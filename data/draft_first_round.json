@@ -1,0 +1,3436 @@
+[
+ {
+  "draft_year": 2001,
+  "name": "寺原 隼人",
+  "pos": "投手",
+  "school": "日南学園",
+  "team_code": "h",
+  "section": "選択選手",
+  "bids": 4,
+  "bidders": [
+   "中日",
+   "横浜",
+   "福岡ダイエー",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2001,
+  "name": "朝井 秀樹",
+  "pos": "投手",
+  "school": "PL学園",
+  "team_code": "bu",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2001,
+  "name": "(選択権利なし)",
+  "pos": "",
+  "school": "",
+  "team_code": "bw",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2001,
+  "name": "大竹 寛",
+  "pos": "投手",
+  "school": "浦和学院",
+  "team_code": "c",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2001,
+  "name": "(選択権利なし)",
+  "pos": "",
+  "school": "",
+  "team_code": "f",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2001,
+  "name": "(選択権利なし)",
+  "pos": "",
+  "school": "",
+  "team_code": "l",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2001,
+  "name": "喜多 隆志",
+  "pos": "外野手",
+  "school": "慶応大",
+  "team_code": "m",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2001,
+  "name": "(選択権利なし)",
+  "pos": "",
+  "school": "",
+  "team_code": "s",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2001,
+  "name": "(選択権利なし)",
+  "pos": "",
+  "school": "",
+  "team_code": "t",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2001,
+  "name": "前田 章宏",
+  "pos": "捕手",
+  "school": "中京大中京",
+  "team_code": "d",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2001,
+  "name": "真田 裕貴",
+  "pos": "投手",
+  "school": "姫路工業高校",
+  "team_code": "g",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2001,
+  "name": "秦 裕二",
+  "pos": "投手",
+  "school": "智弁学園",
+  "team_code": "yb",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2002,
+  "name": "高井 雄平",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "s",
+  "section": "選択選手",
+  "bids": 2,
+  "bidders": [
+   "ヤクルト",
+   "大阪近鉄"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2002,
+  "name": "森岡 良介",
+  "pos": "(18)",
+  "school": "内野手",
+  "team_code": "d",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2002,
+  "name": "尾崎 匡哉",
+  "pos": "(18)",
+  "school": "内野手",
+  "team_code": "f",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2002,
+  "name": "西岡 剛",
+  "pos": "(18)",
+  "school": "内野手",
+  "team_code": "m",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2002,
+  "name": "坂口 智隆",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "bu",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2003,
+  "name": "白濱 裕太",
+  "pos": "(18)",
+  "school": "捕 手",
+  "team_code": "c",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2003,
+  "name": "中川 裕貴",
+  "pos": "(18)",
+  "school": "内野手",
+  "team_code": "d",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2003,
+  "name": "内 竜也",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "m",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2004,
+  "name": "佐藤 剛士",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "c",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2004,
+  "name": "ダルビッシュ 有",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "f",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2004,
+  "name": "江川 智晃",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "h",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2004,
+  "name": "涌井 秀章",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "l",
+  "section": "選択選手",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "松崎 伸吾",
+  "pos": "(22)",
+  "school": "投 手",
+  "team_code": "e",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 2,
+  "bidders": [
+   "広島東洋"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "陽 仲壽",
+  "pos": "(18)",
+  "school": "内野手",
+  "team_code": "f",
+  "section": "高校生選択会議",
+  "bids": 2,
+  "bidders": [
+   "北海道日本ハム",
+   "福岡ソフトバンク"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "辻内 崇伸",
+  "pos": "(17)",
+  "school": "投 手",
+  "team_code": "g",
+  "section": "高校生選択会議",
+  "bids": 2,
+  "bidders": [
+   "オリックス",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "平田 良介",
+  "pos": "(17)",
+  "school": "外野手",
+  "team_code": "d",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "片山 博視 ※",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "e",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "炭谷 銀仁朗",
+  "pos": "(18)",
+  "school": "捕 手",
+  "team_code": "l",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "柳田 将利",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "m",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "村中 恭兵",
+  "pos": "(17)",
+  "school": "投 手",
+  "team_code": "s",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "鶴 直人",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "t",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "山口 俊",
+  "pos": "(17)",
+  "school": "投 手",
+  "team_code": "yb",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2005,
+  "name": "岡田 貴弘",
+  "pos": "(17)",
+  "school": "外野手",
+  "team_code": "bs",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2005,
+  "name": "鈴木 将光",
+  "pos": "(18)",
+  "school": "外野手",
+  "team_code": "c",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2005,
+  "name": "荒川 雄太",
+  "pos": "(17)",
+  "school": "捕 手",
+  "team_code": "h",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2006,
+  "name": "永井 怜",
+  "pos": "(22)",
+  "school": "投 手",
+  "team_code": "e",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 4,
+  "bidders": [
+   "オリックス",
+   "北海道日本ハム",
+   "横浜"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2006,
+  "name": "田中 将大",
+  "pos": "(17)",
+  "school": "投 手",
+  "team_code": "e",
+  "section": "高校生選択会議",
+  "bids": 4,
+  "bidders": [
+   "オリックス",
+   "北海道日本ハム",
+   "東北楽天",
+   "横浜"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2006,
+  "name": "堂上 直倫",
+  "pos": "(18)",
+  "school": "内野手",
+  "team_code": "d",
+  "section": "高校生選択会議",
+  "bids": 3,
+  "bidders": [
+   "中日",
+   "読売",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2006,
+  "name": "大嶺 祐太",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "m",
+  "section": "高校生選択会議",
+  "bids": 2,
+  "bidders": [
+   "千葉ロッテ",
+   "福岡ソフトバンク"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2006,
+  "name": "増渕 竜義",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "s",
+  "section": "高校生選択会議",
+  "bids": 2,
+  "bidders": [
+   "東京ヤクルト",
+   "西武"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2006,
+  "name": "前田 健太",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "c",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2006,
+  "name": "延江 大輔",
+  "pos": "(17)",
+  "school": "投 手",
+  "team_code": "bs",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2006,
+  "name": "吉川 光夫",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "f",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2006,
+  "name": "坂本 勇人",
+  "pos": "(17)",
+  "school": "内野手",
+  "team_code": "g",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2006,
+  "name": "福田 秀平",
+  "pos": "(17)",
+  "school": "内野手",
+  "team_code": "h",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2006,
+  "name": "木村 文和",
+  "pos": "(18)",
+  "school": "投 手",
+  "team_code": "l",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2006,
+  "name": "野原 将志",
+  "pos": "(18)",
+  "school": "内野手",
+  "team_code": "t",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2006,
+  "name": "北 篤",
+  "pos": "(17)",
+  "school": "投 手",
+  "team_code": "yb",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "大場 翔太",
+  "pos": "投手",
+  "school": "東洋大",
+  "team_code": "h",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 6,
+  "bidders": [
+   "オリックス",
+   "北海道日本ハム",
+   "横浜",
+   "福岡ソフトバンク",
+   "読売",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "長谷部 康平",
+  "pos": "投手",
+  "school": "愛知工業大",
+  "team_code": "e",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 5,
+  "bidders": [
+   "中日",
+   "千葉ロッテ",
+   "広島東洋",
+   "東北楽天",
+   "西武"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "加藤 幹典",
+  "pos": "投手",
+  "school": "慶應大",
+  "team_code": "s",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 5,
+  "bidders": [
+   "中日",
+   "東北楽天",
+   "横浜",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "佐藤 由規",
+  "pos": "投手",
+  "school": "仙台育英高",
+  "team_code": "s",
+  "section": "高校生選択会議",
+  "bids": 5,
+  "bidders": [
+   "中日",
+   "東京ヤクルト",
+   "東北楽天",
+   "横浜",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "多田野 数人",
+  "pos": "投手",
+  "school": "3A・サクラメント",
+  "team_code": "f",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 4,
+  "bidders": [
+   "オリックス",
+   "福岡ソフトバンク",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "中田 翔",
+  "pos": "外野手",
+  "school": "大阪桐蔭高",
+  "team_code": "f",
+  "section": "高校生選択会議",
+  "bids": 4,
+  "bidders": [
+   "オリックス",
+   "北海道日本ハム",
+   "福岡ソフトバンク",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "服部 泰卓",
+  "pos": "投手",
+  "school": "トヨタ自動車",
+  "team_code": "m",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 2,
+  "bidders": [
+   "広島東洋"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "唐川 侑己",
+  "pos": "投手",
+  "school": "成田高",
+  "team_code": "m",
+  "section": "高校生選択会議",
+  "bids": 2,
+  "bidders": [
+   "千葉ロッテ"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "寺田 龍平",
+  "pos": "投手",
+  "school": "札幌南高",
+  "team_code": "e",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "岩嵜 翔",
+  "pos": "投手",
+  "school": "市船橋高",
+  "team_code": "h",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2007,
+  "name": "篠田 純平",
+  "pos": "投手",
+  "school": "日本大",
+  "team_code": "c",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "山内 壮馬",
+  "pos": "投手",
+  "school": "名城大",
+  "team_code": "d",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "村田 透",
+  "pos": "投手",
+  "school": "大阪体育大",
+  "team_code": "g",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "平野 将光",
+  "pos": "投手",
+  "school": "JR東日本東北",
+  "team_code": "l",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "白仁田 寛和",
+  "pos": "投手",
+  "school": "福岡大",
+  "team_code": "t",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "安部 友裕",
+  "pos": "内野手",
+  "school": "福岡工大城東高",
+  "team_code": "c",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "赤坂 和幸",
+  "pos": "投手",
+  "school": "浦和学院高",
+  "team_code": "d",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "藤村 大介",
+  "pos": "内野手",
+  "school": "熊本工高",
+  "team_code": "g",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "(辞退)",
+  "pos": "",
+  "school": "",
+  "team_code": "l",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "高濱 卓也",
+  "pos": "内野手",
+  "school": "横浜高",
+  "team_code": "t",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2007,
+  "name": "小林 賢司",
+  "pos": "投手",
+  "school": "青山学院大",
+  "team_code": "bs",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2007,
+  "name": "小林 太志",
+  "pos": "投手",
+  "school": "JR東日本",
+  "team_code": "yb",
+  "section": "大学生・社会人ほか選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2007,
+  "name": "丹羽 将弥",
+  "pos": "外野手",
+  "school": "岐阜城北高",
+  "team_code": "bs",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2007,
+  "name": "田中 健二朗",
+  "pos": "投手",
+  "school": "常葉菊川高",
+  "team_code": "yb",
+  "section": "高校生選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2008,
+  "name": "野本 圭",
+  "pos": "外野手",
+  "school": "日本通運",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "中日",
+   "東北楽天"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2008,
+  "name": "大田 泰示",
+  "pos": "内野手",
+  "school": "東海大相模高",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "福岡ソフトバンク",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2008,
+  "name": "松本 啓二朗",
+  "pos": "外野手",
+  "school": "早稲田大",
+  "team_code": "yb",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "横浜",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2008,
+  "name": "甲斐 拓哉",
+  "pos": "投手",
+  "school": "東海大三高",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2008,
+  "name": "岩本 貴裕",
+  "pos": "外野手",
+  "school": "亜細亜大",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2008,
+  "name": "大野 奨太",
+  "pos": "捕手",
+  "school": "東洋大",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2008,
+  "name": "中崎 雄太",
+  "pos": "投手",
+  "school": "日南学園高",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2008,
+  "name": "木村 雄太",
+  "pos": "投手",
+  "school": "東京ガス",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2008,
+  "name": "赤川 克紀",
+  "pos": "投手",
+  "school": "宮崎商高",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2008,
+  "name": "藤原 紘通",
+  "pos": "投手",
+  "school": "NTT西日本",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2008,
+  "name": "巽 真悟",
+  "pos": "投手",
+  "school": "近畿大",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2008,
+  "name": "蕭 一傑",
+  "pos": "投手",
+  "school": "奈良産業大",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2009,
+  "name": "菊池 雄星",
+  "pos": "投手",
+  "school": "花巻東高",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 6,
+  "bidders": [
+   "中日",
+   "北海道日本ハム",
+   "埼玉西武",
+   "東京ヤクルト",
+   "東北楽天",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2009,
+  "name": "古川 秀一",
+  "pos": "投手",
+  "school": "日本文理大",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2009,
+  "name": "今村 猛",
+  "pos": "投手",
+  "school": "清峰高",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2009,
+  "name": "長野 久義",
+  "pos": "外野手",
+  "school": "Honda",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2009,
+  "name": "今宮 健太",
+  "pos": "内野手",
+  "school": "明豊高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2009,
+  "name": "荻野 貴司",
+  "pos": "外野手",
+  "school": "トヨタ自動車",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2009,
+  "name": "筒香 嘉智",
+  "pos": "内野手",
+  "school": "横浜高",
+  "team_code": "yb",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2009,
+  "name": "岡田 俊哉",
+  "pos": "投手",
+  "school": "智弁和歌山高",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2009,
+  "name": "戸村 健次",
+  "pos": "投手",
+  "school": "立教大",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2009,
+  "name": "中村 勝",
+  "pos": "投手",
+  "school": "春日部共栄高",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2009,
+  "name": "中澤 雅人",
+  "pos": "投手",
+  "school": "トヨタ自動車",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2009,
+  "name": "二神 一人",
+  "pos": "投手",
+  "school": "法政大",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2010,
+  "name": "大石 達也",
+  "pos": "投手",
+  "school": "早稲田大",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 6,
+  "bidders": [
+   "オリックス",
+   "埼玉西武",
+   "広島東洋",
+   "東北楽天",
+   "横浜",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2010,
+  "name": "斎藤 佑樹",
+  "pos": "投手",
+  "school": "早稲田大",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [
+   "北海道日本ハム",
+   "千葉ロッテ",
+   "東京ヤクルト",
+   "福岡ソフトバンク"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2010,
+  "name": "大野 雄大",
+  "pos": "投手",
+  "school": "佛教大",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2010,
+  "name": "澤村 拓一",
+  "pos": "投手",
+  "school": "中央大",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2010,
+  "name": "福井 優也",
+  "pos": "投手",
+  "school": "早稲田大",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2010,
+  "name": "塩見 貴洋",
+  "pos": "投手",
+  "school": "八戸大",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2010,
+  "name": "山下 斐紹",
+  "pos": "捕手",
+  "school": "習志野高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2010,
+  "name": "伊志嶺 翔大",
+  "pos": "外野手",
+  "school": "東海大",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2010,
+  "name": "榎田 大樹",
+  "pos": "投手",
+  "school": "東京ガス",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2010,
+  "name": "須田 幸太",
+  "pos": "投手",
+  "school": "JFE東日本",
+  "team_code": "yb",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2010,
+  "name": "山田 哲人",
+  "pos": "内野手",
+  "school": "履正社高",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2010,
+  "name": "後藤 駿太",
+  "pos": "外野手",
+  "school": "前橋商高",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 4
+ },
+ {
+  "draft_year": 2011,
+  "name": "高橋 周平",
+  "pos": "内野手",
+  "school": "東海大甲府高",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [
+   "オリックス",
+   "中日",
+   "東京ヤクルト"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2011,
+  "name": "藤岡 貴裕",
+  "pos": "投手",
+  "school": "東洋大",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [
+   "千葉ロッテ",
+   "東北楽天",
+   "横浜"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2011,
+  "name": "菅野 智之",
+  "pos": "投手",
+  "school": "東海大",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "北海道日本ハム",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2011,
+  "name": "野村 祐輔",
+  "pos": "投手",
+  "school": "明治大",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2011,
+  "name": "武田 翔太",
+  "pos": "投手",
+  "school": "宮崎日大高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2011,
+  "name": "十亀 剣",
+  "pos": "投手",
+  "school": "JR東日本",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2011,
+  "name": "伊藤 隼太",
+  "pos": "外野手",
+  "school": "慶應義塾大",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2011,
+  "name": "安達 了一",
+  "pos": "内野手",
+  "school": "東芝",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2011,
+  "name": "武藤 好貴",
+  "pos": "投手",
+  "school": "JR北海道",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2011,
+  "name": "松本 竜也",
+  "pos": "投手",
+  "school": "英明高",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2011,
+  "name": "川上 竜平",
+  "pos": "外野手",
+  "school": "光星学院高",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2011,
+  "name": "北方 悠誠",
+  "pos": "投手",
+  "school": "唐津商高",
+  "team_code": "yb",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2012,
+  "name": "藤浪 晋太郎",
+  "pos": "投手",
+  "school": "大阪桐蔭高",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [
+   "オリックス",
+   "千葉ロッテ",
+   "東京ヤクルト",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2012,
+  "name": "東浜 巨",
+  "pos": "投手",
+  "school": "亜細亜大",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [
+   "埼玉西武",
+   "横浜DeNA",
+   "福岡ソフトバンク"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2012,
+  "name": "森 雄大",
+  "pos": "投手",
+  "school": "東福岡高",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "広島東洋",
+   "東北楽天"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2012,
+  "name": "福谷 浩司",
+  "pos": "投手",
+  "school": "慶應義塾大",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2012,
+  "name": "大谷 翔平",
+  "pos": "投手",
+  "school": "花巻東高",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2012,
+  "name": "菅野 智之",
+  "pos": "投手",
+  "school": "東海大在学",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2012,
+  "name": "白崎 浩之",
+  "pos": "内野手",
+  "school": "駒沢大",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2012,
+  "name": "増田 達至",
+  "pos": "投手",
+  "school": "NTT西日本",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2012,
+  "name": "松永 昂大",
+  "pos": "投手",
+  "school": "大阪ガス",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2012,
+  "name": "石山 泰稚",
+  "pos": "投手",
+  "school": "ヤマハ",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2012,
+  "name": "松葉 貴大",
+  "pos": "投手",
+  "school": "大阪体育大",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2012,
+  "name": "高橋 大樹",
+  "pos": "外野手",
+  "school": "龍谷大平安高",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2013,
+  "name": "松井 裕樹",
+  "pos": "投手",
+  "school": "桐光学園高",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 5,
+  "bidders": [
+   "中日",
+   "北海道日本ハム",
+   "東北楽天",
+   "横浜DeNA",
+   "福岡ソフトバンク"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2013,
+  "name": "大瀬良 大地",
+  "pos": "投手",
+  "school": "九州共立大",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [
+   "広島東洋",
+   "東京ヤクルト",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2013,
+  "name": "石川 歩",
+  "pos": "投手",
+  "school": "東京ガス",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "千葉ロッテ",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2013,
+  "name": "吉田 一将",
+  "pos": "投手",
+  "school": "JR東日本",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2013,
+  "name": "森 友哉",
+  "pos": "捕手",
+  "school": "大阪桐蔭高",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2013,
+  "name": "鈴木 翔太",
+  "pos": "投手",
+  "school": "聖隷クリストファー高",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2013,
+  "name": "柿田 裕太",
+  "pos": "投手",
+  "school": "日本生命",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2013,
+  "name": "小林 誠司",
+  "pos": "捕手",
+  "school": "日本生命",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2013,
+  "name": "杉浦 稔大",
+  "pos": "投手",
+  "school": "國學院大",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2013,
+  "name": "加治屋 蓮",
+  "pos": "投手",
+  "school": "JR九州",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2013,
+  "name": "岩貞 祐太",
+  "pos": "投手",
+  "school": "横浜商科大",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2013,
+  "name": "渡邉 諒",
+  "pos": "内野手",
+  "school": "東海大甲府高",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 4
+ },
+ {
+  "draft_year": 2014,
+  "name": "有原 航平",
+  "pos": "投手",
+  "school": "早稲田大",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [
+   "北海道日本ハム",
+   "広島東洋",
+   "横浜DeNA",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2014,
+  "name": "安樂 智大",
+  "pos": "投手",
+  "school": "済美高",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "東京ヤクルト",
+   "東北楽天"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2014,
+  "name": "山崎 福也",
+  "pos": "投手",
+  "school": "明治大",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2014,
+  "name": "野村 亮介",
+  "pos": "投手",
+  "school": "三菱日立パワーシステムズ",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2014,
+  "name": "岡本 和真",
+  "pos": "内野手",
+  "school": "智弁学園高",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2014,
+  "name": "松本 裕樹",
+  "pos": "投手",
+  "school": "盛岡大附属高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2014,
+  "name": "高橋 光成",
+  "pos": "投手",
+  "school": "前橋育英高",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2014,
+  "name": "中村 奨吾",
+  "pos": "内野手",
+  "school": "早稲田大",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2014,
+  "name": "野間 峻祥",
+  "pos": "外野手",
+  "school": "中部学院大",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2014,
+  "name": "山崎 康晃",
+  "pos": "投手",
+  "school": "亜細亜大",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2014,
+  "name": "竹下 真吾",
+  "pos": "投手",
+  "school": "ヤマハ",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2014,
+  "name": "横山 雄哉",
+  "pos": "投手",
+  "school": "新日鉄住金鹿島",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2015,
+  "name": "高橋 純平",
+  "pos": "投手",
+  "school": "県岐阜商高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [
+   "中日",
+   "北海道日本ハム",
+   "福岡ソフトバンク"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2015,
+  "name": "平沢 大河",
+  "pos": "内野手",
+  "school": "仙台育英高",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "千葉ロッテ",
+   "東北楽天"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2015,
+  "name": "高山 俊",
+  "pos": "外野手",
+  "school": "明治大",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "東京ヤクルト",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2015,
+  "name": "吉田 正尚",
+  "pos": "外野手",
+  "school": "青山学院大",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2015,
+  "name": "岡田 明丈",
+  "pos": "投手",
+  "school": "大阪商業大",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2015,
+  "name": "今永 昇太",
+  "pos": "投手",
+  "school": "駒澤大",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2015,
+  "name": "桜井 俊貴",
+  "pos": "投手",
+  "school": "立命館大",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2015,
+  "name": "多和田 真三郎",
+  "pos": "投手",
+  "school": "富士大",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2015,
+  "name": "小笠原 慎之介",
+  "pos": "投手",
+  "school": "東海大相模高",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2015,
+  "name": "オコエ 瑠偉",
+  "pos": "外野手",
+  "school": "関東一高",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2015,
+  "name": "原 樹理",
+  "pos": "投手",
+  "school": "東洋大",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2015,
+  "name": "上原 健太",
+  "pos": "投手",
+  "school": "明治大",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2016,
+  "name": "田中 正義",
+  "pos": "投手",
+  "school": "創価大",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 5,
+  "bidders": [
+   "北海道日本ハム",
+   "千葉ロッテ",
+   "広島東洋",
+   "福岡ソフトバンク",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2016,
+  "name": "柳 裕也",
+  "pos": "投手",
+  "school": "明治大",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "中日",
+   "横浜DeNA"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2016,
+  "name": "山岡 泰輔",
+  "pos": "投手",
+  "school": "東京ガス",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2016,
+  "name": "藤平 尚真",
+  "pos": "投手",
+  "school": "横浜高",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2016,
+  "name": "今井 達也",
+  "pos": "投手",
+  "school": "作新学院高",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2016,
+  "name": "寺島 成輝",
+  "pos": "投手",
+  "school": "履正社高",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2016,
+  "name": "大山 悠輔",
+  "pos": "内野手",
+  "school": "白鴎大",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2016,
+  "name": "佐々木 千隼",
+  "pos": "投手",
+  "school": "桜美林大",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2016,
+  "name": "加藤 拓也",
+  "pos": "投手",
+  "school": "慶應義塾大",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2016,
+  "name": "濱口 遥大",
+  "pos": "投手",
+  "school": "神奈川大",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2016,
+  "name": "堀 瑞輝",
+  "pos": "投手",
+  "school": "広島新庄高",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2016,
+  "name": "吉川 尚輝",
+  "pos": "内野手",
+  "school": "中京学院大",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2017,
+  "name": "清宮 幸太郎",
+  "pos": "内野手",
+  "school": "早稲田実業",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 7,
+  "bidders": [
+   "北海道日本ハム",
+   "千葉ロッテ",
+   "東京ヤクルト",
+   "東北楽天",
+   "福岡ソフトバンク",
+   "読売",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2017,
+  "name": "田嶋 大樹",
+  "pos": "投手",
+  "school": "JR東日本",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "オリックス",
+   "埼玉西武"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2017,
+  "name": "中村 奨成",
+  "pos": "捕手",
+  "school": "広陵高",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "中日",
+   "広島東洋"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2017,
+  "name": "東 克樹",
+  "pos": "投手",
+  "school": "立命館大学",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2017,
+  "name": "鈴木 博志",
+  "pos": "投手",
+  "school": "ヤマハ",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2017,
+  "name": "齊藤 大将",
+  "pos": "投手",
+  "school": "明治大学",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2017,
+  "name": "安田 尚憲",
+  "pos": "内野手",
+  "school": "履正社高",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2017,
+  "name": "村上 宗隆",
+  "pos": "捕手",
+  "school": "九州学院高",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2017,
+  "name": "近藤 弘樹",
+  "pos": "投手",
+  "school": "岡山商科大学",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2017,
+  "name": "鍬原 拓也",
+  "pos": "投手",
+  "school": "中央大学",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2017,
+  "name": "馬場 皐輔",
+  "pos": "投手",
+  "school": "仙台大学",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2017,
+  "name": "吉住 晴斗",
+  "pos": "投手",
+  "school": "鶴岡東高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 4
+ },
+ {
+  "draft_year": 2018,
+  "name": "小園 海斗",
+  "pos": "内野手",
+  "school": "報徳学園高",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [
+   "オリックス",
+   "広島東洋",
+   "横浜DeNA",
+   "福岡ソフトバンク"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2018,
+  "name": "根尾 昂",
+  "pos": "内野手",
+  "school": "大阪桐蔭高",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [
+   "中日",
+   "北海道日本ハム",
+   "東京ヤクルト",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2018,
+  "name": "藤原 恭大",
+  "pos": "外野手",
+  "school": "大阪桐蔭高",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [
+   "千葉ロッテ",
+   "東北楽天",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2018,
+  "name": "松本 航",
+  "pos": "投手",
+  "school": "日本体育大学",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2018,
+  "name": "太田 椋",
+  "pos": "内野手",
+  "school": "天理高",
+  "team_code": "bs",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2018,
+  "name": "上茶谷 大河",
+  "pos": "投手",
+  "school": "東洋大学",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2018,
+  "name": "辰己 涼介",
+  "pos": "外野手",
+  "school": "立命館大学",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2018,
+  "name": "吉田 輝星",
+  "pos": "投手",
+  "school": "金足農業高",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2018,
+  "name": "髙橋 優貴",
+  "pos": "投手",
+  "school": "八戸学院大学",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2018,
+  "name": "甲斐野 央",
+  "pos": "投手",
+  "school": "東洋大学",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2018,
+  "name": "清水 昇",
+  "pos": "投手",
+  "school": "國學院大学",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2018,
+  "name": "近本 光司",
+  "pos": "外野手",
+  "school": "大阪ガス",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2019,
+  "name": "佐々木 朗希",
+  "pos": "投手",
+  "school": "大船渡高",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [
+   "北海道日本ハム",
+   "千葉ロッテ",
+   "埼玉西武",
+   "東北楽天"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2019,
+  "name": "石川 昂弥",
+  "pos": "内野手",
+  "school": "東邦高",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [
+   "オリックス",
+   "中日",
+   "福岡ソフトバンク"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2019,
+  "name": "奥川 恭伸",
+  "pos": "投手",
+  "school": "星稜高",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [
+   "東京ヤクルト",
+   "読売",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2019,
+  "name": "森下 暢仁",
+  "pos": "投手",
+  "school": "明治大学",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2019,
+  "name": "森 敬斗",
+  "pos": "内野手",
+  "school": "桐蔭学園高",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2019,
+  "name": "小深田 大翔",
+  "pos": "内野手",
+  "school": "大阪ガス",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2019,
+  "name": "河野 竜生",
+  "pos": "投手",
+  "school": "JFE西日本",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2019,
+  "name": "佐藤 直樹",
+  "pos": "外野手",
+  "school": "JR西日本",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2019,
+  "name": "宮川 哲",
+  "pos": "投手",
+  "school": "東芝",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2019,
+  "name": "西 純矢",
+  "pos": "投手",
+  "school": "創志学園高",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2019,
+  "name": "宮城 大弥",
+  "pos": "投手",
+  "school": "興南高",
+  "team_code": "b",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2019,
+  "name": "堀田 賢慎",
+  "pos": "投手",
+  "school": "青森山田高",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2020,
+  "name": "早川 隆久",
+  "pos": "投手",
+  "school": "早稲田大学",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [
+   "千葉ロッテ",
+   "埼玉西武",
+   "東京ヤクルト",
+   "東北楽天"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2020,
+  "name": "佐藤 輝明",
+  "pos": "内野手",
+  "school": "近畿大学",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [
+   "オリックス",
+   "福岡ソフトバンク",
+   "読売",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2020,
+  "name": "栗林 良吏",
+  "pos": "投手",
+  "school": "トヨタ自動車",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2020,
+  "name": "髙橋 宏斗",
+  "pos": "投手",
+  "school": "中京大学附属中京高",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2020,
+  "name": "入江 大生",
+  "pos": "投手",
+  "school": "明治大学",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2020,
+  "name": "伊藤 大海",
+  "pos": "投手",
+  "school": "苫小牧駒澤大学",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2020,
+  "name": "山下 舜平大",
+  "pos": "投手",
+  "school": "福岡大学附属大濠高",
+  "team_code": "b",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2020,
+  "name": "平内 龍太",
+  "pos": "投手",
+  "school": "亜細亜大学",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2020,
+  "name": "井上 朋也",
+  "pos": "内野手",
+  "school": "花咲徳栄高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2020,
+  "name": "渡部 健人",
+  "pos": "内野手",
+  "school": "桐蔭横浜大学",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2020,
+  "name": "鈴木 昭汰",
+  "pos": "投手",
+  "school": "法政大学",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2020,
+  "name": "木澤 尚文",
+  "pos": "投手",
+  "school": "慶應義塾大学",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2021,
+  "name": "隅田 知一郎",
+  "pos": "投手",
+  "school": "西日本工業大学",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [
+   "埼玉西武",
+   "広島東洋",
+   "東京ヤクルト",
+   "読売"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2021,
+  "name": "小園 健太",
+  "pos": "投手",
+  "school": "市立和歌山高",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "横浜DeNA",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2021,
+  "name": "椋木 蓮",
+  "pos": "投手",
+  "school": "東北福祉大学",
+  "team_code": "b",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2021,
+  "name": "アドゥ ブライト 健太",
+  "pos": "外野手",
+  "school": "上武大学",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2021,
+  "name": "吉野 創士",
+  "pos": "外野手",
+  "school": "昌平高",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2021,
+  "name": "達 孝太",
+  "pos": "投手",
+  "school": "天理高",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2021,
+  "name": "風間 球打",
+  "pos": "投手",
+  "school": "ノースアジア大学明桜高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2021,
+  "name": "松川 虎生",
+  "pos": "捕手",
+  "school": "市立和歌山高",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2021,
+  "name": "翁田 大勢",
+  "pos": "投手",
+  "school": "関西国際大学",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2021,
+  "name": "山下 輝",
+  "pos": "投手",
+  "school": "法政大学",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2021,
+  "name": "森木 大智",
+  "pos": "投手",
+  "school": "高知高",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2021,
+  "name": "黒原 拓未",
+  "pos": "投手",
+  "school": "関西学院大学",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3
+ },
+ {
+  "draft_year": 2022,
+  "name": "荘司 康誠",
+  "pos": "投手",
+  "school": "立教大学",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "千葉ロッテ",
+   "東北楽天"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "浅野 翔吾",
+  "pos": "外野手",
+  "school": "高松商業高",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "読売",
+   "阪神"
+  ],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "曽谷 龍平",
+  "pos": "投手",
+  "school": "白鴎大学",
+  "team_code": "b",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "斉藤 優汰",
+  "pos": "投手",
+  "school": "苫小牧中央高",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "仲地 礼亜",
+  "pos": "投手",
+  "school": "沖縄大学",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "松尾 汐恩",
+  "pos": "捕手",
+  "school": "大阪桐蔭高",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "矢澤 宏太",
+  "pos": "投手",
+  "school": "日本体育大学",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "イヒネ イツア",
+  "pos": "内野手",
+  "school": "誉高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "蛭間 拓哉",
+  "pos": "外野手",
+  "school": "早稲田大学",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "吉村 貢司郎",
+  "pos": "投手",
+  "school": "東芝",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2022,
+  "name": "菊地 吏玖",
+  "pos": "投手",
+  "school": "専修大学",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2022,
+  "name": "森下 翔太",
+  "pos": "外野手",
+  "school": "中央大学",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 2
+ },
+ {
+  "draft_year": 2023,
+  "name": "度会 隆輝",
+  "pos": "外野手",
+  "school": "ENEOS",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2023,
+  "name": "武内 夏暉",
+  "pos": "投手",
+  "school": "國學院大學",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2023,
+  "name": "前田 悠伍",
+  "pos": "投手",
+  "school": "大阪桐蔭高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [],
+  "wave": 2,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2023,
+  "name": "常廣 羽也斗",
+  "pos": "投手",
+  "school": "青山学院大学",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2023,
+  "name": "西舘 勇陽",
+  "pos": "投手",
+  "school": "中央大学",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2023,
+  "name": "草加 勝",
+  "pos": "投手",
+  "school": "亜細亜大学",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 2,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2023,
+  "name": "細野 晴希",
+  "pos": "投手",
+  "school": "東洋大学",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 3,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2023,
+  "name": "横山 聖哉",
+  "pos": "内野手",
+  "school": "上田西高",
+  "team_code": "b",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2023,
+  "name": "古謝 樹",
+  "pos": "投手",
+  "school": "桐蔭横浜大学",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2023,
+  "name": "上田 希由翔",
+  "pos": "内野手",
+  "school": "明治大学",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2023,
+  "name": "西舘 昂汰",
+  "pos": "投手",
+  "school": "専修大学",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2023,
+  "name": "下村 海翔",
+  "pos": "投手",
+  "school": "青山学院大学",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2024,
+  "name": "宗山 塁",
+  "pos": "内野手",
+  "school": "明治大学",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 5,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2024,
+  "name": "金丸 夢斗",
+  "pos": "投手",
+  "school": "関西大学",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 4,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2024,
+  "name": "西川 史礁",
+  "pos": "外野手",
+  "school": "青山学院大学",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2024,
+  "name": "柴田 獅子",
+  "pos": "投手",
+  "school": "福岡大学附属大濠高",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 2,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2024,
+  "name": "石塚 裕惺",
+  "pos": "内野手",
+  "school": "花咲徳栄高",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 2,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2024,
+  "name": "麦谷 祐介",
+  "pos": "外野手",
+  "school": "富士大学",
+  "team_code": "b",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2024,
+  "name": "佐々木 泰",
+  "pos": "内野手",
+  "school": "青山学院大学",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2024,
+  "name": "竹田 祐",
+  "pos": "投手",
+  "school": "三菱重工West",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2024,
+  "name": "村上 泰斗",
+  "pos": "投手",
+  "school": "神戸弘陵高",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2024,
+  "name": "齋藤 大翔",
+  "pos": "内野手",
+  "school": "金沢高",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2024,
+  "name": "中村 優斗",
+  "pos": "投手",
+  "school": "愛知工業大学",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2024,
+  "name": "伊原 陵人",
+  "pos": "投手",
+  "school": "NTT西日本",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2025,
+  "name": "立石 正広",
+  "pos": "内野手",
+  "school": "創価大学",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 3,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2025,
+  "name": "佐々木 麟太郎",
+  "pos": "内野手",
+  "school": "スタンフォード大学",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2025,
+  "name": "石垣 元気",
+  "pos": "投手",
+  "school": "高崎健康福祉大学高崎高",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2025,
+  "name": "平川 蓮",
+  "pos": "外野手",
+  "school": "仙台大学",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [],
+  "wave": 2,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2025,
+  "name": "藤川 敦也",
+  "pos": "投手",
+  "school": "延岡学園高",
+  "team_code": "b",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2025,
+  "name": "中西 聖輝",
+  "pos": "投手",
+  "school": "青山学院大学",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2025,
+  "name": "小田 康一郎",
+  "pos": "内野手",
+  "school": "青山学院大学",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2025,
+  "name": "藤原 聡大",
+  "pos": "投手",
+  "school": "花園大学",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2025,
+  "name": "大川 慈英",
+  "pos": "投手",
+  "school": "明治大学",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2025,
+  "name": "竹丸 和幸",
+  "pos": "投手",
+  "school": "鷺宮製作所",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2025,
+  "name": "小島 大河",
+  "pos": "捕手",
+  "school": "明治大学",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ },
+ {
+  "draft_year": 2025,
+  "name": "松下 歩叶",
+  "pos": "内野手",
+  "school": "法政大学",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1
+ }
+]

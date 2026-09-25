@@ -1,0 +1,114 @@
+[
+ {
+  "draft_year": 2023,
+  "name": "度会隆輝",
+  "bids": 3,
+  "wave": 1,
+  "winner": "DeNA"
+ },
+ {
+  "draft_year": 2023,
+  "name": "武内夏暉",
+  "bids": 3,
+  "wave": 1,
+  "winner": "西武"
+ },
+ {
+  "draft_year": 2023,
+  "name": "常廣羽也斗",
+  "bids": 2,
+  "wave": 1,
+  "winner": "広島"
+ },
+ {
+  "draft_year": 2023,
+  "name": "西舘勇陽",
+  "bids": 2,
+  "wave": 1,
+  "winner": "巨人"
+ },
+ {
+  "draft_year": 2023,
+  "name": "前田悠伍",
+  "bids": 3,
+  "wave": 2,
+  "winner": "ソフトバンク"
+ },
+ {
+  "draft_year": 2023,
+  "name": "草加勝",
+  "bids": 2,
+  "wave": 2,
+  "winner": "中日"
+ },
+ {
+  "draft_year": 2023,
+  "name": "細野晴希",
+  "bids": 2,
+  "wave": 3,
+  "winner": "日本ハム"
+ },
+ {
+  "draft_year": 2024,
+  "name": "宗山塁",
+  "bids": 5,
+  "wave": 1,
+  "winner": "楽天"
+ },
+ {
+  "draft_year": 2024,
+  "name": "金丸夢斗",
+  "bids": 4,
+  "wave": 1,
+  "winner": "中日"
+ },
+ {
+  "draft_year": 2024,
+  "name": "西川史礁",
+  "bids": 2,
+  "wave": 1,
+  "winner": "ロッテ"
+ },
+ {
+  "draft_year": 2024,
+  "name": "石塚裕惺",
+  "bids": 2,
+  "wave": 2,
+  "winner": "巨人"
+ },
+ {
+  "draft_year": 2024,
+  "name": "柴田獅子",
+  "bids": 2,
+  "wave": 2,
+  "winner": "日本ハム"
+ },
+ {
+  "draft_year": 2025,
+  "name": "立石正広",
+  "bids": 3,
+  "wave": 1,
+  "winner": "阪神"
+ },
+ {
+  "draft_year": 2025,
+  "name": "石垣元気",
+  "bids": 2,
+  "wave": 1,
+  "winner": "ロッテ"
+ },
+ {
+  "draft_year": 2025,
+  "name": "佐々木麟太郎",
+  "bids": 2,
+  "wave": 1,
+  "winner": "ソフトバンク"
+ },
+ {
+  "draft_year": 2025,
+  "name": "平川蓮",
+  "bids": 2,
+  "wave": 2,
+  "winner": "広島"
+ }
+]
