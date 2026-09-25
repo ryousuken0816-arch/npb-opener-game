@@ -33,6 +33,6 @@
 
 ## 次にやること
 
-1. 能力値算出スクリプト（Python推奨、`tools/` などに配置）：data/2008 を入力に、SPEC.md の算出ロジックで各選手の能力値（実数値＋G〜Sランク）を出力。正規化は「その年までの史実実績」、少サンプルは打席数比率で線形ブレンド
-2. 出力フォーマットを Godot 側で読み込む前提で設計（JSON）
+1. ~~能力値算出スクリプト~~ → `tools/compute_ratings.py`（出力 `generated/ratings/<年>_<pre|post>.json`、仕様は tools/README.md）。新しい年の data を追加したら `--year <年> --phase pre/post` で再生成
+2. ~~能力値の要相談事項~~ 決定済み（tools/README.md「決定済み」）。2005〜2007年のチーム成績・表彰の取得をローカル側に依頼検討
 3. Godot プロジェクトの骨組み（ハブ画面）
