@@ -409,14 +409,32 @@ def stage_link(args):
         for k in surname_keys(r["name"]):
             by_surname[(r["year"], norm_name(r["team"]))].setdefault(k, set()).add(r["player_id"])
 
+    roster_teams = defaultdict(set)
+    for r in rosters:
+        roster_teams[r["year"]].add(norm_name(r["team"]))
+
+    def team_key(year, team):
+        """成績ページと名簿で球団名が揺れる(例: 東京ヤクルト/ヤクルト)ので末尾一致で寄せる。"""
+        t = norm_name(team or "")
+        if t in roster_teams[year]:
+            return (year, t)
+        hits = [x for x in roster_teams[year] if x.endswith(t) or t.endswith(x)]
+        return (year, hits[0] if len(hits) == 1 else t)
+
     unmatched = defaultdict(int)
     for r in teamstats:
         key = f'{r["year"]}|{r["team"]}|{r["name"]}'
-        pid = overrides.get(key) or by_year_team[(r["year"], norm_name(r["team"] or ""))].get(norm_name(r["name"]))
+        tk = team_key(r["year"], r["team"])
+        pid = overrides.get(key) or by_year_team[tk].get(norm_name(r["name"]))
         if not pid and len(by_name.get(norm_name(r["name"]), ())) == 1:
             pid = next(iter(by_name[norm_name(r["name"])]))  # 移籍年の表記揺れ等
         if not pid:  # 外国人: 成績表は姓のみ、名簿はフルネーム
-            cands = by_surname[(r["year"], norm_name(r["team"] or ""))].get(norm_name(r["name"]), set())
+            cands = by_surname[tk].get(norm_name(r["name"]), set())
+            if not cands:  # 成績表側がフルネーム(サンティアゴ・ラミレス)、名簿がS.ラミレス
+                for k in surname_keys(r["name"]):
+                    cands = by_surname[tk].get(k, set())
+                    if cands:
+                        break
             if len(cands) == 1:
                 pid = next(iter(cands))
         r["player_id"] = pid
@@ -440,7 +458,10 @@ def main():
     ap.add_argument("stage", choices=[*STAGES, "all"])
     ap.add_argument("--start", type=int, default=2008)
     ap.add_argument("--end", type=int, default=2025)
+    ap.add_argument("--out", default="out", help="出力先ディレクトリ(collect.py からの相対)")
     args = ap.parse_args()
+    global OUT
+    OUT = ROOT / args.out
     for name in (STAGES if args.stage == "all" else [args.stage]):
         STAGES[name](args)
 

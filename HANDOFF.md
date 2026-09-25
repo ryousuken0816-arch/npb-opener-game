@@ -24,6 +24,11 @@
 - 選手ページ投手の列：登板 勝利 敗北 セーブ H HP 完投 完封勝 無四球 勝率 打者 outs 安打 本塁打 四球 死球 三振 暴投 ボーク 失点 自責点 防御率
 - 2軍成績は teamstats_linked.json にのみ存在（選手ページは1軍のみ）
 
+## 追加データ（2008年開幕時点の算出用）
+
+- `data/2005/` `data/2006/` `data/2007/`：rosters.json・teamstats_linked.json（1軍・2軍・守備、1軍は全員player_id突合済み）・awards.json（GG賞。**2005年は0件**＝ページ構造が違い未取得）。players.json は無し（2008年以降の選手の2007年以前の1軍成績は各年の players.json の batting/pitching に含まれる）
+- `data/drafts_2001-2007.json`：2001〜2007年ドラフト（2000年はページなし）。形式は drafts.json と同じ
+
 ## 既知の課題
 
 1. **捕手の盗塁阻止率が npb.jp の守備成績にない**。肩力(捕手)の代替指標を決める必要あり（ユーザーと相談）
