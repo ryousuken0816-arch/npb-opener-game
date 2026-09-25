@@ -1,3 +1,4 @@
+# gdlint: disable=max-public-methods
 extends Node
 ## ゲーム進行状態（年・日付・フェーズ・自球団）とその年のペナント（Season）。
 ##
@@ -71,6 +72,9 @@ var wins: int = 0
 var losses: int = 0
 var draws: int = 0
 
+## 自球団の采配方針（SimTeam.tactics と同じ形。年をまたいでも引き継ぐ）
+var tactics := {"bunt": 0, "steal": 0, "relief": 0}
+
 ## 早送りの目標日（この日の試合が終わるまで進める）。早送りしていなければ -1
 var fast_forward_target: int = -1
 var _fast_forward_time := 0.0
@@ -80,6 +84,7 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	stop_fast_forward()
 	team = team_name
 	year = start_year
+	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	phase = Phase.SEASON
 	GameData.load_ratings(year, "pre")
 	_start_season()
@@ -131,6 +136,24 @@ func stop_fast_forward() -> void:
 		return
 	fast_forward_target = -1
 	changed.emit()
+
+
+## 自球団の編成（その年のペナントの SimTeam）。日程データが無い年は null
+func my_team() -> SimTeam:
+	return season.teams.get(team) if season != null else null
+
+
+## 自球団の采配方針を変える（今季の SimTeam にもすぐ反映）
+func set_tactic(key: String, level: int) -> void:
+	tactics[key] = clampi(level, SimTeam.TACTIC_MIN, SimTeam.TACTIC_MAX)
+	var mine := my_team()
+	if mine != null:
+		mine.set_tactic(key, tactics[key])
+
+
+## 采配画面で編成を変えられるか（シーズン中のみ。オフは前年の編成を見るだけ）
+func can_edit_roster() -> bool:
+	return phase == Phase.SEASON and my_team() != null
 
 
 func is_fast_forwarding() -> bool:
@@ -323,7 +346,12 @@ func _start_season() -> void:
 	var schedule := GameData.load_schedule(year)
 	season = null
 	if not schedule.is_empty() and GameData.has_ratings():
-		season = Season.new(year, GameData.ratings, schedule, randi() + 1)
+		season = Season.new(year, GameData.ratings, schedule, randi() + 1,
+				GameData.load_debut_years(year))
+		var mine: SimTeam = season.teams.get(team)
+		if mine != null:
+			for key: String in tactics:
+				mine.set_tactic(key, tactics[key])
 	day = _season_first_day()
 	_sync_record()
 

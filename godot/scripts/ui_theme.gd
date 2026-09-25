@@ -166,3 +166,70 @@ static func build(p: Palette) -> Theme:
 	t.set_stylebox("panel", "TooltipPanel", box(Color.WHITE, 4, LINE, 1))
 	t.set_color("font_color", "TooltipLabel", TEXT)
 	return t
+
+
+## 見出しの帯つきの白いパネル（参考画像の「1軍」「2軍」の枠）。
+## 戻り値は {panel: PanelContainer, body: VBoxContainer（中身を入れる）, title: Label}
+static func titled_panel(p: Palette, title: String) -> Dictionary:
+	var panel := PanelContainer.new()
+	var style := box(Color(1, 1, 1, 0.97), 10, p.main, 3)
+	style.content_margin_left = 0
+	style.content_margin_right = 0
+	style.content_margin_top = 0
+	style.content_margin_bottom = 8
+	panel.add_theme_stylebox_override("panel", style)
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+	panel.add_child(vbox)
+	var head := PanelContainer.new()
+	var head_style := box(p.main, 0)
+	head_style.corner_radius_top_left = 8
+	head_style.corner_radius_top_right = 8
+	head_style.content_margin_top = 3
+	head_style.content_margin_bottom = 3
+	head.add_theme_stylebox_override("panel", head_style)
+	var label := Label.new()
+	label.text = title
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_override("font", font(800))
+	label.add_theme_font_size_override("font_size", 19)
+	label.add_theme_color_override("font_color", p.on_main)
+	head.add_child(label)
+	vbox.add_child(head)
+	var margin := MarginContainer.new()
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	for side in ["left", "right"]:
+		margin.add_theme_constant_override("margin_" + side, 10)
+	vbox.add_child(margin)
+	var body := VBoxContainer.new()
+	body.add_theme_constant_override("separation", 6)
+	margin.add_child(body)
+	return {"panel": panel, "body": body, "title": label}
+
+
+## ランク（S〜G）の色付きラベル。rating は能力値データの {value, rank}（null なら「-」）
+static func rank_label(rating: Variant, font_size: int = 20) -> Label:
+	var label := Label.new()
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_override("font", font(800))
+	label.add_theme_font_size_override("font_size", font_size)
+	if rating is Dictionary and rating.get("rank") != null:
+		label.text = rating["rank"]
+		label.add_theme_color_override("font_color", GameData.rank_color(rating["rank"]))
+		label.tooltip_text = str(int(rating["value"]))
+		label.mouse_filter = Control.MOUSE_FILTER_PASS
+	else:
+		label.text = "-"
+		label.add_theme_color_override("font_color", TEXT_SUB)
+	return label
+
+
+## 小さな文字のラベル
+static func small_label(text: String, font_size: int = 15, color: Color = TEXT_SUB,
+		weight: int = 500) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_override("font", font(weight))
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", color)
+	return label

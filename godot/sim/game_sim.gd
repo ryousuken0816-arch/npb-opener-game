@@ -80,6 +80,13 @@ const BUNT_MAX_VALUE := 0.7  ## これ以上の打力（batting_value）の打�
 const BUNT_SUCCESS := 0.80
 const BUNT_HIT := 0.05
 
+## 采配方針（SimTeam.tactics、-2〜+2）の効き方。配列は方針 -2, -1, 0, +1, +2 の順
+const BUNT_TACTIC_HITTER := [0.0, 0.5, 1.0, 1.4, 1.8]    ## 野手の送りバントの頻度（倍率）
+const BUNT_TACTIC_PITCHER := [0.5, 0.7, 0.85, 0.92, 0.97]  ## 投手が送りバントする確率
+const BUNT_TACTIC_VALUE := 0.25  ## 1段階ごとに、バントさせる打者の打力の上限（BUNT_MAX_VALUE）をずらす
+const STEAL_TACTIC_LOGIT := 0.5  ## 1段階ごとの盗塁企図率（ロジット）の上下
+const RELIEF_TACTIC_PITCHES := 10  ## 継投：1段階ごとに先発を代える球数の目安を早める（+）/遅らせる（−）
+
 ## 疲労（段階1）：目安の球数を超えた 15球ごとに z 値を下げる
 const FATIGUE_PER_15 := 0.45
 ## 継投（段階8）：先発を代える点数の目安、目安の球数への上乗せ（采配方針）
@@ -500,15 +507,17 @@ func _should_bunt(batting: int, batter: SimPlayer) -> bool:
 	var lead: int = _score[batting] - _score[1 - batting]
 	if absi(lead) > 3:
 		return false
+	var level := _tactic(batting, "bunt")
 	var p := 0.0
 	if batter == _pitcher[batting]:
-		p = BUNT_PITCHER
+		p = BUNT_TACTIC_PITCHER[level + 2]
 	else:
-		# 中軸以外は、打力が低いほど・終盤の接戦ほど送りバントをしやすい
+		# 中軸以外は、打力が低いほど・終盤の接戦ほど送りバントをしやすい（采配方針で頻度と対象を変える）
 		var value := batter.batting_value()
-		if value >= BUNT_MAX_VALUE:
+		var max_value := BUNT_MAX_VALUE + BUNT_TACTIC_VALUE * level
+		if value >= max_value:
 			return false
-		p = BUNT_HITTER * clampf((BUNT_MAX_VALUE - value) / 1.0, 0.0, 1.0)
+		p = BUNT_HITTER * clampf((max_value - value) / 1.0, 0.0, 1.0) * BUNT_TACTIC_HITTER[level + 2]
 		if _inning >= 7 and absi(lead) <= 1:
 			p *= 1.6
 	return rng.randf() < p
@@ -558,7 +567,8 @@ func _try_steal(batting: int, fielding: int) -> void:
 		return
 	var runner: Dictionary = _bases[base]
 	var runner_p: SimPlayer = runner.p
-	var attempt := _sig(_logit(STEAL_ATTEMPT) + A_SPEED_STEAL * runner_p.speed)
+	var attempt := _sig(_logit(STEAL_ATTEMPT) + A_SPEED_STEAL * runner_p.speed
+			+ STEAL_TACTIC_LOGIT * _tactic(batting, "steal"))
 	if base == 1:
 		attempt *= 0.12
 	if rng.randf() >= attempt:
@@ -599,13 +609,17 @@ func _check_pitching_change(fielding: int, inning_start: bool) -> void:
 	var lead: int = _score[fielding] - _score[1 - fielding]
 	var change: bool = _must_change[fielding]
 	if not change and p == _starter[fielding]:
-		var margin := STARTER_PULL_MARGIN + (10 if lead >= 1 and _inning >= 7 and line["r"] <= 2 else 0)
+		# 采配方針の継投：+ は早めに・− は先発を引っ張る
+		var relief := _tactic(fielding, "relief")
+		var pull_runs := maxi(STARTER_PULL_RUNS - relief, 2)
+		var margin := STARTER_PULL_MARGIN - RELIEF_TACTIC_PITCHES * relief \
+				+ (10 if lead >= 1 and _inning >= 7 and line["r"] <= 2 else 0)
 		change = pc >= p.pitch_limit() + margin \
-				or (line["r"] >= STARTER_PULL_RUNS and pc >= 50) \
-				or line["r"] >= STARTER_PULL_RUNS + 3
+				or (line["r"] >= pull_runs and pc >= 50) \
+				or line["r"] >= pull_runs + 3
 		# 終盤の勝ちパターン：7回以降の僅差リードは、球数が近ければ継投する
 		if not change and inning_start and _inning >= 8 and lead in [1, 2, 3] \
-				and pc >= p.pitch_limit() - 15:
+				and pc >= p.pitch_limit() - 15 - RELIEF_TACTIC_PITCHES * relief:
 			change = true
 	elif not change:
 		change = pc >= p.pitch_limit()
@@ -784,6 +798,11 @@ func _finish() -> Dictionary:
 
 
 # --- 確率の道具 ------------------------------------------------------------------------
+
+## side の球団の采配方針（-2〜+2）
+func _tactic(side: int, key: String) -> int:
+	return clampi(int(teams[side].tactics.get(key, 0)), SimTeam.TACTIC_MIN, SimTeam.TACTIC_MAX)
+
 
 ## 走者が次の塁を狙って成功する確率（走力と外野の肩で基準値を上下させる）
 func _speed_p(base: float, runner: SimPlayer, arm: float = 0.0) -> float:

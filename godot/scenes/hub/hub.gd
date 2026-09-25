@@ -26,6 +26,9 @@ const PLACEHOLDERS := {
 }
 
 const ICON_DIR := "res://assets/icons"
+## サブ画面の左上（hub.tscn の SubScreen と同じ値。采配は広げて表示する）
+const SUB_SCREEN_LEFT := 420.0
+const SUB_SCREEN_TOP := 100.0
 const TITLE_SCENE := "res://scenes/title/title.tscn"
 
 var _palette: UiTheme.Palette
@@ -43,7 +46,7 @@ var _open_key := ""
 @onready var _standings: StandingsPanel = %Standings
 @onready var _sub_screen: PanelContainer = %SubScreen
 @onready var _sub_title_label: Label = %SubTitleLabel
-@onready var _roster_view: RosterView = %RosterView
+@onready var _tactics_view: TacticsView = %TacticsView
 @onready var _schedule_view: ScheduleView = %ScheduleView
 @onready var _placeholder_label: Label = %PlaceholderLabel
 @onready var _bottom_bar: PanelContainer = %BottomBar
@@ -64,7 +67,11 @@ func _ready() -> void:
 	_build_menu()
 	_standings.setup(_palette, GameData.league_of(GameState.team))
 	_schedule_view.setup(_palette)
-	%BackButton.pressed.connect(_close_sub_screen)
+	_tactics_view.setup(_palette)
+	_tactics_view.title_changed.connect(func(text: String) -> void: _sub_title_label.text = text)
+	_tactics_view.description_changed.connect(func(text: String) -> void:
+		_description_label.text = text)
+	%BackButton.pressed.connect(_on_back)
 	GameState.changed.connect(_refresh)
 	_refresh()
 	_buttons["advance"].grab_button_focus()
@@ -72,7 +79,7 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and not _open_key.is_empty():
-		_close_sub_screen()
+		_on_back()
 		get_viewport().set_input_as_handled()
 
 
@@ -141,9 +148,10 @@ func _refresh() -> void:
 	_team_name_label.text = GameState.team
 	_summary_label.text = _summary_text()
 	_standings.refresh()
-	_description_label.text = _description(_focused_key)
+	if _open_key != "tactics":
+		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
-		_roster_view.show_team(GameState.team)
+		_tactics_view.refresh()
 	elif _open_key == "schedule":
 		_schedule_view.refresh()
 
@@ -196,14 +204,15 @@ func _open_sub_screen(key: String) -> void:
 	for menu: Array in MENUS:
 		if menu[0] == key:
 			_sub_title_label.text = menu[1]
-	var is_roster := key == "tactics"
+	var is_tactics := key == "tactics"
 	var is_schedule := key == "schedule"
-	_roster_view.visible = is_roster
+	_tactics_view.visible = is_tactics
 	_schedule_view.visible = is_schedule
-	_placeholder_label.visible = not is_roster and not is_schedule
-	if is_roster:
-		_sub_title_label.text = "采配 ― 選手一覧"
-		_roster_view.show_team(GameState.team)
+	_placeholder_label.visible = not is_tactics and not is_schedule
+	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
+	_set_wide(is_tactics)
+	if is_tactics:
+		_tactics_view.open()
 	elif is_schedule:
 		_sub_title_label.text = "日程表"
 		_schedule_view.refresh()
@@ -211,13 +220,29 @@ func _open_sub_screen(key: String) -> void:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
 
 
+## 采配のサブ画面を開いているときは、戻るで采配メニューの一覧へ戻る
+func _on_back() -> void:
+	if _open_key == "tactics" and _tactics_view.back():
+		return
+	_close_sub_screen()
+
+
+func _set_wide(wide: bool) -> void:
+	_sub_screen.offset_left = 24.0 if wide else SUB_SCREEN_LEFT
+	_sub_screen.offset_top = 20.0 if wide else SUB_SCREEN_TOP
+	_menu_box.visible = not wide
+	_event_label.visible = not wide
+
+
 func _close_sub_screen() -> void:
 	# 早送りは日程表を開いている間だけ（閉じたら止める）
 	GameState.stop_fast_forward()
+	_set_wide(false)
 	var key := _open_key
 	_open_key = ""
 	_sub_screen.visible = false
 	_center_area.visible = true
 	_standings.visible = true
+	_description_label.text = _description(_focused_key)
 	if _buttons.has(key):
 		_buttons[key].grab_button_focus()

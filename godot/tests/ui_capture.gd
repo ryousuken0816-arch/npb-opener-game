@@ -36,7 +36,9 @@ func _run() -> void:
 		await _shot("schedule_" + label)
 		if step == 0 or step == 4 or game_state.phase != game_state.Phase.SEASON:
 			hub.call("_open_sub_screen", "tactics")
-			var roster: TabContainer = hub.get_node("%RosterView")
+			var tactics: Node = hub.get_node("%TacticsView")
+			tactics.call("_show_page", "list")
+			var roster: TabContainer = tactics.get("_roster")
 			for tab in roster.get_tab_count():
 				roster.current_tab = tab
 				await _frames(3)

@@ -126,6 +126,21 @@ func load_schedule(year: int) -> Array:
 	return []
 
 
+## data/<年>/rosters.json から 選手ID → 1軍初出場の年（debut_year）。外国人枠の「日本人扱い」の判定に使う
+func load_debut_years(year: int) -> Dictionary:
+	var repo_path := ProjectSettings.globalize_path("res://").path_join(REPO_DATA_DIR)
+	var path := repo_path.path_join("%d/rosters.json" % year).simplify_path()
+	var result := {}
+	if not FileAccess.file_exists(path):
+		return result
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if parsed is Array:
+		for r: Dictionary in parsed:
+			if r.get("player_id") != null and r.get("debut_year") != null:
+				result[r["player_id"]] = r["debut_year"]
+	return result
+
+
 ## 選手IDから能力値ファイルの選手データを引く（無ければ空）
 func player(id: String) -> Dictionary:
 	return _players_by_id.get(id, {})

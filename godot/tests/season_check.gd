@@ -18,7 +18,11 @@ func _init() -> void:
 	var actual_rows: Array = _load_json(root.path_join("data/%d/teamstats_linked.json" % year))
 
 	var start := Time.get_ticks_msec()
-	var season := Season.new(year, ratings, schedule, seed_value)
+	var debut_years := {}
+	for r: Dictionary in _load_json(root.path_join("data/%d/rosters.json" % year)):
+		if r.get("player_id") != null and r.get("debut_year") != null:
+			debut_years[r["player_id"]] = r["debut_year"]
+	var season := Season.new(year, ratings, schedule, seed_value, debut_years)
 	var n := season.sim_all()
 	print("%d年: %d試合をシミュレーション（%.1f秒）" % [year, n, (Time.get_ticks_msec() - start) / 1000.0])
 

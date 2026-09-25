@@ -29,6 +29,8 @@ var team: String
 var is_pitcher: bool
 var bats: String  ## "右" / "左" / "両"
 var throws: String
+var primary_pos := ""  ## 能力値データの primary_pos（"投手" "捕手" "外野手" など。不明は空）
+var is_foreign := false  ## 外国人枠の対象（RosterRules.is_foreign）
 
 # 打撃（z 値）
 var meet := 0.0
@@ -68,6 +70,7 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 	s.is_pitcher = p["is_pitcher"]
 	s.bats = p["bats"] if p["bats"] != null else "右"
 	s.throws = p["throws"] if p["throws"] != null else "右"
+	s.primary_pos = p["primary_pos"] if p.get("primary_pos") != null else ""
 
 	var batting: Variant = p.get("batting")
 	if batting is Dictionary and batting.get("ratings") is Dictionary:

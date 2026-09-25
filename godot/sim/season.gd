@@ -25,8 +25,10 @@ var _rng := RandomNumberGenerator.new()
 var _games_by_date := {}
 
 
-## ratings: 能力値ファイルの中身、schedule: schedule.json の中身
-func _init(season_year: int, ratings: Dictionary, schedule: Array, seed_value: int = 0) -> void:
+## ratings: 能力値ファイルの中身、schedule: schedule.json の中身、
+## debut_years: 選手ID → 1軍初出場の年（外国人枠の判定用。GameData.load_debut_years()）
+func _init(season_year: int, ratings: Dictionary, schedule: Array, seed_value: int = 0,
+		debut_years: Dictionary = {}) -> void:
 	year = season_year
 	_rng.seed = seed_value if seed_value != 0 else hash("season-%d" % year)
 	var by_team := {}
@@ -38,7 +40,7 @@ func _init(season_year: int, ratings: Dictionary, schedule: Array, seed_value: i
 		players[p["id"]] = {"name": p["name"], "team": team}
 	for team: String in by_team:
 		leagues[team] = by_team[team][0]["league"]
-		teams[team] = SimTeam.new(team, leagues[team], by_team[team])
+		teams[team] = SimTeam.new(team, leagues[team], by_team[team], year, debut_years)
 		records[team] = {"w": 0, "l": 0, "d": 0, "rs": 0, "ra": 0}
 
 	for g: Dictionary in schedule:
@@ -63,6 +65,8 @@ func _init(season_year: int, ratings: Dictionary, schedule: Array, seed_value: i
 			_games_by_date[g["date"]] = []
 		_games_by_date[g["date"]].append(g)
 	_skip_canceled()
+	for team: String in teams:
+		teams[team].opening_day = first_day()
 
 
 ## 日程の略称（"読売" "横浜" など）→ 能力値の正式名。前方一致で、その年の球団から選ぶ
