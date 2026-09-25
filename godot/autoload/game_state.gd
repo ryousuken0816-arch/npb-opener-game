@@ -52,7 +52,7 @@ const DEFAULT_SEASON_START := "04-01"
 const DEFAULT_SEASON_END := "10-31"
 const ACTIVE_DRAFT_START_YEAR := 2022
 ## 早送りで1日進める間隔（秒）。将来はシステム設定の「早送り速度」で変える
-const FAST_FORWARD_INTERVAL := 0.12
+const FAST_FORWARD_INTERVAL := 0.25
 
 var year: int = START_YEAR
 ## 今日（まだ試合をしていない日）の通し日数（Season.day_number）。シーズン中のみ意味を持つ
