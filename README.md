@@ -17,5 +17,5 @@ python collect.py all --start 2008 --end 2026
 
 ## tools/
 
-`python tools/compute_ratings.py --year 2008` で能力値（1〜100 + G〜Sランク）を `generated/ratings/<年>.json` に出力。
+`python tools/compute_ratings.py --year 2008 [--phase post]` で能力値（1〜100 + G〜Sランク）を `generated/ratings/<年>_<phase>.json` に出力。
 詳細は [tools/README.md](tools/README.md)。

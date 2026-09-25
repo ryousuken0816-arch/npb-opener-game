@@ -4,8 +4,8 @@ data/<年>/ を入力に、指定年時点の各選手の能力値（1〜100 の
 JSON で出力する。算出ロジックは docs/SPEC.md「能力値算出ロジック」、
 出力フォーマットと各定数の根拠は tools/README.md を参照。
 
-    python tools/compute_ratings.py --year 2008
-    python tools/compute_ratings.py --year 2008 --out generated/ratings/2008.json
+    python tools/compute_ratings.py --year 2008                # 開幕時点（2007年までの成績）
+    python tools/compute_ratings.py --year 2008 --phase post   # シーズン後（2008年までの成績）
 
 外部ライブラリ不要（標準ライブラリのみ）。
 """
@@ -21,7 +21,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 # ---------------------------------------------------------------- 定数
 # 直近シーズンほど重く（Marcel 方式）。キーは「対象年からの遡り年数」
@@ -65,6 +65,11 @@ PITCH_ABILITIES = [
     ("hr9", None, 15, "一発病"),
 ]
 ABILITY_MIN_OUTS = 150  # この投球回（アウト数）未満は特殊能力を付与しない
+
+# 先発/救援の判定: 1登板あたりアウト数がこれ以上なら先発。
+# 投手の総合力・K/9・BB/9・HR/9・特殊能力は先発/救援で別々に正規化する（スタミナは共通）
+STARTER_MIN_OUTS_PER_G = 12
+ROLE_SPLIT_RATINGS = {"overall", "k9", "bb9", "hr9"}
 
 POS_ORDER = ["投手", "捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "外野手"]
 ARM_POS = {"捕手", "三塁手", "遊撃手", "外野手"}  # 補殺が肩力の指標になる守備位置
@@ -246,26 +251,35 @@ class Composite:
 
 # ---------------------------------------------------------------- 本体
 class Calculator:
-    def __init__(self, data: Data):
+    def __init__(self, data: Data, phase: str):
         self.d = data
-        self.year = data.year
+        self.year = data.year                                   # 在籍（ロースター）の年
+        self.phase = phase
+        self.through = self.year - 1 if phase == "pre" else self.year  # 成績を使う最終年
+        # チーム成績（2軍・守備）と表彰は data/<年> にしかないため、
+        # through 以前が無い場合（開始年の開幕時点）は最古の年で代用する
+        ts_years = sorted({r["year"] for r in data.teamstats})
+        ok = [yr for yr in ts_years if yr <= self.through]
+        self.ts_through = ok[-1] if ok else ts_years[0]
+        self.fallbacks = [] if ok else [
+            f"{self.through}年以前のチーム成績（2軍・守備）と表彰がないため {self.ts_through}年のもので代用"]
         self._index()
         self.fip_c = self._fip_constants()
         self._build_pools()
 
     # ---- 索引
     def _index(self):
-        y = self.year
+        y, ty = self.year, self.ts_through
         self.farm_bat = defaultdict(list)   # key -> [(season, row)]
         self.farm_pit = defaultdict(list)
         self.fld = defaultdict(list)        # key -> [(season, level, row)]
         self.unlinked: dict[str, dict] = {}
         for r in self.d.teamstats:
-            if r["year"] > y:
-                continue
             key = r["player_id"] or self._tmp_id(r)
             if not r["player_id"] and r["year"] == y:
                 self.unlinked.setdefault(key, {"name": r["name"], "team": r["team"], "league": r["league"]})
+            if r["year"] > ty:
+                continue
             if r["kind"] == "f":
                 self.fld[key].append((r["year"], r["level"], r))
             elif r["level"] == 2:
@@ -276,7 +290,7 @@ class Calculator:
                 self.league_of[r["team"]] = LEAGUES.get(r["league"])
         self.gg = defaultdict(list)  # player_id -> [(year, category)]
         for a in self.d.awards:
-            if a["award"] == "ゴールデングラブ賞" and a["player_id"] and a["year"] <= y:
+            if a["award"] == "ゴールデングラブ賞" and a["player_id"] and a["year"] <= ty:
                 self.gg[a["player_id"]].append((a["year"], a["category"]))
         # 守備成績のない選手の守備位置用（ドラフト指名時のポジション。名前で突合）
         self.draft_pos = {norm_name(d["name"]): d["pos"] for d in self.d.drafts if d["draft_year"] < y}
@@ -289,14 +303,16 @@ class Calculator:
     # ---- FIP 定数: 年ごとに リーグ防御率 − 素のFIP
     def _fip_constants(self) -> dict[int, float]:
         tot = defaultdict(lambda: defaultdict(float))
-        from_team = {r["year"] for r in self.d.teamstats if r["kind"] == "p" and r["level"] == 1}
-        for r in self.d.teamstats:
-            if r["kind"] == "p" and r["level"] == 1:
+        pit1 = [r for r in self.d.teamstats
+                if r["kind"] == "p" and r["level"] == 1 and r["year"] <= self.through]
+        from_team = {r["year"] for r in pit1}
+        for r in pit1:
+            if True:
                 add_into(tot[r["year"]], r, PIT_KEYS)
         # チーム成績のない年（2007年以前）は選手ページの成績から近似
         for p in self.d.players.values():
             for r in p["pitching"]:
-                if r["年度"] not in from_team:
+                if r["年度"] not in from_team and r["年度"] <= self.through:
                     add_into(tot[r["年度"]], r, PIT_KEYS)
         out = {}
         for yr, c in tot.items():
@@ -308,6 +324,11 @@ class Calculator:
             out[yr] = era - raw
         return out
 
+    @staticmethod
+    def role_of(outs_per_g: float) -> str:
+        """先発数がデータにないため 1登板あたりアウト数で判定。"""
+        return "先発" if outs_per_g >= STARTER_MIN_OUTS_PER_G else "救援"
+
     def fip_c_for(self, season: int) -> float:
         if season in self.fip_c:
             return self.fip_c[season]
@@ -316,13 +337,13 @@ class Calculator:
 
     # ---- 正規化の母集団（対象年から POOL_YEARS 年分の規定到達シーズン）
     def _build_pools(self):
-        lo = self.year - POOL_YEARS + 1
+        lo = self.through - POOL_YEARS + 1
         bat_rows, pit_rows = [], []
         for p in self.d.players.values():
             for rows, keys, out in ((p["batting"], BAT_KEYS, bat_rows), (p["pitching"], PIT_KEYS, pit_rows)):
                 per = defaultdict(dict)
                 for r in rows:
-                    if lo <= r["年度"] <= self.year:
+                    if lo <= r["年度"] <= self.through:
                         add_into(per[r["年度"]], r, keys)
                 out.extend((s, c) for s, c in per.items())
         bat_pool = [c for _, c in bat_rows if c["打席"] >= POOL_MIN_PA]
@@ -332,22 +353,27 @@ class Calculator:
                 c["_c"] = self.fip_c_for(s)
                 pit_pool.append(c)
         self.bat_dist = {k: Dist([m[0](c) for c in bat_pool], m[3]) for k, m in BAT_METRICS.items()}
-        self.pit_dist = {k: Dist([m[0](c) for c in pit_pool], m[3]) for k, m in PIT_METRICS.items()}
         bat_vals = [{k: m[0](c) for k, m in BAT_METRICS.items()} for c in bat_pool]
-        pit_vals = [{k: m[0](c) for k, m in PIT_METRICS.items()} for c in pit_pool]
+        # 投手は 全体 / 先発 / 救援 の3母集団
+        self.pit_dist, self.pit_comp = {}, {}
+        for role in ("全体", "先発", "救援"):
+            pool = [c for c in pit_pool if role == "全体" or self.role_of(c["outs"] / c["登板"]) == role]
+            dist = {k: Dist([m[0](c) for c in pool], m[3]) for k, m in PIT_METRICS.items()}
+            vals = [{k: m[0](c) for k, m in PIT_METRICS.items()} for c in pool]
+            self.pit_dist[role] = dist
+            self.pit_comp[role] = {k: Composite(w, dist, vals) for k, w in PIT_RATINGS.items()}
         # 盗塁成功率は企図のない選手で未定義になるため、母集団では事前値で埋める
         prior_sb = self.bat_dist["sb_pct"].pctl_value(PRIOR_PCTL)
         for v in bat_vals:
             if v["sb_pct"] is None:
                 v["sb_pct"] = prior_sb
         self.bat_comp = {k: Composite(w, self.bat_dist, bat_vals) for k, w in BAT_RATINGS.items()}
-        self.pit_comp = {k: Composite(w, self.pit_dist, pit_vals) for k, w in PIT_RATINGS.items()}
 
         # 守備は位置ごと（teamstats のある年のみ）
         per = defaultdict(lambda: defaultdict(dict))  # pos -> (key, season) -> counts
         for key, rows in self.fld.items():
             for s, lvl, r in rows:
-                if lvl == 1 and s >= lo:
+                if lvl == 1 and s >= self.ts_through - POOL_YEARS + 1:
                     add_into(per[r["pos"]].setdefault((key, s), {}), r, FLD_KEYS)
         self.fld_dist = {}
         self.fld_comp = {}
@@ -370,14 +396,14 @@ class Calculator:
         c1, c2 = {k: 0.0 for k in keys}, {k: 0.0 for k in keys}
         csum = wsum = 0.0
         for r in rows:
-            w = season_weight(r["年度"], self.year)
+            w = season_weight(r["年度"], self.through)
             if w:
                 add_into(c1, r, keys, w)
                 if pitching:
                     csum += self.fip_c_for(r["年度"]) * w * (r.get("outs") or 0)
                     wsum += w * (r.get("outs") or 0)
         for s, r in farm_rows:
-            w = season_weight(s, self.year)
+            w = season_weight(s, self.ts_through)
             if w:
                 add_into(c2, r, keys, w, farm_factors)
                 if pitching:
@@ -388,7 +414,7 @@ class Calculator:
         if "塁打" in comb:
             comb["塁打"] = comb["安打"] + comb["二塁打"] + 2 * comb["三塁打"] + 3 * comb["本塁打"]
         if pitching:
-            comb["_c"] = csum / wsum if wsum else self.fip_c_for(self.year)
+            comb["_c"] = csum / wsum if wsum else self.fip_c_for(self.through)
         return comb, c1, c2
 
     def _rate_block(self, comb, metrics, dists, full_override=None):
@@ -419,23 +445,25 @@ class Calculator:
         p = self.d.players.get(pid) if pid else None
         rows = p["pitching"] if p else []
         farm = self.farm_pit.get(key, [])
-        if not any(season_weight(r["年度"], self.year) for r in rows) and \
-                not any(season_weight(s, self.year) for s, _ in farm):
+        if not any(season_weight(r["年度"], self.through) for r in rows) and \
+                not any(season_weight(s, self.ts_through) for s, _ in farm):
             return None
         comb, c1, c2 = self._weighted(rows, PIT_KEYS, farm, FARM_PIT, pitching=True)
-        vals, detail = self._rate_block(comb, PIT_METRICS, self.pit_dist)
+        # 先発/救援は少サンプル補正前の実績で判定（補正後は事前値に引っ張られるため）
+        role = self.role_of(PIT_METRICS["stamina"][0](comb) or 0)
+        # 率の補正（事前値）は役割別の母集団から取る
+        vals, detail = self._rate_block(comb, PIT_METRICS, self.pit_dist[role])
         ratings = {}
-        for name, comp in self.pit_comp.items():
-            v = comp.score(vals)
+        for name in PIT_RATINGS:
+            r = role if name in ROLE_SPLIT_RATINGS else "全体"
+            v = self.pit_comp[r][name].score(vals)
             ratings[name] = {"value": v, "rank": rank_of(v)}
         abilities = []
         if comb["outs"] >= ABILITY_MIN_OUTS:
             for k, hi, lo, label in PITCH_ABILITIES:
-                pc = self.pit_dist[k].pctl_of(vals[k])
+                pc = self.pit_dist[role][k].pctl_of(vals[k])
                 if (hi is not None and pc >= hi) or (lo is not None and pc <= lo):
                     abilities.append(label)
-        # 先発/救援の目安（先発数がデータにないため 1登板あたりアウト数で判定）
-        role = "先発" if (vals["stamina"] or 0) >= 12 else "救援"
         return {"ratings": ratings, "abilities": abilities, "role": role, "detail": detail,
                 "sample": {"outs_1": round(c1["outs"], 1), "outs_2": round(c2["outs"], 1)}}
 
@@ -444,14 +472,14 @@ class Calculator:
         per = defaultdict(lambda: {k: 0.0 for k in FLD_KEYS})
         games = defaultdict(float)
         for s, lvl, r in self.fld.get(key, []):
-            w = season_weight(s, self.year) * (1.0 if lvl == 1 else FARM_SAMPLE_WEIGHT)
+            w = season_weight(s, self.ts_through) * (1.0 if lvl == 1 else FARM_SAMPLE_WEIGHT)
             if w:
                 add_into(per[r["pos"]], r, FLD_KEYS, w)
-                if s == self.year:
+                if s == self.ts_through:
                     games[r["pos"]] += (r["試合"] or 0) if lvl == 1 else 0
         gg_by_pos = defaultdict(float)
         for yr, cat in self.gg.get(pid, []):
-            gg_by_pos[cat] = max(gg_by_pos[cat], GG_BONUS.get(self.year - yr, 0.0))
+            gg_by_pos[cat] = max(gg_by_pos[cat], GG_BONUS.get(self.ts_through - yr, 0.0))
         out = {}
         for pos in sorted(per, key=POS_ORDER.index):
             if pos not in self.fld_dist:
@@ -530,21 +558,26 @@ class Calculator:
         return {
             "schema_version": SCHEMA_VERSION,
             "year": self.year,
+            "phase": self.phase,
+            "stats_through": self.through,
+            "fallbacks": self.fallbacks,
             "source_years": self.d.years,
             "scale": {"min": 1, "max": 100, "ranks": [{"min": th, "rank": r} for th, r in RANKS]},
-            "fip_constant": round(self.fip_c_for(self.year), 3),
+            "fip_constant": round(self.fip_c_for(self.through), 3),
             "players": out,
         }
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--year", type=int, required=True, help="対象年（この年までの実績で算出）")
+    ap.add_argument("--year", type=int, required=True, help="対象年（この年の在籍選手を出力）")
+    ap.add_argument("--phase", choices=["pre", "post"], default="pre",
+                    help="pre=開幕時点（前年までの成績） / post=シーズン後（当年までの成績）")
     ap.add_argument("--data", type=Path, default=ROOT / "data")
     ap.add_argument("--out", type=Path, help="出力先（省略時 generated/ratings/<年>.json）")
     args = ap.parse_args(argv)
-    out_path = args.out or ROOT / "generated" / "ratings" / f"{args.year}.json"
-    result = Calculator(Data(args.data, args.year)).run()
+    out_path = args.out or ROOT / "generated" / "ratings" / f"{args.year}_{args.phase}.json"
+    result = Calculator(Data(args.data, args.year), args.phase).run()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=1)
