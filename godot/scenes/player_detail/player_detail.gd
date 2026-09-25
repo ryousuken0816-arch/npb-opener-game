@@ -526,9 +526,9 @@ func _foreign_text() -> String:
 
 
 func sim_team() -> SimTeam:
-	if GameState.season == null:
+	if _team_name.is_empty():
 		return null
-	return GameState.season.teams.get(_team_name)
+	return GameState.sim_team_of(_team_name)
 
 
 func _season_caption() -> String:
