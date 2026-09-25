@@ -50,6 +50,14 @@
   - 用途：ドラフト候補一覧の「当時の評価」ランク（docs/references/README.md「draft_list_pawapuro.webp」参照）
   - 取得スクリプト `npb_collector/draft_lottery.py`、手動補足 `npb_collector/draft_lottery_manual.json`
 
+## メジャー移籍のデータ（FA・ポスティング用）
+
+- `data/mlb_moves.json`：NPB→MLB 移籍57人（2008年以降に出て行った、または戻ってきた選手）。項目: player_id, name, mlb_id, npb_team_before, `left_after`（この年のシーズン後に退団）, `route`（posting / other＝海外FA等）, mlb_first, mlb_last, `returned`（NPBに戻った最初の年）, npb_team_after
+  - 例：ダルビッシュ 2011年オフ posting、黒田 2015年 広島に復帰、中島宏之 2012年オフ→2015年 オリックス（マイナーのみ）。2025年オフの今井・岡本・村上は mlb_first が null
+- `data/mlb_stats.json`：上の選手のMLB年度別成績（MLB ID をキーに hitting / pitching。statsapi.mlb.com の項目名のまま）。52人分（MLBの試合に出ていない選手は無し）
+- 取得スクリプト `npb_collector/mlb_moves.py`（MLB公式 statsapi の日本出身選手を生年月日で突合、ポスティング成立はウィキペディア）
+- FA・年俸・引き留めの決定事項は docs/SPEC.md の最後「決定事項：FA・ポスティング」
+
 ## 追加データ（2008年開幕時点の算出用）
 
 - `data/2005/` `data/2006/` `data/2007/`：rosters.json・teamstats_linked.json（1軍・2軍・守備、1軍は全員player_id突合済み）・awards.json（GG賞。**2005年は0件**＝ページ構造が違い未取得）。players.json は無し（2008年以降の選手の2007年以前の1軍成績は各年の players.json の batting/pitching に含まれる）
