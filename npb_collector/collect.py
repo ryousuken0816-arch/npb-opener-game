@@ -181,6 +181,25 @@ def stage_rosters(args):
                     "player_id": m.group(1), "name": name,
                     "debut_year": int(debut.group(1)) if debut else None,
                 })
+    # 当年(シーズン中)は年度別名簿が未掲載なので、現役選手名簿(育成含む)で補う
+    for y in years(args):
+        if teams[y]:
+            continue
+        act = soup("https://npb.jp/bis/players/active/index.html")
+        codes = re.findall(r"rst_([a-z]+)\.html", str(act))
+        print(f"[rosters] {y}: 年度別名簿なし → 現役選手名簿 {len(set(codes))} 球団")
+        for code in dict.fromkeys(codes):
+            s = soup(f"https://npb.jp/bis/players/active/rst_{code}.html")
+            for a in s.select("a.player_unit_1"):
+                m = re.search(r"/bis/players/(\d{8})\.html", a.get("href", ""))
+                pos = clean(a.find(class_="pos").get_text(" ")) if a.find(class_="pos") else ""
+                pm = re.match(r"(\d+)\s*(\S+)", pos)
+                rosters.append({
+                    "year": y, "team_id": None, "team": clean(a.find(class_="team").get_text()),
+                    "player_id": m.group(1), "name": clean(a.find(class_="name").get_text()),
+                    "debut_year": None, "number": pm.group(1) if pm else None,
+                    "pos": pm.group(2) if pm else None, "ikusei": "育成" in pos,
+                })
     save("rosters.json", rosters)
     ids = {r["player_id"] for r in rosters}
     print(f"  {len(rosters)} roster rows, {len(ids)} unique players")
@@ -261,7 +280,37 @@ def stage_players(args):
 
 
 # ---------------------------------------------------------------- teamstats
+def parse_team_table_v2(table, kind):
+    """2025年以降の形式: 見出し1列目が「選手」、記号(*,+)は名前に含む、守備は位置ごとに別テーブル。"""
+    rows = own_rows(table)
+    header = [re.sub(r"\s+", "", x) for x in direct_cells(rows[0])]
+    pos = None
+    if kind == "f":
+        h = table.find_previous(["h2", "h3", "h4", "h5", "p"])
+        pos = clean(h.get_text()) if h else None
+    out = []
+    for tr in rows[1:]:
+        c = direct_cells(tr)
+        if len(c) < 3:
+            continue
+        m = re.match(r"^([*+]+)\s*(.*)$", c[0])
+        rec = {"name": clean(m.group(2) if m else c[0]), "mark": m.group(1) if m else ""}
+        if pos:
+            rec["pos"] = pos
+        for h, v in zip(header[1:], c[1:]):
+            if h == "投球回":
+                t = v.split()
+                rec["outs"] = ip_to_outs(num(t[0]) if t[0] != "+" else "+", t[1] if len(t) > 1 else "") if t else None
+            elif h:
+                rec[{"ホールド": "ホール"}.get(h, h)] = num(v)
+        out.append(rec)
+    return out
+
+
 def parse_team_table(table, kind):
+    first = own_rows(table)[:1]
+    if first and re.sub(r"\s+", "", (direct_cells(first[0]) or [""])[0]) == "選手":
+        return parse_team_table_v2(table, kind)
     rows = own_rows(table)
     header, out, pos = None, [], None
     for tr in rows:

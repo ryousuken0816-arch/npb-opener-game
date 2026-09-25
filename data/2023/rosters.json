@@ -1,0 +1,7458 @@
+[
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71175153",
+  "name": "秋広 優人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51155155",
+  "name": "赤星 優志",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31135157",
+  "name": "相澤 白虎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91195157",
+  "name": "浅野 翔吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "01105135",
+  "name": "石川 慎吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31335135",
+  "name": "今村 信貴",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51355151",
+  "name": "井上 温大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91395153",
+  "name": "伊藤 優輔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81185155",
+  "name": "石田 隼都",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "03705155",
+  "name": "A.ウォーカー",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "11515130",
+  "name": "岡本 和真",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "01505132",
+  "name": "オコエ 瑠偉",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71375134",
+  "name": "大江 竜聖",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21325136",
+  "name": "大城 卓三",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31735153",
+  "name": "小沼 健太",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81385155",
+  "name": "岡田 悠希",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "61565114",
+  "name": "梶谷 隆幸",
+  "debut_year": 2009
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51555137",
+  "name": "鍵谷 陽平",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21525130",
+  "name": "香月 一也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21525155",
+  "name": "亀田 啓太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "11515157",
+  "name": "門脇 誠",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91595136",
+  "name": "岸田 行倫",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21525136",
+  "name": "北村 拓己",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31935151",
+  "name": "菊田 拡和",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31935153",
+  "name": "喜多 隆介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71975153",
+  "name": "木下 幹也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31735155",
+  "name": "菊地 大稀",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91795155",
+  "name": "京本 眞",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21525157",
+  "name": "北村 流音",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31735136",
+  "name": "鍬原 拓也",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "03705157",
+  "name": "F.グリフィン",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91795139",
+  "name": "小林 誠司",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51955114",
+  "name": "坂本 勇人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21925155",
+  "name": "笹原 操希",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21925132",
+  "name": "重信 慎之介",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "11015155",
+  "name": "代木 大和",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "41745137",
+  "name": "菅野 智之",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51755136",
+  "name": "鈴木 康平",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91095155",
+  "name": "鈴木 大和",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81985118",
+  "name": "立岡 宗一郎",
+  "debut_year": 2010
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31035135",
+  "name": "高木 京介",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81085132",
+  "name": "田中 豊樹",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91095134",
+  "name": "高梨 雄平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51255134",
+  "name": "谷岡 竜平",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "61965138",
+  "name": "髙橋 優貴",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81085155",
+  "name": "大勢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91095157",
+  "name": "田中 千晴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "41045157",
+  "name": "田村 朋輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91995131",
+  "name": "長野 久義",
+  "debut_year": 2010
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "13015153",
+  "name": "J.ティマ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "41045138",
+  "name": "戸郷 翔征",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91495153",
+  "name": "戸田 懐生",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "11415155",
+  "name": "富田 龍",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "01005113",
+  "name": "中島 宏之",
+  "debut_year": 2002
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "61065116",
+  "name": "中田 翔",
+  "debut_year": 2009
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81285132",
+  "name": "中川 皓太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "11215138",
+  "name": "直江 大輔",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51655153",
+  "name": "中山 礼都",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "01205157",
+  "name": "中田 歩夢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31635134",
+  "name": "畠 世周",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71675155",
+  "name": "花田 侑樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81485157",
+  "name": "萩尾 匡也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "23225157",
+  "name": "A.バルドナード",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21625132",
+  "name": "廣岡 大志",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "43945157",
+  "name": "T.ビーディ",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31835157",
+  "name": "船迫 大雅",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "83985157",
+  "name": "L.ブリンソン",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21825153",
+  "name": "平内 龍太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71875134",
+  "name": "堀岡 隼人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21625151",
+  "name": "堀田 賢慎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51655112",
+  "name": "松田 宣浩",
+  "debut_year": 2006
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21425116",
+  "name": "丸 佳浩",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51855132",
+  "name": "増田 大輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21825134",
+  "name": "松原 聖弥",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "01605138",
+  "name": "増田 陸",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "01805157",
+  "name": "松井 颯",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31435139",
+  "name": "三上 朋也",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "13115157",
+  "name": "三塚 琉生",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "93095157",
+  "name": "Y.メンデス",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "13315157",
+  "name": "森本 哲星",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "03105151",
+  "name": "山瀬 慎之助",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "03305153",
+  "name": "山﨑 伊織",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "13515153",
+  "name": "山本 一輝",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "53555155",
+  "name": "山田 龍聖",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "43145136",
+  "name": "湯浅 大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "73375134",
+  "name": "吉川 尚輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81885138",
+  "name": "横川 凱",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "73575157",
+  "name": "吉村 優聖歩",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "03005157",
+  "name": "E.ルシアーノ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "23025157",
+  "name": "Y.ロペス",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "13315136",
+  "name": "若林 晃弘",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "43345136",
+  "name": "Z.アルモンテ",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "43545157",
+  "name": "A.アキーノ",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31335116",
+  "name": "岩嵜 翔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "41145134",
+  "name": "石垣 雅海",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21125136",
+  "name": "石川 翔",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81185136",
+  "name": "伊藤 康祐",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "91195138",
+  "name": "石橋 康太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "91195151",
+  "name": "石川 昂弥",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61365132",
+  "name": "宇佐見 真吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81185138",
+  "name": "梅津 晃大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11515153",
+  "name": "上田 洸太朗",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71375155",
+  "name": "鵜飼 航丞",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61365118",
+  "name": "大野 奨太",
+  "debut_year": 2009
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01305131",
+  "name": "大島 洋平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11515131",
+  "name": "岡田 俊哉",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11515133",
+  "name": "大野 雄大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71575132",
+  "name": "小笠原 慎之介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61565151",
+  "name": "岡野 祐一郎",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81585151",
+  "name": "岡林 勇希",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "91595137",
+  "name": "加藤 翔平",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "41545130",
+  "name": "加藤 匠馬",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81585132",
+  "name": "川越 誠司",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21525138",
+  "name": "勝野 昌慶",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "63765155",
+  "name": "G.ガルシア",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "93795157",
+  "name": "O.カリステ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31735132",
+  "name": "木下 拓哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21925151",
+  "name": "郡司 裕也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81785133",
+  "name": "後藤 駿太",
+  "debut_year": 2011
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11015153",
+  "name": "近藤 廉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11915130",
+  "name": "齋藤 綱記",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01905136",
+  "name": "清水 達也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11915139",
+  "name": "砂田 毅樹",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61965136",
+  "name": "鈴木 博志",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "91995139",
+  "name": "祖父江 大輔",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31035118",
+  "name": "谷元 圭介",
+  "debut_year": 2009
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "91095135",
+  "name": "高橋 周平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21025135",
+  "name": "田島 慎二",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21025136",
+  "name": "髙松 渡",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61265153",
+  "name": "髙橋 宏斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21025157",
+  "name": "田中 幹也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01205114",
+  "name": "堂上 直倫",
+  "debut_year": 2008
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "41245157",
+  "name": "仲地 礼亜",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81285138",
+  "name": "根尾 昂",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21425151",
+  "name": "橋本 侑樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71675157",
+  "name": "濱 将乃介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "13715132",
+  "name": "D.ビシエド",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21625157",
+  "name": "樋口 正修",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31635114",
+  "name": "福田 永将",
+  "debut_year": 2009
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21025137",
+  "name": "福谷 浩司",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "41645132",
+  "name": "福 敬登",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21625134",
+  "name": "藤嶋 健人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51855153",
+  "name": "福島 章太",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31835155",
+  "name": "福元 悠真",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71875155",
+  "name": "ブライト 健太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81685157",
+  "name": "福永 裕基",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "83285157",
+  "name": "M.フェリス",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31835134",
+  "name": "細川 成也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21225137",
+  "name": "松葉 貴大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "23925134",
+  "name": "R.マルティネス",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "73175153",
+  "name": "松木平 優太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61865157",
+  "name": "松山 晋也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81285137",
+  "name": "溝脇 隼人",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "83185153",
+  "name": "三好 大倫",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "83185155",
+  "name": "味谷 大誠",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "03105157",
+  "name": "村松 開人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "93295157",
+  "name": "H.メヒア",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "53355153",
+  "name": "森 博人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "33335157",
+  "name": "森山 暁生",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "63165134",
+  "name": "柳 裕也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "03105136",
+  "name": "山本 拓実",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "93395157",
+  "name": "山浅 龍之介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51455153",
+  "name": "龍空",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "33435155",
+  "name": "P.レビーラ",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "33935151",
+  "name": "Y.ロドリゲス",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31635110",
+  "name": "涌井 秀章",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51155131",
+  "name": "秋山 拓巳",
+  "debut_year": 2010
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71175132",
+  "name": "青柳 晃洋",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31335139",
+  "name": "岩崎 優",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51355139",
+  "name": "岩貞 祐太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91395132",
+  "name": "板山 祐太郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81185134",
+  "name": "糸原 健斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31335151",
+  "name": "井上 広大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41145153",
+  "name": "石井 大智",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71375153",
+  "name": "伊藤 将司",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81385153",
+  "name": "岩田 将貴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31335155",
+  "name": "伊藤 稜",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41145157",
+  "name": "井坪 陽生",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81185157",
+  "name": "茨木 秀俊",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21325139",
+  "name": "梅野 隆太郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01305130",
+  "name": "植田 海",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71575151",
+  "name": "遠藤 成",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21325134",
+  "name": "大山 悠輔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41345136",
+  "name": "大竹 耕太郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31535138",
+  "name": "小幡 竜平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "11715151",
+  "name": "小川 一平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71775151",
+  "name": "小野寺 暖",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91795151",
+  "name": "及川 雅貴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "11515155",
+  "name": "岡留 英貴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21525139",
+  "name": "加治屋 蓮",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01505138",
+  "name": "片山 雄哉",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "11715138",
+  "name": "川原 陸",
+  "debut_year": 2024
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31735138",
+  "name": "木浪 聖也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01705155",
+  "name": "桐敷 拓馬",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81585136",
+  "name": "熊谷 敬宥",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "73975155",
+  "name": "K.ケラー",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21725134",
+  "name": "小林 慶祐",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "11915132",
+  "name": "坂本 誠志郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41745134",
+  "name": "才木 浩人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51055153",
+  "name": "榮枝 裕貴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41045153",
+  "name": "佐藤 輝明",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81085153",
+  "name": "佐藤 蓮",
+  "debut_year": 2024
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51055133",
+  "name": "島本 浩也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91995136",
+  "name": "島田 海吏",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01005130",
+  "name": "髙濱 祐仁",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01005132",
+  "name": "髙山 俊",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91095136",
+  "name": "髙橋 遥人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41245153",
+  "name": "髙寺 望夢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71075138",
+  "name": "近本 光司",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31435155",
+  "name": "豊田 寛",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "11215157",
+  "name": "戸井 零士",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51255157",
+  "name": "富田 蓮",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91495134",
+  "name": "長坂 拳弥",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41445153",
+  "name": "中野 拓夢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51455155",
+  "name": "中川 勇斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71275118",
+  "name": "西 勇輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61265118",
+  "name": "二保 旭",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91495151",
+  "name": "西 純矢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01405157",
+  "name": "野口 恭佑",
+  "debut_year": 2024
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "73975157",
+  "name": "S.ノイジー",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61065131",
+  "name": "原口 文仁",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71675134",
+  "name": "浜地 真澄",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41445136",
+  "name": "馬場 皐輔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "03905157",
+  "name": "J.ビーズリー",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91695151",
+  "name": "藤田 健斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "63265157",
+  "name": "C.ブルワー",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "11215137",
+  "name": "北條 史也",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21825155",
+  "name": "前川 右京",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "73075157",
+  "name": "J.ミエセス",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "13315153",
+  "name": "村上 頌樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81885132",
+  "name": "望月 惇志",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "03305155",
+  "name": "森木 大智",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "43145157",
+  "name": "森下 翔太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "53355157",
+  "name": "門別 啓人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "93195132",
+  "name": "山本 泰寛",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41845138",
+  "name": "湯浅 京己",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81685139",
+  "name": "渡邉 諒",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "93395136",
+  "name": "渡邉 雄大",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31135114",
+  "name": "會澤 翼",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31135133",
+  "name": "秋山 翔吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31135134",
+  "name": "アドゥワ 誠",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "53755155",
+  "name": "D.アンダーソン",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81185133",
+  "name": "磯村 嘉孝",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21125135",
+  "name": "一岡 竜司",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21125151",
+  "name": "石原 貴規",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31335137",
+  "name": "上本 崇司",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "41345151",
+  "name": "宇草 孔基",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51355157",
+  "name": "内田 湘大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71375136",
+  "name": "遠藤 淳志",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61365139",
+  "name": "大瀬良 大地",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "91595132",
+  "name": "岡田 明丈",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21325138",
+  "name": "大盛 穂",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "41545153",
+  "name": "大道 温貴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71575157",
+  "name": "河野 佳",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61565135",
+  "name": "菊池 涼介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71775139",
+  "name": "九里 亜蓮",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "91995153",
+  "name": "栗林 良吏",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "41745155",
+  "name": "黒原 拓未",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81585157",
+  "name": "久保 修",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71775136",
+  "name": "ケムナ 誠",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01705138",
+  "name": "小園 海斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "53955151",
+  "name": "R.コルニエル",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61965153",
+  "name": "小林 樹斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11915134",
+  "name": "坂倉 将吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61765157",
+  "name": "斉藤 優汰",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31935138",
+  "name": "島内 颯太郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "91995157",
+  "name": "清水 叶人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51055155",
+  "name": "末包 昇大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51955139",
+  "name": "曽根 海成",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61965139",
+  "name": "田中 広輔",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01005134",
+  "name": "高橋 昂也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "41245151",
+  "name": "玉村 昇悟",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11215155",
+  "name": "髙木 翔斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61265155",
+  "name": "田村 俊介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "13015155",
+  "name": "N.ターリー",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81085157",
+  "name": "辻 大雅",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "53955157",
+  "name": "M.デビッドソン",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61965131",
+  "name": "堂林 翔太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21225130",
+  "name": "戸根 千明",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11415134",
+  "name": "床田 寛樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31235133",
+  "name": "中﨑 翔太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71075139",
+  "name": "中村 祐太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81285136",
+  "name": "中村 奨成",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01405155",
+  "name": "中村 健人",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61265157",
+  "name": "中村 貴浩",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11415157",
+  "name": "名原 典彦",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71475132",
+  "name": "西川 龍馬",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01405151",
+  "name": "韮澤 雄也",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21425135",
+  "name": "野村 祐輔",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01405130",
+  "name": "野間 峻祥",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71475138",
+  "name": "羽月 隆太郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01405138",
+  "name": "林 晃汰",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51655157",
+  "name": "長谷部 銀次",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21625136",
+  "name": "藤井 黎來",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "91895153",
+  "name": "二俣 翔一",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21625130",
+  "name": "塹江 敦哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01405116",
+  "name": "松山 竜平",
+  "debut_year": 2008
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "41845155",
+  "name": "前川 誠太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "73175155",
+  "name": "松本 竜也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "13215155",
+  "name": "R.マクブルーム",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "91895157",
+  "name": "益田 武尚",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11815135",
+  "name": "三好 匠",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81885151",
+  "name": "持丸 泰輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "53155151",
+  "name": "森下 暢仁",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "73375153",
+  "name": "森浦 大輔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "93395155",
+  "name": "森 翔平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "91895130",
+  "name": "薮田 和樹",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71575134",
+  "name": "矢崎 拓也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "93395153",
+  "name": "矢野 雅哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31135119",
+  "name": "青木 宣親",
+  "debut_year": 2004
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01105131",
+  "name": "荒木 貴裕",
+  "debut_year": 2010
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51155153",
+  "name": "赤羽 由紘",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11315115",
+  "name": "石川 雅規",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21125137",
+  "name": "石山 泰稚",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21125138",
+  "name": "市川 悠太",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51355155",
+  "name": "岩田 幸宏",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51355134",
+  "name": "梅野 雄吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91595153",
+  "name": "内山 壮真",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "33735157",
+  "name": "R.エスピナル",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11515137",
+  "name": "小川 泰弘",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91595139",
+  "name": "奥村 展征",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81385130",
+  "name": "太田 賢吾",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "61365134",
+  "name": "尾仲 祐哉",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01305136",
+  "name": "大下 佑馬",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "41545151",
+  "name": "大西 広樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31735151",
+  "name": "奥川 恭伸",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "23525153",
+  "name": "J.オスナ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31735112",
+  "name": "川端 慎吾",
+  "debut_year": 2006
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51555136",
+  "name": "金久保 優斗",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11915153",
+  "name": "木澤 尚文",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01505157",
+  "name": "北村 恵吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "71775138",
+  "name": "久保 拓眞",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21725139",
+  "name": "今野 龍太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01705132",
+  "name": "小澤 怜史",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01705134",
+  "name": "古賀 優大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01705136",
+  "name": "近藤 弘樹",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51955155",
+  "name": "小森 航大郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81785136",
+  "name": "阪口 皓亮",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "33735153",
+  "name": "サイスニード",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "53755153",
+  "name": "D.サンタナ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81785157",
+  "name": "坂本 拓己",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51955157",
+  "name": "澤井 廉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "71975136",
+  "name": "塩見 泰隆",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51955138",
+  "name": "清水 昇",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81985155",
+  "name": "柴田 大地",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "41045151",
+  "name": "杉山 晃基",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21925139",
+  "name": "高梨 裕稔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "41945139",
+  "name": "田口 麗斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51055132",
+  "name": "高橋 奎二",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "71275151",
+  "name": "武岡 龍世",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91295155",
+  "name": "竹山 日向",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51255118",
+  "name": "中村 悠平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51455132",
+  "name": "成田 翔",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51455151",
+  "name": "長岡 秀樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91695153",
+  "name": "並木 秀尊",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "41245133",
+  "name": "西田 明央",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91095139",
+  "name": "西浦 直亨",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91495157",
+  "name": "西村 瑠伊斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "61265138",
+  "name": "沼田 翔平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31635132",
+  "name": "原 樹理",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11615134",
+  "name": "長谷川 宙輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91495138",
+  "name": "濱田 太貴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11615157",
+  "name": "橋本 星哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "23925157",
+  "name": "D.ピーターズ",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11815134",
+  "name": "星 知弥",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51855136",
+  "name": "松本 直樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "61665138",
+  "name": "松本 友",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "43145153",
+  "name": "丸山 翔大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "93195155",
+  "name": "丸山 和郁",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51655133",
+  "name": "三ツ俣 大樹",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01805136",
+  "name": "宮本 丈",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "41845136",
+  "name": "村上 宗隆",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "33335153",
+  "name": "元山 飛優",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91895133",
+  "name": "山田 哲人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "33135132",
+  "name": "山崎 晃大朗",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "93195136",
+  "name": "山本 大貴",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "63365153",
+  "name": "山野 太一",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "33535155",
+  "name": "山下 輝",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "43145151",
+  "name": "吉田 大喜",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "53555157",
+  "name": "吉村 貢司郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "43245157",
+  "name": "E.ロドリゲス",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51155136",
+  "name": "東 克樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51155151",
+  "name": "東妻 純平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "83585157",
+  "name": "T.アンバギー",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81185116",
+  "name": "伊藤 光",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11315130",
+  "name": "石田 健大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01305132",
+  "name": "今永 昇太",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41145151",
+  "name": "伊勢 大夢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21125153",
+  "name": "池谷 蒼大",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61165153",
+  "name": "石川 達也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61365153",
+  "name": "入江 大生",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "13715157",
+  "name": "J.B.ウェンデルケン",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "63365134",
+  "name": "E.エスコバー",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51555151",
+  "name": "蝦名 達夫",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41345118",
+  "name": "大田 泰示",
+  "debut_year": 2009
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01305138",
+  "name": "大貫 晋一",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "73375151",
+  "name": "T.オースティン",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "31535134",
+  "name": "笠原 祥太郎",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "71575136",
+  "name": "神里 和毅",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41545138",
+  "name": "勝又 温史",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81585138",
+  "name": "上茶谷 大河",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51555155",
+  "name": "梶原 昂希",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "93495155",
+  "name": "R.ガゼルマン",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81585134",
+  "name": "京田 陽太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11715134",
+  "name": "京山 将弥",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51755135",
+  "name": "桑原 将志",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61565136",
+  "name": "楠本 泰史",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "31935155",
+  "name": "小園 健太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91995134",
+  "name": "佐野 恵太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81785136",
+  "name": "阪口 皓亮",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11915136",
+  "name": "櫻井 周斗",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11015151",
+  "name": "坂本 裕哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41945132",
+  "name": "柴田 竜拓",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01905157",
+  "name": "上甲 凌大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "31935139",
+  "name": "関根 大気",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "03505136",
+  "name": "N.ソト",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11015116",
+  "name": "田中 健二朗",
+  "debut_year": 2010
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01905139",
+  "name": "平良 拳太郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81085136",
+  "name": "田中 俊太",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91095138",
+  "name": "知野 直人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "43545151",
+  "name": "Y.ディアス",
+  "debut_year": 2024
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41245132",
+  "name": "戸柱 恭孝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81285155",
+  "name": "徳山 壮磨",
+  "debut_year": 2024
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21225136",
+  "name": "中川 虎大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91095139",
+  "name": "西浦 直亨",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "71475136",
+  "name": "西巻 賢二",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51655134",
+  "name": "濵口 遥大",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "31635157",
+  "name": "橋本 達弥",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91695157",
+  "name": "林 琢真",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "33235157",
+  "name": "T.バウアー",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51255139",
+  "name": "平田 真吾",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21225110",
+  "name": "藤田 一也",
+  "debut_year": 2005
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61665155",
+  "name": "深沢 鳳介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91695138",
+  "name": "益子 京右",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "13115153",
+  "name": "牧 秀悟",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "93195153",
+  "name": "松本 隆之介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "33235155",
+  "name": "H.マルセリーノ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21825157",
+  "name": "松尾 汐恩",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21625133",
+  "name": "宮國 椋丞",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41245137",
+  "name": "三嶋 一輝",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51455137",
+  "name": "宮﨑 敏郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51855138",
+  "name": "宮城 滝太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "03105155",
+  "name": "三浦 銀二",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "93195134",
+  "name": "森原 康平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "33135151",
+  "name": "森 敬斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "63165157",
+  "name": "森下 瑠大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61465112",
+  "name": "大和",
+  "debut_year": 2009
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41845130",
+  "name": "山﨑 康晃",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "23125136",
+  "name": "山本 祐大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "33535157",
+  "name": "吉野 光樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31135138",
+  "name": "東妻 勇輔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71175155",
+  "name": "秋山 正雲",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01105135",
+  "name": "石川 慎吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41145139",
+  "name": "石川 歩",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11315139",
+  "name": "井上 晴哉",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91395130",
+  "name": "岩下 大輝",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21125155",
+  "name": "池田 来翔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91395151",
+  "name": "植田 将太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61365133",
+  "name": "江村 直也",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71575131",
+  "name": "荻野 貴司",
+  "debut_year": 2010
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11515139",
+  "name": "岡 大海",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "51555130",
+  "name": "小野 郁",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11515138",
+  "name": "小島 和哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91595151",
+  "name": "大下 誠一郎",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11715153",
+  "name": "小川 龍成",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31735153",
+  "name": "小沼 健太",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41545114",
+  "name": "角中 勝也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21525116",
+  "name": "唐川 侑己",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21525132",
+  "name": "柿沼 友哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61765153",
+  "name": "河村 説人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61365157",
+  "name": "勝又 琉偉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31535157",
+  "name": "金田 優太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "73775157",
+  "name": "L.カスティーヨ",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91595157",
+  "name": "菊地 吏玖",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01705131",
+  "name": "国吉 佑樹",
+  "debut_year": 2011
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "81985133",
+  "name": "澤村 拓一",
+  "debut_year": 2011
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71975134",
+  "name": "佐々木 千隼",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01905134",
+  "name": "澤田 圭佑",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41745138",
+  "name": "坂本 光士郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31035151",
+  "name": "佐々木 朗希",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71075151",
+  "name": "佐藤 都志也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21025153",
+  "name": "佐藤 奨真",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41945136",
+  "name": "菅野 剛士",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71275153",
+  "name": "鈴木 昭汰",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41945137",
+  "name": "田村 龍弘",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71275134",
+  "name": "種市 篤暉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11215151",
+  "name": "髙部 瑛斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31035157",
+  "name": "高野 脩汰",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01005157",
+  "name": "田中 晴也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71275132",
+  "name": "茶谷 健太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21225132",
+  "name": "東條 大樹",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31435134",
+  "name": "土肥 星也",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01005138",
+  "name": "土居 豪人",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71275157",
+  "name": "友杉 篤輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "51455130",
+  "name": "中村 奨吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01205138",
+  "name": "中村 稔弥",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31635153",
+  "name": "中森 俊介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71475155",
+  "name": "永島田 輝斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01205118",
+  "name": "西野 勇士",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91495136",
+  "name": "西村 天裕",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91695132",
+  "name": "平沢 大河",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41645155",
+  "name": "廣畑 敦也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11615114",
+  "name": "福田 秀平",
+  "debut_year": 2010
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21225139",
+  "name": "二木 康太",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41645136",
+  "name": "藤岡 裕大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31635138",
+  "name": "藤原 恭大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "51655138",
+  "name": "古谷 拓郎",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "51655151",
+  "name": "福田 光輝",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "13415157",
+  "name": "M.ブロッソー",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "13215157",
+  "name": "L.ペルドモ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "63065155",
+  "name": "G.ポランコ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71675135",
+  "name": "益田 直也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "53155155",
+  "name": "松川 虎生",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01605133",
+  "name": "美馬 学",
+  "debut_year": 2011
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "51455139",
+  "name": "三木 亮",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "33935134",
+  "name": "C.C.メルセデス",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61865136",
+  "name": "森 遼大朗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "13115151",
+  "name": "本前 郁也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "81885136",
+  "name": "安田 尚憲",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91895138",
+  "name": "山口 航輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "33535153",
+  "name": "山本 大斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "23325155",
+  "name": "八木 彬",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "23125151",
+  "name": "横山 陸人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "83385157",
+  "name": "吉川 悠斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "33335136",
+  "name": "和田 康士朗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31135130",
+  "name": "淺間 大基",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01105155",
+  "name": "有薗 直輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "83585155",
+  "name": "A.アルカンタラ",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01105157",
+  "name": "安西 叶翔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61165130",
+  "name": "石川 直也",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31335132",
+  "name": "井口 和朋",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01105134",
+  "name": "池田 隆英",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21125134",
+  "name": "石井 一成",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11315153",
+  "name": "五十幡 亮汰",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "51355153",
+  "name": "伊藤 大海",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21325153",
+  "name": "今川 優馬",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "51355135",
+  "name": "上沢 直之",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41345132",
+  "name": "上原 健太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61365132",
+  "name": "宇佐見 真吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11515151",
+  "name": "梅林 優貴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21325130",
+  "name": "江越 大賀",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41545132",
+  "name": "加藤 貴之",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71575138",
+  "name": "柿木 蓮",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "81785151",
+  "name": "河野 竜生",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01505155",
+  "name": "上川畑 大悟",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "81385157",
+  "name": "加藤 豪将",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "51555157",
+  "name": "金村 尚真",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41745114",
+  "name": "木村 文紀",
+  "debut_year": 2007
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01505136",
+  "name": "北浦 竜次",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41545136",
+  "name": "清宮 幸太郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "51755155",
+  "name": "北山 亘基",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21925151",
+  "name": "郡司 裕也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61765155",
+  "name": "畔柳 亨丞",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91795134",
+  "name": "郡 拓也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11915130",
+  "name": "齋藤 綱記",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21725138",
+  "name": "齋藤 友貴哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71975155",
+  "name": "阪口 樂",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61965130",
+  "name": "清水 優心",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61765139",
+  "name": "杉浦 稔大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61065151",
+  "name": "鈴木 健矢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31235134",
+  "name": "田中 正義",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91295134",
+  "name": "玉井 大翔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61065136",
+  "name": "田中 瑛斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "51055138",
+  "name": "田宮 裕涼",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91295151",
+  "name": "立野 和明",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01205155",
+  "name": "達 孝太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11215118",
+  "name": "中島 卓也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41245138",
+  "name": "生田目 翼",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31435157",
+  "name": "奈良間 大己",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91495136",
+  "name": "西村 天裕",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41645153",
+  "name": "根本 悠楓",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31435138",
+  "name": "野村 佑希",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31635155",
+  "name": "長谷川 威展",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "73275157",
+  "name": "A.ハンソン",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71675132",
+  "name": "姫野 優也",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61065137",
+  "name": "伏見 寅威",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11615138",
+  "name": "福田 俊",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "51655151",
+  "name": "福田 光輝",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01805153",
+  "name": "古川 裕大",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "81685155",
+  "name": "福島 蓮",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11815157",
+  "name": "藤田 大清",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "51855134",
+  "name": "堀 瑞輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61865153",
+  "name": "細川 凌平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "83085155",
+  "name": "C.ポンセ",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21625135",
+  "name": "松本 剛",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "73975136",
+  "name": "A.マルティネス",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11815138",
+  "name": "万波 中正",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61665151",
+  "name": "松岡 洸希",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "03105153",
+  "name": "松本 遼大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "33135155",
+  "name": "松浦 慶斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "03205157",
+  "name": "J.マーベル",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41445116",
+  "name": "宮西 尚生",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "63165155",
+  "name": "水野 達稀",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "53155157",
+  "name": "宮内 春輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "73475155",
+  "name": "C.メネズ",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11615137",
+  "name": "谷内 亮太",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "13115130",
+  "name": "山田 遥楓",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "03105136",
+  "name": "山本 拓実",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "63365155",
+  "name": "柳川 大晟",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "73375157",
+  "name": "矢澤 宏太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "03305157",
+  "name": "山口 アタル",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "13115138",
+  "name": "吉田 輝星",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "43745136",
+  "name": "B.ロドリゲス",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "23525138",
+  "name": "王 柏融",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51155130",
+  "name": "有原 航平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "33735155",
+  "name": "A.アルメンタ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "63565157",
+  "name": "W.アストゥディーヨ",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31335131",
+  "name": "今宮 健太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61165139",
+  "name": "石川 柊太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01105138",
+  "name": "泉 圭輔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01105151",
+  "name": "石塚 綜一郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01305153",
+  "name": "井上 朋也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61165155",
+  "name": "井﨑 燦志郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21125157",
+  "name": "生海",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11315157",
+  "name": "イヒネ イツア",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91395139",
+  "name": "上林 誠知",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "81385151",
+  "name": "海野 隆司",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71375157",
+  "name": "内野 海斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61365136",
+  "name": "尾形 崇斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61365138",
+  "name": "奥村 政稔",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01505151",
+  "name": "大関 友久",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "81585153",
+  "name": "緒方 理貢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21325155",
+  "name": "大竹 風雅",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "13415155",
+  "name": "R.オスナ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01305157",
+  "name": "大津 亮介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21325157",
+  "name": "大野 稼頭央",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41345157",
+  "name": "岡植 純平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "53755157",
+  "name": "J.オスーナ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91595133",
+  "name": "甲斐 拓也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91595135",
+  "name": "嘉弥真 新也",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01505130",
+  "name": "笠谷 俊介",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11715132",
+  "name": "川瀬 晃",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51555138",
+  "name": "甲斐野 央",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "93395151",
+  "name": "J.ガンケル",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "81785153",
+  "name": "川原田 純平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11715155",
+  "name": "川村 友斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "83785155",
+  "name": "F.ガルビス",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71775155",
+  "name": "木村 大成",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41545157",
+  "name": "木村 光",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01705130",
+  "name": "栗原 陵矢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31735134",
+  "name": "九鬼 隆平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01905153",
+  "name": "桑原 秀侍",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41745135",
+  "name": "近藤 健介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91095151",
+  "name": "佐藤 直樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91095153",
+  "name": "笹川 吉康",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61965155",
+  "name": "佐藤 琢磨",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11915157",
+  "name": "佐々木 明都",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31935157",
+  "name": "佐藤 航太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51955136",
+  "name": "椎野 新",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21925136",
+  "name": "周東 佑京",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71975157",
+  "name": "重松 凱人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91995138",
+  "name": "杉山 一樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "53755138",
+  "name": "C.スチュワート・ジュニア",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01005135",
+  "name": "武田 翔太",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71075132",
+  "name": "髙橋 純平",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11215132",
+  "name": "谷川原 健太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51055136",
+  "name": "田浦 文丸",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01005136",
+  "name": "高橋 礼",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11415153",
+  "name": "田上 奏大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41245155",
+  "name": "田中 怜利 ハモンド",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "81285151",
+  "name": "津森 宥紀",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "03505139",
+  "name": "A.デスパイネ",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31235157",
+  "name": "飛田 悠成",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11215116",
+  "name": "中村 晃",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11615153",
+  "name": "中村 亮太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91495155",
+  "name": "仲田 慶介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51455157",
+  "name": "西尾 歩真",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11415138",
+  "name": "野村 大樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11615155",
+  "name": "野村 勇",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21425138",
+  "name": "板東 湧梧",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01005137",
+  "name": "東浜 巨",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41245139",
+  "name": "古川 侑利",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51655130",
+  "name": "藤井 皓哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51855155",
+  "name": "藤野 恵音",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "33435157",
+  "name": "D.ヘルナンデス",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "33035157",
+  "name": "C.ホーキンス",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61465133",
+  "name": "牧原 大成",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61265139",
+  "name": "又吉 克樹",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61665130",
+  "name": "松本 裕樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11815136",
+  "name": "増田 珠",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "33135153",
+  "name": "牧原 巧汰",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "81885155",
+  "name": "正木 智也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71875157",
+  "name": "前田 純",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41845157",
+  "name": "松本 晴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71475139",
+  "name": "嶺井 博希",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "33135134",
+  "name": "三森 大貴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31835138",
+  "name": "水谷 瞬",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "23125155",
+  "name": "三浦 瑞樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "73175157",
+  "name": "宮﨑 颯",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01405139",
+  "name": "森 唯斗",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "63965134",
+  "name": "L.モイネロ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "83185157",
+  "name": "盛島 稜大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31835133",
+  "name": "柳田 悠岐",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "73175151",
+  "name": "柳町 達",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "13515155",
+  "name": "山崎 琢磨",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "93595155",
+  "name": "山本 恵大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "23325157",
+  "name": "山下 恭吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "13515157",
+  "name": "吉田 賢吾",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11015136",
+  "name": "リチャード",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "83285155",
+  "name": "L.ロドリゲス",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11815117",
+  "name": "和田 毅",
+  "debut_year": 2003
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "73375136",
+  "name": "渡邊 佑樹",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "93195138",
+  "name": "渡邉 陸",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31135135",
+  "name": "安達 了一",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71175136",
+  "name": "東 晃平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01105153",
+  "name": "阿部 翔太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81185139",
+  "name": "石川 亮",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51355132",
+  "name": "石岡 諒太",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41145155",
+  "name": "池田 陵真",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31335157",
+  "name": "入山 海斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11315138",
+  "name": "漆原 大晟",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01305151",
+  "name": "上野 響平",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31535153",
+  "name": "宇田川 優希",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31535130",
+  "name": "小田 裕也",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11515132",
+  "name": "大城 滉二",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81385134",
+  "name": "小野 泰己",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91395138",
+  "name": "太田 椋",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01305155",
+  "name": "大里 昂生",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41745153",
+  "name": "川瀬 堅斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51755138",
+  "name": "宜保 翔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51955153",
+  "name": "来田 涼斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51755134",
+  "name": "黒木 優太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91995151",
+  "name": "紅林 弘太郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "21925153",
+  "name": "元 謙太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81785132",
+  "name": "近藤 大亮",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11915155",
+  "name": "小木田 敦也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "63765157",
+  "name": "J.コットン",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "83085157",
+  "name": "M.ゴンザレス",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91995130",
+  "name": "佐野 皓大",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51055151",
+  "name": "佐藤 一磨",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11215153",
+  "name": "佐野 如一",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "21725157",
+  "name": "才木 海翔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41745157",
+  "name": "齋藤 響介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "83785157",
+  "name": "F.シュウィンデル",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61965132",
+  "name": "杉本 裕太郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51755136",
+  "name": "鈴木 康平",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61965157",
+  "name": "杉澤 龍",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "13915157",
+  "name": "L.セデーニョ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81985157",
+  "name": "曽谷 龍平",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "21025132",
+  "name": "竹安 大知",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41045136",
+  "name": "田嶋 大樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61065157",
+  "name": "茶野 篤政",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61365112",
+  "name": "T-岡田",
+  "debut_year": 2006
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61065138",
+  "name": "富山 凌雅",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81085138",
+  "name": "頓宮 裕真",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51255138",
+  "name": "中川 圭太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01405153",
+  "name": "中川 拓真",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "21425153",
+  "name": "中川 颯",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91295157",
+  "name": "内藤 鵬",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91495130",
+  "name": "西野 真弘",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71475157",
+  "name": "西濱 勇星",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "63065157",
+  "name": "J.ニックス",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81485155",
+  "name": "野口 智哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81285112",
+  "name": "平野 佳寿",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81085131",
+  "name": "比嘉 幹貴",
+  "debut_year": 2010
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "21625132",
+  "name": "廣岡 大志",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11615151",
+  "name": "平野 大和",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41645157",
+  "name": "日髙 暖己",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01605136",
+  "name": "福田 周平",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11815155",
+  "name": "福永 奨",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61665136",
+  "name": "本田 仁海",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41645151",
+  "name": "前 佑囲斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71875151",
+  "name": "宮城 大弥",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11815130",
+  "name": "宗 佑磨",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41845151",
+  "name": "村西 良太",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "33335155",
+  "name": "椋木 蓮",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "93195157",
+  "name": "村上 喬一朗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91495139",
+  "name": "森 友哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61465131",
+  "name": "山田 修義",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "21825130",
+  "name": "山﨑 福也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "83185134",
+  "name": "山岡 泰輔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "33335134",
+  "name": "山﨑 颯一郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "53355134",
+  "name": "山本 由伸",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "13115136",
+  "name": "山足 達也",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "43345153",
+  "name": "山下 舜平大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "13315132",
+  "name": "吉田 凌",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "03505155",
+  "name": "横山 楓",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41645139",
+  "name": "若月 健矢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "73375132",
+  "name": "渡邉 大樹",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "63565155",
+  "name": "渡部 遼人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "73275155",
+  "name": "J.ワゲスパック",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "51155118",
+  "name": "浅村 栄斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71175130",
+  "name": "安樂 智大",
+  "debut_year": 2015
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61165132",
+  "name": "阿部 寿樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71375132",
+  "name": "石橋 良太",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61165134",
+  "name": "石原 彪",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41145138",
+  "name": "伊藤 裕季也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41345153",
+  "name": "入江 大樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61165157",
+  "name": "伊藤 茉央",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "13315151",
+  "name": "E.ウレーニャ",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "51555153",
+  "name": "内 星龍",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71575153",
+  "name": "内間 拓馬",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21325135",
+  "name": "岡島 豪郎",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71375138",
+  "name": "太田 光",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81385138",
+  "name": "小郷 裕哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01505118",
+  "name": "辛島 航",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71375112",
+  "name": "銀次",
+  "debut_year": 2010
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "91795114",
+  "name": "岸 孝之",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "33935155",
+  "name": "C.ギッテンス",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01905151",
+  "name": "黒川 史陽",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61965151",
+  "name": "小深田 大翔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81985151",
+  "name": "小峯 新陸",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31735157",
+  "name": "古賀 康誠",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71775157",
+  "name": "小孫 竜二",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61765134",
+  "name": "酒居 知史",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21025151",
+  "name": "澤野 聖悠",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11015133",
+  "name": "塩見 貴洋",
+  "debut_year": 2011
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71975135",
+  "name": "島内 宏明",
+  "debut_year": 2012
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71975138",
+  "name": "正隨 優弥",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21925157",
+  "name": "荘司 康誠",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "91995112",
+  "name": "炭谷 銀仁朗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81985135",
+  "name": "鈴木 大地",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01905138",
+  "name": "鈴木 翔天",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41945138",
+  "name": "清宮 虎多朗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "73575132",
+  "name": "宋 家豪",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11215114",
+  "name": "田中 将大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31235130",
+  "name": "田中 貴也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71075134",
+  "name": "髙田 萌生",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11215134",
+  "name": "田中 和基",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11015138",
+  "name": "辰己 涼介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31235151",
+  "name": "瀧中 瞭太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01205153",
+  "name": "高田 孝一",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61065155",
+  "name": "泰 勝利",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11015157",
+  "name": "平良 竜哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71075157",
+  "name": "辰見 鴻之介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11415151",
+  "name": "津留﨑 大成",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21225133",
+  "name": "西川 遥輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41445134",
+  "name": "西口 直人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61465155",
+  "name": "西垣 雅矢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "51055137",
+  "name": "則本 昂大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31835153",
+  "name": "早川 隆久",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01605157",
+  "name": "林 優樹",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "93995157",
+  "name": "M.バニュエロス",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61665134",
+  "name": "藤平 尚真",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71875153",
+  "name": "藤井 聖",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "63965157",
+  "name": "M.フランコ",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11815132",
+  "name": "堀内 謙伍",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81285139",
+  "name": "松井 裕樹",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61865155",
+  "name": "前田 銀治",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "13115155",
+  "name": "松井 友飛",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31835151",
+  "name": "水上 桂",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "13315155",
+  "name": "宮森 智志",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41845132",
+  "name": "村林 一輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01805151",
+  "name": "武藤 敦貴",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61865132",
+  "name": "茂木 栄五郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "73175136",
+  "name": "山﨑 剛",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "43345155",
+  "name": "安田 悠馬",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61865138",
+  "name": "弓削 隼人",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "03105132",
+  "name": "横尾 俊建",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "23525155",
+  "name": "吉川 雄大",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "43545155",
+  "name": "吉野 創士",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61665139",
+  "name": "和田 恋",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "73175138",
+  "name": "渡邊 佳明",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "23525157",
+  "name": "渡辺 翔太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31535132",
+  "name": "愛斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71175138",
+  "name": "粟津 凱士",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51155157",
+  "name": "青山 美夏人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31335134",
+  "name": "今井 達也",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "11315136",
+  "name": "伊藤 翔",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71375151",
+  "name": "井上 広輝",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21325132",
+  "name": "呉 念庭",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21325151",
+  "name": "上間 永遠",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "23725155",
+  "name": "D.エンス",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31535139",
+  "name": "岡田 雅利",
+  "debut_year": 2014
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21525153",
+  "name": "大曲 錬",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01505137",
+  "name": "金子 侑司",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81585132",
+  "name": "川越 誠司",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "11915151",
+  "name": "川野 涼多",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51955151",
+  "name": "岸 潤一郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51755115",
+  "name": "栗山 巧",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81585137",
+  "name": "公文 克彦",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21725155",
+  "name": "黒田 将矢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "53955155",
+  "name": "B.クリスキー",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71775134",
+  "name": "源田 壮亮",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81785155",
+  "name": "古賀 悠斗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51755157",
+  "name": "児玉 亮涼",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91795157",
+  "name": "是澤 涼輔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41745136",
+  "name": "齊藤 大将",
+  "debut_year": 2018
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61765136",
+  "name": "齊藤 誠人",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81785138",
+  "name": "佐藤 龍世",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01005153",
+  "name": "佐々木 健",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41945155",
+  "name": "佐藤 隼輔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31035134",
+  "name": "鈴木 将平",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71075155",
+  "name": "菅井 信也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21025155",
+  "name": "隅田 知一郎",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71075130",
+  "name": "髙橋 光成",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01205134",
+  "name": "田村 伊知郎",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31035136",
+  "name": "平良 海馬",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71075136",
+  "name": "高木 渉",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21025136",
+  "name": "髙松 渡",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51255155",
+  "name": "滝澤 夏央",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41245134",
+  "name": "張 奕",
+  "debut_year": 2019
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61265151",
+  "name": "柘植 世那",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "33935157",
+  "name": "J.ティノコ",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41245130",
+  "name": "外崎 修汰",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81085115",
+  "name": "中村 剛也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71275138",
+  "name": "中熊 大智",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61465153",
+  "name": "仲三河 優太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41445155",
+  "name": "中山 誠吾",
+  "debut_year": 2022
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51455136",
+  "name": "西川 愛也",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21425157",
+  "name": "野田 海人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61465151",
+  "name": "浜屋 将太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81685153",
+  "name": "長谷川 信哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51655155",
+  "name": "羽田 慎之介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01605132",
+  "name": "平沼 翔太",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91695134",
+  "name": "平井 克典",
+  "debut_year": 2017
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61665157",
+  "name": "蛭間 拓哉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91295153",
+  "name": "ブランドン",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91895155",
+  "name": "古市 尊",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51855157",
+  "name": "古川 雄大",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "13015157",
+  "name": "M.ペイトン",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31835132",
+  "name": "本田 圭佑",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "43045155",
+  "name": "ボー・タカハシ",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71275137",
+  "name": "増田 達至",
+  "debut_year": 2013
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71675138",
+  "name": "牧野 翔矢",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81685138",
+  "name": "松本 航",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "23125153",
+  "name": "豆田 泰志",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "53055157",
+  "name": "D.マキノン",
+  "debut_year": 2023
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51855151",
+  "name": "宮川 哲",
+  "debut_year": 2020
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "63165153",
+  "name": "水上 由伸",
+  "debut_year": 2021
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81885157",
+  "name": "三浦 大輝",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71875138",
+  "name": "森脇 亮介",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "23125157",
+  "name": "モンテル",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21425139",
+  "name": "山川 穂高",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21825138",
+  "name": "山野辺 翔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "83385153",
+  "name": "山村 崇嘉",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "43345157",
+  "name": "山田 陽翔",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "11615139",
+  "name": "陽川 尚将",
+  "debut_year": 2016
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "63165136",
+  "name": "與座 海人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "53155138",
+  "name": "渡邉 勇太朗",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "53555153",
+  "name": "若林 楽人",
+  "debut_year": null
+ },
+ {
+  "year": 2023,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "73575153",
+  "name": "渡部 健人",
+  "debut_year": 2021
+ }
+]

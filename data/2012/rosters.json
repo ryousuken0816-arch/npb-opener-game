@@ -1,0 +1,6562 @@
+[
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21125113",
+  "name": "阿部 慎之助",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31135115",
+  "name": "朝井 秀樹",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91193884",
+  "name": "石井 義人",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31335114",
+  "name": "隠善 智也",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81185131",
+  "name": "市川 友也",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21125135",
+  "name": "一岡 竜司",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31335135",
+  "name": "今村 信貴",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81185119",
+  "name": "内海 哲也",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91695131",
+  "name": "エドガー",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71375135",
+  "name": "江柄子 裕樹",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21323884",
+  "name": "小笠原 道大",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81385112",
+  "name": "越智 大祐",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "41345118",
+  "name": "大田 泰示",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91595131",
+  "name": "小野 淳平",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21323888",
+  "name": "加藤 健",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81385110",
+  "name": "亀井 義行",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31735114",
+  "name": "金刃 憲人",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71575116",
+  "name": "加治前 竜一",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51555118",
+  "name": "笠原 将生",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81585131",
+  "name": "河野 元貴",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71775131",
+  "name": "鬼屋敷 正人",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21725117",
+  "name": "久保 裕也",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81585116",
+  "name": "久米 勇紀",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71875119",
+  "name": "D.ゴンザレス",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51955133",
+  "name": "小山 雄輝",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51753888",
+  "name": "實松 一成",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "61765115",
+  "name": "真田 裕貴",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51955114",
+  "name": "坂本 勇人",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81985133",
+  "name": "澤村 拓一",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "61763884",
+  "name": "鈴木 尚広",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31935115",
+  "name": "杉内 俊哉",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31935119",
+  "name": "須永 英輝",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91993884",
+  "name": "谷 佳知",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51953886",
+  "name": "高橋 由伸",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71775111",
+  "name": "高木 康成",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81985112",
+  "name": "高口 隆行",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "61065114",
+  "name": "田中 大二郎",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81985118",
+  "name": "立岡 宗一郎",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31035135",
+  "name": "高木 京介",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "61065135",
+  "name": "田原 誠次",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "91995131",
+  "name": "長野 久義",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31235114",
+  "name": "円谷 英俊",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "01905131",
+  "name": "土本 恭平",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51255135",
+  "name": "土田 瑞起",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51255114",
+  "name": "寺内 崇幸",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31035110",
+  "name": "東野 峻",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "01003886",
+  "name": "中谷 仁",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21025116",
+  "name": "中井 大介",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81085118",
+  "name": "仲澤 広基",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31035119",
+  "name": "西村 健太朗",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81085110",
+  "name": "野間口 貴彦",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51455118",
+  "name": "橋本 到",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21223886",
+  "name": "古城 茂幸",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31435112",
+  "name": "福田 聡志",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31435116",
+  "name": "藤村 大介",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71475116",
+  "name": "古川 祐樹",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21425118",
+  "name": "福元 淳史",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "43145116",
+  "name": "D.ホールトン",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21225131",
+  "name": "星野 真澄",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "43145135",
+  "name": "J.ボウカー",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "01605114",
+  "name": "松本 哲也",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "31635133",
+  "name": "丸毛 謙一",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "63165135",
+  "name": "S.マシソン",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "21625133",
+  "name": "宮國 椋丞",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "81485117",
+  "name": "村田 修一",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "51655117",
+  "name": "矢野 謙次",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "71875112",
+  "name": "山口 鉄也",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "11815118",
+  "name": "山本 和作",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "43545112",
+  "name": "林 羿豪",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "43345118",
+  "name": "L.ロメロ",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1947001",
+  "team": "読売ジャイアンツ",
+  "player_id": "13115112",
+  "name": "脇谷 亮太",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71173882",
+  "name": "荒木 雅博",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51155111",
+  "name": "朝倉 健太",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71175114",
+  "name": "浅尾 拓也",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31135116",
+  "name": "赤坂 和幸",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31135131",
+  "name": "赤田 龍一郎",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "41143886",
+  "name": "井端 弘和",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81183888",
+  "name": "岩瀬 仁紀",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81185114",
+  "name": "岩﨑 達郎",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21125118",
+  "name": "伊藤 準規",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "41145118",
+  "name": "井藤 真吾",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31335118",
+  "name": "岩﨑 恭平",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51355118",
+  "name": "岩田 慎司",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "91393886",
+  "name": "小田 幸平",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51353888",
+  "name": "小笠原 孝",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11515118",
+  "name": "小熊 凌祐",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01305131",
+  "name": "大島 洋平",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11515131",
+  "name": "岡田 俊哉",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51555131",
+  "name": "小川 龍也",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11515133",
+  "name": "大野 雄大",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "41343886",
+  "name": "川上 憲伸",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21525135",
+  "name": "川崎 貴弘",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31935117",
+  "name": "小林正",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51755110",
+  "name": "金剛 弘樹",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61765112",
+  "name": "齊藤 信介",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21925114",
+  "name": "清水 昭信",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61765110",
+  "name": "鈴木 義広",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "03505133",
+  "name": "E.ソト",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "93395135",
+  "name": "ソーサ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "85583868",
+  "name": "谷繁 元信",
+  "debut_year": 1989
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71975115",
+  "name": "髙橋 聡文",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81085114",
+  "name": "田中 大輔",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51055116",
+  "name": "谷 哲也",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01905118",
+  "name": "髙島 祥平",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "91095135",
+  "name": "高橋 周平",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21025135",
+  "name": "田島 慎二",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31235135",
+  "name": "辻 孟彦",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "03305135",
+  "name": "ディアス",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01905119",
+  "name": "堂上 剛裕",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01205114",
+  "name": "堂上 直倫",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51055110",
+  "name": "中田 賢一",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71075131",
+  "name": "中田 亮二",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71475135",
+  "name": "西川 健太郎",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "33335116",
+  "name": "M.ネルソン",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31435118",
+  "name": "野本 圭",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71973889",
+  "name": "平井 正史",
+  "debut_year": 1994
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01503888",
+  "name": "英智",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21225115",
+  "name": "久本 祐一",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61265112",
+  "name": "平田 良介",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51455112",
+  "name": "藤井 淳志",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31635114",
+  "name": "福田 永将",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "23125118",
+  "name": "ブランコ",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "91495115",
+  "name": "前田 章宏",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51455131",
+  "name": "松井 雅人",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "71475131",
+  "name": "松井 佑介",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "51255119",
+  "name": "三瀬 幸司",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "61665133",
+  "name": "武藤 祐太",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21223884",
+  "name": "森野 将彦",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81685133",
+  "name": "森越 祐人",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01403862",
+  "name": "山本昌",
+  "debut_year": 1986
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "01303868",
+  "name": "山﨑 武司",
+  "debut_year": 1989
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31635115",
+  "name": "山井 大介",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "81685112",
+  "name": "柳田 殖生",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21625116",
+  "name": "山内 壮馬",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "41445131",
+  "name": "矢地 健人",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "11515110",
+  "name": "雄太",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "41845112",
+  "name": "吉見 一起",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "21825133",
+  "name": "吉川 大幾",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1954001",
+  "team": "中日ドラゴンズ",
+  "player_id": "31433884",
+  "name": "和田 一浩",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01103888",
+  "name": "新井 貴浩",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51155115",
+  "name": "浅井 良",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41145115",
+  "name": "安藤 優也",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01105112",
+  "name": "新井 良太",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51155131",
+  "name": "秋山 拓巳",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91195133",
+  "name": "荒木 郁也",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31335112",
+  "name": "今成 亮太",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51355112",
+  "name": "岩田 稔",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21125116",
+  "name": "石川 俊介",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71375133",
+  "name": "岩本 輝",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41145135",
+  "name": "伊藤 和雄",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81185135",
+  "name": "伊藤 隼太",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01305118",
+  "name": "上本 博紀",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01305133",
+  "name": "榎田 大樹",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91395110",
+  "name": "岡﨑 太一",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41343885",
+  "name": "金本 知憲",
+  "debut_year": 1992
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21525113",
+  "name": "加藤 康介",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "11715113",
+  "name": "狩野 恵輔",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61565112",
+  "name": "川﨑 雄介",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61565116",
+  "name": "清原 大貴",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61765117",
+  "name": "久保田 智之",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01505119",
+  "name": "黒瀬 春樹",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61565110",
+  "name": "久保 康友",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61563884",
+  "name": "小林宏",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41545119",
+  "name": "小宮山 慎二",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "11915114",
+  "name": "小嶋 達也",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61565119",
+  "name": "坂 克彦",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "53155133",
+  "name": "R.ザラテ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61765135",
+  "name": "歳内 宏明",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31733880",
+  "name": "城島 健司",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41945114",
+  "name": "清水 誉",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71975116",
+  "name": "白仁田 寛和",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21725118",
+  "name": "柴田 講平",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41745118",
+  "name": "蕭 一傑",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "13515118",
+  "name": "鄭 凱文",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51255131",
+  "name": "俊介",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51055133",
+  "name": "島本 浩也",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "83585114",
+  "name": "J.スタンリッジ",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81783884",
+  "name": "関本 賢太郎",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41945110",
+  "name": "玉置 隆",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51955131",
+  "name": "田上 健一",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91995119",
+  "name": "筒井 和也",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "41045112",
+  "name": "鶴 直人",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21925119",
+  "name": "鳥谷 敬",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51255133",
+  "name": "中谷 将大",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21225118",
+  "name": "西村 憲",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91495135",
+  "name": "西田 直斗",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61065110",
+  "name": "能見 篤史",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71475114",
+  "name": "野原 将志",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "11415118",
+  "name": "野原 祐也",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61065131",
+  "name": "原口 文仁",
+  "debut_year": 2016
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31433885",
+  "name": "桧山 進次郎",
+  "debut_year": 1992
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61265115",
+  "name": "平野 恵一",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81983888",
+  "name": "福原 忍",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "51053888",
+  "name": "藤井 彰人",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71073888",
+  "name": "藤川 球児",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "53155116",
+  "name": "C.ブラゼル",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71275131",
+  "name": "藤原 正典",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "91295131",
+  "name": "二神 一人",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "31635112",
+  "name": "松崎 伸吾",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "53155131",
+  "name": "M.マートン",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "01605135",
+  "name": "松田 遼馬",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "93195131",
+  "name": "R.メッセンジャー",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "71675116",
+  "name": "森田 一成",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "61465112",
+  "name": "大和",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "21825114",
+  "name": "横山 龍之介",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81685117",
+  "name": "林 威助",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "81885112",
+  "name": "若竹 竜士",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1961001",
+  "team": "阪神タイガース",
+  "player_id": "33135112",
+  "name": "渡辺 亮",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01105115",
+  "name": "天谷 宗一郎",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51155110",
+  "name": "赤松 真人",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31135112",
+  "name": "相澤 寿聡",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31135114",
+  "name": "會澤 翼",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51155114",
+  "name": "青木 高広",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "91195116",
+  "name": "安部 友裕",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "65563868",
+  "name": "石井 琢朗",
+  "debut_year": 1989
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21123888",
+  "name": "井生 崇光",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51355115",
+  "name": "石原 慶幸",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11315112",
+  "name": "今井 啓介",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71375118",
+  "name": "岩本 貴裕",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11315131",
+  "name": "伊東 昂大",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51355131",
+  "name": "今村 猛",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21125133",
+  "name": "池ノ内 亮介",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81185133",
+  "name": "磯村 嘉孝",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51355133",
+  "name": "岩見 優輝",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01305113",
+  "name": "上村 和裕",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81185110",
+  "name": "梅津 智弘",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01305114",
+  "name": "上野 弘文",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01305117",
+  "name": "江草 仁貴",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "13515135",
+  "name": "B.エルドレッド",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61365115",
+  "name": "大島 崇行",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11515115",
+  "name": "大竹 寛",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21325111",
+  "name": "河内 貴哉",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21323887",
+  "name": "菊地原 毅",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01705117",
+  "name": "木村 昇吾",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "91595110",
+  "name": "岸本 秀樹",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61565135",
+  "name": "菊池 涼介",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31533886",
+  "name": "倉 義和",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31535111",
+  "name": "栗原 健太",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51755116",
+  "name": "小窪 哲也",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51755118",
+  "name": "小松 剛",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81785112",
+  "name": "齊藤 悠葵",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "33135133",
+  "name": "D.サファテ",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61563880",
+  "name": "嶋 重宣",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "41745119",
+  "name": "白濱 裕太",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11915116",
+  "name": "篠田 純平",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81785131",
+  "name": "庄司 隼人",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11715111",
+  "name": "末永 真史",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71975112",
+  "name": "鈴木 将光",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21925112",
+  "name": "梵 英心",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71975131",
+  "name": "武内 久士",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11215133",
+  "name": "弦本 悠希",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61965131",
+  "name": "堂林 翔太",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21225135",
+  "name": "戸田 隆矢",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01205117",
+  "name": "永川 勝浩",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11215112",
+  "name": "中谷 翼",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61265114",
+  "name": "中東 直己",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31235118",
+  "name": "中田 廉",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31235133",
+  "name": "中﨑 翔太",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "91295133",
+  "name": "中村 恭平",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "73175135",
+  "name": "ニック",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21425135",
+  "name": "野村 祐輔",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "83185133",
+  "name": "B.バリントン",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "63765133",
+  "name": "B.バーデン",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "41445135",
+  "name": "土生 翔平",
+  "debut_year": 2016
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21923888",
+  "name": "東出 輝裕",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "71275113",
+  "name": "廣瀬 純",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31435133",
+  "name": "福井 優也",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "31633881",
+  "name": "前田 智徳",
+  "debut_year": 1990
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21425117",
+  "name": "松本 高明",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "51655114",
+  "name": "前田 健太",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "01405116",
+  "name": "松山 竜平",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21425116",
+  "name": "丸 佳浩",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "81685135",
+  "name": "三家 和真",
+  "debut_year": 2017
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "83185135",
+  "name": "K.ミコライオ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "61265111",
+  "name": "迎 祐一郎",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "21625115",
+  "name": "山本 芳彦",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1968001",
+  "team": "広島東洋カープ",
+  "player_id": "11213880",
+  "name": "横山 竜士",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "41443880",
+  "name": "相川 亮二",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51155117",
+  "name": "阿部 健太",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31135118",
+  "name": "赤川 克紀",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01105131",
+  "name": "荒木 貴裕",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11315115",
+  "name": "石川 雅規",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21125110",
+  "name": "一場 靖弘",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "61165112",
+  "name": "飯原 誉士",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11815116",
+  "name": "林 昌勇",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "71375114",
+  "name": "上田 剛史",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11515135",
+  "name": "ウーゴ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51555117",
+  "name": "小野寺 力",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91395119",
+  "name": "押本 健彦",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31535110",
+  "name": "川本 良平",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81585112",
+  "name": "川島 慶三",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31735112",
+  "name": "川端 慎吾",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01505116",
+  "name": "加藤 幹典",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11715133",
+  "name": "川﨑 成晃",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91795112",
+  "name": "木下 達生",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01705133",
+  "name": "久古 健太郎",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31735135",
+  "name": "木谷 良平",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81585118",
+  "name": "楠城 祐介",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "61565111",
+  "name": "正田 樹",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31035133",
+  "name": "七條 祐樹",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81085117",
+  "name": "館山 昌平",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21925110",
+  "name": "田中 浩康",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31035112",
+  "name": "武内 晋一",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01205135",
+  "name": "徳山 武陽",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51255118",
+  "name": "中村 悠平",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51055131",
+  "name": "中澤 雅人",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "41245118",
+  "name": "新田 玄気",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "41245133",
+  "name": "西田 明央",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81985111",
+  "name": "野口 祥順",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31235113",
+  "name": "畠山 和洋",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "71875131",
+  "name": "T.バーネット",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "13315133",
+  "name": "W.バレンティン",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "71475118",
+  "name": "日高 亮",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11215131",
+  "name": "平井 諒",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "61465135",
+  "name": "比屋根 渉",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "41943889",
+  "name": "福地 寿樹",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21225113",
+  "name": "藤本 敦士",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11415115",
+  "name": "福川 将和",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01405118",
+  "name": "R.フェルナンデス",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51655135",
+  "name": "古野 正人",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21823888",
+  "name": "松元 ユウイチ",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51455110",
+  "name": "松岡 健一",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11615112",
+  "name": "松井 光介",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "71675114",
+  "name": "増渕 竜義",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31435131",
+  "name": "松井 淳",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51053880",
+  "name": "宮本 慎也",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31233882",
+  "name": "宮出 隆自",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "31435113",
+  "name": "水田 圭介",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81485116",
+  "name": "三輪 正義",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "13315135",
+  "name": "L.ミレッジ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21625112",
+  "name": "村中 恭兵",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11615117",
+  "name": "森岡 良介",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11615110",
+  "name": "山岸 穣",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "61665116",
+  "name": "山本 斉",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "21625118",
+  "name": "八木 亮祐",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "11615131",
+  "name": "山本 哲哉",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "91895133",
+  "name": "山田 哲人",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "01005117",
+  "name": "雄平",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "81785116",
+  "name": "由規",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "33335135",
+  "name": "O.ロマン",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2006001",
+  "team": "東京ヤクルトスワローズ",
+  "player_id": "51655110",
+  "name": "渡辺 恒樹",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01305116",
+  "name": "阿斗里",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01105133",
+  "name": "荒波 翔",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91395115",
+  "name": "井手 正太郎",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01705119",
+  "name": "一輝",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91195110",
+  "name": "石川 雄洋",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61165135",
+  "name": "伊藤 拓郎",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41145119",
+  "name": "牛田 成樹",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "71375116",
+  "name": "内村 賢介",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41345115",
+  "name": "江尻 慎太郎",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61365113",
+  "name": "大沼 幸二",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "31535133",
+  "name": "大原 淳也",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51555133",
+  "name": "大原 慎司",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41345135",
+  "name": "乙坂 智",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61565114",
+  "name": "梶谷 隆幸",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21525131",
+  "name": "加賀 繁",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01505133",
+  "name": "加賀美 希昇",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91593888",
+  "name": "金城 龍彦",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51555110",
+  "name": "菊地 和正",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01705114",
+  "name": "北 篤",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21725112",
+  "name": "黒羽根 利規",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01705131",
+  "name": "国吉 佑樹",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51755135",
+  "name": "桑原 将志",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "53555135",
+  "name": "B.クレイマー",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51655118",
+  "name": "啓二朗",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21523888",
+  "name": "小池 正晃",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11915117",
+  "name": "後藤 武敏",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01705116",
+  "name": "小林 太志",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11715118",
+  "name": "小杉 陽太",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "31935133",
+  "name": "小林 寛",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61765116",
+  "name": "佐藤 祥万",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "43345135",
+  "name": "O.サラサー",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21523886",
+  "name": "篠原 貴行",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41545111",
+  "name": "清水 直行",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81985114",
+  "name": "下園 辰哉",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11815131",
+  "name": "ジオ・アルバラード",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "71075133",
+  "name": "須田 幸太",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01005114",
+  "name": "高崎 健太郎",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21025114",
+  "name": "高森 勇旗",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11015116",
+  "name": "田中 健二朗",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51055135",
+  "name": "髙城 俊人",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "23525133",
+  "name": "陳 冠宇",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21723882",
+  "name": "鶴岡 一成",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41945131",
+  "name": "筒香 嘉智",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81085133",
+  "name": "靍岡 賢二郎",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41245135",
+  "name": "冨田 康祐",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21023885",
+  "name": "中村 紀洋",
+  "debut_year": 1992
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81085112",
+  "name": "内藤 雄太",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41043886",
+  "name": "新沼 慎二",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01405135",
+  "name": "西森 将司",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "01205115",
+  "name": "林 昌範",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "63165133",
+  "name": "C.ハミルトン",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91695135",
+  "name": "飛雄馬",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91095111",
+  "name": "藤井 秀悟",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "21225110",
+  "name": "藤田 一也",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61465118",
+  "name": "藤江 均",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "31235131",
+  "name": "福田 岳洋",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "71475133",
+  "name": "福山 博之",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "03305133",
+  "name": "ブランドン",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "11615118",
+  "name": "細山田 武史",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "91495131",
+  "name": "眞下 貴之",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41443885",
+  "name": "三浦 大輔",
+  "debut_year": 1992
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "41243888",
+  "name": "森本 稀哲",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81485113",
+  "name": "山本 省吾",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "51855112",
+  "name": "山口 俊",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81685118",
+  "name": "山崎 憲晴",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "61665117",
+  "name": "吉村 裕基",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "63165113",
+  "name": "A.ラミレス",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "33335131",
+  "name": "R.ルイーズ",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "81885114",
+  "name": "渡辺 直人",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2012001",
+  "team": "横浜DeNAベイスターズ",
+  "player_id": "43145131",
+  "name": "王 溢正",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71175113",
+  "name": "青野 毅",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41445113",
+  "name": "秋親",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31135110",
+  "name": "青松 敬鎔",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71175116",
+  "name": "阿部 和成",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "51153884",
+  "name": "井口 資仁",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61163884",
+  "name": "今岡 誠",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01305115",
+  "name": "今江 敏晃",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11315116",
+  "name": "伊藤 義弘",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61165133",
+  "name": "伊志嶺 翔大",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61165119",
+  "name": "内 竜也",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "51355116",
+  "name": "植松 優友",
+  "debut_year": 2015
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91395118",
+  "name": "上野 大樹",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61365133",
+  "name": "江村 直也",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71373889",
+  "name": "小野 晋吾",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71375110",
+  "name": "大松 尚逸",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01505114",
+  "name": "大嶺 祐太",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21525114",
+  "name": "荻野 忠寛",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "81385118",
+  "name": "岡田 幸文",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41345131",
+  "name": "大谷 智久",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71575131",
+  "name": "荻野 貴司",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61565117",
+  "name": "金澤 岳",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41545114",
+  "name": "角中 勝也",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21525116",
+  "name": "唐川 侑己",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71575118",
+  "name": "香月 良仁",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "63565133",
+  "name": "カルロス・ロサ",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41545118",
+  "name": "木村 雄太",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91795131",
+  "name": "清田 育宏",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41545110",
+  "name": "工藤 隆人",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "03105114",
+  "name": "S.グライシンガー",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41745133",
+  "name": "黒沢 翔太",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "81785114",
+  "name": "神戸 拓光",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61765133",
+  "name": "小池 翔大",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11915133",
+  "name": "小林 敦",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41143880",
+  "name": "サブロー",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31733888",
+  "name": "里崎 智也",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "81385131",
+  "name": "翔太",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "81985135",
+  "name": "鈴木 大地",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71975119",
+  "name": "田中 雅彦",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21925116",
+  "name": "髙濱 卓也",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11015119",
+  "name": "成瀬 善久",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "41245114",
+  "name": "中郷 大樹",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "81285135",
+  "name": "中後 悠平",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01205118",
+  "name": "西野 勇士",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01205112",
+  "name": "根元 俊一",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "51455117",
+  "name": "早坂 圭介",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11215110",
+  "name": "橋本 健太郎",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21225116",
+  "name": "服部 泰卓",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21923889",
+  "name": "福浦 和也",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91495112",
+  "name": "古谷 拓哉",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "11615135",
+  "name": "藤岡 貴裕",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21025111",
+  "name": "塀内 久雄",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "23325131",
+  "name": "H.ペン",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "21425112",
+  "name": "細谷 圭",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "73375131",
+  "name": "J.ホワイトセル",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71275111",
+  "name": "的場 直樹",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91695114",
+  "name": "松本 幸大",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71675135",
+  "name": "益田 直也",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "93595135",
+  "name": "D.マシス",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "01205111",
+  "name": "南 竜介",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "61465110",
+  "name": "光原 逸裕",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "91695133",
+  "name": "南 昌輝",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71273882",
+  "name": "薮田 安彦",
+  "debut_year": 1996
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "51855114",
+  "name": "山本 一徳",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31835118",
+  "name": "山本 徹矢",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "81485131",
+  "name": "山室 公志郎",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "31635113",
+  "name": "吉見 祐治",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "03505135",
+  "name": "W.レデズマ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "81483886",
+  "name": "渡辺 正人",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "1992001",
+  "team": "千葉ロッテマリーンズ",
+  "player_id": "71675113",
+  "name": "渡辺 俊介",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "51155116",
+  "name": "浅沼 寿紀",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91193880",
+  "name": "稲葉 篤紀",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71173886",
+  "name": "飯山 裕志",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91195119",
+  "name": "糸井 嘉男",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21125119",
+  "name": "岩舘 学",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71175110",
+  "name": "石井 裕也",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01105110",
+  "name": "市川 卓",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31335112",
+  "name": "今成 亮太",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21125114",
+  "name": "糸数 敬作",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61165114",
+  "name": "今浪 隆博",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31335133",
+  "name": "乾 真大",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01105135",
+  "name": "石川 慎吾",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61165110",
+  "name": "鵜久森 淳志",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21325114",
+  "name": "植村 祐介",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91395131",
+  "name": "運天 ジョン・クレイトン",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71675131",
+  "name": "B.ウルフ",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "51355135",
+  "name": "上沢 直之",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21325133",
+  "name": "榎下 陽大",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11515117",
+  "name": "尾崎 匡哉",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61365118",
+  "name": "大野 奨太",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61365131",
+  "name": "大塚 豊",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91395135",
+  "name": "大嶋 匠",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21323889",
+  "name": "金子 誠",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41345119",
+  "name": "金森 敬之",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41545131",
+  "name": "加藤 政義",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31433868",
+  "name": "木田 優夫",
+  "debut_year": 1989
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41645131",
+  "name": "B.ケッペル",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71975117",
+  "name": "小谷野 栄一",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91995117",
+  "name": "紺田 敏正",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41745135",
+  "name": "近藤 健介",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91995114",
+  "name": "佐藤 賢治",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91795118",
+  "name": "榊原 諒",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91995133",
+  "name": "齊藤 勝",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01905133",
+  "name": "斎藤 佑樹",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "63165116",
+  "name": "T.スレッジ",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "81785118",
+  "name": "杉谷 拳士",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01905116",
+  "name": "関口 雄大",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11915111",
+  "name": "田中 賢介",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41045117",
+  "name": "武田 久",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71075112",
+  "name": "武田 勝",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "81985116",
+  "name": "多田野 数人",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "31035118",
+  "name": "谷元 圭介",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41045133",
+  "name": "谷口 雄也",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71275117",
+  "name": "鶴岡 慎也",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91095118",
+  "name": "土屋 健二",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91793864",
+  "name": "中嶋 聡",
+  "debut_year": 1987
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61065116",
+  "name": "中田 翔",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11215118",
+  "name": "中島 卓也",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21025131",
+  "name": "中村 勝",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "01903888",
+  "name": "二岡 智宏",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21225133",
+  "name": "西川 遥輝",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "91295116",
+  "name": "根本 朋久",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "63365133",
+  "name": "M.ホフパワー",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71475110",
+  "name": "松家 卓弘",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "81285131",
+  "name": "増井 浩俊",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21625135",
+  "name": "松本 剛",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41645114",
+  "name": "宮本 賢",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41445116",
+  "name": "宮西 尚生",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "11615116",
+  "name": "村田 和哉",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "71875135",
+  "name": "森内 壽春",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "73575135",
+  "name": "D.モルケン",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61665112",
+  "name": "八木 智哉",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "61665118",
+  "name": "矢貫 俊之",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "21825112",
+  "name": "陽 岱鋼",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "41845114",
+  "name": "吉川 光夫",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2004001",
+  "team": "北海道日本ハムファイターズ",
+  "player_id": "81885112",
+  "name": "若竹 竜士",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91195117",
+  "name": "新垣 渚",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51155119",
+  "name": "明石 健志",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71175118",
+  "name": "有馬 翔",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "23525135",
+  "name": "B.アレン",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31335116",
+  "name": "岩嵜 翔",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "81185118",
+  "name": "猪本 健太郎",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31335131",
+  "name": "今宮 健太",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21325113",
+  "name": "内川 聖一",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11315110",
+  "name": "江川 智晃",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51353889",
+  "name": "岡島 秀樹",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71373888",
+  "name": "小椋 真介",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51555114",
+  "name": "大隣 憲司",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41345116",
+  "name": "大場 翔太",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41343888",
+  "name": "金澤 健人",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41645113",
+  "name": "A.カブレラ",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21525115",
+  "name": "神内 靖",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61365119",
+  "name": "金子 圭輔",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51555112",
+  "name": "甲藤 啓介",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11715131",
+  "name": "川原 弘之",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51555135",
+  "name": "釜元 豪",
+  "debut_year": 2016
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71575135",
+  "name": "亀澤 恭平",
+  "debut_year": 2015
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91595135",
+  "name": "嘉弥真 新也",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "53355135",
+  "name": "A.カストロ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31535119",
+  "name": "城所 龍磨",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21525118",
+  "name": "金 無英",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "81585116",
+  "name": "久米 勇紀",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31533889",
+  "name": "小久保 裕紀",
+  "debut_year": 1994
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41945135",
+  "name": "白根 尚貴",
+  "debut_year": 2016
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91995118",
+  "name": "攝津 正",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01005133",
+  "name": "千賀 滉大",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41743880",
+  "name": "多村 仁志",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61965115",
+  "name": "田上 秀則",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41045114",
+  "name": "髙谷 裕亮",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61965118",
+  "name": "巽 真悟",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "81985118",
+  "name": "立岡 宗一郎",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91595133",
+  "name": "拓也",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01005135",
+  "name": "武田 翔太",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11215135",
+  "name": "塚田 正義",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21025118",
+  "name": "堂上 隼人",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "83385135",
+  "name": "T.ドイル",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91095113",
+  "name": "仲澤 忠厚",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71075110",
+  "name": "中西 健太",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11215116",
+  "name": "中村 晃",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61265118",
+  "name": "二保 旭",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21425114",
+  "name": "長谷川 勇也",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "83785133",
+  "name": "E.バリオス",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "73375135",
+  "name": "R.ピント",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71475112",
+  "name": "藤岡 好明",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11615114",
+  "name": "福田 秀平",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "21425118",
+  "name": "福元 淳史",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "03105118",
+  "name": "B.ファルケンボーグ",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "93195135",
+  "name": "W.ペーニャ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "23325135",
+  "name": "B.ペニー",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41245113",
+  "name": "帆足 和幸",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71475115",
+  "name": "細川 亨",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41445112",
+  "name": "本多 雄一",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "01405133",
+  "name": "星野 大地",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61063884",
+  "name": "松中 信彦",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11215119",
+  "name": "馬原 孝浩",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "51655112",
+  "name": "松田 宣浩",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61465133",
+  "name": "牧原 大成",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61665114",
+  "name": "森福 允彦",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71475113",
+  "name": "山崎 勝己",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31835112",
+  "name": "柳瀬 明宏",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "53355112",
+  "name": "陽 耀勲",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "11815114",
+  "name": "山田 大樹",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "41645118",
+  "name": "柳川 洋平",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "31835133",
+  "name": "柳田 悠岐",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "71875133",
+  "name": "山下 斐紹",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "61265119",
+  "name": "吉川 輝昭",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "91295114",
+  "name": "李 杜軒",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005001",
+  "team": "福岡ソフトバンクホークス",
+  "player_id": "43345118",
+  "name": "L.ロメロ",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51153888",
+  "name": "赤田 将吾",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81185113",
+  "name": "荒金 久雄",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91195131",
+  "name": "阿南 徹",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31135135",
+  "name": "安達 了一",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01103886",
+  "name": "井川 慶",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81185116",
+  "name": "伊藤 光",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11315118",
+  "name": "伊原 正樹",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61865135",
+  "name": "李 大浩",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91595114",
+  "name": "大引 啓次",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91595115",
+  "name": "梶本 勇介",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41545115",
+  "name": "鴨志田 貴司",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01305119",
+  "name": "香月 良太",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41345110",
+  "name": "金子 千尋",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61365135",
+  "name": "海田 智行",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41545135",
+  "name": "川端 崇義",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81383880",
+  "name": "北川 博敏",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71775117",
+  "name": "木佐貫 洋",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51755112",
+  "name": "岸田 護",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31735116",
+  "name": "桑原 謙太朗",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71775115",
+  "name": "後藤 光尊",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91795115",
+  "name": "近藤 一樹",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31935114",
+  "name": "小松 聖",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71775116",
+  "name": "小林 賢司",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91795135",
+  "name": "小島 脩平",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "21925117",
+  "name": "坂口 智隆",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71775110",
+  "name": "齋藤 俊雄",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11915135",
+  "name": "佐藤 達也",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81785133",
+  "name": "駿太",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91995135",
+  "name": "縞田 拓弥",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91793886",
+  "name": "鈴木 郁洋",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "03705133",
+  "name": "B.スケールズ",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31933884",
+  "name": "髙橋 信二",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31935110",
+  "name": "髙橋 秀聡",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71975110",
+  "name": "竹原 直隆",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11015112",
+  "name": "高宮 和也",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11015115",
+  "name": "辻 俊哉",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61065133",
+  "name": "塚原 頌平",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71275135",
+  "name": "堤 裕貴",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91095115",
+  "name": "寺原 隼人",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61365112",
+  "name": "T-岡田",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81285117",
+  "name": "長峰 昌司",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91095110",
+  "name": "中村 一生",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "31235112",
+  "name": "中山 慎也",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "71275118",
+  "name": "西 勇輝",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "91295118",
+  "name": "西川 雅人",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11215115",
+  "name": "野中 信吾",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "73375116",
+  "name": "A.バルディリス",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81983882",
+  "name": "日高 剛",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81285112",
+  "name": "平野 佳寿",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81085131",
+  "name": "比嘉 幹貴",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01205131",
+  "name": "古川 秀一",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "11415133",
+  "name": "深江 真登",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "73375133",
+  "name": "A.フィガロ",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41245131",
+  "name": "前田 祐二",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "83385133",
+  "name": "E.マクレーン",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "33535135",
+  "name": "A.マエストリ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01605111",
+  "name": "ミンチェ",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51655133",
+  "name": "三ツ俣 大樹",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41645133",
+  "name": "宮﨑 祐樹",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41645112",
+  "name": "森山 周",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "51453888",
+  "name": "山﨑 浩司",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "41645116",
+  "name": "山崎 正貴",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "61465131",
+  "name": "山田 修義",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01405111",
+  "name": "吉野 誠",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "01605117",
+  "name": "横山 徹也",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005002",
+  "team": "オリックス・バファローズ",
+  "player_id": "81285119",
+  "name": "由田 慎太郎",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21125115",
+  "name": "有銘 兼久",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "91195112",
+  "name": "青山 浩二",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71175133",
+  "name": "阿部 俊人",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11313884",
+  "name": "岩村 明憲",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01105119",
+  "name": "稲田 直人",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81185112",
+  "name": "井野 卓",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61165116",
+  "name": "伊志嶺 忠",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01105118",
+  "name": "井坂 亮平",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61165118",
+  "name": "井上 雄介",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "51355114",
+  "name": "上園 啓史",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71375116",
+  "name": "内村 賢介",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41345133",
+  "name": "榎本 葵",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11515112",
+  "name": "小山 桂司",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21325135",
+  "name": "岡島 豪郎",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81383888",
+  "name": "川井 貴志",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21525117",
+  "name": "加藤 大輔",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81385119",
+  "name": "川岸 強",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11515119",
+  "name": "川島 亮",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31535112",
+  "name": "片山 博視",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11715112",
+  "name": "河田 寿司",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01505118",
+  "name": "辛島 航",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "73775133",
+  "name": "L.ガルシア",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31535135",
+  "name": "釜田 佳直",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71375112",
+  "name": "銀次",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41545116",
+  "name": "菊池 保則",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11715135",
+  "name": "北川 倫太郎",
+  "debut_year": 2015
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01705112",
+  "name": "草野 大輔",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81583884",
+  "name": "小山 伸一郎",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41745112",
+  "name": "小斉 祐輔",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21725131",
+  "name": "小関 翔太",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "91595111",
+  "name": "佐竹 健太",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "91795110",
+  "name": "定岡 卓摩",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81283883",
+  "name": "下柳 剛",
+  "debut_year": 1991
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01905114",
+  "name": "嶋 基宏",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11015133",
+  "name": "塩見 貴洋",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71975135",
+  "name": "島内 宏明",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41743886",
+  "name": "高須 洋介",
+  "debut_year": 1998
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11215114",
+  "name": "田中 将大",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31935131",
+  "name": "高堀 和也",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "43545135",
+  "name": "B.ダックワース",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21925131",
+  "name": "土屋 朋弘",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31035113",
+  "name": "鉄平",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "53155135",
+  "name": "L.テレーロ",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81985131",
+  "name": "戸村 健次",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21225117",
+  "name": "中島 俊哉",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21225114",
+  "name": "永井 怜",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81285114",
+  "name": "中村 真人",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41045118",
+  "name": "中川 大志",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "71275112",
+  "name": "西村 弥",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "41045131",
+  "name": "西田 哲朗",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "51255110",
+  "name": "橋本 義隆",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01205116",
+  "name": "長谷部 康平",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "93395131",
+  "name": "B.ハーパー",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "63365135",
+  "name": "J.ハウザー",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61265116",
+  "name": "聖澤 諒",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "53355133",
+  "name": "K.ヒメネス",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "03305117",
+  "name": "J.フェルナンデス",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "21225110",
+  "name": "藤田 一也",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81485118",
+  "name": "藤原 紘通",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81983889",
+  "name": "松井 稼頭央",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "61265113",
+  "name": "牧田 明久",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81485112",
+  "name": "枡田 慎太郎",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01605133",
+  "name": "美馬 学",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "11815135",
+  "name": "三好 匠",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "31835135",
+  "name": "武藤 好貴",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "81083880",
+  "name": "山村 宏樹",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "01805114",
+  "name": "横川 史学",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2005003",
+  "team": "東北楽天ゴールデンイーグルス",
+  "player_id": "83185118",
+  "name": "D.ラズナー",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41145113",
+  "name": "阿部 真宏",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51155118",
+  "name": "浅村 栄斗",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31135133",
+  "name": "秋山 翔吾",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31133885",
+  "name": "石井 一久",
+  "debut_year": 1992
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61165131",
+  "name": "石川 貢",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71375131",
+  "name": "岩尾 利弘",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71375117",
+  "name": "上本 達之",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91395116",
+  "name": "梅田 尚通",
+  "debut_year": 2014
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81885135",
+  "name": "R.ウィリアムス",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01305117",
+  "name": "江草 仁貴",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81185111",
+  "name": "大島 裕行",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31535117",
+  "name": "長田 秀一郎",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91895117",
+  "name": "J.オーティズ",
+  "debut_year": 2003
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51355119",
+  "name": "岡本 篤志",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "11515114",
+  "name": "大﨑 雄太朗",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31535116",
+  "name": "鬼崎 裕司",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31535131",
+  "name": "岡本 洋介",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81385133",
+  "name": "大石 達也",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01305110",
+  "name": "片岡 易之",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "13115135",
+  "name": "C.カーター",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91795114",
+  "name": "岸 孝之",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41745114",
+  "name": "木村 文紀",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51755131",
+  "name": "菊池 雄星",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51755115",
+  "name": "栗山 巧",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21725133",
+  "name": "熊代 聖人",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71775135",
+  "name": "小石 博孝",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01705135",
+  "name": "駒月 仁人",
+  "debut_year": 2019
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "33135135",
+  "name": "E.ゴンザレス",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41745113",
+  "name": "坂元 弥太郎",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61765113",
+  "name": "佐藤 友亮",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81585119",
+  "name": "桟原 将司",
+  "debut_year": 2004
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21725116",
+  "name": "斉藤 彰吾",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01705118",
+  "name": "坂田 遼",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61563880",
+  "name": "嶋 重宣",
+  "debut_year": 1997
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91995112",
+  "name": "炭谷 銀仁朗",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61765111",
+  "name": "高山 久",
+  "debut_year": 2000
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61065117",
+  "name": "武山 真吾",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01005112",
+  "name": "田中 靖洋",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41945116",
+  "name": "武隈 祥太",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41945118",
+  "name": "岳野 竜也",
+  "debut_year": 2010
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41045135",
+  "name": "田代 将太郎",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91295135",
+  "name": "十亀 剣",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01005113",
+  "name": "中島 裕之",
+  "debut_year": 2002
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81085115",
+  "name": "中村 剛也",
+  "debut_year": null
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81085116",
+  "name": "中田 祥多",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61065118",
+  "name": "中﨑 雄太",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "11415135",
+  "name": "永江 恭平",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51953880",
+  "name": "西口 文也",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81285118",
+  "name": "野上 亮磨",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41445114",
+  "name": "原 拓也",
+  "debut_year": 2007
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61265133",
+  "name": "林﨑 遼",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "91993889",
+  "name": "平尾 博嗣",
+  "debut_year": 1995
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81285116",
+  "name": "平野 将光",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01205113",
+  "name": "藤田 太陽",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "51455116",
+  "name": "藤原 良平",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "03105135",
+  "name": "E.ヘルマン",
+  "debut_year": 2012
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41043888",
+  "name": "星野 智樹",
+  "debut_year": 1999
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "61265110",
+  "name": "星 孝典",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "81285110",
+  "name": "星 秀和",
+  "debut_year": 2008
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "11415110",
+  "name": "MICHEAL",
+  "debut_year": 2005
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71675112",
+  "name": "松永 浩典",
+  "debut_year": 2006
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "01405131",
+  "name": "松下 建太",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "41445133",
+  "name": "牧田 和久",
+  "debut_year": 2011
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71675118",
+  "name": "宮田 和希",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21425131",
+  "name": "美沢 将",
+  "debut_year": 2013
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "71875114",
+  "name": "山本 淳",
+  "debut_year": 2009
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "21425111",
+  "name": "米野 智人",
+  "debut_year": 2001
+ },
+ {
+  "year": 2012,
+  "team_id": "2008001",
+  "team": "埼玉西武ライオンズ",
+  "player_id": "31635110",
+  "name": "涌井 秀章",
+  "debut_year": null
+ }
+]

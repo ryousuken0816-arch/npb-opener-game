@@ -24,6 +24,15 @@
 - 選手ページ投手の列：登板 勝利 敗北 セーブ H HP 完投 完封勝 無四球 勝率 打者 outs 安打 本塁打 四球 死球 三振 暴投 ボーク 失点 自責点 防御率
 - 2軍成績は teamstats_linked.json にのみ存在（選手ページは1軍のみ）
 
+## 全年データ（2008〜2026）
+
+- `data/<年>/`（2008〜2026）：rosters / players / teamstats_linked / awards / drafts の5ファイル。形式は data/2008 と同じ
+  - **1軍成績は全年・全員 player_id 突合済み**（未突合0）。2軍のみの選手は player_id が null
+  - drafts.json は「前年秋＋当年秋」の2回分（例: 2015/ は 2014年・2015年ドラフト）
+  - **2026年はシーズン途中（9/25時点）の成績**。awards なし、当年秋ドラフト未実施
+  - 2026年の rosters.json は現役選手名簿から作成しており、`number`（背番号）・`pos`・`ikusei`（育成）が付く。2025年以前には無い
+  - 2025年以降、npb.jp の成績表の形式が変わったがパーサで吸収済み（出力形式は同じ）
+
 ## 追加データ（2008年開幕時点の算出用）
 
 - `data/2005/` `data/2006/` `data/2007/`：rosters.json・teamstats_linked.json（1軍・2軍・守備、1軍は全員player_id突合済み）・awards.json（GG賞。**2005年は0件**＝ページ構造が違い未取得）。players.json は無し（2008年以降の選手の2007年以前の1軍成績は各年の players.json の batting/pitching に含まれる）
