@@ -43,6 +43,13 @@
   - 2008年で検証済み：12球団すべて144試合、交流戦144試合
   - 取得スクリプト `npb_collector/schedule.py`。**2009〜2025年は取得中**、2026年は npb.jp のページ構成が違うため未対応
 
+## ドラフト1巡目の競合データ
+
+- `data/draft_first_round.json`：2001〜2025年の1位（1巡目）指名選手ごとに、1回目の入札で指名した球団数 `bids`（1=単独、2以上=競合）・`bidders`・確定した入札の回 `wave`（2以上=外れ1位）
+  - 2022年までは npb.jp 指名一覧の注記から、2023〜2025年はウィキペディアの情報欄から（`source: "wikipedia"`、単独の外れ1位は wave が分からず 1）
+  - 用途：ドラフト候補一覧の「当時の評価」ランク（docs/references/README.md「draft_list_pawapuro.webp」参照）
+  - 取得スクリプト `npb_collector/draft_lottery.py`、手動補足 `npb_collector/draft_lottery_manual.json`
+
 ## 追加データ（2008年開幕時点の算出用）
 
 - `data/2005/` `data/2006/` `data/2007/`：rosters.json・teamstats_linked.json（1軍・2軍・守備、1軍は全員player_id突合済み）・awards.json（GG賞。**2005年は0件**＝ページ構造が違い未取得）。players.json は無し（2008年以降の選手の2007年以前の1軍成績は各年の players.json の batting/pitching に含まれる）
