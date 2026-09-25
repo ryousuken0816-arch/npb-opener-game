@@ -63,7 +63,7 @@ func _run() -> void:
 				_check_mlb_departures(y, before)
 		_gs.advance()  # 開幕へ
 		_check(_gs.phase == _gs.Phase.SEASON and _gs.year == y + 1, "%d年の開幕へ" % (y + 1))
-		_report_offseason(y, before)
+		_report_offseason(y)
 		_check_opening(y + 1)
 		_print_salaries(y + 1)
 		if y + 1 >= _end_year:
@@ -123,7 +123,7 @@ func _check_mlb_departures(y: int, before: Dictionary) -> void:
 				"%d年オフ：%sがメジャーへ（%s）" % [y, m["name"], m["route"]])
 
 
-func _report_offseason(y: int, before: Dictionary) -> void:
+func _report_offseason(y: int) -> void:
 	var league: Variant = _gs.league
 	var by_kind := {}
 	for e: Dictionary in league.log:
@@ -177,7 +177,8 @@ func _report_offseason(y: int, before: Dictionary) -> void:
 	_check(signed + unsigned.size() == candidates.size(), "市場の候補は獲得か未契約のどちらか")
 	var trades := 0
 	for e in league.log:
-		if e["kind"] == "trade" and (e["year"] == y and e["date"] >= "%d-10-01" % y or e["year"] == y + 1):
+		var in_offseason: bool = e["year"] == y and e["date"] >= "%d-10-01" % y or e["year"] == y + 1
+		if e["kind"] == "trade" and in_offseason:
 			trades += 1
 			if e["from"] == _gs.team or e["to"] == _gs.team:
 				_failures += 1
@@ -204,7 +205,8 @@ func _print_salaries(y: int) -> void:
 	var total := 0
 	for a in amounts:
 		total += a
-	var over := func(th: int) -> int: return amounts.filter(func(a: int) -> bool: return a >= th).size()
+	var over := func(th: int) -> int:
+		return amounts.filter(func(a: int) -> bool: return a >= th).size()
 	print("%d年 年俸：平均 %s・中央値 %s・最高 %s・1億円以上 %d人・3億円以上 %d人・1千万円未満 %d人" % [
 		y, Salary.text(total / amounts.size()), Salary.text(amounts[amounts.size() / 2]),
 		Salary.text(amounts[-1]), over.call(10000), over.call(30000),
@@ -218,7 +220,8 @@ func _print_salaries(y: int) -> void:
 		parts.append("%s %s" % [_gd.short_name(r[0]), Salary.text(r[1])])
 	print("  球団の総額：", "／".join(parts))
 	var ids: Array = league.team_of.keys()
-	ids.sort_custom(func(a: String, b: String) -> bool: return league.salary_of(a) > league.salary_of(b))
+	ids.sort_custom(func(a: String, b: String) -> bool:
+		return league.salary_of(a) > league.salary_of(b))
 	var top: Array[String] = []
 	for id: String in ids.slice(0, 12):
 		top.append("%s(%s)%s" % [league.names[id], _gd.short_name(league.team_of[id]),

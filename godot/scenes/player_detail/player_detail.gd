@@ -8,7 +8,7 @@ extends Control
 ##   概要 … 参考画像の「選手能力／投手能力／野手能力／守備・起用」。能力はランク＋数値＋実数値、特殊能力、守備適性
 ##   成績 … 今季（GameState.season）と史実の年度別1軍成績（data/<年>/players.json。今の年より前だけ）、通算
 ##   経歴 … 参考画像の「プロフィール」。生年月日・出身校〜経歴・ドラフト（年・順位）・所属球団の推移
-##   契約 … 年俸のデータがまだ無いので未実装の表示
+##   契約 … 年俸（GameState.league）・在籍年数・所属の状態と、ゲーム内の年俸の推移
 ## 自球団と他球団で情報量は変えない（SPEC）。
 ## 操作：LB/RB（Q/E）でタブ、十字キー（↑↓←→）で前後の選手、Ⓑ（Esc）で閉じる。マウスは上のタブ・▲▼・閉じる。
 ## 開いている間はキー・コントローラーの入力をすべてここで受け、下の画面には渡さない。閉じると元のフォーカスに戻る。
@@ -404,7 +404,7 @@ func _team_chip() -> Control:
 	panel.add_theme_stylebox_override("panel", style)
 	panel.custom_minimum_size = Vector2(0, 52)
 	var label := Label.new()
-	label.text = GameData.short_name(_team_name)
+	label.text = GameData.short_name(_team_name) if not _team_name.is_empty() else unattached_text()
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	var outline := UiTheme.outline_for(_palette.on_main, _palette.main)
 	UiTheme.heading(label, 24, _palette.on_main, outline, 6)
@@ -601,7 +601,7 @@ func _clear(box: Node) -> void:
 		child.queue_free()
 
 
-func _card(title: String) -> Dictionary:
+func card(title: String) -> Dictionary:
 	return UiTheme.titled_panel(_palette, title)
 
 
@@ -611,7 +611,7 @@ func _summary_page() -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	var is_pitcher: bool = _data.get("is_pitcher", false)
-	var abilities := _card("投手能力" if is_pitcher else "野手能力")
+	var abilities := card("投手能力" if is_pitcher else "野手能力")
 	abilities["panel"].custom_minimum_size = Vector2(620, 0)
 	row.add_child(abilities["panel"])
 	var body: VBoxContainer = abilities["body"]
@@ -620,14 +620,14 @@ func _summary_page() -> Control:
 		var pitching := _dict(_data.get("pitching"))
 		var velocity := _dict(pitching.get("velocity"))
 		var kmh := "%d" % int(velocity["kmh"]) if velocity.get("kmh") != null else "-"
-		body.add_child(_value_row("球速", kmh, "km/h", _velocity_note(velocity)))
+		body.add_child(value_row("球速", kmh, "km/h", _velocity_note(velocity)))
 		var ratings := _dict(pitching.get("ratings"))
 		for r: Array in PITCHER_ROWS:
 			body.add_child(_ability_row(r[1], ratings.get(r[0]), _pitching_note(r[0])))
 	else:
 		var batting := _dict(_data.get("batting"))
 		var trajectory: Variant = batting.get("trajectory")
-		body.add_child(_value_row("弾道", str(int(trajectory)) if trajectory != null else "-", "",
+		body.add_child(value_row("弾道", str(int(trajectory)) if trajectory != null else "-", "",
 			"打球の上がりやすさ（1〜4）"))
 		var ratings := _dict(batting.get("ratings"))
 		for r: Array in BATTER_ROWS:
@@ -637,10 +637,10 @@ func _summary_page() -> Control:
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	right.add_theme_constant_override("separation", 10)
 	row.add_child(right)
-	var special := _card("特殊能力")
+	var special := card("特殊能力")
 	right.add_child(special["panel"])
 	special["body"].add_child(_ability_tiles())
-	var aptitude := _card("起用・適性" if is_pitcher else "守備適性")
+	var aptitude := card("起用・適性" if is_pitcher else "守備適性")
 	aptitude["panel"].size_flags_vertical = Control.SIZE_EXPAND_FILL
 	right.add_child(aptitude["panel"])
 	if is_pitcher:
@@ -671,12 +671,12 @@ func _ability_row(title: String, rating: Variant, note: String) -> Control:
 		bar.value = float(rating["value"]) / 100.0
 		bar.color = GameData.rank_color(rating["rank"])
 	box.add_child(bar)
-	box.add_child(_note_label(note))
+	box.add_child(note_label(note))
 	return row
 
 
 ## 数値だけの行（球速・弾道。パワプロと同じくランクなし）
-func _value_row(title: String, value_text: String, unit: String, note: String) -> Control:
+func value_row(title: String, value_text: String, unit: String, note: String) -> Control:
 	var row := _row_frame()
 	var box: HBoxContainer = row.get_child(0)
 	box.add_child(pill(title, 110, 19))
@@ -689,7 +689,7 @@ func _value_row(title: String, value_text: String, unit: String, note: String) -
 	var unit_label := UiTheme.small_label(unit, 17, UiTheme.TEXT, 800)
 	unit_label.custom_minimum_size = Vector2(96, 0)
 	box.add_child(unit_label)
-	box.add_child(_note_label(note))
+	box.add_child(note_label(note))
 	return row
 
 
@@ -709,7 +709,7 @@ func _row_frame() -> PanelContainer:
 	return panel
 
 
-func _note_label(text: String) -> Label:
+func note_label(text: String) -> Label:
 	var label := UiTheme.small_label(text, 13, UiTheme.TEXT_SUB, 700)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.clip_text = true
@@ -956,19 +956,23 @@ func _scroll_to_end(scroll: ScrollContainer) -> void:
 # --- 契約 ---
 
 func _contract_page() -> Control:
-	var center := CenterContainer.new()
-	var card := _card("契約")
-	card["panel"].custom_minimum_size = Vector2(620, 220)
-	center.add_child(card["panel"])
-	var label := UiTheme.small_label(
-			"年俸・契約年数・FA権などの契約情報は、まだデータがないため未実装です。\n"
-			+ "（契約更改・FAの仕組みを作るときに追加します）", 19, UiTheme.TEXT, 700)
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	card["body"].add_child(label)
-	return center
+	var page := ContractPage.new()
+	page.setup(self, player_id, _team_name, _palette)
+	return page
+
+
+## 所属していない選手の状態（外国人市場・メジャー・引退）
+func unattached_text() -> String:
+	var league := GameState.league
+	if league == null:
+		return "-"
+	if league.market.has(player_id):
+		return "外国人市場"
+	if league.in_mlb.has(player_id):
+		return "メジャー"
+	if league.retired.has(player_id):
+		return "引退（%d年）" % league.retired[player_id]
+	return "所属なし"
 
 
 # --- 共通 ---

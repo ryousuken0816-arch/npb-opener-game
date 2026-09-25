@@ -1,3 +1,4 @@
+# gdlint: disable=max-public-methods
 extends Node
 ## 能力値データ（tools/compute_ratings.py の出力）の読み込みと参照。
 ##

@@ -26,7 +26,8 @@ var _games_by_date := {}
 var _debut_years := {}
 
 
-## ratings: {"players": 所属している選手}（GameData.rostered_players()。team が空の選手は除く）、schedule: schedule.json の中身、
+## ratings: {"players": 所属している選手}（GameData.rostered_players()。team が空の選手は除く）、
+## schedule: schedule.json の中身、
 ## debut_years: 選手ID → 1軍初出場の年（外国人枠の判定用。GameData.load_debut_years()）
 func _init(season_year: int, ratings: Dictionary, schedule: Array, seed_value: int = 0,
 		debut_years: Dictionary = {}) -> void:

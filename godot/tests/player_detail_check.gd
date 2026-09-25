@@ -172,10 +172,12 @@ func _run() -> void:
 	await _key(KEY_ESCAPE)
 	await _key(KEY_ESCAPE)
 
-	# --- 選手一覧 ---
+	# --- 選手一覧（起用設定 → 思考設定 → 情報 → 選手一覧）---
 	await _key(KEY_E)
 	await _key(KEY_E)
-	_check("E E で選手一覧", tactics.get("_page") == "list", str(tactics.get("_page")))
+	_check("E E で情報", tactics.get("_page") == "info", str(tactics.get("_page")))
+	await _key(KEY_E)
+	_check("E E E で選手一覧", tactics.get("_page") == "list", str(tactics.get("_page")))
 	await _frames(3)
 	var tree := _focused() as Tree
 	_check("選手一覧：一覧にフォーカス", tree != null, _describe(_focused()))

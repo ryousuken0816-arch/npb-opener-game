@@ -45,8 +45,12 @@ const FLOOR_MAX := 2200
 ## 外国人：市場価値の倍率と最低額
 const FOREIGN_PREMIUM := 1.3
 const FOREIGN_MIN := 3000
+## 外国人市場の提示額に評価の誤差をどれだけ効かせるか（exp(この値 × 誤差z) 倍）
+const ASKING_NOISE_SCALE := 0.5
 ## 新人の年俸 [社会人・大学, 高校]（キーはドラフト順位。自由枠・希望枠は1位扱い、7位以下は最後の値）
-const ROOKIE := {1: [1500, 1200], 2: [1200, 900], 3: [1000, 800], 4: [900, 700], 5: [800, 600], 6: [700, 550]}
+const ROOKIE := {
+	1: [1500, 1200], 2: [1200, 900], 3: [1000, 800], 4: [900, 700], 5: [800, 600], 6: [700, 550],
+}
 const ROOKIE_IKUSEI := [400, 300]
 ## 契約更改
 const CUT_LIMIT_HIGH := 0.40  ## 1億円を超える選手の減額制限
@@ -109,7 +113,8 @@ static func cap(value: float) -> float:
 
 
 static func seniority(years: int) -> float:
-	var s := SENIORITY_MIN + (1.0 - SENIORITY_MIN) * minf(1.0, (years - 1) / float(SENIORITY_FULL_YEARS - 1))
+	var ramp := minf(1.0, (years - 1) / float(SENIORITY_FULL_YEARS - 1))
+	var s := SENIORITY_MIN + (1.0 - SENIORITY_MIN) * ramp
 	s += SENIORITY_VETERAN * maxi(0, years - SENIORITY_FULL_YEARS - 1)
 	return minf(s, SENIORITY_MAX)
 
@@ -125,6 +130,11 @@ static func initial(p: Dictionary, years: int, foreign: bool, year: int) -> int:
 	if foreign:
 		return round_amount(maxf(FOREIGN_MIN, cap(value * FOREIGN_PREMIUM)))
 	return round_amount(maxf(floor_for(years, year), cap(value * seniority(years))))
+
+
+## 外国人市場の提示額：来季の見立て（p）での外国人の年俸に、評価の誤差（noise、z）を反映する
+static func foreign_asking(p: Dictionary, noise: float, year: int) -> int:
+	return round_amount(maxf(FOREIGN_MIN, initial(p, 1, true, year) * exp(ASKING_NOISE_SCALE * noise)))
 
 
 ## 新人の年俸。draft: {round: int（自由枠などは1）, high_school: bool, ikusei: bool}

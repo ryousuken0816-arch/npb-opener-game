@@ -80,6 +80,8 @@ var tactics := {"bunt": 0, "steal": 0, "relief": 0}
 
 ## 早送りの目標日（この日の試合が終わるまで進める）。早送りしていなければ -1
 var fast_forward_target: int = -1
+## 所属が変わるたびに増える（一覧の作り直しの判定用）
+var roster_version := 0
 var _fast_forward_time := 0.0
 ## オフの編成（所属が変わるたびに作り直す。球団名 → SimTeam）
 var _offseason_teams := {}
@@ -178,7 +180,9 @@ func sign_foreign(id: String) -> String:
 
 ## 外国人市場が開いているか（FA・トレード・ポスティング〜春季キャンプ）
 func market_open() -> bool:
-	return phase != Phase.SEASON and phase != Phase.AWARDS and league != null and not league.market.is_empty()
+	if phase == Phase.SEASON or phase == Phase.AWARDS or league == null:
+		return false
+	return not league.market.is_empty()
 
 
 ## 自球団の采配方針を変える（今季の SimTeam にもすぐ反映）
@@ -382,7 +386,7 @@ func _enter(new_phase: Phase) -> void:
 			var next := GameData.peek_ratings(year + 1, "pre")
 			if not next.is_empty():
 				GameData.set_supplement(next)
-				league.prepare_next_year(year, next)
+				league.prepare_next_year(year, next, GameData.peek_ratings(year + 1, "post"))
 				league.apply_returns()
 		Phase.CONTRACT:
 			league.renew_contracts(year, season)
@@ -411,6 +415,7 @@ func _sync_roster() -> void:
 	if league != null:
 		GameData.apply_roster(league.team_of)
 	_offseason_teams.clear()
+	roster_version += 1
 
 
 ## date までの史実のトレードを起こす（シーズン中はペナントの編成にもすぐ反映）

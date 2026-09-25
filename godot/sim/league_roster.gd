@@ -17,6 +17,10 @@ extends RefCounted
 ##   （各球団が史実で獲得した人数ぶん。能力の高い順）。開幕までに誰も獲らなかった選手は来日しない
 ## - 1軍に出ていない選手の仮ID（tmp:…）は、1軍に出た年に本来の選手IDへ付け替える（名前で突合）
 
+## 外国人市場の評価の誤差（z）。候補の評価・提示額は史実の来季の成績（来季のシーズン後の能力値）に
+## この大きさの誤差を足した「不完全な未来視」（docs/SPEC.md のドラフトと同じ考え方）。画面の能力は開幕時点のまま
+const MARKET_NOISE := 0.5
+
 ## 球団名が変わった球団（旧 → 新）。新しい年の能力値ファイルに旧名が無ければ付け替える
 const TEAM_SUCCESSOR := {"横浜ベイスターズ": "横浜DeNAベイスターズ"}
 
@@ -33,7 +37,8 @@ var market: Array[String] = [] ## 外国人市場の候補（未契約）
 var market_info := {}          ## 選手ID → {hist_team, asking, pitcher}
 var cpu_demand := {}           ## CPU球団 → {"p": 投手の残り人数, "b": 野手の残り人数}
 ## 出来事の記録 {year, date, kind, id, name, from, to, text}。kind: trade / trade_skipped / mlb_leave /
-## mlb_return / retire / rookie / join / foreign_candidate / foreign_sign / foreign_unsigned / rename
+## mlb_return / retire / rookie / join / foreign_candidate / foreign_sign / foreign_unsigned /
+## rename
 var log: Array[Dictionary] = []
 
 var _trades: Array[Dictionary] = []  ## trade_id ごと、日付順 {id, date, moves: [{pid, name, from, to}]}
@@ -55,7 +60,8 @@ func _init() -> void:
 
 ## ゲーム開始時の所属：開幕時点の能力値ファイルの球団。ただしその年の開幕後に史実でトレードされた選手は
 ## 移籍前の球団から始める（能力値ファイルは1年分の在籍なので、移籍後の球団になっていることがある）
-func start(start_year: int, ratings: Dictionary, opening_date: String, user: String, seed_value: int = 0) -> void:
+func start(start_year: int, ratings: Dictionary, opening_date: String, user: String,
+		seed_value: int = 0) -> void:
 	year = start_year
 	user_team = user
 	_rng.seed = seed_value if seed_value != 0 else hash("league-%d" % start_year)
@@ -88,8 +94,9 @@ func start(start_year: int, ratings: Dictionary, opening_date: String, user: Str
 	for id: String in team_of:
 		var p := GameData.player(id)
 		var draft := _rookie_draft(p, start_year - 1)
+		var foreign := RosterRules.is_foreign(p, start_year, debut.get(id))
 		var amount := Salary.rookie(draft, start_year) if not draft.is_empty() else Salary.initial(
-				p, years_in_npb(id, start_year), RosterRules.is_foreign(p, start_year, debut.get(id)), start_year)
+				p, years_in_npb(id, start_year), foreign, start_year)
 		_set_salary(id, amount, start_year)
 
 
@@ -145,7 +152,8 @@ func apply_trades_until(date: String) -> Array[Dictionary]:
 static func _trade_label(moves: Array[Dictionary]) -> String:
 	var parts: Array[String] = []
 	for mv in moves:
-		parts.append("%s %s→%s" % [mv["name"], GameData.short_name(mv["from"]), GameData.short_name(mv["to"])])
+		parts.append("%s %s→%s" % [mv["name"], GameData.short_name(mv["from"]),
+			GameData.short_name(mv["to"])])
 	return "、".join(parts)
 
 
@@ -165,10 +173,14 @@ func depart_mlb(season_year: int) -> void:
 				"%s：%s → メジャー（%s）" % [names.get(id, m["name"]), GameData.short_name(from), route])
 
 
-## 来季（season_year + 1）の準備。next: 来季の開幕時点の能力値ファイル。
+## 来季（season_year + 1）の準備。next: 来季の開幕時点の能力値ファイル、next_post: 来季のシーズン後の能力値
+## ファイル（外国人市場の評価に使う。無ければ空）。
 ## 引退・仮IDの付け替え・メジャーからの復帰・新加入・外国人市場の候補を決める（実行はフェーズごと）
-func prepare_next_year(season_year: int, next: Dictionary) -> void:
+func prepare_next_year(season_year: int, next: Dictionary, next_post: Dictionary = {}) -> void:
 	var next_year := season_year + 1
+	var post := {}
+	for p: Dictionary in next_post.get("players", []):
+		post[p["id"]] = p
 	var debut := GameData.load_debut_years(next_year)
 	var entries := {}
 	for p: Dictionary in next.get("players", []):
@@ -194,21 +206,24 @@ func prepare_next_year(season_year: int, next: Dictionary) -> void:
 		if not m.is_empty() and m.get("returned") != null and int(m["returned"]) == next_year:
 			returns.append(id)
 		elif RosterRules.is_foreign(p, next_year, debut.get(id)):
-			_add_candidate(p, next_year)
+			_add_candidate(p, next_year, post.get(id, {}))
 		else:
 			newcomers.append(id)
 	_plan = {"year": next_year, "entries": entries, "renames": renames, "retire": retire,
 		"returns": returns, "newcomers": newcomers, "debut": debut}
 
 
-func _add_candidate(p: Dictionary, next_year: int) -> void:
+func _add_candidate(p: Dictionary, next_year: int, post: Dictionary) -> void:
 	var id: String = p["id"]
 	var hist: String = p.get("hist_team", p["team"])
 	var pitcher: bool = p.get("is_pitcher", false)
+	var basis := post if not post.is_empty() else p
+	var a := Salary.ability(basis)
+	var noise := _rng.randfn(0.0, MARKET_NOISE)
 	market.append(id)
 	names[id] = p["name"]
-	market_info[id] = {"hist_team": hist, "pitcher": pitcher,
-		"asking": Salary.initial(p, 1, true, next_year)}
+	market_info[id] = {"hist_team": hist, "pitcher": pitcher, "value": a[0] + 0.5 * a[1] + noise,
+		"asking": Salary.foreign_asking(basis, noise, next_year)}
 	var team := _current_name(hist)
 	if team != user_team:
 		if not cpu_demand.has(team):
@@ -244,7 +259,8 @@ func apply_returns() -> void:
 		names[id] = p["name"]
 		if not joined.has(id):
 			joined[id] = _joined_year(p, _plan["debut"].get(id), _plan["year"])
-		_set_salary(id, Salary.initial(p, years_in_npb(id, _plan["year"]), false, _plan["year"]), _plan["year"])
+		var next_year: int = _plan["year"]
+		_set_salary(id, Salary.initial(p, years_in_npb(id, next_year), false, next_year), next_year)
 		_log("", "mlb_return", id, p["name"], "", team, "%s：メジャー → %s（復帰）" % [
 			p["name"], GameData.short_name(team)])
 
@@ -268,8 +284,8 @@ func renew_contracts(season_year: int, season: Season) -> void:
 		if season != null:
 			stats = (season.pitching if p.get("is_pitcher", false) else season.batting).get(id, {})
 		var foreign := RosterRules.is_foreign(p, next_year, debut.get(id))
-		_set_salary(id, Salary.renew(salary[id], p, stats, years_in_npb(id, next_year), foreign, next_year),
-				next_year)
+		var years := years_in_npb(id, next_year)
+		_set_salary(id, Salary.renew(salary[id], p, stats, years, foreign, next_year), next_year)
 
 
 ## 戦力外・引退：来季の能力値ファイルにいない選手
@@ -297,13 +313,15 @@ func apply_newcomers() -> void:
 		retired.erase(id)
 		var draft := _rookie_draft(p, next_year - 1)
 		if not joined.has(id):
-			joined[id] = next_year if not draft.is_empty() else _joined_year(p, _plan["debut"].get(id), next_year)
+			var debut_year: Variant = _plan["debut"].get(id)
+			joined[id] = next_year if not draft.is_empty() else _joined_year(p, debut_year, next_year)
 		var amount := Salary.rookie(draft, next_year) if not draft.is_empty() else Salary.initial(
 				p, years_in_npb(id, next_year), false, next_year)
 		_set_salary(id, amount, next_year)
 		var kind := "rookie" if not draft.is_empty() else "join"
 		var what := "新人" if kind == "rookie" else "入団"
-		_log("", kind, id, p["name"], "", team, "%s：%s（%s）" % [p["name"], GameData.short_name(team), what])
+		var text := "%s：%s（%s）" % [p["name"], GameData.short_name(team), what]
+		_log("", kind, id, p["name"], "", team, text)
 
 
 ## 外国人市場の選手を獲得する（自球団・CPU球団とも）。獲得できなければ空でないエラー文
@@ -360,8 +378,7 @@ func _best_candidate(pitcher: bool) -> String:
 	for id in market:
 		if market_info[id]["pitcher"] != pitcher:
 			continue
-		var a := Salary.ability(GameData.player(id))
-		var value: float = a[0] + 0.3 * a[1] + _rng.randf() * 0.05
+		var value: float = market_info[id]["value"]
 		if value > best_value:
 			best_value = value
 			best = id
@@ -472,8 +489,8 @@ func _set_salary(id: String, amount: int, for_year: int) -> void:
 
 func _log(date: String, kind: String, id: String, name: String, from: String, to: String,
 		text: String) -> void:
-	log.append({"year": year, "date": date, "kind": kind, "id": id, "name": name, "from": from, "to": to,
-		"text": text})
+	log.append({"year": year, "date": date, "kind": kind, "id": id, "name": name, "from": from,
+		"to": to, "text": text})
 
 
 ## 史実のデータの略称（"読売" "横浜" "西武" など）→ 今の所属の球団名
@@ -492,7 +509,8 @@ func _current_name(team: String) -> String:
 ## NPB に入った年：ドラフト（"2000年ドラフト1位" → 2001年）→ 1軍初出場の年 → その年
 static func _joined_year(p: Dictionary, debut_year: Variant, fallback: int) -> int:
 	var draft: Variant = p.get("draft")
-	if draft is String and draft.length() >= 5 and draft.substr(4, 1) == "年" and draft.substr(0, 4).is_valid_int():
+	if draft is String and draft.length() >= 5 and draft.substr(4, 1) == "年" \
+			and draft.substr(0, 4).is_valid_int():
 		return int(draft.substr(0, 4)) + 1
 	if debut_year != null:
 		return int(debut_year)
