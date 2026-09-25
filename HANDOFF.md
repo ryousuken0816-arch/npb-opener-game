@@ -39,5 +39,5 @@
 ## 次にやること
 
 1. ~~能力値算出スクリプト~~ → `tools/compute_ratings.py`（出力 `generated/ratings/<年>_<pre|post>.json`、仕様は tools/README.md）。新しい年の data を追加したら `--year <年> --phase pre/post` で再生成
-2. ~~能力値の要相談事項~~ 決定済み（tools/README.md「決定済み」）。2005〜2007年のチーム成績・表彰の取得をローカル側に依頼検討
+2. ~~能力値の要相談事項~~ 決定済み（tools/README.md「決定済み」）。2005〜2007年のチーム成績・表彰は取得済み（data/2005〜2007、上記「追加データ」）。compute_ratings.py の fallbacks を解消する
 3. Godot プロジェクトの骨組み（ハブ画面）
