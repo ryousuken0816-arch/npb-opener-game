@@ -7,6 +7,9 @@ extends Node
 
 const DATA_DIR := "res://data/ratings"
 const GENERATED_DIR := "../generated/ratings"
+## 史実の日程（npb_collector/schedule.py の出力）。書き出し時は res://data/schedule/<年>.json にコピーする想定
+const SCHEDULE_DIR := "res://data/schedule"
+const REPO_DATA_DIR := "../data"
 
 const LEAGUE_NAMES := {"C": "セ・リーグ", "P": "パ・リーグ"}
 
@@ -67,9 +70,10 @@ const RANK_COLORS := {
 	"G": Color("8a9199"),
 }
 
-## 現在の能力値ファイルの中身（schema_version 2）
+## 現在の能力値ファイルの中身（schema_version 3）
 var ratings: Dictionary = {}
 var _players_by_team: Dictionary = {}
+var _players_by_id: Dictionary = {}
 var _loaded_file := ""
 
 
@@ -103,6 +107,28 @@ func find_ratings_path(year: int, phase: String) -> String:
 		if FileAccess.file_exists(path):
 			return path
 	return ""
+
+
+## data/<年>/schedule.json の中身（試合の配列）。無ければ空配列
+func load_schedule(year: int) -> Array:
+	var repo_path := ProjectSettings.globalize_path("res://").path_join(REPO_DATA_DIR)
+	var candidates := [
+		SCHEDULE_DIR.path_join("%d.json" % year),
+		repo_path.path_join("%d/schedule.json" % year).simplify_path(),
+	]
+	for path: String in candidates:
+		if not FileAccess.file_exists(path):
+			continue
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+		if parsed is Array:
+			return parsed
+		push_error("日程ファイルを読めません: " + path)
+	return []
+
+
+## 選手IDから能力値ファイルの選手データを引く（無ければ空）
+func player(id: String) -> Dictionary:
+	return _players_by_id.get(id, {})
 
 
 func has_ratings() -> bool:
@@ -151,7 +177,9 @@ func pos_index(pos: Variant) -> int:
 
 func _index_players() -> void:
 	_players_by_team.clear()
+	_players_by_id.clear()
 	for p: Dictionary in ratings.get("players", []):
+		_players_by_id[p["id"]] = p
 		var team: String = p["team"]
 		if not _players_by_team.has(team):
 			_players_by_team[team] = []

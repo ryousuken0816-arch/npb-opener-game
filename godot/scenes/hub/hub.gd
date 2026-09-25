@@ -163,7 +163,11 @@ func _summary_text() -> String:
 func _description(key: String) -> String:
 	if key == "advance":
 		if GameState.phase == GameState.Phase.SEASON:
-			return "%d月の試合を行い、次の月へ進みます。（試合シミュレーションは未実装）" % GameState.month
+			if GameState.season == null:
+				return "%d月へ進みます。（%d年の日程データがないため試合は行いません）" % [
+					GameState.month, GameState.year]
+			return "%d月の残り%d試合（全球団）を行い、次の月へ進みます。" % [
+				GameState.month, GameState.games_left_in_month()]
 		return "オフシーズンを進めます。次は「%s」です。" % GameState.PHASE_NAMES[GameState.next_phase()]
 	for menu: Array in MENUS:
 		if menu[0] == key:
