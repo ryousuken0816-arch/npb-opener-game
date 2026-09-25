@@ -1,6 +1,7 @@
 class_name StandingsPanel
 extends PanelContainer
-## 順位表パネル（◀ ▶ でセ・パを切り替え）。球団名は各球団のチームカラーの札で表示。
+## 順位表パネル（◀ ▶・コントローラーの LB/RB でセ・パを切り替え）。球団名は各球団のチームカラーの札（立体）で表示。
+## 勝敗・ゲーム差・順位が前回から変わった行は数字を軽く弾ませる。
 
 const LEAGUES := ["C", "P"]
 const ROW_HEIGHT := 44
@@ -11,6 +12,8 @@ var _header := PanelContainer.new()
 var _title := Label.new()
 var _rows := VBoxContainer.new()
 var _arrows: Array[Button] = []
+## 球団 → 前回表示した「順位|勝敗|ゲーム差」（変わった数字を弾ませる）
+var _last := {}
 
 
 func _ready() -> void:
@@ -35,14 +38,16 @@ func _ready() -> void:
 
 func setup(p: UiTheme.Palette, league: String) -> void:
 	_palette = p
-	var header_style := UiTheme.box(p.main, 8)
+	var header_style := UiTheme.gloss(p.main, 8, 2, 3)
 	header_style.content_margin_top = 2
-	header_style.content_margin_bottom = 2
+	header_style.content_margin_bottom = 2 + header_style.depth
 	_header.add_theme_stylebox_override("panel", header_style)
-	_title.add_theme_color_override("font_color", p.on_main)
+	UiTheme.heading(_title, 22, p.on_main, UiTheme.outline_for(p.on_main, p.main), 6, false)
 	for arrow in _arrows:
 		for c in ["font_color", "font_hover_color", "font_pressed_color"]:
 			arrow.add_theme_color_override(c, p.on_main)
+		arrow.add_theme_color_override("font_outline_color", UiTheme.outline_for(p.on_main, p.main))
+		arrow.add_theme_constant_override("outline_size", 6)
 	_page = maxi(LEAGUES.find(league), 0)
 	refresh()
 
@@ -58,9 +63,11 @@ func refresh() -> void:
 		_rows.add_child(_make_row(standings[i], i == 0))
 
 
-func _turn(delta: int) -> void:
+## セ・パの切り替え（◀▶ ボタン、ハブ・日程表の LB/RB）
+func turn(delta: int) -> void:
 	_page = posmod(_page + delta, LEAGUES.size())
 	refresh()
+	UiFx.fade_in(_rows)
 
 
 func _make_arrow(text: String, delta: int) -> Button:
@@ -69,7 +76,7 @@ func _make_arrow(text: String, delta: int) -> Button:
 	button.flat = true
 	button.focus_mode = Control.FOCUS_NONE
 	button.add_theme_font_size_override("font_size", 22)
-	button.pressed.connect(_turn.bind(delta))
+	button.pressed.connect(turn.bind(delta))
 	_arrows.append(button)
 	return button
 
@@ -104,7 +111,23 @@ func _make_row(row: Dictionary, is_top: bool) -> Control:
 	var gb_label := _label(gb, 24, _palette.ink, 800)
 	gb_label.custom_minimum_size.x = 52
 	gb_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	gb_label.add_theme_color_override("font_outline_color", Color.WHITE)
+	gb_label.add_theme_constant_override("outline_size", 5)
 	hbox.add_child(gb_label)
+	rank.add_theme_color_override("font_outline_color", Color.WHITE)
+	rank.add_theme_constant_override("outline_size", 5)
+
+	# 前回から変わった数字を弾ませる
+	var now := "%s|%s|%s" % [rank.text, record.text, gb]
+	if _last.has(team) and _last[team] != now:
+		var old: PackedStringArray = str(_last[team]).split("|")
+		if old[0] != rank.text:
+			UiFx.bump(rank, 1.3)
+		if old[1] != record.text:
+			UiFx.bump(record, 1.2)
+		if old[2] != gb:
+			UiFx.bump(gb_label, 1.25)
+	_last[team] = now
 	return container
 
 
@@ -112,18 +135,21 @@ func _make_row(row: Dictionary, is_top: bool) -> Control:
 func _team_badge(team: String) -> Control:
 	var colors := GameData.team_colors(team)
 	var badge := PanelContainer.new()
-	var style := UiTheme.box(colors[0], 4, colors[1], 0)
+	var style := UiTheme.gloss(colors[0], 4, 0, 3, colors[1])
 	style.border_width_left = 6
-	style.border_width_bottom = 3
+	style.shadow_size = 2
 	style.content_margin_top = 1
-	style.content_margin_bottom = 1
+	style.content_margin_bottom = 1 + style.depth
 	badge.add_theme_stylebox_override("panel", style)
 	badge.custom_minimum_size = Vector2(122, 0)
 	badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var short_name := GameData.short_name(team)
 	var font_size := 18 if short_name.length() <= 5 else 15
-	var name_label := _label(short_name, font_size, UiTheme.text_on(colors[0]), 800)
+	var ink := UiTheme.text_on(colors[0])
+	var name_label := _label(short_name, font_size, ink, 800)
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_label.add_theme_color_override("font_outline_color", UiTheme.outline_for(ink, colors[0]))
+	name_label.add_theme_constant_override("outline_size", 5)
 	badge.add_child(name_label)
 	return badge
 

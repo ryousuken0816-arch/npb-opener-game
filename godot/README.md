@@ -7,6 +7,7 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
 | パス | 役割 |
 |---|---|
 | `autoload/game_data.gd` (`GameData`) | 能力値JSON・史実の日程（`load_schedule()`）の読み込み・球団別の選手一覧・球団略称・ランク色 |
+| `autoload/ui_input.gd` (`UiInput`) | コントローラー操作：LB/RB（キーボード Q/E・PageUp/PageDown）の `ui_tab_prev` / `ui_tab_next`、決定/戻るの入れ替え（`SWAP_CONFIRM_CANCEL`、Switch 配置用）、フォーカスしたときのツールチップ、フォーカスの補助（`focus_first` / `focus_index` / `focus_nth` / `grab`） |
 | `autoload/game_state.gd` (`GameState`) | 年・今日の日付（`day`）・フェーズ・自球団と、その年のペナント（`season: Season`）。日単位の進行と早送り（`start_fast_forward()` / `stop_fast_forward()`）、可変ボタンの文言と進行（`advance()`＝1か月）。順位表は `standings()` |
 | `sim/season.gd` (`Season`) | 1年分のペナント。史実の日程の status=played の試合を日付順にシミュレーションし、全試合の結果（スコア・イニング別得点・勝敗セーブ投手・個人成績）と球団成績・個人通算成績を保持 |
 | `sim/game_sim.gd` (`GameSim`) | 1試合のシミュレーション（打席単位、docs/SPEC.md の8段階）。係数は冒頭の定数 |
@@ -17,6 +18,7 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
 | `tests/ui_capture.gd` | 球団を選んで、日程表で早送り→中止→1日→1週間、そのあと月を進めながら、ハブ・日程表・采配のスクショを保存（見た目の確認用） |
 | `tests/tactics_check.gd` | 采配の確認（ヘッドレス）。全球団の1軍が上限・外国人枠を守る／上限・外国人枠・10日ルールを超える登録を断る／2軍から上げてスタメン・先発ローテに入れた選手が数日で試合に出て成績が付き、落とした選手は出ない（毎日、出場選手が全員1軍か調べる）／采配方針が犠打・盗塁・先発の投球回に効く |
 | `tests/tactics_capture.gd` | 采配画面のスクショ（一覧→投手・野手1軍登録で入れ替え→起用設定→思考設定→日程表で2週間進めて成績が付いた画面） |
+| `tests/pad_flow_check.gd` | コントローラー操作の確認。マウスを使わずキーボード（矢印・Enter・Esc・Q/E）だけで 球団選択→ハブ→日程表で早送り→Escで中止→采配で入れ替え→戻る を行い、各段階のフォーカス位置を調べる（xvfb-run で実行するとスクショも保存） |
 | `tests/day_progress_check.gd` | 日単位の進行の確認（ヘッドレス）。日付指定の早送り→中止→1日ずつ→1週間→試合へ→最終日まで早送りしてオフ→翌年。各段階で「今日より前の試合だけ終了」「順位表の勝敗合計＝試合数」「個人成績の打席合計＝試合の打席合計」を調べる |
 | `scenes/title/` | ニューゲーム（2008年開幕の球団選択。球団ボタンは各球団のチームカラー） |
 | `scenes/hub/hub.tscn` | ハブ画面（パワプロのペナント画面風。docs/references/README.md）。左に大きなメニュー、上にイベント名、右上に順位表、下に説明文と日付。メニューを押すと中央〜右に各画面を開く（Esc で戻る） |
@@ -27,10 +29,13 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
 | `scenes/hub/order_page.gd` | 起用設定：DHあり／なしのスタメン（打順・守備位置）と控え、自動で組む |
 | `scenes/hub/roster_view.gd` | 采配 → 選手一覧：自球団の野手・投手一覧（ランクは色付き文字、値はツールチップ）と今季の打撃成績・投手成績タブ |
 | `scenes/hub/schedule_view.gd` | 「日程表」画面：史実の日程の3日分の全カードタイル（終了はスコア、ツールチップに勝敗投手／中止／試合なし）＋セ・パ順位表＋スライダー（両端 ◀▶）。「1日進める」「1週間進める」、列クリックで日付を選んで「この日まで早送り」（ダブルクリックでも可）、早送り中は帯と「早送り中止」 |
-| `scripts/ui_theme.gd` (`UiTheme`) | 配色（球団カラー → `Palette`）と画面全体の Theme、フォント |
-| `scripts/team_background.gd` | 明るい背景（球団カラーの薄いグラデーション＋斜めの帯） |
-| `scripts/name_tag.gd` (`NameTag`) | 選手の名前札（守備位置の色：投手=赤・捕手=水色・内野=黄・外野=緑、他の守備位置も守る野手は右側が2色目）。名字の表示（同姓は名前の1文字目を足す） |
-| `scripts/team_emblem.gd` | 球団の丸いエンブレム（ロゴ画像の代わり） |
+| `scripts/ui_theme.gd` (`UiTheme`) | 配色（球団カラー → `Palette`）と画面全体の Theme、フォント。質感の部品：`gloss()`（立体ボタン・帯）、`card()`（白カード＋影）、`style_button()`（全状態）、`style_toggle()`（選ぶボタン：水色／選択中は橙で明滅）、`heading()`（太字＋縁取り＋影）、`focus_frame()`（選択中の黄色い光の枠）、`rank_label()`（色付き太字＋二重の縁取り） |
+| `scripts/gloss_box.gd` (`GlossBox`) | 立体的な StyleBox：縦グラデーション＋上半分のツヤ＋縁取り＋下側の厚み＋影（`pressed` で沈む）。StyleBoxFlat と同じ名前のプロパティ。`paint()` / `shine()` は名前札の2色の面にも使う |
+| `scripts/ui_fx.gd` (`UiFx`) | 動き（0.1〜0.2秒）：`install(root)` で root 以下の全ボタンに「選択中（フォーカス）は少し拡大してゆっくり明滅・押すと沈む・マウスを乗せるとフォーカスが移る・押せないボタンにはフォーカスが止まらない」を付ける。`slide_in` / `fade_in`（画面の切り替え）、`bump` / `set_text_bump`（数字が変わったとき） |
+| `scripts/pad_guide.gd` (`PadGuide`) | 右上の操作ガイド（Ⓐ決定 Ⓑ戻る LB/RB切替、Xbox 式の記号） |
+| `scripts/team_background.gd` | 明るい背景（球団カラーの空のグラデーション＋斜めのストライプ＋照明の光＋流れる帯＋芝生） |
+| `scripts/name_tag.gd` (`NameTag`) | 選手の名前札（守備位置の色：投手=赤・捕手=水色・内野=黄・外野=緑、他の守備位置も守る野手は右側が2色目）。GlossBox で光沢のある札、フォーカスで黄色い光、選択中は橙の枠が明滅。名字の表示（同姓は名前の1文字目を足す） |
+| `scripts/team_emblem.gd` | 球団の丸いエンブレム（ロゴ画像の代わり。ツヤ付き） |
 | `assets/icons/` | メニューのアイコン（SVG） |
 | `assets/fonts/` | M PLUS Rounded 1c（Medium / ExtraBold、SIL OFL → `OFL.txt`）。無い字は OS フォントにフォールバック |
 
@@ -39,6 +44,26 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
 - 球団カラーは `GameData.TEAM_COLORS`（[メイン, サブ]）。`UiTheme.team_palette(球団名)` で背景・パネル・見出し・順位表などの色を作る
 - 背景は白寄りの明るい色（メインカラーを薄めたもの）。黒基調にはしない
 - メニューボタンは参考画像にならってボタンごとに固定色（試合へ=赤、日程表=ピンク、采配=橙、新戦力=緑、記録室=黄、システム=紫）
+
+## 質感と動き（docs/references/README.md「UI全体の質感アップ」）
+
+- 画面ごとに StyleBoxFlat を作らず、`UiTheme.gloss()` / `card()` / `style_button()` / `style_toggle()` / `heading()` を使う。
+  Theme（`UiTheme.build()`）の Button・Panel・タブ・Tree の見出し・スクロールバーは GlossBox になっている
+- 本文（説明文・表の数字）は読みやすさ優先で縁取りなし。見出し・ボタン・日付・ランク文字は縁取り＋影
+- 画面のルート（タイトル・ハブ）で `UiFx.install(self)` を呼ぶと、あとから作ったボタンにも動きが付く。
+  独自に動きを持つボタン（ハブのメニュー）はメタ `no_fx` を付けて対象外にする
+- 演出はテンポ重視で 0.1〜0.2 秒。スクショを撮るテストは 0.3 秒待ってから撮る（早送り中の画面は待たずに撮る）
+
+## コントローラー操作（docs/references/README.md「コントローラー操作」）
+
+- 十字キー／左スティックでフォーカス移動、Ⓐ決定、Ⓑ戻る（Esc と同じ）、LB/RB でタブ切り替え。PC の XInput（Xbox 互換）を想定
+  - LB/RB：ハブ・日程表＝順位表のセ・パ、采配＝サブ画面を順に（選手一覧ではタブ）
+  - 日程表：日付の列もフォーカスできる（Ⓐで目標日に選び、選んだ列でもう一度Ⓐで早送り）。早送り中はⒷで中止、フォーカスは「早送り中止」へ移り、終わったら元に戻る
+- 画面を開いたら最初の項目にフォーカスする。作り直す画面（1軍登録・起用設定・日程表）は作り直したあとも同じ位置にフォーカスを戻す
+- フォーカスは自動（位置関係）で決まる。自動だとずれる所だけ `focus_neighbor_*` を設定（日程表のスライダー行→日付の列）
+- マウスを乗せたときだけ出ていたツールチップは、十字キーでフォーカスしたときにも出る（`UiInput`）
+- 決定/戻るの入れ替え（Switch 配置）は `UiInput.SWAP_CONFIRM_CANCEL`（システム設定ができたらそちらへ）
+- クラス名を型として使うテスト（`extends SceneTree`）は、オートロードより先にコンパイルされるため `UiTheme` に依存するクラス（NameTag など）を型に使えない（`GameData` が見つからずコンパイルエラー）。`has_method()` などで判定する
 
 ## 能力値データの場所
 
@@ -80,6 +105,7 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
 - 日本語フォントは同梱の M PLUS Rounded 1c。一部の人名漢字（燁・嵜・邉 など）は含まれないため OS のフォント（Yu Gothic UI 等）で表示される
 - クラウド環境でも GitHub Releases から Godot 4.7（Linux 版）を取得でき、`xvfb-run` で起動してスクリーンショットを確認できる。GDScript は `gdlint` でもチェックしている
   - 例：`xvfb-run -a godot --path godot --resolution 1280x720 --script res://tests/ui_capture.gd -- <出力先> 阪神タイガース`（初回は先に `godot --headless --path godot --import`）
+  - ui_capture は最初にタイトル画面（title.png）も撮る
 
 ## 試合シミュレーション（`sim/`）
 

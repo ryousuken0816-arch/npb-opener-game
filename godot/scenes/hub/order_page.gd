@@ -7,6 +7,7 @@ extends HBoxContainer
 ## - スタメンの札 → スタメンの札：打順を入れ替える（守備位置は選手についていく）
 ## - 守備位置の欄：選ぶと、その位置を守っていた選手と守備位置を入れ替える
 ## 対左投手用のオーダーは未実装。2軍の選手は「野手1軍登録」で上げてから使う。
+## コントローラー：十字キーで札・守備位置の欄を選び Ⓐ。作り直してもフォーカスは同じ位置に残る。
 
 signal roster_changed
 
@@ -46,7 +47,6 @@ func setup(p: UiTheme.Palette) -> void:
 	left.add_child(_no_dh_button)
 	var auto := Button.new()
 	auto.text = "自動で組む"
-	auto.focus_mode = Control.FOCUS_NONE
 	auto.tooltip_text = "1軍の野手から能力と実績でスタメン・打順を組み直します"
 	auto.pressed.connect(_on_auto)
 	left.add_child(auto)
@@ -75,6 +75,7 @@ func setup(p: UiTheme.Palette) -> void:
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
 	bench["body"].add_child(scroll)
 	_bench_grid = GridContainer.new()
 	_bench_grid.columns = 2
@@ -92,20 +93,9 @@ func _toggle(text: String, group: ButtonGroup, dh: bool) -> Button:
 	b.text = text
 	b.toggle_mode = true
 	b.button_group = group
-	b.focus_mode = Control.FOCUS_NONE
 	b.custom_minimum_size = Vector2(0, 44)
 	b.add_theme_font_size_override("font_size", 20)
-	var on := UiTheme.box(Color("ff9800"), 8, Color("e65100"), 3)
-	b.add_theme_stylebox_override("pressed", on)
-	b.add_theme_stylebox_override("hover_pressed", on)
-	var off := UiTheme.box(_palette.tint, 8, _palette.main.lerp(Color.WHITE, 0.4), 2)
-	b.add_theme_stylebox_override("normal", off)
-	var hover := UiTheme.box(_palette.tint.lightened(0.3), 8, _palette.main, 2)
-	b.add_theme_stylebox_override("hover", hover)
-	for c in ["font_color", "font_hover_color", "font_focus_color"]:
-		b.add_theme_color_override(c, _palette.ink)
-	b.add_theme_color_override("font_pressed_color", Color.WHITE)
-	b.add_theme_color_override("font_hover_pressed_color", Color.WHITE)
+	UiTheme.style_toggle(b, _palette.ink)
 	b.toggled.connect(func(on_state: bool) -> void:
 		if on_state and _use_dh != dh:
 			_use_dh = dh
@@ -124,6 +114,26 @@ func refresh(reset_selection: bool = false) -> void:
 		_message = ""
 	_dh_button.set_pressed_no_signal(_use_dh)
 	_no_dh_button.set_pressed_no_signal(not _use_dh)
+	# 作り直す前のフォーカスの位置（スタメン・控えの何番目か）を覚えておく
+	var focus_box: Control = null
+	var focus_at := -1
+	for box: Control in [_lineup_box, _bench_grid]:
+		var i := UiInput.focus_index(box)
+		if i >= 0:
+			focus_box = box
+			focus_at = i
+	_refresh_body()
+	if focus_box != null:
+		UiInput.focus_nth(focus_box, focus_at)
+
+
+## 画面を開いたとき：スタメンの1番の札にフォーカス
+func focus_first() -> void:
+	if not UiInput.focus_first(_lineup_box):
+		_dh_button.grab_focus()
+
+
+func _refresh_body() -> void:
 	_clear(_lineup_box)
 	_clear(_bench_grid)
 	if _team == null:
@@ -208,7 +218,6 @@ func _position_selector(i: int, pos: String) -> Control:
 		return l
 	var option := OptionButton.new()
 	option.custom_minimum_size = Vector2(112, 0)
-	option.focus_mode = Control.FOCUS_NONE
 	option.add_theme_font_size_override("font_size", 16)
 	option.fit_to_longest_item = false
 	var choices: Array[String] = []
@@ -220,10 +229,17 @@ func _position_selector(i: int, pos: String) -> Control:
 	option.select(choices.find(pos))
 	option.disabled = not GameState.can_edit_roster()
 	var color := NameTag.pos_color(pos)
-	var style := UiTheme.box(color.lerp(Color.WHITE, 0.35), 6, color.darkened(0.2), 2)
+	var style := UiTheme.gloss(color.lerp(Color.WHITE, 0.35), 6, 2, 2, color.darkened(0.2))
 	style.content_margin_left = 8
-	for state in ["normal", "hover", "pressed", "disabled"]:
+	style.content_margin_top = 2
+	style.content_margin_bottom = 2 + style.depth
+	var hover := style.copy()
+	hover.bg_color = color.lerp(Color.WHITE, 0.55)
+	for state in ["normal", "disabled"]:
 		option.add_theme_stylebox_override(state, style)
+	option.add_theme_stylebox_override("hover", hover)
+	option.add_theme_stylebox_override("pressed", style.pressed_copy())
+	option.add_theme_stylebox_override("focus", UiTheme.focus_frame(6))
 	for c in UiTheme.BUTTON_FONT_COLORS + ["font_disabled_color"]:
 		option.add_theme_color_override(c, UiTheme.TEXT)
 	option.item_selected.connect(func(index: int) -> void:

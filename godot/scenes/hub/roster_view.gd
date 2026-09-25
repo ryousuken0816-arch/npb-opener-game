@@ -52,6 +52,26 @@ func show_team(team: String) -> void:
 	current_tab = clampi(tab, 0, get_tab_count() - 1)
 
 
+## LB/RB：タブの切り替え（一覧にフォーカスを移す）
+func switch_tab(delta: int) -> void:
+	if get_tab_count() == 0:
+		return
+	current_tab = posmod(current_tab + delta, get_tab_count())
+	focus_content()
+	UiFx.fade_in(get_current_tab_control())
+
+
+## 表示中のタブの一覧にフォーカス（十字キーの上下で行を選べる）
+func focus_content() -> void:
+	var tree := get_current_tab_control() as Tree
+	if tree == null:
+		return
+	tree.grab_focus()
+	var root := tree.get_root()
+	if tree.get_selected() == null and root != null and root.get_first_child() != null:
+		tree.set_selected(root.get_first_child(), 0)
+
+
 func _add_tab(title: String, content: Control) -> void:
 	add_child(content)
 	set_tab_title(get_tab_count() - 1, title)

@@ -9,6 +9,8 @@ extends HBoxContainer
 ## - 選手一覧 … RosterView（能力のランクと今季の成績）
 ## - 練習設定・登録設定・情報 … 未実装
 ## 編成は今季の自球団の SimTeam（GameState.my_team()）を直接書き換え、次の試合から反映される。
+## コントローラー：サブメニューは十字キー＋Ⓐ、Ⓑで一覧→ハブへ戻る。LB/RB でサブ画面を順に切り替え
+## （選手一覧ではタブを切り替え）。画面を開くと最初の項目にフォーカスする。
 
 ## 画面の見出し・説明文が変わった（ハブの見出しと下の帯に出す）
 signal title_changed(text: String)
@@ -87,14 +89,33 @@ func setup(p: UiTheme.Palette) -> void:
 ## ハブから開かれたとき：サブメニューの一覧（1軍・2軍の名前札）から始める
 func open() -> void:
 	_show_page("")
+	_menu_buttons[MENUS[0][0]].grab_focus()
 
 
-## 戻る（Esc）：サブ画面なら一覧へ戻って true、一覧なら false（ハブが采配を閉じる）
+## 戻る（Esc・Ⓑ）：サブ画面なら一覧へ戻って true、一覧なら false（ハブが采配を閉じる）
 func back() -> bool:
 	if _page.is_empty():
 		return false
+	var left := _page
 	_show_page("")
+	if _menu_buttons.has(left):
+		_menu_buttons[left].grab_focus()
 	return true
+
+
+## LB/RB：実装済みのサブ画面を順に切り替える（選手一覧ではタブを切り替える）
+func switch_tab(delta: int) -> void:
+	if _page == "list" and _roster.get_tab_count() > 1:
+		var next := _roster.current_tab + delta
+		if next >= 0 and next < _roster.get_tab_count():
+			_roster.switch_tab(delta)
+			return
+	var keys: Array[String] = [""]
+	for menu: Array in MENUS:
+		if menu[3]:
+			keys.append(menu[0])
+	var i := keys.find(_page)
+	_show_page(keys[posmod(i + delta, keys.size())], true)
 
 
 ## 日付が進んだときなど（表示中の画面を作り直す）
@@ -116,7 +137,7 @@ func refresh() -> void:
 
 func _build_menu() -> Control:
 	var panel := PanelContainer.new()
-	var style := UiTheme.box(Color(1, 1, 1, 0.9), 12, _palette.main.lerp(Color.WHITE, 0.3), 3)
+	var style := UiTheme.card(_palette.main.lerp(Color.WHITE, 0.3), 12, 3, 0.92)
 	style.content_margin_left = 10
 	style.content_margin_right = 10
 	style.content_margin_top = 8
@@ -126,43 +147,39 @@ func _build_menu() -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 7)
 	panel.add_child(box)
-	var head := UiTheme.small_label("MENU", 20, _palette.ink, 800)
+	var head := Label.new()
+	head.text = "MENU"
+	UiTheme.heading(head, 20, _palette.ink, Color.WHITE, 6)
 	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(head)
 	for menu: Array in MENUS:
 		var b := Button.new()
 		b.text = menu[1]
 		b.toggle_mode = true
-		b.focus_mode = Control.FOCUS_NONE
 		b.custom_minimum_size = Vector2(0, 46)
 		b.add_theme_font_override("font", UiTheme.font(800))
 		b.add_theme_font_size_override("font_size", 21)
 		_style_menu_button(b, menu[3])
-		b.pressed.connect(_show_page.bind(menu[0]))
+		b.pressed.connect(_show_page.bind(menu[0], true))
+		# 説明文はマウスを乗せたとき・十字キーで選んだときに出す
+		b.focus_entered.connect(func() -> void: description_changed.emit(menu[2]))
+		b.focus_exited.connect(func() -> void: description_changed.emit(_page_description()))
 		b.mouse_entered.connect(func() -> void: description_changed.emit(menu[2]))
-		b.mouse_exited.connect(func() -> void: description_changed.emit(_page_description()))
+		b.mouse_exited.connect(func() -> void:
+			if not b.has_focus():
+				description_changed.emit(_page_description()))
 		box.add_child(b)
 		_menu_buttons[menu[0]] = b
 	return panel
 
 
 func _style_menu_button(b: Button, implemented: bool) -> void:
-	var normal := UiTheme.box(Color("e9f6fd"), 8, Color("9fd3ee"), 2)
-	var hover := UiTheme.box(Color("fff3d6"), 8, Color("ffb74d"), 3)
-	var on := UiTheme.box(Color("ff9800"), 8, Color("e65100"), 3)
-	b.add_theme_stylebox_override("normal", normal)
-	b.add_theme_stylebox_override("hover", hover)
-	b.add_theme_stylebox_override("pressed", on)
-	b.add_theme_stylebox_override("hover_pressed", on)
-	var ink := Color("1d4f73") if implemented else Color("9aa7b2")
-	for c in ["font_color", "font_hover_color", "font_focus_color"]:
-		b.add_theme_color_override(c, ink)
-	b.add_theme_color_override("font_pressed_color", Color.WHITE)
-	b.add_theme_color_override("font_hover_pressed_color", Color.WHITE)
-	b.add_theme_constant_override("outline_size", 0)
+	UiTheme.style_toggle(b, Color("1d4f73") if implemented else Color("9aa7b2"))
 
 
-func _show_page(key: String) -> void:
+## focus_page：開いた画面の最初の項目にフォーカスを移す（メニューをⒶで押したとき・LB/RB）
+func _show_page(key: String, focus_page: bool = false) -> void:
+	var changed := key != _page
 	_page = key
 	for k: String in _menu_buttons:
 		_menu_buttons[k].set_pressed_no_signal(k == key)
@@ -196,6 +213,42 @@ func _show_page(key: String) -> void:
 			title += " ― " + menu[1]
 	title_changed.emit(title)
 	description_changed.emit(_page_description())
+	var shown := _current_page()
+	if changed and shown != null:
+		UiFx.fade_in(shown)
+	if focus_page:
+		_focus_page.call_deferred()
+
+
+func _current_page() -> Control:
+	for page: Control in _pages():
+		if page.visible:
+			return page
+	return null
+
+
+func _focus_page() -> void:
+	match _page:
+		"pitchers":
+			_register_pitchers.focus_first()
+		"fielders":
+			_register_fielders.focus_first()
+		"order":
+			_order.focus_first()
+		"list":
+			_roster.focus_content()
+		"strategy":
+			for b in UiInput.focusables(_strategy):
+				if b is Button and (b as Button).button_pressed:
+					b.grab_focus()
+					return
+			UiInput.focus_first(_strategy)
+		"":
+			if not UiInput.focus_first(_home):
+				_menu_buttons[MENUS[0][0]].grab_focus()
+		_:
+			if _menu_buttons.has(_page):
+				_menu_buttons[_page].grab_focus()
 
 
 func _pages() -> Array[Control]:
@@ -224,6 +277,7 @@ func _render_home() -> void:
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
 	_home.add_child(scroll)
 	var box := VBoxContainer.new()
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -265,8 +319,12 @@ func _tag_block(title: String, sub: String, members: Array[SimPlayer]) -> Contro
 	var head := VBoxContainer.new()
 	head.custom_minimum_size = Vector2(96, 0)
 	var badge := PanelContainer.new()
-	badge.add_theme_stylebox_override("panel", UiTheme.box(_palette.main, 8))
-	var label := UiTheme.small_label(title, 30, _palette.on_main, 800)
+	var badge_style := UiTheme.gloss(_palette.main, 8, 2, 4)
+	badge.add_theme_stylebox_override("panel", badge_style)
+	var label := Label.new()
+	label.text = title
+	var outline := UiTheme.outline_for(_palette.on_main, _palette.main)
+	UiTheme.heading(label, 30, _palette.on_main, outline, 7)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	badge.add_child(label)
 	head.add_child(badge)
@@ -285,7 +343,7 @@ func _tag_block(title: String, sub: String, members: Array[SimPlayer]) -> Contro
 		tag.setup_player(GameData.player(p.id), _names.get(p.id, p.name))
 		var pos := p.primary_pos if not p.primary_pos.is_empty() else "守備位置不明"
 		tag.tooltip_text = "%s（%s）" % [p.name, pos]
-		tag.pressed.connect(_show_page.bind("pitchers" if p.is_pitcher else "fielders"))
+		tag.pressed.connect(_show_page.bind("pitchers" if p.is_pitcher else "fielders", true))
 		grid.add_child(tag)
 	row.add_child(grid)
 	return row
@@ -322,7 +380,6 @@ func _render_strategy() -> void:
 			b.text = labels[i]
 			b.toggle_mode = true
 			b.button_group = group
-			b.focus_mode = Control.FOCUS_NONE
 			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			b.custom_minimum_size = Vector2(0, 40)
 			b.disabled = not editable

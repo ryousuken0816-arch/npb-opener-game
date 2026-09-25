@@ -2,6 +2,8 @@ extends Control
 ## ハブ画面（パワプロのペナント画面が参考。docs/references/README.md）。
 ## 左に大きなメニュー、右上に順位表、上にイベント名、下に選択中メニューの説明と日付。
 ## 配色は自球団のチームカラー。メニューを押すと中央〜右にその画面を開く（未実装はプレースホルダー）。
+## コントローラー：十字キーで選択、Ⓐ決定、Ⓑ戻る（日程表の早送り中は中止）、LB/RB でタブ切り替え
+## （ハブ・日程表は順位表のセ・パ、采配はサブ画面）。右上に操作ガイド。
 
 ## [キー, ボタン名, アイコン, ボタン色, 説明文]。先頭は可変ボタン（文言・説明は GameState から）
 const MENUS := [
@@ -29,12 +31,15 @@ const ICON_DIR := "res://assets/icons"
 ## サブ画面の左上（hub.tscn の SubScreen と同じ値。采配は広げて表示する）
 const SUB_SCREEN_LEFT := 420.0
 const SUB_SCREEN_TOP := 100.0
+## 采配を広げたときの上端（操作ガイドは見出しの行の「戻る」の左へ移す）
+const WIDE_TOP := 20.0
 const TITLE_SCENE := "res://scenes/title/title.tscn"
 
 var _palette: UiTheme.Palette
 var _buttons := {}
 var _focused_key := "advance"
 var _open_key := ""
+var _guide := PadGuide.new()
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -65,6 +70,8 @@ func _ready() -> void:
 	_background.set_palette(_palette)
 	_style_labels()
 	_build_menu()
+	_add_guide()
+	UiFx.install(self)
 	_standings.setup(_palette, GameData.league_of(GameState.team))
 	_schedule_view.setup(_palette)
 	_tactics_view.setup(_palette)
@@ -75,35 +82,79 @@ func _ready() -> void:
 	GameState.changed.connect(_refresh)
 	_refresh()
 	_buttons["advance"].grab_button_focus()
+	UiFx.fade_in(self)
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and not _open_key.is_empty():
 		_on_back()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(UiInput.TAB_PREV) or event.is_action_pressed(UiInput.TAB_NEXT):
+		var delta := -1 if event.is_action_pressed(UiInput.TAB_PREV) else 1
+		match _open_key:
+			"":
+				_standings.turn(delta)
+			"schedule":
+				_schedule_view.switch_tab(delta)
+			"tactics":
+				_tactics_view.switch_tab(delta)
+		get_viewport().set_input_as_handled()
+
+
+## 右上の操作ガイド（Ⓐ決定 Ⓑ戻る LB/RB切替）
+func _add_guide() -> void:
+	add_child(_guide)
+	_guide.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_guide.position = Vector2(size.x - _guide.size.x - 24, 5)
+	_guide.resized.connect(_place_guide)
+	resized.connect(_place_guide)
+	_place_guide()
+
+
+func _place_guide() -> void:
+	if _guide.get_parent() == self:
+		_guide.position = Vector2(size.x - _guide.size.x - 24, 5)
+
+
+## 采配を広げたときは右上の操作ガイドが画面の枠に重なるので、見出しの行（「戻る」の左）へ移す
+func _move_guide(into_header: bool) -> void:
+	var header: Node = %BackButton.get_parent()
+	var target: Node = header if into_header else self
+	if _guide.get_parent() == target:
+		return
+	_guide.get_parent().remove_child(_guide)
+	target.add_child(_guide)
+	if into_header:
+		header.move_child(_guide, %BackButton.get_index())
+		_guide.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	else:
+		_guide.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		_guide.size = _guide.custom_minimum_size
+		_place_guide()
 
 
 func _style_labels() -> void:
 	var p := _palette
 	_event_label.label_settings = _label_settings(64, p.ink, 12, Color.WHITE, Color(p.ink, 0.35))
 	_team_name_label.label_settings = _label_settings(34, p.ink, 8, Color.WHITE)
-	_summary_label.label_settings = _label_settings(20, UiTheme.TEXT, 0, Color.WHITE)
+	_summary_label.label_settings = _label_settings(20, UiTheme.TEXT, 6, Color.WHITE)
 	_year_label.label_settings = _label_settings(32, p.ink, 8, Color.WHITE, Color.TRANSPARENT, 800)
 	_month_label.label_settings = _label_settings(44, p.ink, 10, Color.WHITE, Color(p.ink, 0.3))
-	_sub_title_label.label_settings = _label_settings(28, p.ink, 0, Color.WHITE)
+	_sub_title_label.label_settings = _label_settings(28, p.ink, 7, Color.WHITE)
 	_description_label.add_theme_font_size_override("font_size", 21)
 	_description_label.add_theme_font_override("font", UiTheme.font(700))
 
-	# 下の帯：白地に球団カラーの上線
-	var bar := UiTheme.box(Color(1, 1, 1, 0.9), 0, _palette.main, 0)
+	# 下の帯：白地（ごく薄い縦グラデーション）に球団カラーの上線
+	var bar := UiTheme.card(_palette.main, 0, 0, 0.92)
 	bar.border_width_top = 5
+	bar.shadow_offset = Vector2(0, -2)
 	bar.content_margin_left = 32
 	bar.content_margin_right = 32
 	bar.content_margin_top = 4
 	bar.content_margin_bottom = 4
 	_bottom_bar.add_theme_stylebox_override("panel", bar)
 
-	var screen := UiTheme.box(Color(1, 1, 1, 0.97), 12, _palette.main, 3)
+	var screen := UiTheme.card(_palette.main, 12, 3, 0.97)
 	screen.content_margin_left = 16
 	screen.content_margin_right = 16
 	screen.content_margin_top = 12
@@ -119,9 +170,10 @@ func _label_settings(font_size: int, color: Color, outline: int, outline_color: 
 	s.font_color = color
 	s.outline_size = outline
 	s.outline_color = outline_color
-	s.shadow_color = shadow
-	s.shadow_size = 0
-	s.shadow_offset = Vector2(3, 4)
+	# 軽い影（縁取りの外側に落とす）。shadow を指定したときはその色で大きめに
+	s.shadow_color = shadow if shadow.a > 0.0 else Color(0, 0, 0, 0.2)
+	s.shadow_size = maxi(outline, 2)
+	s.shadow_offset = Vector2(3, 4) if shadow.a > 0.0 else Vector2(1, 3)
 	return s
 
 
@@ -141,12 +193,12 @@ func _refresh() -> void:
 	# 長いフェーズ名（FA・トレード・ポスティング 等）は枠に収まるよう縮める
 	var fit_size := int(_event_label.size.x / _event_label.text.length())
 	_event_label.label_settings.font_size = clampi(fit_size, 32, 64)
-	_year_label.text = GameState.year_text()
-	_month_label.text = GameState.month_text()
+	UiFx.set_text_bump(_year_label, GameState.year_text())
+	UiFx.set_text_bump(_month_label, GameState.month_text(), 1.2)
 	_buttons["advance"].set_text(GameState.button_text())
 	_emblem.setup(_palette, GameData.short_name(GameState.team))
 	_team_name_label.text = GameState.team
-	_summary_label.text = _summary_text()
+	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
 	if _open_key != "tactics":
 		_description_label.text = _description(_focused_key)
@@ -211,17 +263,23 @@ func _open_sub_screen(key: String) -> void:
 	_placeholder_label.visible = not is_tactics and not is_schedule
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
 	_set_wide(is_tactics)
+	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
 	elif is_schedule:
 		_sub_title_label.text = "日程表"
 		_schedule_view.refresh()
+		_schedule_view.focus_default()
 	else:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
+		%BackButton.grab_focus()
 
 
-## 采配のサブ画面を開いているときは、戻るで采配メニューの一覧へ戻る
+## 采配のサブ画面を開いているときは、戻るで采配メニューの一覧へ戻る。日程表の早送り中は中止だけ
 func _on_back() -> void:
+	if _open_key == "schedule" and GameState.is_fast_forwarding():
+		GameState.stop_fast_forward()
+		return
 	if _open_key == "tactics" and _tactics_view.back():
 		return
 	_close_sub_screen()
@@ -229,9 +287,10 @@ func _on_back() -> void:
 
 func _set_wide(wide: bool) -> void:
 	_sub_screen.offset_left = 24.0 if wide else SUB_SCREEN_LEFT
-	_sub_screen.offset_top = 20.0 if wide else SUB_SCREEN_TOP
+	_sub_screen.offset_top = WIDE_TOP if wide else SUB_SCREEN_TOP
 	_menu_box.visible = not wide
 	_event_label.visible = not wide
+	_move_guide(wide)
 
 
 func _close_sub_screen() -> void:
@@ -243,6 +302,9 @@ func _close_sub_screen() -> void:
 	_sub_screen.visible = false
 	_center_area.visible = true
 	_standings.visible = true
+	if not key.is_empty():
+		UiFx.fade_in(_center_area)
+		UiFx.fade_in(_standings)
 	_description_label.text = _description(_focused_key)
 	if _buttons.has(key):
 		_buttons[key].grab_button_focus()

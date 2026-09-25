@@ -121,7 +121,10 @@ func _frames(n: int) -> void:
 		await process_frame
 
 
-func _shot(name: String) -> void:
+## 画面の切り替え・数字の演出（0.2秒以内）が終わってから撮る（早送り中は待つと日付が進むので wait=0）
+func _shot(name: String, wait := 0.3) -> void:
+	if wait > 0.0:
+		await create_timer(wait).timeout
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
 	image.save_png(_out.path_join(name + ".png"))

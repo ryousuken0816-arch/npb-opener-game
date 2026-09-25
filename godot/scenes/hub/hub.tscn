@@ -95,9 +95,9 @@ anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -330.0
-offset_top = 24.0
+offset_top = 38.0
 offset_right = -24.0
-offset_bottom = 380.0
+offset_bottom = 394.0
 grow_horizontal = 0
 script = ExtResource("4_standings")
 
@@ -132,7 +132,6 @@ text = "采配"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 40)
 layout_mode = 2
-focus_mode = 0
 text = "戻る (Esc)"
 
 [node name="TacticsView" type="HBoxContainer" parent="SubScreen/VBox"]
