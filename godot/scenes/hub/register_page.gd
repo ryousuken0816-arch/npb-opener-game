@@ -7,6 +7,7 @@ extends VBoxContainer
 ##   1軍 ⇔ 2軍 … 登録の入れ替え（上げた選手は落とした選手の持ち場・打順に入る）
 ##   1軍 ⇔ 1軍（投手）… 持ち場の入れ替え ／ 「あき」… その持ち場へ移す・2軍から上げる
 ## 人数の上限・外国人枠・抹消後10日間の再登録制限は SimTeam（RosterRules）が判定し、できないときは理由を表示する。
+## コントローラー：十字キーで札を選び Ⓐ で選択→相手の札で Ⓐ。入れ替えて作り直しても、フォーカスは同じ位置に残る。
 
 signal roster_changed
 
@@ -53,7 +54,8 @@ func setup(p: UiTheme.Palette, is_pitchers: bool) -> void:
 	var top := HBoxContainer.new()
 	top.add_theme_constant_override("separation", 16)
 	add_child(top)
-	_count_label = UiTheme.small_label("", 19, p.ink, 800)
+	_count_label = Label.new()
+	UiTheme.heading(_count_label, 19, p.ink, Color.WHITE, 5, false)
 	top.add_child(_count_label)
 	_message_label = UiTheme.small_label("", 16, UiTheme.TEXT_SUB, 700)
 	_message_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -92,17 +94,34 @@ func refresh(reset_selection: bool = false) -> void:
 		return
 	if _selected != null and not _team.by_id.has(_selected.id):
 		_selected = null
+	# 作り直す前のフォーカスの位置（1軍・2軍の枠の何番目か）を覚えておく
+	var focus_box: Control = null
+	var focus_at := -1
+	for box: Control in [_active_box, _farm_box]:
+		var i := UiInput.focus_index(box)
+		if i >= 0:
+			focus_box = box
+			focus_at = i
 	_names = NameTag.short_names(_team.players)
 	_render_counts()
 	_render_active()
 	_render_farm()
 	_render_summary()
+	if focus_box != null:
+		UiInput.focus_nth(focus_box, focus_at)
+
+
+## 画面を開いたとき：1軍の最初の札にフォーカス
+func focus_first() -> void:
+	if not UiInput.focus_first(_active_box):
+		UiInput.focus_first(_farm_box)
 
 
 func _scroll_box(parent: VBoxContainer) -> VBoxContainer:
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
 	parent.add_child(scroll)
 	var box := VBoxContainer.new()
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -179,7 +198,10 @@ func _render_active() -> void:
 ## 先発／中継ぎ／抑えの枠（左に縦書きの見出し、右に2列の札）
 func _role_section(role: String, title: String, members: Array, slots: int, room: bool) -> Control:
 	var panel := PanelContainer.new()
-	var style := UiTheme.box(SECTION_COLORS[role], 8)
+	var style := UiTheme.card(SECTION_COLORS[role].darkened(0.08), 8, 1)
+	style.bg_color = SECTION_COLORS[role]
+	style.gradient = 0.04
+	style.shadow_size = 0
 	style.content_margin_left = 4
 	style.content_margin_top = 4
 	style.content_margin_bottom = 4
@@ -284,6 +306,7 @@ func _render_summary() -> void:
 	tag.font_size = 22
 	tag.setup_player(data, p.name)
 	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tag.focus_mode = Control.FOCUS_NONE
 	_summary_box.add_child(tag)
 	var line := "%s投%s打" % [p.throws, p.bats]
 	if p.is_foreign:

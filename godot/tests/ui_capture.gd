@@ -4,7 +4,7 @@ extends SceneTree
 ##
 ##   xvfb-run godot --path godot --script res://tests/ui_capture.gd -- <出力先ディレクトリ> [球団名]
 ##
-## 出力: ff_*.png（早送りの各段階）/ hub_<日付>.png / schedule_<日付>.png / roster_<日付>.png
+## 出力: title.png / ff_*.png（早送りの各段階）/ hub_<日付>.png / schedule_<日付>.png / roster_<日付>.png
 
 var _out := ""
 var _team := "阪神タイガース"
@@ -22,6 +22,9 @@ func _initialize() -> void:
 func _run() -> void:
 	var game_data: Node = root.get_node("GameData")
 	var game_state: Node = root.get_node("GameState")
+	change_scene_to_file("res://scenes/title/title.tscn")
+	await _frames(5)
+	await _shot("title")
 	game_data.load_ratings(2008, "pre")
 	game_state.new_game(_team)
 	change_scene_to_file("res://scenes/hub/hub.tscn")
@@ -72,7 +75,7 @@ func _fast_forward_steps(hub: Node, game_state: Node) -> void:
 	while game_state.is_fast_forwarding() and game_state.day <= stop_at:
 		await process_frame
 	await _frames(1)
-	await _shot("ff_3_running")
+	await _shot("ff_3_running", 0.0)
 	game_state.stop_fast_forward()
 	await _frames(3)
 	await _shot("ff_4_stopped")
@@ -100,7 +103,10 @@ func _frames(n: int) -> void:
 		await process_frame
 
 
-func _shot(name: String) -> void:
+## 画面の切り替え・数字の演出（0.2秒以内）が終わってから撮る（早送り中は待つと日付が進むので wait=0）
+func _shot(name: String, wait := 0.3) -> void:
+	if wait > 0.0:
+		await create_timer(wait).timeout
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
 	image.save_png(_out.path_join(name + ".png"))

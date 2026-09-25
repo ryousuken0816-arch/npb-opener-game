@@ -2,7 +2,9 @@ class_name NameTag
 extends Button
 ## 選手の名前札（docs/references/README.md「全画面共通の表現」）。札の色は守備位置：
 ## 投手=赤、捕手=水色、内野手=黄、外野手=緑。ほかの守備位置も守る野手は右側を2つ目の色にする。
-## 空き枠（「あき」）にも使う。クリックで pressed。選択中は橙の太枠、選べない選手は薄く表示する。
+## 空き枠（「あき」）にも使う。クリック（コントローラーは Ⓐ）で pressed。選択中は橙の太枠がゆっくり明滅し、
+## 選べない選手は薄く表示する。札は GlossBox（縦グラデーション＋ツヤ＋濃い縁＋下側の厚み）で立体的に描く。
+## フォーカス（十字キーの移動先・マウスを乗せた札）は UiFx が拡大・明滅させ、黄色い光の枠を付ける。
 
 const COLOR_PITCHER := Color("f47a86")
 const COLOR_CATCHER := Color("5cc8f0")
@@ -11,6 +13,10 @@ const COLOR_OUTFIELD := Color("7fd17f")
 const COLOR_UNKNOWN := Color("c9ced4")
 const COLOR_EMPTY := Color("f6f7f9")
 const SELECT_COLOR := Color("ff6d00")
+const RADIUS := 7
+const DEPTH := 3
+## 選択中の枠の明滅の周期（秒）
+const BLINK_SEC := 1.2
 const INFIELD := ["一塁手", "二塁手", "三塁手", "遊撃手", "内野手"]
 ## 2つ目の色を付ける守備位置の最低試合数（能力値データの fielding の games）
 const SECOND_POS_GAMES := 10
@@ -22,6 +28,7 @@ var empty_slot := false
 var selected := false:
 	set(value):
 		selected = value
+		set_process(selected)
 		queue_redraw()
 var dimmed := false:
 	set(value):
@@ -30,11 +37,23 @@ var dimmed := false:
 var font_size := 19
 
 
+var _blink := 0.0
+
+
 func _init() -> void:
 	flat = true
-	focus_mode = Control.FOCUS_NONE
+	focus_mode = Control.FOCUS_ALL
 	custom_minimum_size = Vector2(128, 34)
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	focus_entered.connect(queue_redraw)
+	focus_exited.connect(queue_redraw)
+	set_process(false)
+
+
+func _process(delta: float) -> void:
+	_blink = fmod(_blink + delta, BLINK_SEC)
+	queue_redraw()
 
 
 ## p: 能力値データの選手（GameData.player()）。text: 札に書く名前
@@ -135,22 +154,31 @@ static func _is_katakana(s: String) -> bool:
 
 func _draw() -> void:
 	var rect := Rect2(Vector2.ZERO, size)
+	var ci := get_canvas_item()
+	var mode := get_draw_mode()
+	var sunk := not empty_slot and (mode == DRAW_PRESSED or mode == DRAW_HOVER_PRESSED)
+	var lit := (is_hovered() or has_focus()) and not disabled
 	var base: Color = colors[0]
-	if is_hovered() and not disabled:
-		base = base.lightened(0.18)
-	var style := UiTheme.box(base, 7, base.darkened(0.25) if not empty_slot else UiTheme.LINE, 2)
+	if lit:
+		base = base.lightened(0.16)
+	var style := _style(base)
+	if sunk:
+		style = style.pressed_copy()
+	var two_colors := colors.size() > 1
+	if two_colors:
+		style.gloss = 0.0
 	draw_style_box(style, rect)
-	if colors.size() > 1:
-		# 右側に2つ目の守備位置の色
-		var second: Color = colors[1].lightened(0.18) if is_hovered() else colors[1]
-		var right := StyleBoxFlat.new()
-		right.bg_color = second
-		right.corner_radius_top_right = 6
-		right.corner_radius_bottom_right = 6
+	var face := style.face_rect(rect)
+	var radii := style.face_radii()
+	if two_colors:
+		# 右側に2つ目の守備位置の色（面のグラデーションを合わせ、ツヤは札全体にまとめて重ねる）
+		var second: Color = colors[1].lightened(0.16) if lit else colors[1]
 		var x := size.x * 0.62
-		draw_style_box(right, Rect2(x, 2, size.x - x - 2, size.y - 4))
-	# 下側を少し暗くして札らしく
-	draw_rect(Rect2(3, size.y - 6, size.x - 6, 3), Color(0, 0, 0, 0.08))
+		var right := Rect2(x, face.position.y, face.end.x - x, face.size.y)
+		GlossBox.paint(ci, right, [0, radii[1], radii[2], 0],
+			second.lightened(style.gradient), second.darkened(style.gradient * 0.6))
+		draw_line(Vector2(x, face.position.y + 1), Vector2(x, face.end.y - 1), Color(1, 1, 1, 0.5), 1.0)
+		GlossBox.shine(ci, face, radii, 0.55)
 
 	var font := UiTheme.font(800)
 	var fs := font_size
@@ -158,17 +186,41 @@ func _draw() -> void:
 	while fs > MIN_FONT_SIZE \
 			and font.get_string_size(tag_text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > width:
 		fs -= 1
-	var baseline := (size.y + font.get_ascent(fs) - font.get_descent(fs)) / 2.0
+	var baseline := face.position.y + (face.size.y + font.get_ascent(fs) - font.get_descent(fs)) / 2.0
 	var text_color := UiTheme.TEXT_SUB if empty_slot else UiTheme.TEXT
 	var origin := Vector2(5, baseline)
 	if not empty_slot:
-		draw_string_outline(font, origin, tag_text, HORIZONTAL_ALIGNMENT_CENTER, width, fs, 4,
-				Color(1, 1, 1, 0.85))
+		draw_string_outline(font, origin + Vector2(0, 1), tag_text, HORIZONTAL_ALIGNMENT_CENTER, width,
+			fs, 5, Color(0, 0, 0, 0.12))
+		draw_string_outline(font, origin, tag_text, HORIZONTAL_ALIGNMENT_CENTER, width, fs, 5,
+			Color(1, 1, 1, 0.92))
 	draw_string(font, origin, tag_text, HORIZONTAL_ALIGNMENT_CENTER, width, fs, text_color)
 
 	if dimmed:
-		draw_style_box(UiTheme.box(Color(1, 1, 1, 0.55), 7), rect)
+		draw_style_box(UiTheme.box(Color(1, 1, 1, 0.55), RADIUS), rect)
+	if has_focus() and not disabled:
+		# フォーカス（コントローラーの選択位置）：黄色い光の枠
+		var glow := UiTheme.box(Color.TRANSPARENT, RADIUS + 2, UiTheme.FOCUS, 3)
+		glow.draw_center = false
+		glow.shadow_color = Color(UiTheme.FOCUS, 0.6)
+		glow.shadow_size = 6
+		draw_style_box(glow, rect.grow(2))
 	if selected:
-		var frame := UiTheme.box(Color.TRANSPARENT, 8, SELECT_COLOR, 4)
+		# 選択中：橙の太枠がゆっくり明滅
+		var wave := 0.5 + 0.5 * cos(_blink / BLINK_SEC * TAU)
+		var frame_color := Color(SELECT_COLOR, 0.65 + 0.35 * wave)
+		var frame := UiTheme.box(Color.TRANSPARENT, RADIUS + 1, frame_color, 4)
 		frame.draw_center = false
+		frame.shadow_color = Color(SELECT_COLOR, 0.45 * wave)
+		frame.shadow_size = int(3 + 5 * wave)
 		draw_style_box(frame, rect.grow(2))
+
+
+func _style(base: Color) -> GlossBox:
+	var style := UiTheme.gloss(base, RADIUS, 2, DEPTH,
+		UiTheme.LINE if empty_slot else base.darkened(0.38))
+	style.shadow_size = 2
+	style.shadow_color = Color(0, 0, 0, 0.18)
+	style.gradient = 0.22
+	style.gloss = 0.3 if empty_slot else 0.55
+	return style

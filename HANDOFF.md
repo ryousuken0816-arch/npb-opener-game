@@ -117,6 +117,18 @@
    - 試合への反映：`SimTeam` に1軍（`active`）を持たせ、スタメン・控え・ローテ・ブルペンは1軍の選手だけから組む。CPU球団も開幕時に同じ自動編成で1軍を決める（上限・外国人枠を守る。投手は上限の半分−1人）。2008年の係数検証（season_check）は従来どおり
    - 確認：`tests/tactics_check.gd`（ヘッドレス、全項目OK）・`tests/tactics_capture.gd` のスクショ（Godot 4.7.2 で起動、エラー0件）。日程表で2週間進めると入れ替えた選手に成績が付き、日付表示も追従
    - **既知の課題（データ側）**：開幕前（pre）の能力値で、前年までに成績のない新加入選手の一部（新外国人投手・由規など）が `is_pitcher: false`・`primary_pos: null` になっている（`tools/compute_ratings.py` の player_entry が前年までの成績と bio から守備位置を決めているため）。投手なのに野手として扱われ、ブルペンに入れられない。札は灰色になる
+4.11 ~~UI全体の質感アップ＋コントローラー操作~~ → 完了（2026-09-25）。docs/references/README.md「UI全体の質感アップ」「コントローラー操作」
+   - 共通部品を作り直して全画面（タイトル・ハブ・日程表・采配）に効かせた。情報・配置は変えていない（構成は godot/README.md「質感と動き」「コントローラー操作」）
+     - `scripts/gloss_box.gd`（新）：縦グラデーション＋ツヤ＋縁取り＋下側の厚み＋影の StyleBox。ボタン・見出し帯・タブ・名前札・順位表の札・日程表のタイルに使用
+     - `ui_theme.gd`：`gloss` / `card` / `style_button` / `style_toggle` / `heading` / `focus_frame`、ランク文字は色付き太字＋二重の縁取り
+     - `ui_fx.gd`（新）：選択中（フォーカス）は少し拡大してゆっくり明滅、押すと沈む、画面の切り替えはスライド／フェード、日付・順位表の数字が変わると弾む（0.1〜0.2秒）
+     - `team_background.gd`：球団カラーの空＋斜めのストライプ＋照明の光＋芝生。`name_tag.gd`・`hub_menu_button.gd`・`team_emblem.gd` も光沢付きに
+   - コントローラー：`autoload/ui_input.gd`（新、オートロード `UiInput`）、右上に操作ガイド `scripts/pad_guide.gd`（Ⓐ決定 Ⓑ戻る LB/RB切替）。
+     十字キーで全ボタン・名前札・日付の列・タブを移動、Ⓑ＝戻る（日程表の早送り中は中止）、LB/RB＝セ・パ／采配のサブ画面／選手一覧のタブ。
+     フォーカスしたときもツールチップを表示。決定/戻るの入れ替え（Switch 配置）は定数 `UiInput.SWAP_CONFIRM_CANCEL`
+   - 采配を画面いっぱいに広げたときは、操作ガイドを見出しの行（「戻る」の左）に移す。ハブの順位表は操作ガイドの分だけ 14px 下げた
+   - 確認：Godot 4.7.2 で起動しエラー0件、作り直す前後のスクショを並べて比較。`tests/pad_flow_check.gd`（新、キーボードだけで一通り操作、全項目OK）・`tactics_check`・`day_progress_check` 全項目OK
+   - **実機のコントローラー（BIGBIG WON Rainbow、XInput）では未確認**。ユーザーがローカルで試して、ボタン配置やスティックの効き具合に問題があれば調整する
 5. 次の候補（どれから進めるかユーザーと相談）
    - 選手詳細画面（概要／成績／経歴／契約の4タブ。実数値は ratings の `detail`。球速・弾道、今季成績 `GameState.season.batting/pitching` もここに表示）… 新しい画面なので Opus 向き
    - 記録室（リーグの個人成績ランキング・タイトル。`Season.batting/pitching` から集計）… 新しい画面なので Opus 向き

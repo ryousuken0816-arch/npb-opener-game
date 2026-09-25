@@ -8,6 +8,8 @@ extends Control
 ##
 ## 試合を進める：「1日進める」「1週間進める」、日付（列）をクリックして選び「この日まで早送り」（ダブルクリックでも可）。
 ## 早送り中は上の帯に「〇月〇日（〇）終了まで早送り中」、右上に「早送り中止」。進行は GameState が1日ずつ行う。
+## コントローラー：日付の列も十字キーで選べる（Ⓐで目標日に選び、選んだ列でもう一度Ⓐで早送り）。
+## 早送り中はⒷで中止（ハブが処理）、LB/RB で順位表のセ・パ切り替え。
 
 const DAYS_SHOWN := 3
 const WEEK_DAYS := 7
@@ -31,6 +33,14 @@ var _standings: StandingsPanel
 var _slider: HSlider
 var _prev_button: Button
 var _next_button: Button
+## 早送り中か（始まった・終わったときにフォーカスを移すため）
+var _was_fast_forwarding := false
+var _focus_before_ff := -1
+## 作り直す直前のフォーカスの位置（早送りが始まったときに覚えておく）
+var _focus_at_render := -1
+var _focus_day_at_render := -1
+## 早送りを始めたときに日付の列を選んでいたらその日（通し日数）
+var _focus_day_before_ff := -1
 
 
 func _ready() -> void:
@@ -39,25 +49,20 @@ func _ready() -> void:
 
 func setup(p: UiTheme.Palette) -> void:
 	_palette = p
-	var bar_style := UiTheme.box(p.main, 8)
-	bar_style.content_margin_top = 6
-	bar_style.content_margin_bottom = 6
+	var bar_style := UiTheme.gloss(p.main, 8, 2, 3)
+	bar_style.content_margin_top = 5
+	bar_style.content_margin_bottom = 5 + bar_style.depth
 	_status_bar.add_theme_stylebox_override("panel", bar_style)
-	_status_label.add_theme_color_override("font_color", p.on_main)
-	_status_label.add_theme_font_override("font", UiTheme.font(800))
-	_status_label.add_theme_font_size_override("font_size", 20)
+	UiTheme.heading(_status_label, 20, p.on_main, UiTheme.outline_for(p.on_main, p.main), 6, false)
 	_standings.setup(p, GameData.league_of(GameState.team))
 	for b: Button in [_prev_button, _next_button, _one_day_button, _one_week_button, _to_date_button]:
 		b.add_theme_font_override("font", UiTheme.font(700))
 	# 早送り中止は目立つ白地のボタン（参考画像の右上）
-	var stop_style := UiTheme.box(Color.WHITE, 20, p.main, 3)
-	_stop_button.add_theme_stylebox_override("normal", stop_style)
-	var stop_hover := stop_style.duplicate() as StyleBoxFlat
-	stop_hover.bg_color = p.tint
-	_stop_button.add_theme_stylebox_override("hover", stop_hover)
-	_stop_button.add_theme_stylebox_override("pressed", stop_hover)
-	for c in UiTheme.BUTTON_FONT_COLORS:
-		_stop_button.add_theme_color_override(c, p.ink)
+	UiTheme.style_button(_stop_button, Color.WHITE, p.ink, 20)
+	for state in ["normal", "hover", "pressed", "hover_pressed"]:
+		var st := _stop_button.get_theme_stylebox(state) as GlossBox
+		st.border_color = p.main
+		st.set_border_width_all(3)
 	_stop_button.add_theme_font_override("font", UiTheme.font(800))
 
 
@@ -130,6 +135,7 @@ func _build_layout() -> void:
 	_days_box.add_theme_constant_override("separation", 8)
 	days_scroll.add_child(_days_box)
 
+	days_scroll.follow_focus = true
 	_standings = StandingsPanel.new()
 	_standings.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	body.add_child(_standings)
@@ -156,10 +162,20 @@ func _build_layout() -> void:
 func _make_button(text: String, on_pressed: Callable) -> Button:
 	var b := Button.new()
 	b.text = text
-	b.focus_mode = Control.FOCUS_NONE
 	b.add_theme_font_size_override("font_size", 16)
 	b.pressed.connect(on_pressed)
 	return b
+
+
+## 日程表を開いたとき：「1日進める」（押せなければ最初の項目）にフォーカス
+func focus_default() -> void:
+	if not UiInput.grab(_one_day_button):
+		UiInput.focus_first(self)
+
+
+## LB/RB：順位表のセ・パ切り替え
+func switch_tab(delta: int) -> void:
+	_standings.turn(delta)
 
 
 ## 今日から days 日分（今日を含む）の試合を早送りで進める
@@ -172,17 +188,22 @@ func _on_fast_forward_to_selected() -> void:
 		GameState.start_fast_forward(_selected_day)
 
 
-## 日付の列をクリック：早送りの目標に選ぶ（ダブルクリックならすぐ早送り）
+## 日付の列をクリック：早送りの目標に選ぶ（ダブルクリックならすぐ早送り）。
+## コントローラー・キーボードは Ⓐ（Enter）で選び、選んである列でもう一度 Ⓐ で早送り
 func _on_day_clicked(event: InputEvent, day: int) -> void:
 	var click := event as InputEventMouseButton
-	if click == null or not click.pressed or click.button_index != MOUSE_BUTTON_LEFT:
+	var accept := event.is_action_pressed("ui_accept") and not event.is_echo()
+	if not accept and (click == null or not click.pressed or click.button_index != MOUSE_BUTTON_LEFT):
 		return
+	if accept:
+		get_viewport().set_input_as_handled()
 	if GameState.is_fast_forwarding() or not _is_selectable(day):
 		return
-	_selected_day = day
-	if click.double_click:
+	if (click != null and click.double_click) or (accept and _selected_day == day):
+		_selected_day = day
 		GameState.start_fast_forward(day)
 		return
+	_selected_day = day
 	_render()
 
 
@@ -218,6 +239,13 @@ func _anchor_offset() -> int:
 
 
 func _render() -> void:
+	# 日付の列にフォーカスがあれば、作り直したあとも同じ日の列に戻す
+	var focused := get_viewport().gui_get_focus_owner() if is_inside_tree() else null
+	_focus_at_render = UiInput.focus_index(self) if is_inside_tree() else -1
+	var focus_day := -1
+	if focused != null and _days_box.is_ancestor_of(focused):
+		focus_day = int(focused.get_meta("day", -1))
+	_focus_day_at_render = focus_day
 	for child in _days_box.get_children():
 		_days_box.remove_child(child)
 		child.queue_free()
@@ -243,6 +271,19 @@ func _render() -> void:
 		if day > season.last_day():
 			break
 		_days_box.add_child(_make_day_column(day))
+	_link_focus()
+	if focus_day >= 0:
+		var frames := _days_box.get_children()
+		var target: Control = null
+		for f: Control in frames:
+			if int(f.get_meta("day", -1)) == focus_day and f.focus_mode == Control.FOCUS_ALL:
+				target = f
+		if target == null:
+			target = UiInput.first_focusable(_days_box)
+		if target != null:
+			target.grab_focus()
+		else:
+			focus_default()
 
 	if GameState.is_fast_forwarding():
 		_status_label.text = "%s 終了まで早送り中" % Season.day_label(GameState.fast_forward_target)
@@ -260,6 +301,14 @@ func _update_controls() -> void:
 	var fast_forwarding := GameState.is_fast_forwarding()
 	var in_season := GameState.phase == GameState.Phase.SEASON
 	_stop_button.visible = fast_forwarding
+	# 早送りが始まったら「早送り中止」へ、終わったら元の項目へフォーカスを移す
+	if fast_forwarding and not _was_fast_forwarding and is_visible_in_tree():
+		_focus_before_ff = _focus_at_render
+		_focus_day_before_ff = _focus_day_at_render
+		_stop_button.grab_focus.call_deferred()
+	elif not fast_forwarding and _was_fast_forwarding and is_visible_in_tree():
+		_restore_focus_after_ff.call_deferred()
+	_was_fast_forwarding = fast_forwarding
 	_one_day_button.disabled = fast_forwarding or not in_season
 	_one_week_button.disabled = fast_forwarding or not in_season
 	_to_date_button.disabled = fast_forwarding or not _is_selectable(_selected_day)
@@ -269,6 +318,39 @@ func _update_controls() -> void:
 		_to_date_button.text = "日付をクリックして選ぶと、その日まで早送り"
 	else:
 		_to_date_button.text = "シーズン終了"
+
+
+## 十字キーの移動先：日付の列の上下は進行ボタンとスライダー。スライダーの行（◀ ▶ はスライダーより
+## 背が高いので、自動では上に選ばれてしまう）から上は日付の列へ
+func _link_focus() -> void:
+	var frames: Array[Control] = []
+	for f: Control in _days_box.get_children():
+		if f.focus_mode == Control.FOCUS_ALL:
+			frames.append(f)
+	var up_target: Control = frames[0] if not frames.is_empty() else _one_day_button
+	for c: Control in [_prev_button, _slider, _next_button]:
+		c.focus_neighbor_top = c.get_path_to(up_target)
+	for f in frames:
+		f.focus_neighbor_bottom = f.get_path_to(_slider)
+		f.focus_neighbor_top = f.get_path_to(_one_day_button if not _one_day_button.disabled
+			else _to_date_button)
+
+
+func _restore_focus_after_ff() -> void:
+	var owner_control := get_viewport().gui_get_focus_owner()
+	if owner_control != null and owner_control != _stop_button and is_ancestor_of(owner_control):
+		return
+	# 日付の列から早送りしたときは、同じ日の列（表示から外れていれば最初の列）へ
+	if _focus_day_before_ff >= 0:
+		for f: Control in _days_box.get_children():
+			if int(f.get_meta("day", -1)) == _focus_day_before_ff and UiInput.grab(f):
+				return
+		if UiInput.focus_first(_days_box):
+			return
+	if _focus_before_ff >= 0:
+		UiInput.focus_nth(self, _focus_before_ff)
+	else:
+		focus_default()
 
 
 func _make_day_column(day: int) -> Control:
@@ -285,9 +367,26 @@ func _make_day_column(day: int) -> Control:
 		frame_style.set_content_margin_all(3)
 	frame.add_theme_stylebox_override("panel", frame_style)
 	frame.mouse_filter = Control.MOUSE_FILTER_STOP
+	frame.set_meta("day", day)
 	if _is_selectable(day):
 		frame.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-		frame.tooltip_text = "クリックで選択、ダブルクリックでこの日まで早送り"
+		frame.tooltip_text = "クリック（Ⓐ）で選択、ダブルクリック（選んだ列でもう一度Ⓐ）でこの日まで早送り"
+		frame.focus_mode = Control.FOCUS_ALL
+		# フォーカス中は黄色い光の枠でゆっくり明滅（ボタンと同じ見た目）
+		var focus_style := frame_style.duplicate() as StyleBoxFlat
+		focus_style.border_color = UiTheme.FOCUS
+		focus_style.set_border_width_all(3)
+		focus_style.shadow_color = Color(UiTheme.FOCUS, 0.55)
+		focus_style.shadow_size = 7
+		frame.focus_entered.connect(func() -> void:
+			frame.add_theme_stylebox_override("panel", focus_style)
+			UiFx.pulse(frame))
+		frame.focus_exited.connect(func() -> void:
+			frame.add_theme_stylebox_override("panel", frame_style)
+			var tw: Tween = frame.get_meta("_pulse") if frame.has_meta("_pulse") else null
+			if tw != null:
+				tw.kill()
+			frame.self_modulate = Color.WHITE)
 	frame.gui_input.connect(_on_day_clicked.bind(day))
 
 	var column := VBoxContainer.new()
@@ -299,16 +398,18 @@ func _make_day_column(day: int) -> Control:
 	header.text = Season.day_label(day)
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	header.clip_text = true
-	header.add_theme_color_override("font_color", _palette.ink if is_today else _palette.on_main)
-	header.add_theme_font_override("font", UiTheme.font(800))
 	# 「10月10日（金）」など長い日付は列に収まるよう小さくする
-	header.add_theme_font_size_override("font_size", 18 if header.text.length() <= 8 else 16)
+	var header_ink := _palette.ink if is_today else _palette.on_main
+	UiTheme.heading(header, 18 if header.text.length() <= 8 else 16, header_ink,
+		UiTheme.outline_for(header_ink, Color.WHITE if is_today else _palette.main), 5, false)
 	var header_panel := PanelContainer.new()
 	header_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	# 今日は白抜きの見出し
-	var header_style := UiTheme.box(_palette.main, 8)
+	var header_style := UiTheme.gloss(_palette.main, 8, 2, 3)
+	header_style.content_margin_top = 3
+	header_style.content_margin_bottom = 3 + header_style.depth
 	if is_today:
-		header_style = UiTheme.box(Color.WHITE, 8, _palette.main, 3)
+		header_style = UiTheme.gloss(Color.WHITE, 8, 3, 0, _palette.main)
 		header_style.content_margin_top = 3
 		header_style.content_margin_bottom = 3
 	header_panel.add_theme_stylebox_override("panel", header_style)
@@ -319,16 +420,16 @@ func _make_day_column(day: int) -> Control:
 	if games.is_empty():
 		var rest_panel := PanelContainer.new()
 		rest_panel.mouse_filter = Control.MOUSE_FILTER_PASS
-		rest_panel.add_theme_stylebox_override("panel", UiTheme.box(Color(1, 1, 1, 0.8), 8))
+		var rest_style := UiTheme.card(UiTheme.LINE, 8, 1, 0.85)
+		rest_style.shadow_size = 2
+		rest_panel.add_theme_stylebox_override("panel", rest_style)
 		rest_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		var rest_label := Label.new()
 		var weekday: int = Time.get_datetime_dict_from_unix_time(day * Season.DAY_SECONDS)["weekday"]
 		rest_label.text = "移動日" if weekday == MONDAY else "試合なし"
 		rest_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		rest_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		rest_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
-		rest_label.add_theme_font_override("font", UiTheme.font(800))
-		rest_label.add_theme_font_size_override("font_size", 26)
+		UiTheme.heading(rest_label, 26, UiTheme.TEXT_SUB, Color.WHITE, 6, true)
 		rest_panel.add_child(rest_label)
 		column.add_child(rest_panel)
 		return frame
@@ -383,13 +484,19 @@ func _make_game_tile(g: Dictionary) -> PanelContainer:
 	var canceled: bool = g["status"] != "played"
 	var is_own_game := home == GameState.team or away == GameState.team
 	var tile := PanelContainer.new()
-	var style: StyleBoxFlat
+	var style: GlossBox
 	if finished:
-		style = UiTheme.box(Color("3d434c"), 8)
+		style = UiTheme.gloss(Color("454c56"), 8, 1, 0, Color("2c3137"))
+		style.gloss = 0.3
 	elif canceled:
-		style = UiTheme.box(Color("e3e6ea"), 8, Color("d5dae0"), 1)
+		style = UiTheme.gloss(Color("e3e6ea"), 8, 1, 0, Color("d5dae0"))
+		style.gloss = 0.3
 	else:
-		style = UiTheme.box(Color(1, 1, 1, 0.95), 8, Color("d5dae0"), 1)
+		style = UiTheme.gloss(Color(1, 1, 1, 0.97), 8, 1, 0, Color("d5dae0"))
+		style.gradient = 0.06
+		style.gloss = 0.0
+	style.shadow_size = 2
+	style.shadow_color = Color(0, 0, 0, 0.15)
 	if is_own_game:
 		style.border_color = _palette.main
 		style.set_border_width_all(3)
@@ -461,7 +568,10 @@ func _make_team_chip(team: String) -> PanelContainer:
 	var chip := PanelContainer.new()
 	chip.mouse_filter = Control.MOUSE_FILTER_PASS
 	chip.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var style := UiTheme.box(colors[0], 6)
+	var style := UiTheme.gloss(colors[0], 6, 0, 0)
+	style.shadow_size = 0
+	style.gradient = 0.22
+	style.gloss = 0.5
 	style.content_margin_left = 2
 	style.content_margin_right = 2
 	style.content_margin_top = 0
