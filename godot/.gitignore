@@ -1,0 +1,4 @@
+# Godot のキャッシュ・書き出し
+.godot/
+/android/
+*.tmp
