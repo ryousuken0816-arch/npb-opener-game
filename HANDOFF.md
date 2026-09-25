@@ -57,6 +57,7 @@
 - `data/mlb_stats.json`：上の選手のMLB年度別成績（MLB ID をキーに hitting / pitching。statsapi.mlb.com の項目名のまま）。52人分（MLBの試合に出ていない選手は無し）
 - 取得スクリプト `npb_collector/mlb_moves.py`（MLB公式 statsapi の日本出身選手を生年月日で突合、ポスティング成立はウィキペディア）
 - FA・年俸・引き留めの決定事項は docs/SPEC.md の最後「決定事項：FA・ポスティング」
+- `data/trades.json`：史実のトレード（npb.jp 公示、2008〜2025年度、293件・のべ392人）。trade_id（同じ日付・同じ2球団の移籍をまとめたもの）・season・date・name・背番号・from_team・to_team・player_id。CPU球団同士は史実どおり起こす（SPEC「所属の管理と史実の出来事」）。取得スクリプト `npb_collector/trades.py`
 
 ## 追加データ（2008年開幕時点の算出用）
 
