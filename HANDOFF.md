@@ -24,6 +24,11 @@
 - 選手ページ投手の列：登板 勝利 敗北 セーブ H HP 完投 完封勝 無四球 勝率 打者 outs 安打 本塁打 四球 死球 三振 暴投 ボーク 失点 自責点 防御率
 - 2軍成績は teamstats_linked.json にのみ存在（選手ページは1軍のみ）
 
+## 追加データ（2008年開幕時点の算出用）
+
+- `data/2005/` `data/2006/` `data/2007/`：rosters.json・teamstats_linked.json（1軍・2軍・守備、1軍は全員player_id突合済み）・awards.json（GG賞。**2005年は0件**＝ページ構造が違い未取得）。players.json は無し（2008年以降の選手の2007年以前の1軍成績は各年の players.json の batting/pitching に含まれる）
+- `data/drafts_2001-2007.json`：2001〜2007年ドラフト（2000年はページなし）。形式は drafts.json と同じ
+
 ## 既知の課題
 
 1. **捕手の盗塁阻止率が npb.jp の守備成績にない**。肩力(捕手)の代替指標を決める必要あり（ユーザーと相談）
@@ -34,10 +39,11 @@
 ## 次にやること
 
 1. ~~能力値算出スクリプト~~ → `tools/compute_ratings.py`（出力 `generated/ratings/<年>_<pre|post>.json`、仕様は tools/README.md）。新しい年の data を追加したら `--year <年> --phase pre/post` で再生成
-2. ~~能力値の要相談事項~~ 決定済み（tools/README.md「決定済み」）。2005〜2007年のチーム成績・表彰の取得をローカル側に依頼検討
+2. ~~能力値の要相談事項~~ 決定済み（tools/README.md「決定済み」）。2005〜2007年のチーム成績・表彰は取得済み（data/2005〜2007、上記「追加データ」）。compute_ratings.py の fallbacks を解消する
 3. ~~Godot プロジェクトの骨組み（ハブ画面）~~ → `godot/`（構成は godot/README.md）。タイトル（球団選択）→ ハブ画面（可変ボタン・メニュー・自球団の選手一覧）。
    **Godot 実機での動作確認がまだ**（クラウドに Godot 本体がなく gdlint の構文チェックのみ）。ローカルで開いて表示崩れ・エラーがないか確認する
 4. 次の候補（どれから進めるかユーザーと相談）
+   - ハブ画面の見た目を docs/references/README.md の要望に合わせる（球団カラーのテーマ、明るい配色、色付きの大きなメニューボタン、説明文・日付・順位表パネル）。今の骨組みは暗い背景なので要修正 … Sonnet 向き
    - 選手詳細画面（概要／成績／経歴／契約の4タブ。実数値は ratings の `detail`）… Sonnet 向き
    - 試合シミュレーション（打席単位、docs/SPEC.md の8段階）＋ 日程生成 … Opus 向き
    - セーブ/ロード（`GameState` の内容を user:// に保存）… Sonnet 向き
