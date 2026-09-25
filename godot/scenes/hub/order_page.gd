@@ -8,6 +8,8 @@ extends HBoxContainer
 ## - 守備位置の欄：選ぶと、その位置を守っていた選手と守備位置を入れ替える
 ## 対左投手用のオーダーは未実装。2軍の選手は「野手1軍登録」で上げてから使う。
 ## コントローラー：十字キーで札・守備位置の欄を選び Ⓐ。作り直してもフォーカスは同じ位置に残る。
+## 選んでいる札をもう一度 Ⓐ・クリック（または右クリック）で選手詳細。Ⓑ はまず選択を取り消す。
+## オフシーズン（編成を変えられない間）は札を押すとすぐ選手詳細。
 
 signal roster_changed
 
@@ -30,6 +32,8 @@ var _lineup_title: Label
 var _lineup_box: VBoxContainer
 var _bench_title: Label
 var _bench_grid: GridContainer
+## 札の並び（スタメン→控え。選手詳細の十字キーで送る順）
+var _order_ids: Array[String] = []
 
 
 func setup(p: UiTheme.Palette) -> void:
@@ -127,6 +131,17 @@ func refresh(reset_selection: bool = false) -> void:
 		UiInput.focus_nth(focus_box, focus_at)
 
 
+## 選んでいる札を取り消す（取り消したら true）
+func clear_selection() -> bool:
+	if _sel_index < 0 and _sel_bench == null:
+		return false
+	_sel_index = -1
+	_sel_bench = null
+	_message = ""
+	refresh()
+	return true
+
+
 ## 画面を開いたとき：スタメンの1番の札にフォーカス
 func focus_first() -> void:
 	if not UiInput.focus_first(_lineup_box):
@@ -140,6 +155,12 @@ func _refresh_body() -> void:
 		_message_label.text = "日程データのない年は編成できません"
 		return
 	_names = NameTag.short_names(_team.players)
+	_order_ids.clear()
+	for entry: Array in _team.lineup(_use_dh):
+		if entry[0] != null:
+			_order_ids.append((entry[0] as SimPlayer).id)
+	for p in _team.bench(_use_dh):
+		_order_ids.append(p.id)
 	if not GameState.can_edit_roster():
 		_message_label.text = "オフシーズンは編成を変えられません（見るだけ）"
 	else:
@@ -283,6 +304,10 @@ func _render_bench() -> void:
 # --- 操作 --------------------------------------------------------------------------
 
 func _on_lineup_pressed(i: int) -> void:
+	var here: SimPlayer = _team.lineup(_use_dh)[i][0]
+	if here != null and (_sel_index == i or not GameState.can_edit_roster()):
+		_open_detail(here)
+		return
 	if not GameState.can_edit_roster():
 		return
 	if _sel_bench != null:
@@ -299,7 +324,7 @@ func _on_lineup_pressed(i: int) -> void:
 		_sel_index = i
 		_message = ""
 	elif _sel_index == i:
-		_sel_index = -1
+		_sel_index = -1  # 「投手」の打順の札（選手詳細はない）
 	else:
 		_team.lineup_swap_order(_use_dh, _sel_index, i)
 		_message = "%d番と%d番を入れ替えました" % [_sel_index + 1, i + 1]
@@ -309,16 +334,22 @@ func _on_lineup_pressed(i: int) -> void:
 
 
 func _on_bench_pressed(p: SimPlayer) -> void:
-	if not GameState.can_edit_roster():
+	if _sel_bench == p or not GameState.can_edit_roster():
+		_open_detail(p)
 		return
 	if _sel_index >= 0:
 		var i := _sel_index
 		_sel_index = -1
 		_on_bench_into(i, p)
 		return
-	_sel_bench = null if _sel_bench == p else p
+	_sel_bench = p
 	_message = ""
 	refresh()
+
+
+func _open_detail(p: SimPlayer) -> void:
+	var from: Control = get_viewport().gui_get_focus_owner()
+	PlayerDetail.open(from if from != null else self, p.id, _order_ids)
 
 
 func _on_bench_into(i: int, p: SimPlayer) -> void:

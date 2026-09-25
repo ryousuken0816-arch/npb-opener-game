@@ -1,6 +1,7 @@
 class_name RosterView
 extends TabContainer
 ## 球団の選手一覧（野手・投手タブ）。一覧はランク表示（docs/SPEC.md「共通ルール」）。
+## 行をクリック（コントローラーは Ⓐ・キーボードは Enter）で選手詳細。十字キーの前後はその一覧の並び。
 
 const BATTER_COLUMNS := [
 	["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"],
@@ -73,8 +74,27 @@ func focus_content() -> void:
 
 
 func _add_tab(title: String, content: Control) -> void:
+	var tree := content as Tree
+	if tree != null:
+		tree.item_activated.connect(_open_detail.bind(tree))
+		tree.item_mouse_selected.connect(func(_pos: Vector2, button: int) -> void:
+			if button == MOUSE_BUTTON_LEFT:
+				_open_detail(tree))
 	add_child(content)
 	set_tab_title(get_tab_count() - 1, title)
+
+
+## 選んでいる行の選手の詳細を開く（前後の選手はこの一覧の並び）
+func _open_detail(tree: Tree) -> void:
+	var item := tree.get_selected()
+	if item == null or item.get_metadata(0) == null:
+		return
+	var ids: Array[String] = []
+	var row := tree.get_root().get_first_child()
+	while row != null:
+		ids.append(str(row.get_metadata(0)))
+		row = row.get_next()
+	PlayerDetail.open(tree, str(item.get_metadata(0)), ids)
 
 
 func _make_batter_tree(players: Array) -> Tree:

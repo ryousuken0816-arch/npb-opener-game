@@ -2,7 +2,7 @@ class_name TacticsView
 extends HBoxContainer
 ## 「采配」画面（docs/references/README.md「saihai_menu_pawapuro.webp」）。
 ##
-## 左にサブメニュー、右に選んだ画面。最初は全選手を1軍・2軍に分けた名前札の一覧（守備位置の色）。
+## 左にサブメニュー、右に選んだ画面。最初は全選手を1軍・2軍に分けた名前札の一覧（守備位置の色。押すと選手詳細）。
 ## - 投手1軍登録／野手1軍登録 … RegisterPage
 ## - 起用設定 … OrderPage（DHあり／なしのスタメンと控え）
 ## - 思考設定 … 采配方針（送りバント・盗塁の積極性・継投の傾向。docs/SPEC.md「采配」）
@@ -92,10 +92,21 @@ func open() -> void:
 	_menu_buttons[MENUS[0][0]].grab_focus()
 
 
-## 戻る（Esc・Ⓑ）：サブ画面なら一覧へ戻って true、一覧なら false（ハブが采配を閉じる）
+## 戻る（Esc・Ⓑ）：札を選んでいれば選択の取り消し、サブ画面なら一覧へ戻って true、一覧なら false（ハブが采配を閉じる）
 func back() -> bool:
 	if _page.is_empty():
 		return false
+	# 1軍登録・起用設定で札を選んでいるときは、まず選択を取り消す
+	match _page:
+		"pitchers":
+			if _register_pitchers.clear_selection():
+				return true
+		"fielders":
+			if _register_fielders.clear_selection():
+				return true
+		"order":
+			if _order.clear_selection():
+				return true
 	var left := _page
 	_show_page("")
 	if _menu_buttons.has(left):
@@ -305,15 +316,20 @@ func _render_home() -> void:
 	var active_text := "%d/%d人\n投%d 野%d\n外国人%d" % [team.active_count(),
 		RosterRules.roster_limit(team.year), team.active_players(true).size(), fielders.size(),
 		fc[0] + fc[1]]
-	box.add_child(_tag_block("1軍", active_text, actives))
+	# 札を押すと選手詳細。十字キーの前後はこの一覧の並び（1軍→2軍）
+	var ids: Array[String] = []
+	for p in actives + farm:
+		ids.append(p.id)
+	box.add_child(_tag_block("1軍", active_text, actives, ids))
 	var line := ColorRect.new()
 	line.color = _palette.main.lerp(Color.WHITE, 0.4)
 	line.custom_minimum_size = Vector2(0, 3)
 	box.add_child(line)
-	box.add_child(_tag_block("2軍", "%d人" % farm.size(), farm))
+	box.add_child(_tag_block("2軍", "%d人" % farm.size(), farm, ids))
 
 
-func _tag_block(title: String, sub: String, members: Array[SimPlayer]) -> Control:
+func _tag_block(title: String, sub: String, members: Array[SimPlayer],
+		ids: Array[String]) -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	var head := VBoxContainer.new()
@@ -343,7 +359,7 @@ func _tag_block(title: String, sub: String, members: Array[SimPlayer]) -> Contro
 		tag.setup_player(GameData.player(p.id), _names.get(p.id, p.name))
 		var pos := p.primary_pos if not p.primary_pos.is_empty() else "守備位置不明"
 		tag.tooltip_text = "%s（%s）" % [p.name, pos]
-		tag.pressed.connect(_show_page.bind("pitchers" if p.is_pitcher else "fielders", true))
+		tag.pressed.connect(func() -> void: PlayerDetail.open(tag, p.id, ids))
 		grid.add_child(tag)
 	row.add_child(grid)
 	return row

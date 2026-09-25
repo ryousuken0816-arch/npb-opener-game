@@ -75,6 +75,9 @@ var ratings: Dictionary = {}
 var _players_by_team: Dictionary = {}
 var _players_by_id: Dictionary = {}
 var _loaded_file := ""
+var _pages_year := -1
+var _pages := {}
+var _roster_cache := {}
 
 
 ## <年>_<phase>.json を読み込む。見つからなければ false を返し、現在のデータを保持する。
@@ -128,17 +131,45 @@ func load_schedule(year: int) -> Array:
 
 ## data/<年>/rosters.json から 選手ID → 1軍初出場の年（debut_year）。外国人枠の「日本人扱い」の判定に使う
 func load_debut_years(year: int) -> Dictionary:
-	var repo_path := ProjectSettings.globalize_path("res://").path_join(REPO_DATA_DIR)
-	var path := repo_path.path_join("%d/rosters.json" % year).simplify_path()
+	return _roster_field(year, "debut_year")
+
+
+## data/<年>/rosters.json から 選手ID → 背番号（文字列）。背番号は 2026年の名簿にしか無い（無ければ空）
+func uniform_numbers(year: int) -> Dictionary:
+	return _roster_field(year, "number")
+
+
+func _roster_field(year: int, key: String) -> Dictionary:
+	var cache_key := "%d|%s" % [year, key]
+	if _roster_cache.has(cache_key):
+		return _roster_cache[cache_key]
 	var result := {}
-	if not FileAccess.file_exists(path):
-		return result
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var parsed: Variant = _read_repo_json("%d/rosters.json" % year)
 	if parsed is Array:
 		for r: Dictionary in parsed:
-			if r.get("player_id") != null and r.get("debut_year") != null:
-				result[r["player_id"]] = r["debut_year"]
+			if r.get("player_id") != null and r.get(key) != null:
+				result[r["player_id"]] = r[key]
+	_roster_cache[cache_key] = result
 	return result
+
+
+## 選手ページ（data/<年>/players.json）の中身：bio（経歴・ドラフト）と batting/pitching（1軍の年度別成績）。
+## **npb.jp の今の選手ページなので <年> より後の成績も入っている**（表示する側で年度を絞る）。
+## 5MB 前後あるので、選手詳細を初めて開いたときに1年分だけ読んで持っておく。無ければ空
+func player_page(year: int, id: String) -> Dictionary:
+	if _pages_year != year:
+		_pages_year = year
+		var parsed: Variant = _read_repo_json("%d/players.json" % year)
+		_pages = parsed if parsed is Dictionary else {}
+	return _pages.get(id, {})
+
+
+func _read_repo_json(relative: String) -> Variant:
+	var repo_path := ProjectSettings.globalize_path("res://").path_join(REPO_DATA_DIR)
+	var path := repo_path.path_join(relative).simplify_path()
+	if not FileAccess.file_exists(path):
+		return null
+	return JSON.parse_string(FileAccess.get_file_as_string(path))
 
 
 ## 選手IDから能力値ファイルの選手データを引く（無ければ空）

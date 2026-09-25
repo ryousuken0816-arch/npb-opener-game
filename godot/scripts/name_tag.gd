@@ -4,6 +4,7 @@ extends Button
 ## 投手=赤、捕手=水色、内野手=黄、外野手=緑。ほかの守備位置も守る野手は右側を2つ目の色にする。
 ## 空き枠（「あき」）にも使う。クリック（コントローラーは Ⓐ）で pressed。選択中は橙の太枠がゆっくり明滅し、
 ## 選べない選手は薄く表示する。札は GlossBox（縦グラデーション＋ツヤ＋濃い縁＋下側の厚み）で立体的に描く。
+## 選手の札は右クリックでも選手詳細（PlayerDetail）を開ける。
 ## フォーカス（十字キーの移動先・マウスを乗せた札）は UiFx が拡大・明滅させ、黄色い光の枠を付ける。
 
 const COLOR_PITCHER := Color("f47a86")
@@ -23,6 +24,8 @@ const SECOND_POS_GAMES := 10
 const MIN_FONT_SIZE := 11
 
 var tag_text := ""
+## 選手の札のときの選手ID（空き枠・「投手」の札は空）
+var player_id := ""
 var colors: Array[Color] = [COLOR_UNKNOWN]
 var empty_slot := false
 var selected := false:
@@ -51,6 +54,16 @@ func _init() -> void:
 	set_process(false)
 
 
+## 右クリック：選手詳細を開く（左クリック・Ⓐは画面ごとの pressed）
+func _gui_input(event: InputEvent) -> void:
+	var mb := event as InputEventMouseButton
+	if mb == null or player_id.is_empty():
+		return
+	if mb.pressed and mb.button_index == MOUSE_BUTTON_RIGHT:
+		PlayerDetail.open(self, player_id)
+		accept_event()
+
+
 func _process(delta: float) -> void:
 	_blink = fmod(_blink + delta, BLINK_SEC)
 	queue_redraw()
@@ -59,6 +72,7 @@ func _process(delta: float) -> void:
 ## p: 能力値データの選手（GameData.player()）。text: 札に書く名前
 func setup_player(p: Dictionary, text: String) -> void:
 	tag_text = text
+	player_id = str(p.get("id", ""))
 	colors = colors_for(p)
 	empty_slot = false
 	queue_redraw()
@@ -66,6 +80,7 @@ func setup_player(p: Dictionary, text: String) -> void:
 
 func setup_empty(text: String = "あき") -> void:
 	tag_text = text
+	player_id = ""
 	colors = [COLOR_EMPTY]
 	empty_slot = true
 	queue_redraw()
@@ -74,6 +89,7 @@ func setup_empty(text: String = "あき") -> void:
 ## 札の色だけを指定する（「投手」の打順の札など）
 func setup_plain(text: String, color: Color) -> void:
 	tag_text = text
+	player_id = ""
 	colors = [color]
 	empty_slot = false
 	queue_redraw()

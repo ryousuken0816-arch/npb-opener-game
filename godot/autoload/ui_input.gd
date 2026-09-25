@@ -190,6 +190,11 @@ func _show_tip() -> void:
 	_tip_panel.position = pos
 
 
+## 出ているツールチップを消す（フォーカスを外しただけでは消えないので、画面を重ねるときに呼ぶ）
+func hide_tip() -> void:
+	_hide_tip()
+
+
 func _hide_tip() -> void:
 	_tip_timer.stop()
 	_tip_panel.visible = false
