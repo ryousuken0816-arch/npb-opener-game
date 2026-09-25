@@ -37,6 +37,42 @@ const TEAM_SHORT := {
 ## 守備位置の並び順（一覧のソート用）
 const POS_ORDER := ["捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "内野手", "外野手", "指名打者", "投手"]
 
+## 球団カラー（テーマ配色用）。text はボタン等に載せる文字色
+const TEAM_COLORS := {
+	"読売ジャイアンツ": {"primary": Color("f39800"), "text": Color("202020")},
+	"阪神タイガース": {"primary": Color("fff200"), "text": Color("202020")},
+	"中日ドラゴンズ": {"primary": Color("0057a8"), "text": Color("ffffff")},
+	"横浜ベイスターズ": {"primary": Color("0075c2"), "text": Color("ffffff")},
+	"横浜DeNAベイスターズ": {"primary": Color("0075c2"), "text": Color("ffffff")},
+	"広島東洋カープ": {"primary": Color("e60039"), "text": Color("ffffff")},
+	"東京ヤクルトスワローズ": {"primary": Color("00a960"), "text": Color("ffffff")},
+	"埼玉西武ライオンズ": {"primary": Color("003876"), "text": Color("ffffff")},
+	"オリックス・バファローズ": {"primary": Color("ffb81c"), "text": Color("202020")},
+	"福岡ソフトバンクホークス": {"primary": Color("f5ce00"), "text": Color("202020")},
+	"北海道日本ハムファイターズ": {"primary": Color("00a0e9"), "text": Color("202020")},
+	"千葉ロッテマリーンズ": {"primary": Color("1b3a6b"), "text": Color("ffffff")},
+	"東北楽天ゴールデンイーグルス": {"primary": Color("870038"), "text": Color("ffffff")},
+}
+
+const DEFAULT_TEAM_COLOR := {"primary": Color("4a6fa5"), "text": Color("ffffff")}
+
+## 本拠地球場（日程表の表示用。現行の呼称。年代によっては史実と異なる場合がある）
+const STADIUM_NAMES := {
+	"読売ジャイアンツ": "東京ドーム",
+	"阪神タイガース": "阪神甲子園球場",
+	"中日ドラゴンズ": "バンテリンドーム ナゴヤ",
+	"横浜ベイスターズ": "横浜スタジアム",
+	"横浜DeNAベイスターズ": "横浜スタジアム",
+	"広島東洋カープ": "MAZDA Zoom-Zoom スタジアム広島",
+	"東京ヤクルトスワローズ": "明治神宮野球場",
+	"埼玉西武ライオンズ": "ベルーナドーム",
+	"オリックス・バファローズ": "京セラドーム大阪",
+	"福岡ソフトバンクホークス": "みずほPayPayドーム福岡",
+	"北海道日本ハムファイターズ": "エスコンフィールドHOKKAIDO",
+	"千葉ロッテマリーンズ": "ZOZOマリンスタジアム",
+	"東北楽天ゴールデンイーグルス": "楽天モバイルパーク宮城",
+}
+
 const RANK_COLORS := {
 	"S": Color("ff5a5a"),
 	"A": Color("ff9a3c"),
@@ -107,6 +143,24 @@ func players_of(team: String) -> Array:
 
 func short_name(team: String) -> String:
 	return TEAM_SHORT.get(team, team)
+
+
+func team_color(team: String) -> Color:
+	return TEAM_COLORS.get(team, DEFAULT_TEAM_COLOR)["primary"]
+
+
+func team_text_color(team: String) -> Color:
+	return TEAM_COLORS.get(team, DEFAULT_TEAM_COLOR)["text"]
+
+
+func stadium_of(team: String) -> String:
+	return STADIUM_NAMES.get(team, team)
+
+
+## その球団が所属するリーグ（"C"/"P"）。能力値未読み込み時は空文字
+func league_of(team: String) -> String:
+	var players: Array = _players_by_team.get(team, [])
+	return players[0]["league"] if not players.is_empty() else ""
 
 
 func rank_color(rank: String) -> Color:
