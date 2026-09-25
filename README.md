@@ -1,6 +1,6 @@
 # NPBオーペナゲーム
 
-2008年開始・実在NPB選手（個人用）のペナント/GMシミュレーション（Godot予定）。
+2008年開始・実在NPB選手（個人用）のペナント/GMシミュレーション（Godot）。
 
 ## npb_collector/
 
@@ -19,3 +19,7 @@ python collect.py all --start 2008 --end 2026
 
 `python tools/compute_ratings.py --year 2008 [--phase post]` で能力値（1〜100 + G〜Sランク）を `generated/ratings/<年>_<phase>.json` に出力。
 詳細は [tools/README.md](tools/README.md)。
+
+## godot/
+
+Godot 4.4 以降で `godot/project.godot` を開く。詳細は [godot/README.md](godot/README.md)。
