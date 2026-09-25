@@ -86,7 +86,7 @@ func _run() -> void:
 	_check(_months_started == [4, 5, 6, 7, 8, 9, 10], "月替わりの通知: %s" % [_months_started])
 	_verify("シーズン終了後")
 
-	# オフ → 翌年（2009年、日程データなしでも日付が進む）→ オフ
+	# オフ → 翌年（2009年）の開幕 → 3日進める → 試合へを繰り返してオフ
 	while _gs.phase != _gs.Phase.SEASON:
 		_gs.advance()
 	_check(_gs.year == 2009 and _gs.phase == _gs.Phase.SEASON, "翌年の開幕: " + _gs.date_text())
