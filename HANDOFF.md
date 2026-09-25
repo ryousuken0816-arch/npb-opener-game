@@ -59,9 +59,10 @@
    - **弾道は実データなし**：HR/打数・ISO から推定（1〜4）。係数は定数化して後で調整できるように
    - 画面の参考画像は docs/references/（ハブ・日程表・1軍登録・オーダー・選手詳細・采配メニュー・トレード）。現SPECに無い要素（調子・疲労・変化球図）は一旦保留
 4. ~~ハブ画面の見た目~~ → パワプロ風に作り直し済み（球団カラーのテーマ、明るい背景、色付きの大きなメニューボタン、説明文・日付・順位表パネル、同梱フォント）。采配 = 選手一覧
-4.5 ~~日程表画面（見た目）~~ → `godot/scenes/hub/schedule_view.gd`（ハブから「日程表」で開く）。3日分×全カードのタイル、自球団カードは球団カラーで縁取り、終了済みは暗色＋スコア、月曜は「移動日」、右にセ・パ順位表（`StandingsPanel` 再利用、◀▶切替）、進行バーとスライダー。
+4.5 ~~日程表画面（見た目）~~ → `godot/scenes/hub/schedule_view.gd`（ハブから「日程表」で開く）。3日分×全カードのタイル（日ごとにセ・パを左右の列に分けて、スクロールなしで全カード表示）、自球団カードは球団カラーで縁取り、終了済みは暗色＋スコア、月曜は「移動日」、右にセ・パ順位表（`StandingsPanel` 再利用、◀▶切替）、進行バーとスライダー。開いたとき／月を進めたときは現在の月付近の3日間を表示する（`_elapsed_days()` を起点に `_day_offset` を計算）。
    **日程生成・試合シミュレーションは未実装なので、カード・組み合わせ・スコアはすべて仮データ**（総当たりもどきの仮ペアリング、スコアはハッシュ由来の乱数、本拠地名もハードコード）。実装したら差し替えること。
-   クラウドで Godot 4.7 を実際に起動しスクショ確認済み（エラーなし）。前回 claude/peaceful-lamport-1mbcsc の `schedule_view.gd` は `GameData.team_color`/`team_text_color`/`stadium_of` という存在しないメソッドを呼んでいて起動できなかった（今回は `GameData.team_colors`（複数形・Array[Color]）や `UiTheme.text_on` など実在するAPIのみ使用）。ほかにハマった点：ScrollContainer は該当方向の scroll_mode を DISABLED にしても子の最小サイズをそのまま親に伝える（=切り詰めない）ので幅がはみ出す／Label は既定で自身のテキスト幅を最小サイズとして要求するので `clip_text = true` にしないと横幅の指定が無視される
+   クラウドで Godot 4.7 を実際に起動しスクショ確認済み（エラーなし）。前回 claude/peaceful-lamport-1mbcsc の `schedule_view.gd` は `GameData.team_color`/`team_text_color`/`stadium_of` という存在しないメソッドを呼んでいて起動できなかった（今回は `GameData.team_colors`（複数形・Array[Color]）や `UiTheme.text_on` など実在するAPIのみ使用）。ほかにハマった点：ScrollContainer は該当方向の scroll_mode を DISABLED にしても子の最小サイズをそのまま親に伝える（=切り詰めない）ので幅がはみ出す／Label は既定で自身のテキスト幅を最小サイズとして要求するので `clip_text = true` にしないと横幅の指定が無視される／チームチップを横並びではなく縦積み（アウェイ→中央→ホーム）にすると1タイルの横幅が半分で済み、セ・パ2列でも収まる
+   ローカル（Windows）で `.import` が全件差分になる件は `.gitattributes`（`* text=auto eol=lf`）で解消。既存ファイルは `git add --renormalize .` 済み
 5. 次の候補（どれから進めるかユーザーと相談）
    - 2009年以降の能力値の生成（data/2008〜2026 が揃ったので `tools/compute_ratings.py --year <年>`。クラウドの generated/ratings は 2008 のみ）… Sonnet 向き
    - 選手詳細画面（概要／成績／経歴／契約の4タブ。実数値は ratings の `detail`）… Sonnet 向き

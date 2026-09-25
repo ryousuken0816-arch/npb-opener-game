@@ -59,9 +59,9 @@ func setup(p: UiTheme.Palette) -> void:
 		b.add_theme_font_override("font", UiTheme.font(700))
 
 
-## ハブ画面から開かれるたびに呼ばれる。現在の年月を起点に表示位置をリセットする。
+## ハブ画面から開かれるたびに呼ばれる。現在の年月の付近を表示する。
 func refresh() -> void:
-	_day_offset = 0
+	_day_offset = clampi(_elapsed_days(), 0, maxi(_season_day_count() - DAYS_SHOWN, 0))
 	_render()
 
 
@@ -197,9 +197,9 @@ func _render() -> void:
 
 func _make_day_column(day_unix: int, day_index: int, finished: bool) -> Control:
 	var column := VBoxContainer.new()
-	column.custom_minimum_size = Vector2(140, 0)
+	column.custom_minimum_size = Vector2(145, 0)
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	column.add_theme_constant_override("separation", 6)
+	column.add_theme_constant_override("separation", 4)
 
 	var dt := Time.get_datetime_dict_from_unix_time(day_unix)
 	var weekday: int = dt["weekday"]
@@ -207,6 +207,7 @@ func _make_day_column(day_unix: int, day_index: int, finished: bool) -> Control:
 	var header := Label.new()
 	header.text = "%d月%d日（%s）" % [dt["month"], dt["day"], WEEKDAY_NAMES[weekday]]
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	header.clip_text = true
 	header.add_theme_color_override("font_color", _palette.on_main)
 	header.add_theme_font_override("font", UiTheme.font(800))
 	header.add_theme_font_size_override("font_size", 18)
@@ -230,20 +231,41 @@ func _make_day_column(day_unix: int, day_index: int, finished: bool) -> Control:
 		column.add_child(rest_panel)
 		return column
 
-	for pair: Array in _pairings_for(day_index):
-		column.add_child(_make_game_tile(pair[0], pair[1], day_unix, finished))
+	# セ・パそれぞれの試合を左右の列に分け、その日の全カードがスクロールなしで見えるようにする
+	var leagues_row := HBoxContainer.new()
+	leagues_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	leagues_row.add_theme_constant_override("separation", 4)
+	column.add_child(leagues_row)
+	var pairings := _pairings_for(day_index)
+	for league in ["C", "P"]:
+		leagues_row.add_child(_make_league_column(league, pairings.get(league, []), day_unix, finished))
 	return column
+
+
+func _make_league_column(league: String, pairs: Array, day_unix: int, finished: bool) -> VBoxContainer:
+	var league_col := VBoxContainer.new()
+	league_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	league_col.add_theme_constant_override("separation", 2)
+	var label := Label.new()
+	label.text = GameData.LEAGUE_NAMES.get(league, league).left(1)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 11)
+	label.add_theme_font_override("font", UiTheme.font(700))
+	label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
+	label.custom_minimum_size.y = 14
+	league_col.add_child(label)
+	for pair: Array in pairs:
+		league_col.add_child(_make_game_tile(pair[0], pair[1], day_unix, finished))
+	return league_col
 
 
 ## 円卓法（circle method）で日ごとの組み合わせを作る仮のペアリング。
 ## リーグ内総当たりの雰囲気を出すためだけの仮ロジックで、実際の年間日程ではない。
-func _pairings_for(day_index: int) -> Array:
-	var pairs: Array = []
+func _pairings_for(day_index: int) -> Dictionary:
+	var pairs: Dictionary = {}
 	for league in ["C", "P"]:
 		var teams: Array = GameData.teams(league)
-		if teams.size() < 2:
-			continue
-		pairs.append_array(_round_robin_pairs(teams, day_index))
+		pairs[league] = _round_robin_pairs(teams, day_index) if teams.size() >= 2 else []
 	return pairs
 
 
@@ -272,21 +294,22 @@ func _make_game_tile(home: String, away: String, day_unix: int, finished: bool) 
 	if is_own_game:
 		style.border_color = _palette.main
 		style.set_border_width_all(3)
-	style.content_margin_left = 5
-	style.content_margin_right = 5
-	style.content_margin_top = 5
-	style.content_margin_bottom = 5
+	style.content_margin_left = 2
+	style.content_margin_right = 2
+	style.content_margin_top = 2
+	style.content_margin_bottom = 2
 	tile.add_theme_stylebox_override("panel", style)
 
+	# 縦積み（アウェイ→中央→ホーム）にして、列を細くしても読めるようにする
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 3)
+	box.add_theme_constant_override("separation", 1)
 	tile.add_child(box)
-	box.add_child(_make_matchup_row(home, away))
+	box.add_child(_make_team_chip(away))
 
 	var mid_label := Label.new()
 	mid_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	mid_label.clip_text = true
-	mid_label.add_theme_font_size_override("font_size", 20)
+	mid_label.add_theme_font_size_override("font_size", 13)
 	mid_label.add_theme_font_override("font", UiTheme.font(800))
 	if finished:
 		var seed := hash("%s-%s-%d" % [home, away, day_unix])
@@ -294,32 +317,24 @@ func _make_game_tile(home: String, away: String, day_unix: int, finished: bool) 
 		var away_score := (seed / 8) % 8
 		if home_score == away_score:
 			home_score += 1
-		mid_label.text = "%d － %d" % [away_score, home_score]
+		mid_label.text = "%d－%d" % [away_score, home_score]
 		mid_label.add_theme_color_override("font_color", Color.WHITE)
 	else:
-		mid_label.text = STADIUMS.get(home, "-")
-		mid_label.add_theme_font_size_override("font_size", 14)
+		mid_label.text = "vs"
 		mid_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
 	box.add_child(mid_label)
+	box.add_child(_make_team_chip(home))
 
-	if finished:
-		var stadium_label := Label.new()
-		stadium_label.text = STADIUMS.get(home, "-")
-		stadium_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		stadium_label.clip_text = true
-		stadium_label.add_theme_font_size_override("font_size", 12)
-		stadium_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.75))
-		box.add_child(stadium_label)
+	var stadium_label := Label.new()
+	stadium_label.text = STADIUMS.get(home, "-")
+	stadium_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stadium_label.clip_text = true
+	stadium_label.add_theme_font_size_override("font_size", 9)
+	stadium_label.add_theme_color_override(
+			"font_color", Color(1, 1, 1, 0.75) if finished else UiTheme.TEXT_SUB)
+	box.add_child(stadium_label)
 
 	return tile
-
-
-func _make_matchup_row(home: String, away: String) -> HBoxContainer:
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 4)
-	row.add_child(_make_team_chip(away))
-	row.add_child(_make_team_chip(home))
-	return row
 
 
 func _make_team_chip(team: String) -> PanelContainer:

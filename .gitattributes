@@ -1,0 +1,12 @@
+# 改行コードをLFに統一する（Windowsのローカル環境でcore.autocrlfにより
+# .import等のテキストファイルが全件差分になるのを防ぐ）
+* text=auto eol=lf
+
+# バイナリ扱い（改行変換・diffの対象外）
+*.png binary
+*.webp binary
+*.ttf binary
+*.otf binary
+*.wav binary
+*.ogg binary
+*.mp3 binary
