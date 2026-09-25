@@ -21,7 +21,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 # ---------------------------------------------------------------- 定数
 # 直近シーズンほど重く（Marcel 方式）。キーは「対象年からの遡り年数」
@@ -105,6 +105,20 @@ ABILITY_MIN_OUTS = 150  # この投球回（アウト数）未満は特殊能力
 STARTER_MIN_OUTS_PER_G = 12
 ROLE_SPLIT_RATINGS = {"overall", "k9", "bb9", "hr9"}
 
+# メジャー成績の NPB 換算（data/mlb_stats.json → メジャーにいた年の能力値。引き留めたときに使う）。
+# 各項目の回数に掛ける係数（打席・打数・アウト数はそのまま）。data/mlb_moves.json の選手の
+# 「移籍前3年のNPB ↔ 移籍後3年のMLB」「復帰前2年のMLB ↔ 復帰後2年のNPB」の率の比（2026-09 集計：
+# 安打1.13 二塁打1.10 本塁打1.87 四球1.20 三振0.90 盗塁1.12／被本塁打0.61 与四球0.75 奪三振1.00）を、
+# 選ばれてメジャーへ行った選手は好調期の年が多い分だけ控えめに丸めたもの
+MLB_TO_NPB_BAT = {"安打": 1.12, "二塁打": 1.10, "三塁打": 1.00, "本塁打": 1.70, "四球": 1.15, "死球": 1.00,
+                  "三振": 0.90, "盗塁": 1.10, "盗塁刺": 1.00}
+MLB_TO_NPB_PIT = {"安打": 0.90, "本塁打": 0.65, "四球": 0.78, "死球": 0.78, "三振": 1.00, "自責点": 0.80}
+# メジャー能力値を作るのは、ゲーム開始年以降にNPBから出ていった選手だけ（それより前に出た選手は引き留められない）
+MLB_RATINGS_MIN_LEFT_AFTER = 2008
+# メジャーの成績が無い年（マイナー・故障など）は直前の能力値から年齢に応じて緩やかに変化させる。
+# (この年齢以下, 1年あたりの能力値の増減)
+MLB_NO_STATS_DRIFT = [(26, 1.0), (31, 0.0), (99, -1.5)]
+
 POS_ORDER = ["投手", "捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "外野手"]
 ARM_POS = {"捕手", "三塁手", "遊撃手", "外野手"}  # 補殺が肩力の指標になる守備位置
 LEAGUES = {"セントラル・リーグ": "C", "パシフィック・リーグ": "P"}
@@ -145,6 +159,9 @@ class Data:
                        for d in load_json(data_dir / str(y) / "drafts.json")]
         vpath = data_dir / "velocity.json"
         self.velocity = load_json(vpath) if vpath.exists() else []
+        mpath, spath = data_dir / "mlb_moves.json", data_dir / "mlb_stats.json"
+        self.mlb_moves = load_json(mpath) if mpath.exists() else []
+        self.mlb_stats = load_json(spath) if spath.exists() else {}
 
 
 # ---------------------------------------------------------------- 集計ヘルパ
@@ -703,6 +720,96 @@ class Calculator:
             "fielding": fld,
         }
 
+    # ---- メジャーにいた年の能力値
+    @staticmethod
+    def _mlb_row(r: dict, mapping: dict, factors: dict) -> dict:
+        row = {"年度": r["season"]}
+        for npb_key, mlb_key in mapping.items():
+            row[npb_key] = (r.get(mlb_key) or 0) * factors.get(npb_key, 1.0)
+        return row
+
+    MLB_BAT_KEYS = {"打席": "plateAppearances", "打数": "atBats", "安打": "hits", "二塁打": "doubles",
+                    "三塁打": "triples", "本塁打": "homeRuns", "塁打": "totalBases", "盗塁": "stolenBases",
+                    "盗塁刺": "caughtStealing", "犠打": "sacBunts", "犠飛": "sacFlies", "四球": "baseOnBalls",
+                    "死球": "hitByPitch", "三振": "strikeOuts"}
+    MLB_PIT_KEYS = {"登板": "gamesPitched", "outs": "outs", "打者": "battersFaced", "安打": "hits",
+                    "本塁打": "homeRuns", "四球": "baseOnBalls", "死球": "hitBatsmen", "三振": "strikeOuts",
+                    "自責点": "earnedRuns"}
+
+    def mlb_rows(self, mlb_id) -> tuple[list, list]:
+        """メジャーの年度別成績を NPB 換算した選手ページ形式の行（打撃, 投手）。"""
+        st = self.d.mlb_stats.get(str(mlb_id), {})
+        bat = [self._mlb_row(r, self.MLB_BAT_KEYS, MLB_TO_NPB_BAT) for r in st.get("hitting", [])]
+        pit = [self._mlb_row(r, self.MLB_PIT_KEYS, MLB_TO_NPB_PIT) for r in st.get("pitching", [])]
+        return bat, pit
+
+    @staticmethod
+    def _drift_per_year(age: int) -> float:
+        return next(d for th, d in MLB_NO_STATS_DRIFT if age <= th)
+
+    def mlb_entry(self, move: dict) -> dict | None:
+        """対象年にメジャーにいる選手の能力値。NPB の成績にメジャー成績（NPB換算）を足して同じ手順で算出する。
+        対象年までの数年にメジャー成績が無い（マイナー・故障）場合は、成績のある最後の年時点で算出し、
+        そこから年齢に応じて緩やかに変化させる（MLB_NO_STATS_DRIFT）。"""
+        pid = move["player_id"]
+        page = self.d.players.get(pid)
+        if not page:
+            return None
+        mbat, mpit = self.mlb_rows(move["mlb_id"]) if move.get("mlb_id") else ([], [])
+        patched = dict(page, batting=page["batting"] + mbat, pitching=page["pitching"] + mpit)
+        played = [r["年度"] for r in patched["batting"] if (r.get("打席") or 0) > 0] + \
+                 [r["年度"] for r in patched["pitching"] if (r.get("outs") or 0) > 0]
+        played = [y for y in played if y <= self.through]
+        through = max(played) if played else self.through
+        saved = self.through, self.ts_through, self.d.players[pid]
+        try:
+            self.through = through
+            self.ts_through = min(self.ts_through, move["left_after"])
+            self.d.players[pid] = patched
+            entry = self.player_entry(pid, pid, page.get("name") or move["name"], None, None)
+        finally:
+            self.through, self.ts_through, self.d.players[pid] = saved
+        gap = self.through - through
+        if gap > 0:
+            birth = entry.get("birth") or ""
+            age = self.year - int(birth[:4]) if birth[:4].isdigit() else 30
+            delta = round(self._drift_per_year(age) * gap)
+            self._shift_ratings(entry, delta)
+        entry["league"] = None
+        entry["mlb"] = {
+            "mlb_id": move.get("mlb_id"), "npb_team_before": move["npb_team_before"],
+            "left_after": move["left_after"], "returned": move.get("returned"),
+            "stats_through": through, "drift_years": gap,
+            "mlb_seasons": sorted({r["年度"] for r in mbat + mpit if r["年度"] <= self.through}),
+        }
+        return entry
+
+    @staticmethod
+    def _shift_ratings(entry: dict, delta: int):
+        def shift(r):
+            if isinstance(r, dict) and r.get("value") is not None:
+                r["value"] = max(1, min(100, r["value"] + delta))
+                r["rank"] = rank_of(r["value"])
+        for r in (entry.get("batting") or {}).get("ratings", {}).values():
+            shift(r)
+        for r in ((entry.get("pitching") or {}).get("ratings") or {}).values():
+            shift(r)
+        for f in (entry.get("fielding") or {}).values():
+            shift(f.get("defense"))
+            shift(f.get("arm"))
+
+    def mlb_players(self) -> list[dict]:
+        out = []
+        for m in self.d.mlb_moves:
+            if m["left_after"] < MLB_RATINGS_MIN_LEFT_AFTER or m["left_after"] >= self.year:
+                continue
+            if m.get("returned") is not None and self.year >= m["returned"]:
+                continue
+            e = self.mlb_entry(m)
+            if e:
+                out.append(e)
+        return out
+
     def run(self) -> dict:
         out = []
         seen = set()
@@ -723,6 +830,7 @@ class Calculator:
             "scale": {"min": 1, "max": 100, "ranks": [{"min": th, "rank": r} for th, r in RANKS]},
             "fip_constant": round(self.fip_c_for(self.through), 3),
             "players": out,
+            "mlb_players": self.mlb_players(),
         }
 
 
