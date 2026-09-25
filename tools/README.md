@@ -23,7 +23,10 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
    FULL は指標ごと（打率 400打席、BB% 200打席、FIP 450アウト=150回 など）。
    事前値は正規化母集団の30パーセンタイル（出場の少ない選手は平均以下が多いため）
 3. **正規化**: 対象年から5年分の1軍シーズン（200打席以上 / 50回以上 / 守備は同一位置40試合以上）を母集団に z 値化
-4. **スケール**: `55 + 15 × z` を 1〜100 に丸め、ランク S≥90 A≥80 B≥70 C≥60 D≥50 E≥40 F≥20 G<20
+4. **スケール**: `63 + 17 × z` を 1〜100 に丸め、ランク S≥90 A≥80 B≥70 C≥60 D≥50 E≥40 F≥20 G<20
+   （母集団が規定打席/規定投球回クリア済みの「そこそこ良い選手」に絞られているため、平均をそのまま
+   D帯に置くとレギュラーの大半がD以下に沈む。平均をC寄りに、SDを広めにして、レギュラー級がC〜D中心・
+   主力がB以上・スターがA/Sに届くように調整済み。定数は `SCALE_MEAN` / `SCALE_SD`）
 
 ### 各能力の指標
 
@@ -48,6 +51,9 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 1. 対象年までの実測値がない場合、その投手の最古の実測値を「最古の年との差×`VELOCITY_EARLY_DECAY_PER_YEAR`（上限 `VELOCITY_EARLY_DECAY_CAP`）」だけ下げて使う（`early_career`）。主に2008〜2010年向け
 2. 実測値が一切ない投手（2010年以前引退など）は、実測値のある投手の通算K/9→実測値平均 の単回帰で推定し `VELOCITY_MIN_KMH`〜`VELOCITY_MAX_KMH` にクリップ（`estimated`）
 3. 通常は対象年から遡り3年をMarcel加重平均（`observed`）
+4. **1軍・2軍とも登板実績が一切ない投手**（新人・新外国人。K/9も算出できないため②の回帰も使えない）は
+   平均球速（`velocity_mean_kmh`）にドラフト順位による加減（`PROVISIONAL_VELOCITY_ROUND_BONUS`。上位指名ほど+、育成は`PROVISIONAL_VELOCITY_IKUSEI_PENALTY`）を加えた仮の値（`provisional`）。
+   この場合 `pitching` は `{"ratings": null, "abilities": [], "role": null, "detail": null, "velocity": {...}, "sample": {"outs_1": 0.0, "outs_2": 0.0}}` になる（球速以外は算出不能なため null）
 
 ### 出力フォーマット（`generated/ratings/<年>_<phase>.json`）
 

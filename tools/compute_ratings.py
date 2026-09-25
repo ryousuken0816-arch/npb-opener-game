@@ -49,8 +49,11 @@ POOL_MIN_OUTS = 150  # 50 IP
 POOL_MIN_FIELD_G = 40
 
 # 1〜100 スケール: 母集団平均 → SCALE_MEAN, 1σ → SCALE_SD
-SCALE_MEAN = 55
-SCALE_SD = 15
+# 母集団は規定打席/規定投球回に達した「そこそこ良い選手」に絞られているため、
+# 平均をそのまま D(50台) に置くと大多数のレギュラーが D〜E 以下に沈んでしまう。
+# 平均を C 寄りに、標準偏差を広めにして、主力が B 以上・スターが A/S に届くようにする
+SCALE_MEAN = 63
+SCALE_SD = 17
 RANKS = [(90, "S"), (80, "A"), (70, "B"), (60, "C"), (50, "D"), (40, "E"), (20, "F"), (0, "G")]
 
 # 守備: ゴールデングラブ受賞のボーナス（z 値加算）。キーは受賞年からの経過年数
@@ -64,6 +67,11 @@ VELOCITY_EARLY_DECAY_CAP = 3.0        # 減算の上限(km/h)
 VELOCITY_MIN_OUTS_FOR_K9 = 30         # これ未満のアウト数は回帰の説明変数として使わず平均K/9で代用
 VELOCITY_MIN_KMH = 125
 VELOCITY_MAX_KMH = 162
+
+# 1軍・2軍とも登板実績が一切ない投手（新人・新外国人）向けの仮の球速。
+# 平均球速からの加算(km/h)。ドラフト順位が分かる場合のみ加減、無ければ平均のまま
+PROVISIONAL_VELOCITY_ROUND_BONUS = {1: 5, 2: 3, 3: 1}
+PROVISIONAL_VELOCITY_IKUSEI_PENALTY = -3
 
 # 弾道（野手）: ISO と HR/打数 の z 値を加重平均し、しきい値で 1〜4 に分類。
 # 実データが無いための代用指標。係数・しきい値は後で調整できるようここに定数化
@@ -328,8 +336,9 @@ class Calculator:
         for a in self.d.awards:
             if a["award"] == "ゴールデングラブ賞" and a["player_id"] and a["year"] <= ty:
                 self.gg[a["player_id"]].append((a["year"], a["category"]))
-        # 守備成績のない選手の守備位置用（ドラフト指名時のポジション。名前で突合）
-        self.draft_pos = {norm_name(d["name"]): d["pos"] for d in self.d.drafts if d["draft_year"] < y}
+        # ドラフト指名情報（守備位置・仮の球速の算出に使用。名前で突合、player_idなしのため）
+        self.draft_info = {norm_name(d["name"]): d for d in self.d.drafts if d["draft_year"] < y}
+        self.draft_pos = {k: v["pos"] for k, v in self.draft_info.items()}
 
     @staticmethod
     def _tmp_id(r) -> str:
@@ -481,6 +490,19 @@ class Calculator:
         est = max(VELOCITY_MIN_KMH, min(VELOCITY_MAX_KMH, est))
         return {"kmh": round(est), "source": "estimated"}
 
+    def provisional_velocity(self, name: str) -> dict:
+        """1軍・2軍とも登板実績が一切ない投手向けの仮の球速。ドラフト順位が分かれば加減する。"""
+        info = self.draft_info.get(norm_name(name))
+        bonus = 0.0
+        if info:
+            m = re.match(r"(\d+)", info.get("round") or "")
+            if m:
+                bonus += PROVISIONAL_VELOCITY_ROUND_BONUS.get(int(m.group(1)), 0.0)
+            if info.get("ikusei"):
+                bonus += PROVISIONAL_VELOCITY_IKUSEI_PENALTY
+        est = max(VELOCITY_MIN_KMH, min(VELOCITY_MAX_KMH, self.velocity_mean_kmh + bonus))
+        return {"kmh": round(est), "source": "provisional"}
+
     # ---- 選手ごとの加重カウント
     def _weighted(self, rows, keys, farm_rows, farm_factors, pitching: bool):
         """1軍（選手ページ）と2軍（チーム成績）を Marcel 加重で合算。
@@ -613,6 +635,10 @@ class Calculator:
             primary = bio.get("ポジション") or self.draft_pos.get(norm_name(name)) \
                 or ("指名打者" if bat_sample["pa_1"] else None)
             is_pitcher = primary == "投手"
+        if is_pitcher and pit is None:
+            # 1軍・2軍とも登板実績が一切ない投手（新人・新外国人）: 球速のみ仮の値を入れる
+            pit = {"ratings": None, "abilities": [], "role": None, "detail": None,
+                   "velocity": self.provisional_velocity(name), "sample": {"outs_1": 0.0, "outs_2": 0.0}}
         # 野手の肩力・守備力はメイン守備位置の値を代表値にする
         if primary and primary in fld:
             bat["defense"] = fld[primary]["defense"]
