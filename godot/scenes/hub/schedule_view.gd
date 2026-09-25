@@ -4,20 +4,30 @@ extends Control
 ##
 ## 史実の日程（GameState.season）を3日分ずつ、その日の全カードのタイルで表示する。
 ## 終了した試合は暗色＋スコア（ツールチップに勝敗投手）、雨天中止は「中止」、試合のない日は「試合なし」。
-## 開いたときは最後に試合をした日から3日間を表示する。
+## 表示するのは前日・今日・翌日の3日間（今日の見出しは白抜き）。
+##
+## 試合を進める：「1日進める」「1週間進める」、日付（列）をクリックして選び「この日まで早送り」（ダブルクリックでも可）。
+## 早送り中は上の帯に「〇月〇日（〇）終了まで早送り中」、右上に「早送り中止」。進行は GameState が1日ずつ行う。
 
 const DAYS_SHOWN := 3
-const WEEKDAY_NAMES := ["日", "月", "火", "水", "木", "金", "土"]
+const WEEK_DAYS := 7
 const MONDAY := 1
+## 早送りの目標に選んだ日の枠の色
+const SELECT_COLOR := Color("ff8f00")
 
 var _palette: UiTheme.Palette
 var _day_offset := 0
+## 早送りの目標に選んだ日（通し日数）。未選択は -1
+var _selected_day := -1
 
 var _status_label: Label
 var _status_bar: PanelContainer
+var _stop_button: Button
+var _one_day_button: Button
+var _one_week_button: Button
+var _to_date_button: Button
 var _days_box: HBoxContainer
 var _standings: StandingsPanel
-var _progress: ProgressBar
 var _slider: HSlider
 var _prev_button: Button
 var _next_button: Button
@@ -37,15 +47,33 @@ func setup(p: UiTheme.Palette) -> void:
 	_status_label.add_theme_font_override("font", UiTheme.font(800))
 	_status_label.add_theme_font_size_override("font_size", 20)
 	_standings.setup(p, GameData.league_of(GameState.team))
-	for b: Button in [_prev_button, _next_button]:
+	for b: Button in [_prev_button, _next_button, _one_day_button, _one_week_button, _to_date_button]:
 		b.add_theme_font_override("font", UiTheme.font(700))
+	# 早送り中止は目立つ白地のボタン（参考画像の右上）
+	var stop_style := UiTheme.box(Color.WHITE, 20, p.main, 3)
+	_stop_button.add_theme_stylebox_override("normal", stop_style)
+	var stop_hover := stop_style.duplicate() as StyleBoxFlat
+	stop_hover.bg_color = p.tint
+	_stop_button.add_theme_stylebox_override("hover", stop_hover)
+	_stop_button.add_theme_stylebox_override("pressed", stop_hover)
+	for c in UiTheme.BUTTON_FONT_COLORS:
+		_stop_button.add_theme_color_override(c, p.ink)
+	_stop_button.add_theme_font_override("font", UiTheme.font(800))
 
 
-## ハブ画面から開かれるたびに呼ばれる。最後に試合をした日の付近を表示する。
+## ハブ画面から開かれるたび・日付が進むたびに呼ばれる。前日・今日・翌日を表示する。
 func refresh() -> void:
 	_slider.max_value = maxi(_season_day_count() - DAYS_SHOWN, 0)
 	_day_offset = clampi(_anchor_offset(), 0, maxi(_season_day_count() - DAYS_SHOWN, 0))
+	if not _is_selectable(_selected_day):
+		_selected_day = -1
 	_render()
+
+
+## 早送りの目標に選べる日か（今日〜最終日）
+func _is_selectable(day: int) -> bool:
+	return (GameState.phase == GameState.Phase.SEASON and day >= GameState.day
+			and day <= GameState.season_last_day())
 
 
 func _build_layout() -> void:
@@ -53,19 +81,34 @@ func _build_layout() -> void:
 
 	var root := VBoxContainer.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
-	root.add_theme_constant_override("separation", 10)
+	root.add_theme_constant_override("separation", 8)
 	add_child(root)
 
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 10)
+	root.add_child(top)
 	_status_bar = PanelContainer.new()
+	_status_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status_label = Label.new()
 	_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_status_label.clip_text = true
 	_status_bar.add_child(_status_label)
-	root.add_child(_status_bar)
+	top.add_child(_status_bar)
+	_stop_button = _make_button("■ 早送り中止", GameState.stop_fast_forward)
+	_stop_button.custom_minimum_size = Vector2(170, 0)
+	_stop_button.visible = false
+	top.add_child(_stop_button)
 
-	_progress = ProgressBar.new()
-	_progress.custom_minimum_size = Vector2(0, 8)
-	_progress.show_percentage = false
-	root.add_child(_progress)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 8)
+	root.add_child(actions)
+	_one_day_button = _make_button("▶ 1日進める", _on_advance_days.bind(1))
+	actions.add_child(_one_day_button)
+	_one_week_button = _make_button("▶▶ 1週間進める", _on_advance_days.bind(WEEK_DAYS))
+	actions.add_child(_one_week_button)
+	_to_date_button = _make_button("", _on_fast_forward_to_selected)
+	_to_date_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.add_child(_to_date_button)
 
 	var body := HBoxContainer.new()
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -77,23 +120,6 @@ func _build_layout() -> void:
 	days_area.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	days_area.add_theme_constant_override("separation", 8)
 	body.add_child(days_area)
-
-	var nav := HBoxContainer.new()
-	nav.add_theme_constant_override("separation", 8)
-	_prev_button = Button.new()
-	_prev_button.text = "◀ 前の3日間"
-	_prev_button.focus_mode = Control.FOCUS_NONE
-	_prev_button.pressed.connect(_shift.bind(-DAYS_SHOWN))
-	nav.add_child(_prev_button)
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	nav.add_child(spacer)
-	_next_button = Button.new()
-	_next_button.text = "次の3日間 ▶"
-	_next_button.focus_mode = Control.FOCUS_NONE
-	_next_button.pressed.connect(_shift.bind(DAYS_SHOWN))
-	nav.add_child(_next_button)
-	days_area.add_child(nav)
 
 	var days_scroll := ScrollContainer.new()
 	days_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -108,11 +134,56 @@ func _build_layout() -> void:
 	_standings.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	body.add_child(_standings)
 
+	# 下に日程全体のスライダー（両端の ◀ ▶ で3日ずつ）
+	var nav := HBoxContainer.new()
+	nav.add_theme_constant_override("separation", 6)
+	days_area.add_child(nav)
+	_prev_button = _make_button("◀", _shift.bind(-DAYS_SHOWN))
+	_prev_button.tooltip_text = "前の3日間"
+	nav.add_child(_prev_button)
 	_slider = HSlider.new()
 	_slider.min_value = 0
 	_slider.step = 1
+	_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_slider.value_changed.connect(_on_slider_changed)
-	root.add_child(_slider)
+	nav.add_child(_slider)
+	_next_button = _make_button("▶", _shift.bind(DAYS_SHOWN))
+	_next_button.tooltip_text = "次の3日間"
+	nav.add_child(_next_button)
+
+
+func _make_button(text: String, on_pressed: Callable) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_size_override("font_size", 16)
+	b.pressed.connect(on_pressed)
+	return b
+
+
+## 今日から days 日分（今日を含む）の試合を早送りで進める
+func _on_advance_days(days: int) -> void:
+	GameState.start_fast_forward(GameState.day + days - 1)
+
+
+func _on_fast_forward_to_selected() -> void:
+	if _is_selectable(_selected_day):
+		GameState.start_fast_forward(_selected_day)
+
+
+## 日付の列をクリック：早送りの目標に選ぶ（ダブルクリックならすぐ早送り）
+func _on_day_clicked(event: InputEvent, day: int) -> void:
+	var click := event as InputEventMouseButton
+	if click == null or not click.pressed or click.button_index != MOUSE_BUTTON_LEFT:
+		return
+	if GameState.is_fast_forwarding() or not _is_selectable(day):
+		return
+	_selected_day = day
+	if click.double_click:
+		GameState.start_fast_forward(day)
+		return
+	_render()
 
 
 func _shift(delta: int) -> void:
@@ -136,15 +207,14 @@ func _season_day_count() -> int:
 	return season.last_day() - season.first_day() + 1
 
 
-## 開いたときに表示する位置（開幕日からの日数）：最後に試合をした日。開幕前は開幕日
+## 表示する位置（開幕日からの日数）：前日・今日・翌日の3日間。シーズン後は最後の3日間
 func _anchor_offset() -> int:
 	var season := GameState.season
 	if season == null or season.games.is_empty():
 		return 0
-	var last_date := season.last_played_date()
-	if last_date.is_empty():
-		return 0
-	return Season.day_number(last_date) - season.first_day()
+	if GameState.phase != GameState.Phase.SEASON:
+		return _season_day_count() - DAYS_SHOWN
+	return GameState.day - 1 - season.first_day()
 
 
 func _render() -> void:
@@ -152,10 +222,14 @@ func _render() -> void:
 		_days_box.remove_child(child)
 		child.queue_free()
 	_standings.refresh()
+	_update_controls()
 	var season := GameState.season
 	if season == null or season.games.is_empty():
-		_status_label.text = "%d年の日程データがありません" % GameState.year
-		_progress.value = 0
+		if GameState.phase == GameState.Phase.SEASON:
+			_status_label.text = "今日は%s（%d年の日程データがないため試合はありません）" % [
+				Season.day_label(GameState.day), GameState.year]
+		else:
+			_status_label.text = "%d年の日程データがありません" % GameState.year
 		_prev_button.disabled = true
 		_next_button.disabled = true
 		return
@@ -170,43 +244,81 @@ func _render() -> void:
 			break
 		_days_box.add_child(_make_day_column(day))
 
-	var last_date := season.last_played_date()
-	if season.is_finished():
+	if GameState.is_fast_forwarding():
+		_status_label.text = "%s 終了まで早送り中" % Season.day_label(GameState.fast_forward_target)
+	elif GameState.phase != GameState.Phase.SEASON or season.is_finished():
 		_status_label.text = "全日程終了（%d試合）" % season.played_count()
-	elif last_date.is_empty():
-		_status_label.text = "開幕前　%s 開幕" % _date_label(season.first_day())
+	elif GameState.day == season.first_day():
+		_status_label.text = "開幕前　%s 開幕" % Season.day_label(season.first_day())
 	else:
-		_status_label.text = "%s までの試合が終了" % _date_label(Season.day_number(last_date))
-	_progress.value = 100.0 * season.played_count() / maxi(season.scheduled_count(), 1)
+		_status_label.text = "今日は%s　これまでに%d試合が終了" % [
+			Season.day_label(GameState.day), season.played_count()]
 
 
-func _date_label(day: int) -> String:
-	var dt := Time.get_datetime_dict_from_unix_time(day * Season.DAY_SECONDS + Season.DAY_SECONDS / 2)
-	return "%d月%d日（%s）" % [dt["month"], dt["day"], WEEKDAY_NAMES[dt["weekday"]]]
+## 進行ボタンの状態（早送り中は中止ボタンだけ、シーズン後はすべて無効）
+func _update_controls() -> void:
+	var fast_forwarding := GameState.is_fast_forwarding()
+	var in_season := GameState.phase == GameState.Phase.SEASON
+	_stop_button.visible = fast_forwarding
+	_one_day_button.disabled = fast_forwarding or not in_season
+	_one_week_button.disabled = fast_forwarding or not in_season
+	_to_date_button.disabled = fast_forwarding or not _is_selectable(_selected_day)
+	if _is_selectable(_selected_day):
+		_to_date_button.text = "▶▶▶ %s 終了まで早送り" % Season.day_label(_selected_day)
+	elif in_season:
+		_to_date_button.text = "日付をクリックして選ぶと、その日まで早送り"
+	else:
+		_to_date_button.text = "シーズン終了"
 
 
 func _make_day_column(day: int) -> Control:
+	var is_today := GameState.phase == GameState.Phase.SEASON and day == GameState.day
+	var target := GameState.fast_forward_target if GameState.is_fast_forwarding() else _selected_day
+	# 列全体を枠で包み、クリックで早送りの目標日に選べるようにする（選んだ日は橙の枠）
+	var frame := PanelContainer.new()
+	frame.custom_minimum_size = Vector2(145, 0)
+	frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var frame_style := UiTheme.box(Color.TRANSPARENT, 10)
+	frame_style.set_content_margin_all(3)
+	if day == target:
+		frame_style = UiTheme.box(Color(SELECT_COLOR, 0.18), 10, SELECT_COLOR, 3)
+		frame_style.set_content_margin_all(3)
+	frame.add_theme_stylebox_override("panel", frame_style)
+	frame.mouse_filter = Control.MOUSE_FILTER_STOP
+	if _is_selectable(day):
+		frame.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		frame.tooltip_text = "クリックで選択、ダブルクリックでこの日まで早送り"
+	frame.gui_input.connect(_on_day_clicked.bind(day))
+
 	var column := VBoxContainer.new()
-	column.custom_minimum_size = Vector2(145, 0)
-	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 4)
+	column.mouse_filter = Control.MOUSE_FILTER_PASS
+	frame.add_child(column)
 
 	var header := Label.new()
-	header.text = _date_label(day)
+	header.text = Season.day_label(day)
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	header.clip_text = true
-	header.add_theme_color_override("font_color", _palette.on_main)
+	header.add_theme_color_override("font_color", _palette.ink if is_today else _palette.on_main)
 	header.add_theme_font_override("font", UiTheme.font(800))
 	# 「10月10日（金）」など長い日付は列に収まるよう小さくする
 	header.add_theme_font_size_override("font_size", 18 if header.text.length() <= 8 else 16)
 	var header_panel := PanelContainer.new()
-	header_panel.add_theme_stylebox_override("panel", UiTheme.box(_palette.main, 8))
+	header_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	# 今日は白抜きの見出し
+	var header_style := UiTheme.box(_palette.main, 8)
+	if is_today:
+		header_style = UiTheme.box(Color.WHITE, 8, _palette.main, 3)
+		header_style.content_margin_top = 3
+		header_style.content_margin_bottom = 3
+	header_panel.add_theme_stylebox_override("panel", header_style)
 	header_panel.add_child(header)
 	column.add_child(header_panel)
 
 	var games: Array = GameState.season.games_on(Season.date_of_day(day))
 	if games.is_empty():
 		var rest_panel := PanelContainer.new()
+		rest_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 		rest_panel.add_theme_stylebox_override("panel", UiTheme.box(Color(1, 1, 1, 0.8), 8))
 		rest_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		var rest_label := Label.new()
@@ -219,7 +331,7 @@ func _make_day_column(day: int) -> Control:
 		rest_label.add_theme_font_size_override("font_size", 26)
 		rest_panel.add_child(rest_label)
 		column.add_child(rest_panel)
-		return column
+		return frame
 
 	# セ・パの試合を左右の列に分け、その日の全カードがスクロールなしで見えるようにする。
 	# 交流戦の日は主催が片方のリーグに偏るので、半分ずつに分ける
@@ -236,16 +348,18 @@ func _make_day_column(day: int) -> Control:
 		for league: String in columns:
 			titles[league] = GameData.LEAGUE_NAMES.get(league, league).left(1)
 	var leagues_row := HBoxContainer.new()
+	leagues_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	leagues_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	leagues_row.add_theme_constant_override("separation", 4)
 	column.add_child(leagues_row)
 	for league in ["C", "P"]:
 		leagues_row.add_child(_make_league_column(titles[league], columns[league]))
-	return column
+	return frame
 
 
 func _make_league_column(title: String, games: Array) -> VBoxContainer:
 	var league_col := VBoxContainer.new()
+	league_col.mouse_filter = Control.MOUSE_FILTER_PASS
 	league_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	league_col.add_theme_constant_override("separation", 2)
 	var label := Label.new()
@@ -284,6 +398,7 @@ func _make_game_tile(g: Dictionary) -> PanelContainer:
 	style.content_margin_top = 1
 	style.content_margin_bottom = 0
 	tile.add_theme_stylebox_override("panel", style)
+	tile.mouse_filter = Control.MOUSE_FILTER_PASS
 	if finished:
 		tile.tooltip_text = _result_tooltip(g)
 
@@ -344,6 +459,7 @@ func _result_tooltip(g: Dictionary) -> String:
 func _make_team_chip(team: String) -> PanelContainer:
 	var colors: Array[Color] = GameData.team_colors(team)
 	var chip := PanelContainer.new()
+	chip.mouse_filter = Control.MOUSE_FILTER_PASS
 	chip.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var style := UiTheme.box(colors[0], 6)
 	style.content_margin_left = 2

@@ -7,6 +7,7 @@ extends RefCounted
 ## status=canceled の試合はシミュレーションせず、日程表で「中止」と表示する。
 
 const DAY_SECONDS := 86400
+const WEEKDAY_NAMES := ["日", "月", "火", "水", "木", "金", "土"]
 
 var year: int
 ## 日付順。{date, day, kind, home, away, venue, status, game_no, result}
@@ -84,6 +85,16 @@ static func day_number(date: String) -> int:
 
 static func date_of_day(day: int) -> String:
 	return Time.get_date_string_from_unix_time(day * DAY_SECONDS + DAY_SECONDS / 2)
+
+
+static func month_of(day: int) -> int:
+	return int(date_of_day(day).substr(5, 2))
+
+
+## 例: "4月30日（水）"
+static func day_label(day: int) -> String:
+	var dt := Time.get_datetime_dict_from_unix_time(day * DAY_SECONDS + DAY_SECONDS / 2)
+	return "%d月%d日（%s）" % [dt["month"], dt["day"], WEEKDAY_NAMES[dt["weekday"]]]
 
 
 func is_finished() -> bool:

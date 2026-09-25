@@ -82,7 +82,7 @@ func _style_labels() -> void:
 	_team_name_label.label_settings = _label_settings(34, p.ink, 8, Color.WHITE)
 	_summary_label.label_settings = _label_settings(20, UiTheme.TEXT, 0, Color.WHITE)
 	_year_label.label_settings = _label_settings(32, p.ink, 8, Color.WHITE, Color.TRANSPARENT, 800)
-	_month_label.label_settings = _label_settings(56, p.ink, 10, Color.WHITE, Color(p.ink, 0.3))
+	_month_label.label_settings = _label_settings(44, p.ink, 10, Color.WHITE, Color(p.ink, 0.3))
 	_sub_title_label.label_settings = _label_settings(28, p.ink, 0, Color.WHITE)
 	_description_label.add_theme_font_size_override("font_size", 21)
 	_description_label.add_theme_font_override("font", UiTheme.font(700))
@@ -163,11 +163,12 @@ func _summary_text() -> String:
 func _description(key: String) -> String:
 	if key == "advance":
 		if GameState.phase == GameState.Phase.SEASON:
+			var last_month := GameState.month == GameState.season_months()[-1]
+			var goal := "シーズン終了まで進みます" if last_month else "次の月へ進みます"
 			if GameState.season == null:
-				return "%d月へ進みます。（%d年の日程データがないため試合は行いません）" % [
-					GameState.month, GameState.year]
-			return "%d月の残り%d試合（全球団）を行い、次の月へ進みます。" % [
-				GameState.month, GameState.games_left_in_month()]
+				return "%s。（%d年の日程データがないため試合は行いません）" % [goal, GameState.year]
+			return "%d月の残り%d試合（全球団）をまとめて行い、%s。日程表からは1日ずつ進められます。" % [
+				GameState.month, GameState.games_left_in_month(), goal]
 		return "オフシーズンを進めます。次は「%s」です。" % GameState.PHASE_NAMES[GameState.next_phase()]
 	for menu: Array in MENUS:
 		if menu[0] == key:
@@ -211,6 +212,8 @@ func _open_sub_screen(key: String) -> void:
 
 
 func _close_sub_screen() -> void:
+	# 早送りは日程表を開いている間だけ（閉じたら止める）
+	GameState.stop_fast_forward()
 	var key := _open_key
 	_open_key = ""
 	_sub_screen.visible = false
