@@ -34,18 +34,37 @@ const TEAM_SHORT := {
 	"東北楽天ゴールデンイーグルス": "楽天",
 }
 
+## 球団カラー [メイン, サブ]。画面のテーマ色に使う（UiTheme.team_palette）
+const TEAM_COLORS := {
+	"読売ジャイアンツ": ["f97709", "1a1a1a"],
+	"阪神タイガース": ["ffd800", "1a1a1a"],
+	"中日ドラゴンズ": ["00338d", "8ec6ec"],
+	"横浜ベイスターズ": ["0b4fa8", "9fd6f2"],
+	"横浜DeNAベイスターズ": ["0055a5", "00a0e9"],
+	"広島東洋カープ": ["e60012", "1a2a5a"],
+	"東京ヤクルトスワローズ": ["2e9b48", "0b2c6b"],
+	"埼玉西武ライオンズ": ["102961", "3fa9f5"],
+	"オリックス・バファローズ": ["0e2350", "b5975a"],
+	"福岡ソフトバンクホークス": ["f9c800", "1a1a1a"],
+	"北海道日本ハムファイターズ": ["0065b3", "b59b5a"],
+	"千葉ロッテマリーンズ": ["1a1a1a", "a7a9ac"],
+	"東北楽天ゴールデンイーグルス": ["86001b", "c8a14b"],
+}
+const DEFAULT_TEAM_COLORS := ["1f5fae", "f2b705"]
+
 ## 守備位置の並び順（一覧のソート用）
 const POS_ORDER := ["捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "内野手", "外野手", "指名打者", "投手"]
 
+## ランクの文字色（明るい背景用）
 const RANK_COLORS := {
-	"S": Color("ff5a5a"),
-	"A": Color("ff9a3c"),
-	"B": Color("ffd23c"),
-	"C": Color("8fdc5a"),
-	"D": Color("5ac8dc"),
-	"E": Color("7a9cff"),
-	"F": Color("a0a0a0"),
-	"G": Color("707070"),
+	"S": Color("d81b60"),
+	"A": Color("e53935"),
+	"B": Color("f4511e"),
+	"C": Color("ef8a00"),
+	"D": Color("c49a00"),
+	"E": Color("43a047"),
+	"F": Color("1e88e5"),
+	"G": Color("8a9199"),
 }
 
 ## 現在の能力値ファイルの中身（schema_version 2）
@@ -107,6 +126,18 @@ func players_of(team: String) -> Array:
 
 func short_name(team: String) -> String:
 	return TEAM_SHORT.get(team, team)
+
+
+## [メイン, サブ] の Color
+func team_colors(team: String) -> Array[Color]:
+	var hex: Array = TEAM_COLORS.get(team, DEFAULT_TEAM_COLORS)
+	return [Color(hex[0]), Color(hex[1])]
+
+
+## "C"（セ）/"P"（パ）。不明なら空文字
+func league_of(team: String) -> String:
+	var players := players_of(team)
+	return players[0]["league"] if not players.is_empty() else ""
 
 
 func rank_color(rank: String) -> Color:
