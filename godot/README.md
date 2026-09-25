@@ -1,4 +1,4 @@
-# godot/ — ゲーム本体（Godot 4.4 以降）
+# godot/ — ゲーム本体（Godot 4.7）
 
 Godot エディタで `godot/project.godot` を開いて実行（F5）。タイトル → 球団選択 → ハブ画面。
 
@@ -8,9 +8,22 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
 |---|---|
 | `autoload/game_data.gd` (`GameData`) | 能力値JSONの読み込み・球団別の選手一覧・球団略称・ランク色 |
 | `autoload/game_state.gd` (`GameState`) | 年・月・フェーズ・自球団・成績。可変ボタンの文言と進行（`advance()`） |
-| `scenes/title/` | ニューゲーム（2008年開幕の球団選択） |
-| `scenes/hub/hub.tscn` | ハブ画面。左に可変ボタン＋メニュー、右に各画面 |
-| `scenes/hub/roster_view.gd` | 「チーム」画面：自球団の野手・投手一覧（ランク表示、値はツールチップ） |
+| `scenes/title/` | ニューゲーム（2008年開幕の球団選択。球団ボタンは各球団のチームカラー） |
+| `scenes/hub/hub.tscn` | ハブ画面（パワプロのペナント画面風。docs/references/README.md）。左に大きなメニュー、上にイベント名、右上に順位表、下に説明文と日付。メニューを押すと中央〜右に各画面を開く（Esc で戻る） |
+| `scenes/hub/hub_menu_button.gd` | メニューボタン（アイコン＋太字、ボタンごとの色。選択中は大きく・右へせり出す） |
+| `scenes/hub/standings_panel.gd` | 順位表パネル（◀▶でセ・パ切り替え、球団名は各球団カラーの札） |
+| `scenes/hub/roster_view.gd` | 「采配」画面：自球団の野手・投手一覧（ランクは色付き文字、値はツールチップ） |
+| `scripts/ui_theme.gd` (`UiTheme`) | 配色（球団カラー → `Palette`）と画面全体の Theme、フォント |
+| `scripts/team_background.gd` | 明るい背景（球団カラーの薄いグラデーション＋斜めの帯） |
+| `scripts/team_emblem.gd` | 球団の丸いエンブレム（ロゴ画像の代わり） |
+| `assets/icons/` | メニューのアイコン（SVG） |
+| `assets/fonts/` | M PLUS Rounded 1c（Medium / ExtraBold、SIL OFL → `OFL.txt`）。無い字は OS フォントにフォールバック |
+
+## 配色
+
+- 球団カラーは `GameData.TEAM_COLORS`（[メイン, サブ]）。`UiTheme.team_palette(球団名)` で背景・パネル・見出し・順位表などの色を作る
+- 背景は白寄りの明るい色（メインカラーを薄めたもの）。黒基調にはしない
+- メニューボタンは参考画像にならってボタンごとに固定色（試合へ=赤、日程表=ピンク、采配=橙、新戦力=緑、記録室=黄、システム=紫）
 
 ## 能力値データの場所
 
@@ -32,9 +45,9 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
 
 ## 未実装（プレースホルダー）
 
-日程表・采配・新戦力・記録室・システム、各フェーズの画面、選手詳細。
+日程表・采配（選手一覧以外）・新戦力・記録室・システム、各フェーズの画面、選手詳細。日付は月単位（日程生成の実装後に「3/28 金」形式にする）。
 
 ## メモ
 
-- 日本語フォントは OS のシステムフォントへのフォールバックで表示している。文字化け（豆腐）する環境では Noto Sans JP 等をプロジェクトのテーマフォントに設定する
-- クラウド環境では Godot 本体を取得できないため、GDScript は `gdtoolkit`（`gdparse`/`gdlint`）で構文チェックのみ行っている
+- 日本語フォントは同梱の M PLUS Rounded 1c。一部の人名漢字（燁・嵜・邉 など）は含まれないため OS のフォント（Yu Gothic UI 等）で表示される
+- クラウド環境でも GitHub Releases から Godot 4.7（Linux 版）を取得でき、`xvfb-run` で起動してスクリーンショットを確認できる。GDScript は `gdlint` でもチェックしている

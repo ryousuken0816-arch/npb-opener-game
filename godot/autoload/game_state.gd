@@ -109,6 +109,71 @@ func date_text() -> String:
 			return "%d年 オフ" % year
 
 
+## ハブ画面の日付表示: 年
+func year_text() -> String:
+	return str(year)
+
+
+## ハブ画面の日付表示: 月（オフは「オフ」）
+func month_text() -> String:
+	match phase:
+		Phase.SEASON:
+			return "%d月" % month
+		Phase.CAMP:
+			return "2月"
+		_:
+			return "オフ"
+
+
+## ハブ画面上部のイベント名
+func event_text() -> String:
+	if phase != Phase.SEASON:
+		return phase_name()
+	if month == SEASON_MONTHS[0] and games_played() == 0:
+		return "開幕戦"
+	if month == SEASON_MONTHS[-1]:
+		return "シーズン終盤"
+	return "ペナントレース"
+
+
+func games_played() -> int:
+	return wins + losses + draws
+
+
+## リーグの順位表。各行は {team, wins, losses, draws, rank, games_behind}。
+## 自球団以外の成績は試合シミュレーション実装まで 0。
+func standings(league: String) -> Array[Dictionary]:
+	var rows: Array[Dictionary] = []
+	for t in GameData.teams(league):
+		var own := t == team
+		rows.append({
+			"team": t,
+			"wins": wins if own else 0,
+			"losses": losses if own else 0,
+			"draws": draws if own else 0,
+		})
+	# 同率は GameData.teams() の表示順を保つ（sort_custom は安定ソートではない）
+	for i in rows.size():
+		rows[i]["order"] = i
+	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		var pa := win_pct(a)
+		var pb := win_pct(b)
+		return pa > pb if pa != pb else a["order"] < b["order"])
+	for i in rows.size():
+		var row := rows[i]
+		var top := rows[0]
+		row["games_behind"] = ((top["wins"] - top["losses"]) - (row["wins"] - row["losses"])) / 2.0
+		var tied := i > 0 and win_pct(row) == win_pct(rows[i - 1])
+		row["rank"] = rows[i - 1]["rank"] if tied else i + 1
+	return rows
+
+
+## 勝率（引き分けを除く）。試合がなければ 0
+static func win_pct(row: Dictionary) -> float:
+	var decided: int = row["wins"] + row["losses"]
+	return float(row["wins"]) / decided if decided > 0 else 0.0
+
+
 func record_text() -> String:
 	return "%d勝 %d敗 %d分" % [wins, losses, draws]
 

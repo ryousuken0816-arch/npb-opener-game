@@ -104,6 +104,8 @@ func _set_ranks(item: TreeItem, first_col: int, ratings: Dictionary, columns: Ar
 			continue
 		item.set_text(col, rating["rank"])
 		item.set_custom_color(col, GameData.rank_color(rating["rank"]))
+		item.set_custom_font(col, UiTheme.font(800))
+		item.set_custom_font_size(col, 22)
 		item.set_tooltip_text(col, str(int(rating["value"])))
 
 
