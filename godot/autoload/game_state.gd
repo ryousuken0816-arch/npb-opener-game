@@ -1,6 +1,7 @@
 extends Node
-## ゲーム進行状態（年・月・フェーズ・自球団）。
+## ゲーム進行状態（年・月・フェーズ・自球団）とその年のペナント（Season）。
 ## ハブ画面の可変ボタンは advance() を呼び、button_text() の文言を表示する。
+## シーズン中は「試合へ」でその月の残り試合（史実の日程）をすべてシミュレーションし、次の月へ進む。
 
 signal changed
 
@@ -38,15 +39,18 @@ const PHASE_BUTTON := {
 }
 
 const START_YEAR := 2008
-const SEASON_MONTHS := [4, 5, 6, 7, 8, 9, 10]
+## 日程データ（data/<年>/schedule.json）が無い年に使う月の並び
+const DEFAULT_SEASON_MONTHS: Array[int] = [4, 5, 6, 7, 8, 9, 10]
 const ACTIVE_DRAFT_START_YEAR := 2022
 
 var year: int = START_YEAR
-var month: int = SEASON_MONTHS[0]
+var month: int = DEFAULT_SEASON_MONTHS[0]
 var phase: Phase = Phase.SEASON
 var team: String = ""
+## その年のペナント（日程・試合結果・個人成績）。日程データが無い年は null
+var season: Season = null
 
-# 自球団の成績（試合シミュレーション実装までは 0 のまま）
+# 自球団の成績（season の集計を写したもの）
 var wins: int = 0
 var losses: int = 0
 var draws: int = 0
@@ -55,25 +59,44 @@ var draws: int = 0
 func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	team = team_name
 	year = start_year
-	month = SEASON_MONTHS[0]
 	phase = Phase.SEASON
-	wins = 0
-	losses = 0
-	draws = 0
 	GameData.load_ratings(year, "pre")
+	_start_season()
 	changed.emit()
 
 
-## 可変ボタンを押したときの処理。シーズン中は1か月進め、オフは次のフェーズへ。
+## 可変ボタンを押したときの処理。シーズン中はその月の試合を行って次の月へ、オフは次のフェーズへ。
 func advance() -> void:
 	if phase == Phase.SEASON:
-		# TODO: その月の全試合をシミュレーションする
-		var i := SEASON_MONTHS.find(month)
-		if i + 1 < SEASON_MONTHS.size():
-			month = SEASON_MONTHS[i + 1]
+		if season != null:
+			season.sim_month(month)
+			_sync_record()
+		var months := season_months()
+		var i := months.find(month)
+		if i + 1 < months.size():
+			month = months[i + 1]
 			changed.emit()
 			return
 	_enter(next_phase())
+
+
+## シーズンの月（日程データがあれば試合のある月。2008年なら3〜10月）
+func season_months() -> Array[int]:
+	if season != null and not season.games.is_empty():
+		return season.months()
+	return DEFAULT_SEASON_MONTHS
+
+
+## その月にまだ行っていない試合の数（全球団）
+func games_left_in_month() -> int:
+	if season == null:
+		return 0
+	var n := 0
+	for i in range(season.next_index, season.games.size()):
+		var g: Dictionary = season.games[i]
+		if int(g["date"].substr(5, 2)) == month and g["status"] == "played":
+			n += 1
+	return n
 
 
 func next_phase() -> Phase:
@@ -129,9 +152,10 @@ func month_text() -> String:
 func event_text() -> String:
 	if phase != Phase.SEASON:
 		return phase_name()
-	if month == SEASON_MONTHS[0] and games_played() == 0:
+	var months := season_months()
+	if month == months[0] and games_played() == 0:
 		return "開幕戦"
-	if month == SEASON_MONTHS[-1]:
+	if month == months[-1]:
 		return "シーズン終盤"
 	return "ペナントレース"
 
@@ -140,17 +164,18 @@ func games_played() -> int:
 	return wins + losses + draws
 
 
-## リーグの順位表。各行は {team, wins, losses, draws, rank, games_behind}。
-## 自球団以外の成績は試合シミュレーション実装まで 0。
+## リーグの順位表。各行は {team, wins, losses, draws, runs, runs_allowed, rank, games_behind}。
 func standings(league: String) -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	for t in GameData.teams(league):
-		var own := t == team
+		var rec: Dictionary = season.record_of(t) if season != null else {}
 		rows.append({
 			"team": t,
-			"wins": wins if own else 0,
-			"losses": losses if own else 0,
-			"draws": draws if own else 0,
+			"wins": rec.get("w", 0),
+			"losses": rec.get("l", 0),
+			"draws": rec.get("d", 0),
+			"runs": rec.get("rs", 0),
+			"runs_allowed": rec.get("ra", 0),
 		})
 	# 同率は GameData.teams() の表示順を保つ（sort_custom は安定ソートではない）
 	for i in rows.size():
@@ -187,9 +212,23 @@ func _enter(new_phase: Phase) -> void:
 			year += 1
 			GameData.load_ratings(year, "pre")
 		Phase.SEASON:
-			month = SEASON_MONTHS[0]
-			wins = 0
-			losses = 0
-			draws = 0
+			_start_season()
 	phase = new_phase
 	changed.emit()
+
+
+## その年の日程を読み込み、開幕前の状態にする（能力値は開幕時点の pre を使う）
+func _start_season() -> void:
+	var schedule := GameData.load_schedule(year)
+	season = null
+	if not schedule.is_empty() and GameData.has_ratings():
+		season = Season.new(year, GameData.ratings, schedule, randi() + 1)
+	month = season_months()[0]
+	_sync_record()
+
+
+func _sync_record() -> void:
+	var rec: Dictionary = season.record_of(team) if season != null else {}
+	wins = rec.get("w", 0)
+	losses = rec.get("l", 0)
+	draws = rec.get("d", 0)

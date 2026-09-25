@@ -2,31 +2,13 @@ class_name ScheduleView
 extends Control
 ## 日程表画面（docs/references/README.md「schedule_pawapuro.webp」）。
 ##
-## 年間の対戦日程生成・試合シミュレーションはまだ実装されていない
-## （docs/SPEC.md「試合シミュレーション」、HANDOFF.md「次にやること」）。
-## そのため表示するカードとスコアは実データではなく、現在の年月を起点に生成した仮データ。
+## 史実の日程（GameState.season）を3日分ずつ、その日の全カードのタイルで表示する。
+## 終了した試合は暗色＋スコア（ツールチップに勝敗投手）、雨天中止は「中止」、試合のない日は「試合なし」。
+## 開いたときは最後に試合をした日から3日間を表示する。
 
 const DAYS_SHOWN := 3
-const DAY_SECONDS := 86400
 const WEEKDAY_NAMES := ["日", "月", "火", "水", "木", "金", "土"]
-const OFF_WEEKDAY := 1  ## 月曜は全カード移動日（参考画像どおり）
-
-## 仮の本拠地球場（実データが無いため、見た目確認用の固定値）
-const STADIUMS := {
-	"読売ジャイアンツ": "東京ドーム",
-	"阪神タイガース": "甲子園",
-	"中日ドラゴンズ": "バンテリンドーム",
-	"横浜ベイスターズ": "横浜スタジアム",
-	"横浜DeNAベイスターズ": "横浜スタジアム",
-	"広島東洋カープ": "マツダスタジアム",
-	"東京ヤクルトスワローズ": "神宮球場",
-	"埼玉西武ライオンズ": "ベルーナドーム",
-	"オリックス・バファローズ": "京セラドーム",
-	"福岡ソフトバンクホークス": "みずほPayPayドーム",
-	"北海道日本ハムファイターズ": "エスコンフィールド",
-	"千葉ロッテマリーンズ": "ZOZOマリン",
-	"東北楽天ゴールデンイーグルス": "楽天モバイルパーク",
-}
+const MONDAY := 1
 
 var _palette: UiTheme.Palette
 var _day_offset := 0
@@ -59,9 +41,10 @@ func setup(p: UiTheme.Palette) -> void:
 		b.add_theme_font_override("font", UiTheme.font(700))
 
 
-## ハブ画面から開かれるたびに呼ばれる。現在の年月の付近を表示する。
+## ハブ画面から開かれるたびに呼ばれる。最後に試合をした日の付近を表示する。
 func refresh() -> void:
-	_day_offset = clampi(_elapsed_days(), 0, maxi(_season_day_count() - DAYS_SHOWN, 0))
+	_slider.max_value = maxi(_season_day_count() - DAYS_SHOWN, 0)
+	_day_offset = clampi(_anchor_offset(), 0, maxi(_season_day_count() - DAYS_SHOWN, 0))
 	_render()
 
 
@@ -127,14 +110,13 @@ func _build_layout() -> void:
 
 	_slider = HSlider.new()
 	_slider.min_value = 0
-	_slider.max_value = _season_day_count()
-	_slider.step = DAYS_SHOWN
+	_slider.step = 1
 	_slider.value_changed.connect(_on_slider_changed)
 	root.add_child(_slider)
 
 
 func _shift(delta: int) -> void:
-	_day_offset = clampi(_day_offset + delta, 0, _season_day_count())
+	_day_offset = clampi(_day_offset + delta, 0, maxi(_season_day_count() - DAYS_SHOWN, 0))
 	_render()
 
 
@@ -146,82 +128,90 @@ func _on_slider_changed(value: float) -> void:
 	_render()
 
 
+## 開幕日から最終日までの日数（日程データが無ければ 0）
 func _season_day_count() -> int:
-	var months: Array = GameState.SEASON_MONTHS
-	return months.size() * 30
+	var season := GameState.season
+	if season == null or season.games.is_empty():
+		return 0
+	return season.last_day() - season.first_day() + 1
 
 
-func _season_start_unix() -> int:
-	var dict := {
-		"year": GameState.year, "month": GameState.SEASON_MONTHS[0], "day": 1,
-		"hour": 12, "minute": 0, "second": 0,
-	}
-	return Time.get_unix_time_from_datetime_dict(dict)
-
-
-## 開幕からの経過日数。現フェーズの月を起点に「消化済み／これから」の境目に使う。
-func _elapsed_days() -> int:
-	if GameState.phase != GameState.Phase.SEASON:
-		return _season_day_count()
-	var months: Array = GameState.SEASON_MONTHS
-	var month_index := months.find(GameState.month)
-	return maxi(month_index, 0) * 30
+## 開いたときに表示する位置（開幕日からの日数）：最後に試合をした日。開幕前は開幕日
+func _anchor_offset() -> int:
+	var season := GameState.season
+	if season == null or season.games.is_empty():
+		return 0
+	var last_date := season.last_played_date()
+	if last_date.is_empty():
+		return 0
+	return Season.day_number(last_date) - season.first_day()
 
 
 func _render() -> void:
-	_slider.set_value_no_signal(_day_offset)
-	_prev_button.disabled = _day_offset <= 0
-	_next_button.disabled = _day_offset >= _season_day_count()
-
-	var season_start := _season_start_unix()
-	var elapsed := _elapsed_days()
-
 	for child in _days_box.get_children():
 		_days_box.remove_child(child)
 		child.queue_free()
-	var last_dt := {}
-	for i in DAYS_SHOWN:
-		var day_index := _day_offset + i
-		var day_unix := season_start + day_index * DAY_SECONDS
-		var finished := day_index < elapsed
-		last_dt = Time.get_datetime_dict_from_unix_time(day_unix)
-		_days_box.add_child(_make_day_column(day_unix, day_index, finished))
-
-	var last_label := "%d月%d日（%s）" % [
-		last_dt["month"], last_dt["day"], WEEKDAY_NAMES[last_dt["weekday"]]]
-	_status_label.text = "%s 終了まで早送り中" % last_label
-	_progress.value = 100.0 * (_day_offset + DAYS_SHOWN) / _season_day_count()
-
 	_standings.refresh()
+	var season := GameState.season
+	if season == null or season.games.is_empty():
+		_status_label.text = "%d年の日程データがありません" % GameState.year
+		_progress.value = 0
+		_prev_button.disabled = true
+		_next_button.disabled = true
+		return
+
+	_slider.set_value_no_signal(_day_offset)
+	var max_offset := maxi(_season_day_count() - DAYS_SHOWN, 0)
+	_prev_button.disabled = _day_offset <= 0
+	_next_button.disabled = _day_offset >= max_offset
+	for i in DAYS_SHOWN:
+		var day := season.first_day() + _day_offset + i
+		if day > season.last_day():
+			break
+		_days_box.add_child(_make_day_column(day))
+
+	var last_date := season.last_played_date()
+	if season.is_finished():
+		_status_label.text = "全日程終了（%d試合）" % season.played_count()
+	elif last_date.is_empty():
+		_status_label.text = "開幕前　%s 開幕" % _date_label(season.first_day())
+	else:
+		_status_label.text = "%s までの試合が終了" % _date_label(Season.day_number(last_date))
+	_progress.value = 100.0 * season.played_count() / maxi(season.scheduled_count(), 1)
 
 
-func _make_day_column(day_unix: int, day_index: int, finished: bool) -> Control:
+func _date_label(day: int) -> String:
+	var dt := Time.get_datetime_dict_from_unix_time(day * Season.DAY_SECONDS + Season.DAY_SECONDS / 2)
+	return "%d月%d日（%s）" % [dt["month"], dt["day"], WEEKDAY_NAMES[dt["weekday"]]]
+
+
+func _make_day_column(day: int) -> Control:
 	var column := VBoxContainer.new()
 	column.custom_minimum_size = Vector2(145, 0)
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 4)
 
-	var dt := Time.get_datetime_dict_from_unix_time(day_unix)
-	var weekday: int = dt["weekday"]
-
 	var header := Label.new()
-	header.text = "%d月%d日（%s）" % [dt["month"], dt["day"], WEEKDAY_NAMES[weekday]]
+	header.text = _date_label(day)
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	header.clip_text = true
 	header.add_theme_color_override("font_color", _palette.on_main)
 	header.add_theme_font_override("font", UiTheme.font(800))
-	header.add_theme_font_size_override("font_size", 18)
+	# 「10月10日（金）」など長い日付は列に収まるよう小さくする
+	header.add_theme_font_size_override("font_size", 18 if header.text.length() <= 8 else 16)
 	var header_panel := PanelContainer.new()
 	header_panel.add_theme_stylebox_override("panel", UiTheme.box(_palette.main, 8))
 	header_panel.add_child(header)
 	column.add_child(header_panel)
 
-	if weekday == OFF_WEEKDAY:
+	var games: Array = GameState.season.games_on(Season.date_of_day(day))
+	if games.is_empty():
 		var rest_panel := PanelContainer.new()
 		rest_panel.add_theme_stylebox_override("panel", UiTheme.box(Color(1, 1, 1, 0.8), 8))
 		rest_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		var rest_label := Label.new()
-		rest_label.text = "移動日"
+		var weekday: int = Time.get_datetime_dict_from_unix_time(day * Season.DAY_SECONDS)["weekday"]
+		rest_label.text = "移動日" if weekday == MONDAY else "試合なし"
 		rest_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		rest_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		rest_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
@@ -231,64 +221,59 @@ func _make_day_column(day_unix: int, day_index: int, finished: bool) -> Control:
 		column.add_child(rest_panel)
 		return column
 
-	# セ・パそれぞれの試合を左右の列に分け、その日の全カードがスクロールなしで見えるようにする
+	# セ・パの試合を左右の列に分け、その日の全カードがスクロールなしで見えるようにする。
+	# 交流戦の日は主催が片方のリーグに偏るので、半分ずつに分ける
+	var columns := {"C": [], "P": []}
+	var titles := {}
+	var interleague := games.any(func(g: Dictionary) -> bool: return g["kind"] == "interleague")
+	if interleague:
+		var half := ceili(games.size() / 2.0)
+		columns = {"C": games.slice(0, half), "P": games.slice(half)}
+		titles = {"C": "交流戦", "P": ""}
+	else:
+		for g: Dictionary in games:
+			columns[GameState.season.leagues.get(g["home"], "C")].append(g)
+		for league: String in columns:
+			titles[league] = GameData.LEAGUE_NAMES.get(league, league).left(1)
 	var leagues_row := HBoxContainer.new()
 	leagues_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	leagues_row.add_theme_constant_override("separation", 4)
 	column.add_child(leagues_row)
-	var pairings := _pairings_for(day_index)
 	for league in ["C", "P"]:
-		leagues_row.add_child(_make_league_column(league, pairings.get(league, []), day_unix, finished))
+		leagues_row.add_child(_make_league_column(titles[league], columns[league]))
 	return column
 
 
-func _make_league_column(league: String, pairs: Array, day_unix: int, finished: bool) -> VBoxContainer:
+func _make_league_column(title: String, games: Array) -> VBoxContainer:
 	var league_col := VBoxContainer.new()
 	league_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	league_col.add_theme_constant_override("separation", 2)
 	var label := Label.new()
-	label.text = GameData.LEAGUE_NAMES.get(league, league).left(1)
+	label.text = title
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", 11)
 	label.add_theme_font_override("font", UiTheme.font(700))
 	label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
 	label.custom_minimum_size.y = 14
 	league_col.add_child(label)
-	for pair: Array in pairs:
-		league_col.add_child(_make_game_tile(pair[0], pair[1], day_unix, finished))
+	for g: Dictionary in games:
+		league_col.add_child(_make_game_tile(g))
 	return league_col
 
 
-## 円卓法（circle method）で日ごとの組み合わせを作る仮のペアリング。
-## リーグ内総当たりの雰囲気を出すためだけの仮ロジックで、実際の年間日程ではない。
-func _pairings_for(day_index: int) -> Dictionary:
-	var pairs: Dictionary = {}
-	for league in ["C", "P"]:
-		var teams: Array = GameData.teams(league)
-		pairs[league] = _round_robin_pairs(teams, day_index) if teams.size() >= 2 else []
-	return pairs
-
-
-func _round_robin_pairs(teams: Array, round_index: int) -> Array:
-	var n := teams.size()
-	var rotating: Array = teams.slice(1)
-	var r := round_index % maxi(n - 1, 1)
-	for i in r:
-		rotating.push_back(rotating.pop_front())
-	var order: Array = [teams[0]]
-	order.append_array(rotating)
-	var pairs: Array = []
-	for i in n / 2:
-		pairs.append([order[i], order[n - 1 - i]])
-	return pairs
-
-
-func _make_game_tile(home: String, away: String, day_unix: int, finished: bool) -> PanelContainer:
+func _make_game_tile(g: Dictionary) -> PanelContainer:
+	var home: String = g["home"]
+	var away: String = g["away"]
+	var result: Dictionary = g["result"]
+	var finished := not result.is_empty()
+	var canceled: bool = g["status"] != "played"
 	var is_own_game := home == GameState.team or away == GameState.team
 	var tile := PanelContainer.new()
 	var style: StyleBoxFlat
 	if finished:
 		style = UiTheme.box(Color("3d434c"), 8)
+	elif canceled:
+		style = UiTheme.box(Color("e3e6ea"), 8, Color("d5dae0"), 1)
 	else:
 		style = UiTheme.box(Color(1, 1, 1, 0.95), 8, Color("d5dae0"), 1)
 	if is_own_game:
@@ -296,29 +281,30 @@ func _make_game_tile(home: String, away: String, day_unix: int, finished: bool) 
 		style.set_border_width_all(3)
 	style.content_margin_left = 2
 	style.content_margin_right = 2
-	style.content_margin_top = 2
-	style.content_margin_bottom = 2
+	style.content_margin_top = 1
+	style.content_margin_bottom = 0
 	tile.add_theme_stylebox_override("panel", style)
+	if finished:
+		tile.tooltip_text = _result_tooltip(g)
 
 	# 縦積み（アウェイ→中央→ホーム）にして、列を細くしても読めるようにする
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 1)
+	box.add_theme_constant_override("separation", 0)
+	box.mouse_filter = Control.MOUSE_FILTER_PASS
 	tile.add_child(box)
 	box.add_child(_make_team_chip(away))
 
 	var mid_label := Label.new()
 	mid_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	mid_label.clip_text = true
-	mid_label.add_theme_font_size_override("font_size", 13)
+	mid_label.add_theme_font_size_override("font_size", 12)
 	mid_label.add_theme_font_override("font", UiTheme.font(800))
 	if finished:
-		var seed := hash("%s-%s-%d" % [home, away, day_unix])
-		var home_score := seed % 8
-		var away_score := (seed / 8) % 8
-		if home_score == away_score:
-			home_score += 1
-		mid_label.text = "%d－%d" % [away_score, home_score]
+		mid_label.text = "%d－%d" % [result["away_score"], result["home_score"]]
 		mid_label.add_theme_color_override("font_color", Color.WHITE)
+	elif canceled:
+		mid_label.text = "中止"
+		mid_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
 	else:
 		mid_label.text = "vs"
 		mid_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
@@ -326,7 +312,7 @@ func _make_game_tile(home: String, away: String, day_unix: int, finished: bool) 
 	box.add_child(_make_team_chip(home))
 
 	var stadium_label := Label.new()
-	stadium_label.text = STADIUMS.get(home, "-")
+	stadium_label.text = g["venue"] if not str(g["venue"]).is_empty() else "-"
 	stadium_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stadium_label.clip_text = true
 	stadium_label.add_theme_font_size_override("font_size", 9)
@@ -337,6 +323,24 @@ func _make_game_tile(home: String, away: String, day_unix: int, finished: bool) 
 	return tile
 
 
+## 終了した試合のツールチップ（スコアと勝敗・セーブ投手）
+func _result_tooltip(g: Dictionary) -> String:
+	var result: Dictionary = g["result"]
+	var season := GameState.season
+	var lines := PackedStringArray()
+	lines.append("%s %d－%d %s%s" % [
+		GameData.short_name(g["away"]), result["away_score"], result["home_score"],
+		GameData.short_name(g["home"]), "（延長%d回）" % result["innings"] if result["innings"] > 9 else ""])
+	if result["win"].is_empty():
+		lines.append("引き分け")
+	else:
+		lines.append("勝：%s　敗：%s" % [
+			season.player_name(result["win"]), season.player_name(result["lose"])])
+		if not result["save"].is_empty():
+			lines.append("S：%s" % season.player_name(result["save"]))
+	return "\n".join(lines)
+
+
 func _make_team_chip(team: String) -> PanelContainer:
 	var colors: Array[Color] = GameData.team_colors(team)
 	var chip := PanelContainer.new()
@@ -344,8 +348,8 @@ func _make_team_chip(team: String) -> PanelContainer:
 	var style := UiTheme.box(colors[0], 6)
 	style.content_margin_left = 2
 	style.content_margin_right = 2
-	style.content_margin_top = 2
-	style.content_margin_bottom = 2
+	style.content_margin_top = 0
+	style.content_margin_bottom = 0
 	chip.add_theme_stylebox_override("panel", style)
 	var label := Label.new()
 	var short_name := GameData.short_name(team)

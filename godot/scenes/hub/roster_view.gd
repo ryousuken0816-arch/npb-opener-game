@@ -11,13 +11,25 @@ const PITCHER_COLUMNS := [
 	["bb9", "制球"], ["hr9", "被弾抑制"],
 ]
 const RANK_COLUMN_WIDTH := 72
+## 今季の成績タブ（GameState.season）の列 [見出し, 幅]
+const BATTING_STAT_COLUMNS := [
+	["試合", 48], ["打席", 52], ["打率", 56], ["本塁打", 60], ["打点", 48],
+	["盗塁", 48], ["四球", 48], ["三振", 48], ["出塁率", 60],
+]
+const PITCHING_STAT_COLUMNS := [
+	["登板", 48], ["先発", 48], ["勝", 40], ["敗", 40], ["S", 40], ["H", 40],
+	["投球回", 76], ["防御率", 60], ["奪三振", 60],
+]
 
 var _shown_key := ""
 
 
 ## 表示中と同じ球団・能力値なら作り直さない
 func show_team(team: String) -> void:
-	var key := "%s|%s|%s" % [team, GameData.ratings.get("year"), GameData.ratings.get("phase")]
+	var season := GameState.season
+	var key := "%s|%s|%s|%d" % [team, GameData.ratings.get("year"), GameData.ratings.get("phase"),
+		season.played_count() if season != null else -1]
+	var tab := current_tab
 	if key == _shown_key:
 		return
 	_shown_key = key
@@ -34,6 +46,10 @@ func show_team(team: String) -> void:
 
 	_add_tab("野手 (%d)" % batters.size(), _make_batter_tree(batters))
 	_add_tab("投手 (%d)" % pitchers.size(), _make_pitcher_tree(pitchers))
+	if season != null:
+		_add_tab("打撃成績", _make_batting_stats_tree(batters + pitchers, season))
+		_add_tab("投手成績", _make_pitching_stats_tree(pitchers, season))
+	current_tab = clampi(tab, 0, get_tab_count() - 1)
 
 
 func _add_tab(title: String, content: Control) -> void:
@@ -61,11 +77,87 @@ func _make_pitcher_tree(players: Array) -> Tree:
 		item.set_text(0, p["name"])
 		item.set_text(1, _str(pitching.get("role")))
 		item.set_text(2, _throws_bats(p))
-		_set_ranks(item, 3, pitching.get("ratings", {}), PITCHER_COLUMNS)
+		var ratings: Variant = pitching.get("ratings")
+		_set_ranks(item, 3, ratings if ratings is Dictionary else {}, PITCHER_COLUMNS)
 		var abilities := PackedStringArray(pitching.get("abilities", []))
 		item.set_text(3 + PITCHER_COLUMNS.size(), " ".join(abilities))
 		item.set_metadata(0, p["id"])
 	return tree
+
+
+## 今季の打撃成績（出場した選手のみ、打席の多い順）
+func _make_batting_stats_tree(players: Array, season: Season) -> Tree:
+	var rows: Array = []
+	for p: Dictionary in players:
+		var b: Dictionary = season.batting.get(p["id"], {})
+		if not b.is_empty():
+			rows.append([p, b])
+	rows.sort_custom(func(x: Array, y: Array) -> bool: return x[1]["pa"] > y[1]["pa"])
+	var tree := _make_stats_tree(BATTING_STAT_COLUMNS)
+	for row: Array in rows:
+		var p: Dictionary = row[0]
+		var b: Dictionary = row[1]
+		var obp_den: int = b["ab"] + b["bb"] + b["hbp"] + b["sf"]
+		var obp := float(b["h"] + b["bb"] + b["hbp"]) / obp_den if obp_den > 0 else 0.0
+		var item := tree.create_item()
+		item.set_text(0, p["name"])
+		item.set_metadata(0, p["id"])
+		_set_stat_texts(item, [
+			b["g"], b["pa"], _rate(Season.batting_avg(b)) if b["ab"] > 0 else "-", b["hr"],
+			b["rbi"], b["sb"], b["bb"], b["so"], _rate(obp) if obp_den > 0 else "-",
+		])
+	return tree
+
+
+## 今季の投手成績（登板した投手のみ、投球回の多い順）
+func _make_pitching_stats_tree(players: Array, season: Season) -> Tree:
+	var rows: Array = []
+	for p: Dictionary in players:
+		var s: Dictionary = season.pitching.get(p["id"], {})
+		if not s.is_empty():
+			rows.append([p, s])
+	rows.sort_custom(func(x: Array, y: Array) -> bool: return x[1]["outs"] > y[1]["outs"])
+	var tree := _make_stats_tree(PITCHING_STAT_COLUMNS)
+	for row: Array in rows:
+		var p: Dictionary = row[0]
+		var s: Dictionary = row[1]
+		var outs: int = s["outs"]
+		var item := tree.create_item()
+		item.set_text(0, p["name"])
+		item.set_metadata(0, p["id"])
+		_set_stat_texts(item, [
+			s["g"], s["gs"], s["w"], s["l"], s["sv"], s["hld"],
+			"%d %d/3" % [outs / 3, outs % 3] if outs % 3 != 0 else str(outs / 3),
+			"%.2f" % Season.era(s) if outs > 0 else "-", s["so"],
+		])
+	return tree
+
+
+func _make_stats_tree(columns: Array) -> Tree:
+	var tree := Tree.new()
+	tree.hide_root = true
+	tree.select_mode = Tree.SELECT_ROW
+	tree.column_titles_visible = true
+	tree.columns = 1 + columns.size()
+	tree.set_column_title(0, "名前")
+	tree.set_column_expand(0, true)
+	for i in columns.size():
+		tree.set_column_title(i + 1, columns[i][0])
+		tree.set_column_expand(i + 1, false)
+		tree.set_column_custom_minimum_width(i + 1, columns[i][1])
+	tree.create_item()  # 非表示のルート
+	return tree
+
+
+func _set_stat_texts(item: TreeItem, values: Array) -> void:
+	for i in values.size():
+		item.set_text(i + 1, str(values[i]))
+		item.set_text_alignment(i + 1, HORIZONTAL_ALIGNMENT_RIGHT)
+
+
+## 打率などの表示（".312"）
+func _rate(value: float) -> String:
+	return ("%.3f" % value).trim_prefix("0")
 
 
 func _make_tree(text_headers: Array, rank_columns: Array, trailing_headers: Array = []) -> Tree:
@@ -128,12 +220,21 @@ func _batter_before(a: Dictionary, b: Dictionary) -> bool:
 
 
 func _pitcher_before(a: Dictionary, b: Dictionary) -> bool:
-	var ra: String = a["pitching"]["role"] if a["pitching"] else ""
-	var rb: String = b["pitching"]["role"] if b["pitching"] else ""
+	var ra := _role(a)
+	var rb := _role(b)
 	if ra != rb:
 		return ra == "先発"
 	return _overall(a) > _overall(b)
 
 
+## 先発/救援。登板実績のない投手（role が null）は空文字
+func _role(p: Dictionary) -> String:
+	if not p["pitching"] or p["pitching"]["role"] == null:
+		return ""
+	return p["pitching"]["role"]
+
+
 func _overall(p: Dictionary) -> int:
-	return int(p["pitching"]["ratings"]["overall"]["value"]) if p["pitching"] else 0
+	if not p["pitching"] or not p["pitching"]["ratings"]:
+		return 0
+	return int(p["pitching"]["ratings"]["overall"]["value"])
