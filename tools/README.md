@@ -23,7 +23,10 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
    FULL は指標ごと（打率 400打席、BB% 200打席、FIP 450アウト=150回 など）。
    事前値は正規化母集団の30パーセンタイル（出場の少ない選手は平均以下が多いため）
 3. **正規化**: 対象年から5年分の1軍シーズン（200打席以上 / 50回以上 / 守備は同一位置40試合以上）を母集団に z 値化
-4. **スケール**: `55 + 15 × z` を 1〜100 に丸め、ランク S≥90 A≥80 B≥70 C≥60 D≥50 E≥40 F≥20 G<20
+4. **スケール**: `63 + 17 × z` を 1〜100 に丸め、ランク S≥90 A≥80 B≥70 C≥60 D≥50 E≥40 F≥20 G<20
+   （母集団が規定打席/規定投球回クリア済みの「そこそこ良い選手」に絞られているため、平均をそのまま
+   D帯に置くとレギュラーの大半がD以下に沈む。平均をC寄りに、SDを広めにして、レギュラー級がC〜D中心・
+   主力がB以上・スターがA/Sに届くように調整済み。定数は `SCALE_MEAN` / `SCALE_SD`）
 
 ### 各能力の指標
 
@@ -39,17 +42,29 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 | 投手 スタミナ | 1登板あたりアウト数（12以上で先発扱い。先発数がデータにないため）。先発・救援共通で正規化 |
 | 投手 K/9・BB/9・HR/9 | 先発・救援で別々に正規化 |
 | 投手 特殊能力 | K/9・BB/9・HR/9 が同じ役割の母集団で上位15%/下位15%なら付与（50回未満は付与しない） |
+| 投手 球速 | `data/velocity.json`（2011年〜、実測 km/h）を Marcel 加重で平均。データが無い期間は代用（下記） |
+| 野手 弾道（1〜4） | ISO と HR/打数 の z 値（0.5/0.5）をしきい値で分類。実データなしの代用指標 |
+
+球速・弾道はランク（G〜S）ではなく実数値のみを出力する（パワプロ画面で球速・弾道は数値のまま表示されるため）。
+
+**球速のデータが無い場合の代用**（`velocity_for`、`source` に記録）:
+1. 対象年までの実測値がない場合、その投手の最古の実測値を「最古の年との差×`VELOCITY_EARLY_DECAY_PER_YEAR`（上限 `VELOCITY_EARLY_DECAY_CAP`）」だけ下げて使う（`early_career`）。主に2008〜2010年向け
+2. 実測値が一切ない投手（2010年以前引退など）は、実測値のある投手の通算K/9→実測値平均 の単回帰で推定し `VELOCITY_MIN_KMH`〜`VELOCITY_MAX_KMH` にクリップ（`estimated`）
+3. 通常は対象年から遡り3年をMarcel加重平均（`observed`）
+4. **1軍・2軍とも登板実績が一切ない投手**（新人・新外国人。K/9も算出できないため②の回帰も使えない）は
+   平均球速（`velocity_mean_kmh`）にドラフト順位による加減（`PROVISIONAL_VELOCITY_ROUND_BONUS`。上位指名ほど+、育成は`PROVISIONAL_VELOCITY_IKUSEI_PENALTY`）を加えた仮の値（`provisional`）。
+   この場合 `pitching` は `{"ratings": null, "abilities": [], "role": null, "detail": null, "velocity": {...}, "sample": {"outs_1": 0.0, "outs_2": 0.0}}` になる（球速以外は算出不能なため null）
 
 ### 出力フォーマット（`generated/ratings/<年>_<phase>.json`）
 
 ```jsonc
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "year": 2008,                     // 在籍の年
   "phase": "pre",                   // pre=開幕時点 / post=シーズン後
   "stats_through": 2007,            // 使った成績の最終年
   "fallbacks": ["..."],             // データ不足で代用した内容
-  "source_years": [2008],           // 入力に使った data/<年>
+  "source_years": [2005, 2006, 2007, 2008],  // 入力に使った data/<年>
   "scale": {"min": 1, "max": 100, "ranks": [{"min": 90, "rank": "S"}, ...]},
   "fip_constant": 3.021,
   "players": [{
@@ -65,14 +80,16 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
         "meet": {"value": 59, "rank": "D"}, "power": {...}, "eye": {...}, "speed": {...},
         "defense": {...}, "arm": {...}
       },
-      "detail": {"avg": {"observed": 0.281, "blended": 0.281, "weight": 1.0}, ...},  // 詳細画面の実数値
-      "sample": {"pa_1": 1246.2, "pa_2": 0.0}                                      // 加重後の打席数
+      "detail": {"avg": {"observed": 0.281, "blended": 0.281, "weight": 1.0}, ...},  // 詳細画面の実数値（hr_rate含む）
+      "sample": {"pa_1": 1246.2, "pa_2": 0.0},                                     // 加重後の打席数
+      "trajectory": 3                                                             // 弾道 1〜4（実数値のみ）
     },
     "pitching": null | {
       "ratings": {"overall": {...}, "stamina": {...}, "k9": {...}, "bb9": {...}, "hr9": {...}},
       "abilities": ["奪三振", "被弾抑制"],
       "role": "先発" | "救援",
       "detail": {"fip": {...}, ...},
+      "velocity": {"kmh": 148, "source": "observed"} | null,  // observed/early_career/estimated
       "sample": {"outs_1": 1369.8, "outs_2": 0.0}
     },
     "fielding": {                    // 守備位置ごと（1軍・2軍いずれかで守備記録のある位置）
@@ -82,10 +99,6 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 }
 ```
 
-### 未解決・要相談
-
-- 2008年 pre は2007年以前の2軍・守備成績とGG賞がないため2008年分で代用中。ローカル側で2005〜2007年のチーム成績・表彰を取得できれば解消
-
 ### 決定済み
 
 - 捕手の肩力は 補殺/試合（盗塁阻止率の代替）で確定
@@ -93,3 +106,5 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 - 能力値は前年までの成績で算出し、シーズン後に再計算
 - スタミナと先発/救援判定（1登板12アウト以上）を採用
 - 守備成績もドラフト情報もない選手（2006年以前指名の未出場選手など）は `primary_pos: null`。全年データが揃えば解消する見込み
+- 2005〜2007年のチーム成績・表彰（data/2005〜2007）を取得済みのため、2008年 pre のフォールバックは解消（players.json・drafts.json が無い年はスキップして読み込む）
+- 球速・弾道の指標と代用ロジックは上記のとおり確定（係数は `tools/compute_ratings.py` 冒頭の `VELOCITY_*` / `TRAJECTORY_*` 定数で調整可能）

@@ -51,20 +51,20 @@
 2. ~~能力値の要相談事項~~ 決定済み（tools/README.md「決定済み」）。2005〜2007年のチーム成績・表彰は取得済み（data/2005〜2007、上記「追加データ」）。compute_ratings.py の fallbacks を解消する
 3. ~~Godot プロジェクトの骨組み（ハブ画面）~~ → `godot/`（構成は godot/README.md）。タイトル（球団選択）→ ハブ画面（可変ボタン・メニュー・自球団の選手一覧）。
    ローカルの Godot 4.7.2 で起動確認済み（エラーなし、2011年まで進行OK）。**ユーザーは Godot 4.7 を使用**。クラウドでも Godot 4.7 を GitHub Releases から取得して xvfb で起動・スクショ確認できる（godot/README.md「メモ」）
-3.5 **球速（投手）と弾道（野手）を能力値に追加する**（ユーザー決定 2026-09-25）… Opus 向き（式の設計）
-   - **球速は実データあり**：`data/velocity.json`（baseballdata.jp の「最速」、**2011〜2026年**の1軍投手 5,403行、全行 player_id 突合済み）。項目: year, league, name, team, max_kmh, games, player_id
-     - シーズン途中の移籍投手は同じ年に2行ある（30件）→ その年の **max_kmh の最大値** を使う
-     - 2008〜2010年はサイトに無い。方針：①その投手の2011年以降で最も古い値を使う（若手は少し下げる）②実データが一切ない投手（〜2010年引退・1軍未登板）は、実データのある投手で K/9 等→球速 の回帰を作って推定
-     - 収集スクリプトは `npb_collector/velocity.py`、手動補正は `npb_collector/velocity_overrides.json`（サイト側に選手名の取り違えがあるため）
-   - **弾道は実データなし**：HR/打数・ISO から推定（1〜4）。係数は定数化して後で調整できるように
-   - 画面の参考画像は docs/references/（ハブ・日程表・1軍登録・オーダー・選手詳細・采配メニュー・トレード）。現SPECに無い要素（調子・疲労・変化球図）は一旦保留
+3.5 ~~球速（投手）と弾道（野手）を能力値に追加する~~ → 完了（2026-09-25）。`tools/compute_ratings.py` に実装済み
+   - **球速**：`data/velocity.json` の実測 km/h をMarcel加重平均。実データ不足時は「最古の実測値を年数差ぶん減算」または「K/9からの単回帰」で代用（`source: observed/early_career/estimated`）。定数は `VELOCITY_*`（スクリプト冒頭）
+   - **弾道**：ISO・HR/打数の z 値から 1〜4 を算出。定数は `TRAJECTORY_*`
+   - 出力: `pitching.velocity`（`{"kmh":..., "source":...}`）、`batting.trajectory`（1〜4の整数）。schema_version 3。詳細は tools/README.md
+   - ついでに直していた既存バグ：`data/2005〜2007/` に players.json・drafts.json が無いため2008年pre生成が落ちる問題を修正（存在確認してスキップ）→ 2008年pre のフォールバック（HANDOFF旧記載）も解消
 4. ~~ハブ画面の見た目~~ → パワプロ風に作り直し済み（球団カラーのテーマ、明るい背景、色付きの大きなメニューボタン、説明文・日付・順位表パネル、同梱フォント）。采配 = 選手一覧
 4.5 ~~日程表画面（見た目）~~ → `godot/scenes/hub/schedule_view.gd`（ハブから「日程表」で開く）。3日分×全カードのタイル（日ごとにセ・パを左右の列に分けて、スクロールなしで全カード表示）、自球団カードは球団カラーで縁取り、終了済みは暗色＋スコア、月曜は「移動日」、右にセ・パ順位表（`StandingsPanel` 再利用、◀▶切替）、進行バーとスライダー。開いたとき／月を進めたときは現在の月付近の3日間を表示する（`_elapsed_days()` を起点に `_day_offset` を計算）。
    **日程生成・試合シミュレーションは未実装なので、カード・組み合わせ・スコアはすべて仮データ**（総当たりもどきの仮ペアリング、スコアはハッシュ由来の乱数、本拠地名もハードコード）。実装したら差し替えること。
    クラウドで Godot 4.7 を実際に起動しスクショ確認済み（エラーなし）。前回 claude/peaceful-lamport-1mbcsc の `schedule_view.gd` は `GameData.team_color`/`team_text_color`/`stadium_of` という存在しないメソッドを呼んでいて起動できなかった（今回は `GameData.team_colors`（複数形・Array[Color]）や `UiTheme.text_on` など実在するAPIのみ使用）。ほかにハマった点：ScrollContainer は該当方向の scroll_mode を DISABLED にしても子の最小サイズをそのまま親に伝える（=切り詰めない）ので幅がはみ出す／Label は既定で自身のテキスト幅を最小サイズとして要求するので `clip_text = true` にしないと横幅の指定が無視される／チームチップを横並びではなく縦積み（アウェイ→中央→ホーム）にすると1タイルの横幅が半分で済み、セ・パ2列でも収まる
    ローカル（Windows）で `.import` が全件差分になる件は `.gitattributes`（`* text=auto eol=lf`）で解消。既存ファイルは `git add --renormalize .` 済み
+4.6 ~~2009年以降の能力値の生成、能力値正規化の見直し~~ → 完了（2026-09-25）。`generated/ratings/` に 2008〜2026年の pre/post 全て生成済み（球速・弾道込み、schema_version 3）。
+   正規化のスケールを `55+15z` → `63+17z` に変更（`SCALE_MEAN`/`SCALE_SD`）：母集団が規定打席/規定投球回クリア済みの「そこそこ良い選手」に絞られているため平均をそのままD帯に置くとレギュラーの大半がD以下に沈んでいた問題を修正し、レギュラー級C〜D中心・主力B以上・スターA/Sになるよう調整。
+   また1軍・2軍とも登板実績が一切ない投手（新人・新外国人、年50〜120人程度）の球速がnullだったのを、ドラフト順位による加減つきの仮の値（`provisional_velocity`, `source: "provisional"`）で埋めた
 5. 次の候補（どれから進めるかユーザーと相談）
-   - 2009年以降の能力値の生成（data/2008〜2026 が揃ったので `tools/compute_ratings.py --year <年>`。クラウドの generated/ratings は 2008 のみ）… Sonnet 向き
-   - 選手詳細画面（概要／成績／経歴／契約の4タブ。実数値は ratings の `detail`）… Sonnet 向き
+   - 選手詳細画面（概要／成績／経歴／契約の4タブ。実数値は ratings の `detail`。球速・弾道もここに表示）… Sonnet 向き
    - 試合シミュレーション（打席単位、docs/SPEC.md の8段階）＋ 日程生成 … Opus 向き
    - セーブ/ロード（`GameState` の内容を user:// に保存）… Sonnet 向き

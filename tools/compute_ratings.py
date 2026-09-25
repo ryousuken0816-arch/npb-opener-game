@@ -21,7 +21,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 # ---------------------------------------------------------------- 定数
 # 直近シーズンほど重く（Marcel 方式）。キーは「対象年からの遡り年数」
@@ -33,7 +33,8 @@ FARM_BAT = {"安打": 0.85, "二塁打": 0.85, "三塁打": 0.85, "本塁打": 0
 FARM_PIT = {"本塁打": 1.30, "四球": 1.10, "死球": 1.10, "三振": 0.85}
 
 # 少サンプル補正: 重み w = min(1, サンプル / FULL) で 観測値 と 事前値 を線形ブレンド
-FULL_PA = {"avg": 400, "contact": 200, "iso": 300, "bb": 200, "sb_att": 250, "sb_pct": 250, "triple": 400}
+FULL_PA = {"avg": 400, "contact": 200, "iso": 300, "bb": 200, "sb_att": 250, "sb_pct": 250, "triple": 400,
+           "hr_rate": 300}
 FULL_OUTS = {"fip": 450, "k9": 210, "bb9": 360, "hr9": 600, "stamina": 150}
 FULL_CHANCES = {"err": 250, "arm": 60}  # 守備機会（arm は守備試合数）
 
@@ -48,12 +49,34 @@ POOL_MIN_OUTS = 150  # 50 IP
 POOL_MIN_FIELD_G = 40
 
 # 1〜100 スケール: 母集団平均 → SCALE_MEAN, 1σ → SCALE_SD
-SCALE_MEAN = 55
-SCALE_SD = 15
+# 母集団は規定打席/規定投球回に達した「そこそこ良い選手」に絞られているため、
+# 平均をそのまま D(50台) に置くと大多数のレギュラーが D〜E 以下に沈んでしまう。
+# 平均を C 寄りに、標準偏差を広めにして、主力が B 以上・スターが A/S に届くようにする
+SCALE_MEAN = 63
+SCALE_SD = 17
 RANKS = [(90, "S"), (80, "A"), (70, "B"), (60, "C"), (50, "D"), (40, "E"), (20, "F"), (0, "G")]
 
 # 守備: ゴールデングラブ受賞のボーナス（z 値加算）。キーは受賞年からの経過年数
 GG_BONUS = {0: 1.2, 1: 0.9, 2: 0.6, 3: 0.3}
+
+# 球速（投手）: data/velocity.json（2011年〜）の年別最速を Marcel 加重で平均。
+# データが無い年（2008〜2010）は、その投手の最古の実測値を年数差ぶん少し下げて代用。
+# 実測値が一切ない投手（2010年以前引退など）は K/9 からの単回帰で推定
+VELOCITY_EARLY_DECAY_PER_YEAR = 0.3   # 最古の実測値から遡る1年あたりの減算(km/h)
+VELOCITY_EARLY_DECAY_CAP = 3.0        # 減算の上限(km/h)
+VELOCITY_MIN_OUTS_FOR_K9 = 30         # これ未満のアウト数は回帰の説明変数として使わず平均K/9で代用
+VELOCITY_MIN_KMH = 125
+VELOCITY_MAX_KMH = 162
+
+# 1軍・2軍とも登板実績が一切ない投手（新人・新外国人）向けの仮の球速。
+# 平均球速からの加算(km/h)。ドラフト順位が分かる場合のみ加減、無ければ平均のまま
+PROVISIONAL_VELOCITY_ROUND_BONUS = {1: 5, 2: 3, 3: 1}
+PROVISIONAL_VELOCITY_IKUSEI_PENALTY = -3
+
+# 弾道（野手）: ISO と HR/打数 の z 値を加重平均し、しきい値で 1〜4 に分類。
+# 実データが無いための代用指標。係数・しきい値は後で調整できるようここに定数化
+TRAJECTORY_WEIGHTS = {"iso": 0.5, "hr_rate": 0.5}
+TRAJECTORY_CUTOFFS = [(1.0, 4), (0.0, 3), (-1.0, 2)]  # 該当しなければ 1
 
 # 投手の特殊能力（K/9・BB/9・HR/9 の母集団パーセンタイルで判定、良い方向を 100）
 PITCH_ABILITIES = [
@@ -98,13 +121,19 @@ class Data:
             sys.exit(f"data/{year}/ がありません")
         cur = data_dir / str(year)
         self.rosters = load_json(cur / "rosters.json")
-        # 古い年の players.json を新しい年で上書き（引退選手も母集団に含めるため全年分読む）
+        # 古い年の players.json を新しい年で上書き（引退選手も母集団に含めるため全年分読む）。
+        # 2005〜2007年は players.json / drafts.json がない（HANDOFF「追加データ」参照）ためスキップ
         self.players: dict[str, dict] = {}
         for y in self.years:
-            self.players.update(load_json(data_dir / str(y) / "players.json"))
+            p = data_dir / str(y) / "players.json"
+            if p.exists():
+                self.players.update(load_json(p))
         self.teamstats = [r for y in self.years for r in load_json(data_dir / str(y) / "teamstats_linked.json")]
         self.awards = [a for y in self.years for a in load_json(data_dir / str(y) / "awards.json")]
-        self.drafts = [d for y in self.years for d in load_json(data_dir / str(y) / "drafts.json")]
+        self.drafts = [d for y in self.years if (data_dir / str(y) / "drafts.json").exists()
+                       for d in load_json(data_dir / str(y) / "drafts.json")]
+        vpath = data_dir / "velocity.json"
+        self.velocity = load_json(vpath) if vpath.exists() else []
 
 
 # ---------------------------------------------------------------- 集計ヘルパ
@@ -150,6 +179,7 @@ BAT_METRICS = {
     "sb_pct": (lambda c: div(c["盗塁"], c["盗塁"] + c["盗塁刺"]),
                lambda c: (c["盗塁"] + c["盗塁刺"]) * 10, FULL_PA["sb_pct"], True),
     "triple": (lambda c: div(c["三塁打"], c["安打"] - c["本塁打"]), lambda c: c["打席"], FULL_PA["triple"], True),
+    "hr_rate": (lambda c: div(c["本塁打"], c["打数"]), lambda c: c["打席"], FULL_PA["hr_rate"], True),
 }
 
 # FIP 定数は年ごとに別途計算して counts["_c"] に入れる
@@ -248,6 +278,19 @@ class Composite:
     def score(self, vals: dict, bonus_z: float = 0.0) -> int:
         return to_scale((self._raw(vals) - self.mean) / self.sd + bonus_z)
 
+    def zscore(self, vals: dict) -> float | None:
+        raw = self._raw(vals)
+        return None if raw is None else (raw - self.mean) / self.sd
+
+
+def trajectory_of(z: float | None) -> int:
+    if z is None:
+        return 1
+    for th, v in TRAJECTORY_CUTOFFS:
+        if z >= th:
+            return v
+    return 1
+
 
 # ---------------------------------------------------------------- 本体
 class Calculator:
@@ -266,6 +309,7 @@ class Calculator:
         self._index()
         self.fip_c = self._fip_constants()
         self._build_pools()
+        self._build_velocity()
 
     # ---- 索引
     def _index(self):
@@ -292,8 +336,9 @@ class Calculator:
         for a in self.d.awards:
             if a["award"] == "ゴールデングラブ賞" and a["player_id"] and a["year"] <= ty:
                 self.gg[a["player_id"]].append((a["year"], a["category"]))
-        # 守備成績のない選手の守備位置用（ドラフト指名時のポジション。名前で突合）
-        self.draft_pos = {norm_name(d["name"]): d["pos"] for d in self.d.drafts if d["draft_year"] < y}
+        # ドラフト指名情報（守備位置・仮の球速の算出に使用。名前で突合、player_idなしのため）
+        self.draft_info = {norm_name(d["name"]): d for d in self.d.drafts if d["draft_year"] < y}
+        self.draft_pos = {k: v["pos"] for k, v in self.draft_info.items()}
 
     @staticmethod
     def _tmp_id(r) -> str:
@@ -368,6 +413,7 @@ class Calculator:
             if v["sb_pct"] is None:
                 v["sb_pct"] = prior_sb
         self.bat_comp = {k: Composite(w, self.bat_dist, bat_vals) for k, w in BAT_RATINGS.items()}
+        self.traj_comp = Composite(TRAJECTORY_WEIGHTS, self.bat_dist, bat_vals)
 
         # 守備は位置ごと（teamstats のある年のみ）
         per = defaultdict(lambda: defaultdict(dict))  # pos -> (key, season) -> counts
@@ -388,6 +434,74 @@ class Calculator:
             vals = [{k: m[0](c) for k, m in ms.items()} for c in pool]
             self.fld_dist[pos] = dists
             self.fld_comp[pos] = {k: Composite({k: 1.0}, dists, vals) for k in ms}
+
+    # ---- 球速（投手）
+    def _build_velocity(self):
+        self.velocity_by_pid = defaultdict(dict)  # pid -> {year: max_kmh}（全年、フォールバック探索用）
+        for r in self.d.velocity:
+            pid = r.get("player_id")
+            if not pid:
+                continue
+            y = r["year"]
+            self.velocity_by_pid[pid][y] = max(self.velocity_by_pid[pid].get(y, 0), r["max_kmh"])
+        # K/9 からの回帰（実測値のある投手の通算 K/9 → 実測値の単純平均）
+        xs, ys = [], []
+        for pid, years_data in self.velocity_by_pid.items():
+            p = self.d.players.get(pid)
+            if not p or not years_data:
+                continue
+            k_tot = sum(r.get("三振") or 0 for r in p["pitching"])
+            outs_tot = sum(r.get("outs") or 0 for r in p["pitching"])
+            if outs_tot < VELOCITY_MIN_OUTS_FOR_K9:
+                continue
+            xs.append(k_tot * 27 / outs_tot)
+            ys.append(sum(years_data.values()) / len(years_data))
+        if len(xs) >= 5:
+            mx, my = sum(xs) / len(xs), sum(ys) / len(ys)
+            sxx = sum((x - mx) ** 2 for x in xs)
+            b = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sxx if sxx else 0.0
+            a = my - b * mx
+        else:
+            a, b, my = 140.0, 0.0, 140.0
+        self.velocity_reg = (a, b)
+        self.velocity_mean_kmh = my
+
+    def velocity_for(self, pid: str | None, comb: dict) -> dict | None:
+        """{'kmh': int, 'source': 'observed'|'early_career'|'estimated'}。実測値も推定材料もなければ None。"""
+        years_data = self.velocity_by_pid.get(pid, {}) if pid else {}
+        window = [y for y in years_data if y <= self.through]
+        if window:
+            num = sum(years_data[y] * season_weight(y, self.through) for y in window)
+            den = sum(season_weight(y, self.through) for y in window)
+            if den:
+                return {"kmh": round(num / den), "source": "observed"}
+        if years_data:
+            earliest = min(years_data)
+            gap = max(0, earliest - self.through)
+            reduction = min(VELOCITY_EARLY_DECAY_CAP, VELOCITY_EARLY_DECAY_PER_YEAR * gap)
+            return {"kmh": round(years_data[earliest] - reduction), "source": "early_career"}
+        if not comb or not comb.get("outs"):
+            return None
+        if comb["outs"] >= VELOCITY_MIN_OUTS_FOR_K9:
+            a, b = self.velocity_reg
+            est = a + b * (comb["三振"] * 27 / comb["outs"])
+        else:
+            est = self.velocity_mean_kmh
+        est = max(VELOCITY_MIN_KMH, min(VELOCITY_MAX_KMH, est))
+        return {"kmh": round(est), "source": "estimated"}
+
+    def provisional_velocity(self, name: str) -> dict:
+        """1軍・2軍とも登板実績が一切ない投手向けの仮の球速。ドラフト順位が分かれば加減する。"""
+        info = self.draft_info.get(norm_name(name))
+        bonus = 0.0
+        if info:
+            m = re.match(r"(\d+)", info.get("round") or "")
+            if m:
+                bonus += PROVISIONAL_VELOCITY_ROUND_BONUS.get(int(m.group(1)), 0.0)
+            if info.get("ikusei"):
+                bonus += PROVISIONAL_VELOCITY_IKUSEI_PENALTY
+        est = max(VELOCITY_MIN_KMH, min(VELOCITY_MAX_KMH, self.velocity_mean_kmh + bonus))
+        return {"kmh": round(est), "source": "provisional"}
 
     # ---- 選手ごとの加重カウント
     def _weighted(self, rows, keys, farm_rows, farm_factors, pitching: bool):
@@ -439,7 +553,8 @@ class Calculator:
         for name, comp in self.bat_comp.items():
             v = comp.score(vals)
             ratings[name] = {"value": v, "rank": rank_of(v)}
-        return ratings, detail, {"pa_1": round(c1["打席"], 1), "pa_2": round(c2["打席"], 1)}
+        trajectory = trajectory_of(self.traj_comp.zscore(vals))
+        return ratings, detail, {"pa_1": round(c1["打席"], 1), "pa_2": round(c2["打席"], 1)}, trajectory
 
     def pitching(self, pid, key):
         p = self.d.players.get(pid) if pid else None
@@ -465,6 +580,7 @@ class Calculator:
                 if (hi is not None and pc >= hi) or (lo is not None and pc <= lo):
                     abilities.append(label)
         return {"ratings": ratings, "abilities": abilities, "role": role, "detail": detail,
+                "velocity": self.velocity_for(pid, comb),
                 "sample": {"outs_1": round(c1["outs"], 1), "outs_2": round(c2["outs"], 1)}}
 
     def fielding(self, pid, key):
@@ -500,7 +616,7 @@ class Calculator:
     # ---- 出力
     def player_entry(self, pid, key, name, team, team_id):
         p = self.d.players.get(pid) if pid else None
-        bat, bat_detail, bat_sample = self.batting(pid, key)
+        bat, bat_detail, bat_sample, trajectory = self.batting(pid, key)
         pit = self.pitching(pid, key)
         fld = self.fielding(pid, key)
         pos_games = {pos: v["games"] for pos, v in fld.items()}
@@ -519,6 +635,10 @@ class Calculator:
             primary = bio.get("ポジション") or self.draft_pos.get(norm_name(name)) \
                 or ("指名打者" if bat_sample["pa_1"] else None)
             is_pitcher = primary == "投手"
+        if is_pitcher and pit is None:
+            # 1軍・2軍とも登板実績が一切ない投手（新人・新外国人）: 球速のみ仮の値を入れる
+            pit = {"ratings": None, "abilities": [], "role": None, "detail": None,
+                   "velocity": self.provisional_velocity(name), "sample": {"outs_1": 0.0, "outs_2": 0.0}}
         # 野手の肩力・守備力はメイン守備位置の値を代表値にする
         if primary and primary in fld:
             bat["defense"] = fld[primary]["defense"]
@@ -540,7 +660,7 @@ class Calculator:
             "career": bio.get("経歴"),
             "is_pitcher": is_pitcher,
             "primary_pos": primary,
-            "batting": {"ratings": bat, "detail": bat_detail, "sample": bat_sample},
+            "batting": {"ratings": bat, "detail": bat_detail, "sample": bat_sample, "trajectory": trajectory},
             "pitching": pit,
             "fielding": fld,
         }
