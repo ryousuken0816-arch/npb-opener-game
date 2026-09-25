@@ -1,12 +1,20 @@
 extends Node
-## ゲーム進行状態（年・月・フェーズ・自球団）とその年のペナント（Season）。
-## ハブ画面の可変ボタンは advance() を呼び、button_text() の文言を表示する。
-## シーズン中は「試合へ」でその月の残り試合（史実の日程）をすべてシミュレーションし、次の月へ進む。
+## ゲーム進行状態（年・日付・フェーズ・自球団）とその年のペナント（Season）。
+##
+## シーズンは日単位で進む（`day` は「今日」＝まだ試合をしていない日の通し日数）。
+## - 日程表の「1日進める」「1週間進める」「この日まで早送り」は start_fast_forward() で、
+##   _process() が一定間隔で1日ずつ進める（途中で stop_fast_forward() で止められる）
+## - ハブの可変ボタン「試合へ」は advance() で、その月の残り日程をまとめて行い翌月1日へ進む（近道）
+## - 月が替わると month_started を出す。docs/SPEC.md の「月ごとの粒度」（故障・トレードイベント、
+##   育成コマンド）はこのタイミングで挟む
+## - 最終日を終えるとシーズン終了（表彰）へ進む。オフはフェーズ単位で advance() する
 
 signal changed
+## 月が替わった（月替わりのイベントを挟むタイミング）
+signal month_started(new_month: int)
 
 enum Phase {
-	SEASON,        ## レギュラーシーズン（月単位で進行）
+	SEASON,        ## レギュラーシーズン（日単位で進行）
 	AWARDS,        ## シーズン終了・表彰
 	ACTIVE_DRAFT,  ## 現役ドラフト（2022年オフ以降）
 	FA_TRADE,      ## FA・トレード・ポスティング
@@ -39,12 +47,20 @@ const PHASE_BUTTON := {
 }
 
 const START_YEAR := 2008
-## 日程データ（data/<年>/schedule.json）が無い年に使う月の並び
-const DEFAULT_SEASON_MONTHS: Array[int] = [4, 5, 6, 7, 8, 9, 10]
+## 日程データ（data/<年>/schedule.json）が無い年のシーズン期間（月日）
+const DEFAULT_SEASON_START := "04-01"
+const DEFAULT_SEASON_END := "10-31"
 const ACTIVE_DRAFT_START_YEAR := 2022
+## 早送りで1日進める間隔（秒）。将来はシステム設定の「早送り速度」で変える
+const FAST_FORWARD_INTERVAL := 0.12
 
 var year: int = START_YEAR
-var month: int = DEFAULT_SEASON_MONTHS[0]
+## 今日（まだ試合をしていない日）の通し日数（Season.day_number）。シーズン中のみ意味を持つ
+var day: int = 0
+## 今日の月
+var month: int:
+	get:
+		return Season.month_of(day)
 var phase: Phase = Phase.SEASON
 var team: String = ""
 ## その年のペナント（日程・試合結果・個人成績）。日程データが無い年は null
@@ -55,8 +71,13 @@ var wins: int = 0
 var losses: int = 0
 var draws: int = 0
 
+## 早送りの目標日（この日の試合が終わるまで進める）。早送りしていなければ -1
+var fast_forward_target: int = -1
+var _fast_forward_time := 0.0
+
 
 func new_game(team_name: String, start_year: int = START_YEAR) -> void:
+	stop_fast_forward()
 	team = team_name
 	year = start_year
 	phase = Phase.SEASON
@@ -65,36 +86,113 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	changed.emit()
 
 
-## 可変ボタンを押したときの処理。シーズン中はその月の試合を行って次の月へ、オフは次のフェーズへ。
+func _process(delta: float) -> void:
+	if fast_forward_target < 0:
+		return
+	_fast_forward_time += delta
+	if _fast_forward_time < FAST_FORWARD_INTERVAL:
+		return
+	_fast_forward_time = 0.0
+	_advance_one_day()
+	if phase != Phase.SEASON or day > fast_forward_target:
+		fast_forward_target = -1
+	changed.emit()
+
+
+## 可変ボタンを押したときの処理。シーズン中はその月の残り日程を行って翌月1日へ（最終月ならシーズン終了へ）、
+## オフは次のフェーズへ。
 func advance() -> void:
+	stop_fast_forward()
 	if phase == Phase.SEASON:
-		if season != null:
-			season.sim_month(month)
-			_sync_record()
-		var months := season_months()
-		var i := months.find(month)
-		if i + 1 < months.size():
-			month = months[i + 1]
-			changed.emit()
-			return
+		advance_through(_month_end_day(day))
+		changed.emit()
+		return
 	_enter(next_phase())
 
 
-## シーズンの月（日程データがあれば試合のある月。2008年なら3〜10月）
-func season_months() -> Array[int]:
+## target_day（通し日数）の試合が終わるまで一気に進める（最終日を越えるとシーズン終了へ）
+func advance_through(target_day: int) -> void:
+	while phase == Phase.SEASON and day <= target_day:
+		_advance_one_day()
+
+
+## target_day の試合が終わるまで1日ずつ早送りする（日程表から）。今日より前の日なら何もしない
+func start_fast_forward(target_day: int) -> void:
+	if phase != Phase.SEASON or target_day < day:
+		return
+	fast_forward_target = mini(target_day, season_last_day())
+	# 最初の1日はすぐに進める
+	_fast_forward_time = FAST_FORWARD_INTERVAL
+	changed.emit()
+
+
+func stop_fast_forward() -> void:
+	if fast_forward_target < 0:
+		return
+	fast_forward_target = -1
+	changed.emit()
+
+
+func is_fast_forwarding() -> bool:
+	return fast_forward_target >= 0
+
+
+## 今日の試合を行い、翌日へ進む。月が替われば month_started、最終日を終えればシーズン終了へ
+func _advance_one_day() -> void:
+	if season != null:
+		season.sim_until_day(day + 1)
+		_sync_record()
+	var old_month := month
+	day += 1
+	if day > season_last_day():
+		_enter(next_phase())
+		return
+	if month != old_month:
+		# 月替わりのイベント（故障・トレード、育成コマンド）はここに挟む（未実装）
+		month_started.emit(month)
+
+
+## シーズンの初日（開幕日）・最終日の通し日数。日程データが無い年は既定の期間
+func _season_first_day() -> int:
 	if season != null and not season.games.is_empty():
-		return season.months()
-	return DEFAULT_SEASON_MONTHS
+		return season.first_day()
+	return Season.day_number("%d-%s" % [year, DEFAULT_SEASON_START])
 
 
-## その月にまだ行っていない試合の数（全球団）
+func season_last_day() -> int:
+	if season != null and not season.games.is_empty():
+		return season.last_day()
+	return Season.day_number("%d-%s" % [year, DEFAULT_SEASON_END])
+
+
+## シーズンの月（開幕日の月〜最終日の月。2008年なら3〜10月）
+func season_months() -> Array[int]:
+	var result: Array[int] = []
+	for m in range(Season.month_of(_season_first_day()), Season.month_of(season_last_day()) + 1):
+		result.append(m)
+	return result
+
+
+## some_day を含む月の最終日（シーズン最終日を越えない）
+func _month_end_day(some_day: int) -> int:
+	var date := Season.date_of_day(some_day)
+	var y := int(date.substr(0, 4))
+	var m := int(date.substr(5, 2))
+	var first_of_next := "%04d-%02d-01" % [y + (1 if m == 12 else 0), 1 if m == 12 else m + 1]
+	return mini(Season.day_number(first_of_next) - 1, season_last_day())
+
+
+## 今月の残り日程（今日以降）で行う試合の数（全球団）
 func games_left_in_month() -> int:
 	if season == null:
 		return 0
+	var last := _month_end_day(day)
 	var n := 0
 	for i in range(season.next_index, season.games.size()):
 		var g: Dictionary = season.games[i]
-		if int(g["date"].substr(5, 2)) == month and g["status"] == "played":
+		if g["day"] > last:
+			break
+		if g["day"] >= day and g["status"] == "played":
 			n += 1
 	return n
 
@@ -121,11 +219,11 @@ func phase_name() -> String:
 	return PHASE_NAMES[phase]
 
 
-## ヘッダー表示用の日付（例: "2008年 5月" / "2008年 オフ"）
+## ヘッダー表示用の日付（例: "2008年 5月3日" / "2008年 オフ"）
 func date_text() -> String:
 	match phase:
 		Phase.SEASON:
-			return "%d年 %d月" % [year, month]
+			return "%d年 %d月%d日" % [year, month, _day_of_month()]
 		Phase.CAMP:
 			return "%d年 2月" % year
 		_:
@@ -137,25 +235,28 @@ func year_text() -> String:
 	return str(year)
 
 
-## ハブ画面の日付表示: 月（オフは「オフ」）
+## ハブ画面の日付表示: 月日（オフは「オフ」）
 func month_text() -> String:
 	match phase:
 		Phase.SEASON:
-			return "%d月" % month
+			return "%d月%d日" % [month, _day_of_month()]
 		Phase.CAMP:
 			return "2月"
 		_:
 			return "オフ"
 
 
+func _day_of_month() -> int:
+	return int(Season.date_of_day(day).substr(8, 2))
+
+
 ## ハブ画面上部のイベント名
 func event_text() -> String:
 	if phase != Phase.SEASON:
 		return phase_name()
-	var months := season_months()
-	if month == months[0] and games_played() == 0:
+	if day == _season_first_day():
 		return "開幕戦"
-	if month == months[-1]:
+	if month == season_months()[-1]:
 		return "シーズン終盤"
 	return "ペナントレース"
 
@@ -223,7 +324,7 @@ func _start_season() -> void:
 	season = null
 	if not schedule.is_empty() and GameData.has_ratings():
 		season = Season.new(year, GameData.ratings, schedule, randi() + 1)
-	month = season_months()[0]
+	day = _season_first_day()
 	_sync_record()
 
 
