@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://scripts/team_emblem.gd" id="3_emblem"]
 [ext_resource type="Script" path="res://scenes/hub/standings_panel.gd" id="4_standings"]
 [ext_resource type="Script" path="res://scenes/hub/roster_view.gd" id="5_roster"]
+[ext_resource type="Script" path="res://scenes/hub/schedule_view.gd" id="6_schedule"]
 
 [node name="Hub" type="Control"]
 layout_mode = 3
@@ -139,6 +140,13 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("5_roster")
+
+[node name="ScheduleView" type="Control" parent="SubScreen/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("6_schedule")
 
 [node name="PlaceholderLabel" type="Label" parent="SubScreen/VBox"]
 unique_name_in_owner = true

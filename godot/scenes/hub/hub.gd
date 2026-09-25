@@ -20,7 +20,6 @@ const MENUS := [
 
 ## 未実装画面の内容（docs/SPEC.md「UI/画面構成」）
 const PLACEHOLDERS := {
-	"schedule": "自球団の日程と結果、その日の全カード結果、セ・パ順位表。\n試合結果（ハイライト・勝敗確率グラフ）は日程表から開く。",
 	"scout": "トレード交渉、外国人選手の獲得、ドラフト候補の事前スカウティング。",
 	"records": "リーグ全体の個人成績・通算成績、タイトル・表彰歴、チーム成績推移、\n達成記録（ノーヒットノーラン等）、ドラフト履歴。",
 	"system": "セーブ/ロード、難易度（CPUの未来視ノイズ）、表示/サウンド、早送り速度。",
@@ -45,6 +44,7 @@ var _open_key := ""
 @onready var _sub_screen: PanelContainer = %SubScreen
 @onready var _sub_title_label: Label = %SubTitleLabel
 @onready var _roster_view: RosterView = %RosterView
+@onready var _schedule_view: ScheduleView = %ScheduleView
 @onready var _placeholder_label: Label = %PlaceholderLabel
 @onready var _bottom_bar: PanelContainer = %BottomBar
 @onready var _description_label: Label = %DescriptionLabel
@@ -63,6 +63,7 @@ func _ready() -> void:
 	_style_labels()
 	_build_menu()
 	_standings.setup(_palette, GameData.league_of(GameState.team))
+	_schedule_view.setup(_palette)
 	%BackButton.pressed.connect(_close_sub_screen)
 	GameState.changed.connect(_refresh)
 	_refresh()
@@ -143,6 +144,8 @@ func _refresh() -> void:
 	_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_roster_view.show_team(GameState.team)
+	elif _open_key == "schedule":
+		_schedule_view.refresh()
 
 
 func _summary_text() -> String:
@@ -189,11 +192,16 @@ func _open_sub_screen(key: String) -> void:
 		if menu[0] == key:
 			_sub_title_label.text = menu[1]
 	var is_roster := key == "tactics"
+	var is_schedule := key == "schedule"
 	_roster_view.visible = is_roster
-	_placeholder_label.visible = not is_roster
+	_schedule_view.visible = is_schedule
+	_placeholder_label.visible = not is_roster and not is_schedule
 	if is_roster:
 		_sub_title_label.text = "采配 ― 選手一覧"
 		_roster_view.show_team(GameState.team)
+	elif is_schedule:
+		_sub_title_label.text = "日程表"
+		_schedule_view.refresh()
 	else:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
 
