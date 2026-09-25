@@ -73,6 +73,17 @@ VELOCITY_MAX_KMH = 162
 PROVISIONAL_VELOCITY_ROUND_BONUS = {1: 5, 2: 3, 3: 1}
 PROVISIONAL_VELOCITY_IKUSEI_PENALTY = -3
 
+# 新人（プロ成績が少ない選手）の初期能力。
+# 少サンプル補正のブレンド先（事前値）は通常 母集団の PRIOR_PCTL パーセンタイルだが、
+# ドラフト順位・出身区分が分かる選手はそこから加減する（値が大きいほど高能力側）。
+# 単位は「母集団分布の何パーセンタイル」。2軍成績が出れば blend() の重みが自然に増え、
+# 実績側に寄っていく（既存の少サンプル補正の仕組みをそのまま利用）
+ROOKIE_BASE_PCTL = {"社会人": 45, "大学": 35, "高校": 20}  # 出身区分（即戦力度）
+ROOKIE_ROUND_PCTL_BONUS = {1: 15, 2: 8, 3: 4}              # ドラフト順位（該当なければ0）
+ROOKIE_IKUSEI_PCTL_PENALTY = -10                            # 育成指名
+ROOKIE_IMPORT_PCTL = 35                                     # ドラフト情報がない新加入選手（主に外国人）の既定値
+ROOKIE_PCTL_MIN, ROOKIE_PCTL_MAX = 5, 70
+
 # 弾道（野手）: ISO と HR/打数 の z 値を加重平均し、しきい値で 1〜4 に分類。
 # 実データが無いための代用指標。係数・しきい値は後で調整できるようここに定数化
 TRAJECTORY_WEIGHTS = {"iso": 0.5, "hr_rate": 0.5}
@@ -490,6 +501,29 @@ class Calculator:
         est = max(VELOCITY_MIN_KMH, min(VELOCITY_MAX_KMH, est))
         return {"kmh": round(est), "source": "estimated"}
 
+    @staticmethod
+    def draft_category(school: str | None) -> str:
+        if not school:
+            return "社会人"
+        if school.endswith("高"):
+            return "高校"
+        if "大" in school:
+            return "大学"
+        return "社会人"
+
+    def prior_pctl_for(self, name: str) -> float:
+        """少サンプル補正のブレンド先（事前値）のパーセンタイル。ドラフト情報があれば加減する。"""
+        info = self.draft_info.get(norm_name(name))
+        if not info:
+            return ROOKIE_IMPORT_PCTL
+        pctl = ROOKIE_BASE_PCTL[self.draft_category(info.get("school"))]
+        m = re.match(r"(\d+)", info.get("round") or "")
+        if m:
+            pctl += ROOKIE_ROUND_PCTL_BONUS.get(int(m.group(1)), 0)
+        if info.get("ikusei"):
+            pctl += ROOKIE_IKUSEI_PCTL_PENALTY
+        return max(ROOKIE_PCTL_MIN, min(ROOKIE_PCTL_MAX, pctl))
+
     def provisional_velocity(self, name: str) -> dict:
         """1軍・2軍とも登板実績が一切ない投手向けの仮の球速。ドラフト順位が分かれば加減する。"""
         info = self.draft_info.get(norm_name(name))
@@ -531,12 +565,12 @@ class Calculator:
             comb["_c"] = csum / wsum if wsum else self.fip_c_for(self.through)
         return comb, c1, c2
 
-    def _rate_block(self, comb, metrics, dists, full_override=None):
+    def _rate_block(self, comb, metrics, dists, prior_pctl=PRIOR_PCTL):
         vals, detail = {}, {}
         for k, (fn, sample_fn, full, _hb) in metrics.items():
             if k not in dists:
                 continue
-            prior = dists[k].pctl_value(PRIOR_PCTL)
+            prior = dists[k].pctl_value(prior_pctl)
             obs = fn(comb) if comb else None
             v, w = blend(obs, sample_fn(comb) if comb else 0, full, prior)
             vals[k] = v
@@ -544,35 +578,39 @@ class Calculator:
                          "blended": round(v, 4), "weight": round(w, 3)}
         return vals, detail
 
-    def batting(self, pid, key):
+    def batting(self, pid, key, name):
         p = self.d.players.get(pid) if pid else None
         comb, c1, c2 = self._weighted(p["batting"] if p else [], BAT_KEYS, self.farm_bat.get(key, []),
                                       FARM_BAT, pitching=False)
-        vals, detail = self._rate_block(comb, BAT_METRICS, self.bat_dist)
+        vals, detail = self._rate_block(comb, BAT_METRICS, self.bat_dist, self.prior_pctl_for(name))
         ratings = {}
-        for name, comp in self.bat_comp.items():
+        for rating_name, comp in self.bat_comp.items():
             v = comp.score(vals)
-            ratings[name] = {"value": v, "rank": rank_of(v)}
+            ratings[rating_name] = {"value": v, "rank": rank_of(v)}
         trajectory = trajectory_of(self.traj_comp.zscore(vals))
         return ratings, detail, {"pa_1": round(c1["打席"], 1), "pa_2": round(c2["打席"], 1)}, trajectory
 
-    def pitching(self, pid, key):
+    def pitching(self, pid, key, name, force=False):
+        """force=True: 1軍・2軍とも成績が一切ない投手でも、ドラフト情報による事前値だけで初期の能力値を返す
+        （新人・新外国人向け。データが増えれば blend() の重みが上がり実績側に寄っていく）"""
         p = self.d.players.get(pid) if pid else None
         rows = p["pitching"] if p else []
         farm = self.farm_pit.get(key, [])
-        if not any(season_weight(r["年度"], self.through) for r in rows) and \
-                not any(season_weight(s, self.ts_through) for s, _ in farm):
+        has_data = any(season_weight(r["年度"], self.through) for r in rows) or \
+            any(season_weight(s, self.ts_through) for s, _ in farm)
+        if not has_data and not force:
             return None
         comb, c1, c2 = self._weighted(rows, PIT_KEYS, farm, FARM_PIT, pitching=True)
-        # 先発/救援は少サンプル補正前の実績で判定（補正後は事前値に引っ張られるため）
-        role = self.role_of(PIT_METRICS["stamina"][0](comb) or 0)
+        # 先発/救援は少サンプル補正前の実績で判定（補正後は事前値に引っ張られるため）。
+        # 成績が一切ない場合は判定できないため救援扱い
+        role = self.role_of(PIT_METRICS["stamina"][0](comb) or 0) if has_data else "救援"
         # 率の補正（事前値）は役割別の母集団から取る
-        vals, detail = self._rate_block(comb, PIT_METRICS, self.pit_dist[role])
+        vals, detail = self._rate_block(comb, PIT_METRICS, self.pit_dist[role], self.prior_pctl_for(name))
         ratings = {}
-        for name in PIT_RATINGS:
-            r = role if name in ROLE_SPLIT_RATINGS else "全体"
-            v = self.pit_comp[r][name].score(vals)
-            ratings[name] = {"value": v, "rank": rank_of(v)}
+        for rating_name in PIT_RATINGS:
+            r = role if rating_name in ROLE_SPLIT_RATINGS else "全体"
+            v = self.pit_comp[r][rating_name].score(vals)
+            ratings[rating_name] = {"value": v, "rank": rank_of(v)}
         abilities = []
         if comb["outs"] >= ABILITY_MIN_OUTS:
             for k, hi, lo, label in PITCH_ABILITIES:
@@ -580,11 +618,12 @@ class Calculator:
                 if (hi is not None and pc >= hi) or (lo is not None and pc <= lo):
                     abilities.append(label)
         return {"ratings": ratings, "abilities": abilities, "role": role, "detail": detail,
-                "velocity": self.velocity_for(pid, comb),
+                "velocity": self.velocity_for(pid, comb) or self.provisional_velocity(name),
                 "sample": {"outs_1": round(c1["outs"], 1), "outs_2": round(c2["outs"], 1)}}
 
-    def fielding(self, pid, key):
+    def fielding(self, pid, key, name):
         """守備位置ごとの守備力・肩力。1軍＋2軍（2軍は重み半分）の Marcel 加重。"""
+        prior_pctl = self.prior_pctl_for(name)
         per = defaultdict(lambda: {k: 0.0 for k in FLD_KEYS})
         games = defaultdict(float)
         for s, lvl, r in self.fld.get(key, []):
@@ -602,7 +641,7 @@ class Calculator:
                 continue
             c = per[pos]
             ms = {k: FLD_METRICS[k] for k in self.fld_dist[pos]}
-            vals, detail = self._rate_block(c, ms, self.fld_dist[pos])
+            vals, detail = self._rate_block(c, ms, self.fld_dist[pos], prior_pctl)
             comps = self.fld_comp[pos]
             d = comps["err"].score(vals, gg_by_pos.get(pos, 0.0))
             entry = {"games": int(games.get(pos, 0)), "defense": {"value": d, "rank": rank_of(d)},
@@ -616,9 +655,9 @@ class Calculator:
     # ---- 出力
     def player_entry(self, pid, key, name, team, team_id):
         p = self.d.players.get(pid) if pid else None
-        bat, bat_detail, bat_sample, trajectory = self.batting(pid, key)
-        pit = self.pitching(pid, key)
-        fld = self.fielding(pid, key)
+        bat, bat_detail, bat_sample, trajectory = self.batting(pid, key, name)
+        pit = self.pitching(pid, key, name)
+        fld = self.fielding(pid, key, name)
         pos_games = {pos: v["games"] for pos, v in fld.items()}
         is_pitcher = bool(pit) and (pos_games.get("投手", 0) >= max(pos_games.values() or [0])
                                     or not any(g for pos, g in pos_games.items() if pos != "投手"))
@@ -636,9 +675,8 @@ class Calculator:
                 or ("指名打者" if bat_sample["pa_1"] else None)
             is_pitcher = primary == "投手"
         if is_pitcher and pit is None:
-            # 1軍・2軍とも登板実績が一切ない投手（新人・新外国人）: 球速のみ仮の値を入れる
-            pit = {"ratings": None, "abilities": [], "role": None, "detail": None,
-                   "velocity": self.provisional_velocity(name), "sample": {"outs_1": 0.0, "outs_2": 0.0}}
+            # 1軍・2軍とも登板実績が一切ない投手（新人・新外国人）: ドラフト情報による初期の能力値を入れる
+            pit = self.pitching(pid, key, name, force=True)
         # 野手の肩力・守備力はメイン守備位置の値を代表値にする
         if primary and primary in fld:
             bat["defense"] = fld[primary]["defense"]

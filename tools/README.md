@@ -21,7 +21,8 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
    2軍は1軍換算係数（例: 本塁打×0.70）を掛け、サンプル量は半分として数える
 2. **少サンプル補正**: `w = min(1, サンプル / FULL)` で 観測値 と 事前値 を線形ブレンド。
    FULL は指標ごと（打率 400打席、BB% 200打席、FIP 450アウト=150回 など）。
-   事前値は正規化母集団の30パーセンタイル（出場の少ない選手は平均以下が多いため）
+   事前値は正規化母集団の何パーセンタイル目か（`prior_pctl_for`）。既定は30パーセンタイル（`PRIOR_PCTL`。
+   出場の少ない選手は平均以下が多いため）だが、ドラフト情報のある選手はそこから加減する（新人の初期能力。下記）
 3. **正規化**: 対象年から5年分の1軍シーズン（200打席以上 / 50回以上 / 守備は同一位置40試合以上）を母集団に z 値化
 4. **スケール**: `63 + 17 × z` を 1〜100 に丸め、ランク S≥90 A≥80 B≥70 C≥60 D≥50 E≥40 F≥20 G<20
    （母集団が規定打席/規定投球回クリア済みの「そこそこ良い選手」に絞られているため、平均をそのまま
@@ -52,8 +53,23 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 2. 実測値が一切ない投手（2010年以前引退など）は、実測値のある投手の通算K/9→実測値平均 の単回帰で推定し `VELOCITY_MIN_KMH`〜`VELOCITY_MAX_KMH` にクリップ（`estimated`）
 3. 通常は対象年から遡り3年をMarcel加重平均（`observed`）
 4. **1軍・2軍とも登板実績が一切ない投手**（新人・新外国人。K/9も算出できないため②の回帰も使えない）は
-   平均球速（`velocity_mean_kmh`）にドラフト順位による加減（`PROVISIONAL_VELOCITY_ROUND_BONUS`。上位指名ほど+、育成は`PROVISIONAL_VELOCITY_IKUSEI_PENALTY`）を加えた仮の値（`provisional`）。
-   この場合 `pitching` は `{"ratings": null, "abilities": [], "role": null, "detail": null, "velocity": {...}, "sample": {"outs_1": 0.0, "outs_2": 0.0}}` になる（球速以外は算出不能なため null）
+   平均球速（`velocity_mean_kmh`）にドラフト順位による加減（`PROVISIONAL_VELOCITY_ROUND_BONUS`。上位指名ほど+、育成は`PROVISIONAL_VELOCITY_IKUSEI_PENALTY`）を加えた仮の値（`provisional`）。`pitching`自体は下記「新人の初期能力」により null にならない
+
+### 新人（プロ成績が少ない選手）の初期能力
+
+少サンプル補正のブレンド先（事前値、上記②）を、通常の「母集団の30パーセンタイル目」ではなく
+**ドラフト順位＋出身区分から決めたパーセンタイル目**にする（`prior_pctl_for`）。2軍の成績が出れば
+blend の重みが自然に上がり実績側へ寄っていくので、この事前値は初期値（新人の頃）にしか効かない。
+
+- 出身区分は drafts.json の `school` から判定（`draft_category`）：`〜高`＝高校（`ROOKIE_BASE_PCTL["高校"]`＝低め）、
+  `大`を含む＝大学、それ以外＝社会人・独立リーグ等（即戦力寄り＝高め）
+- ドラフト順位（`round`。「1位」「1巡目」どちらの表記も対応）が上位ほど加算（`ROOKIE_ROUND_PCTL_BONUS`）、育成指名は減算（`ROOKIE_IKUSEI_PCTL_PENALTY`）
+- drafts.json に player_id が無いため名前（`norm_name`）で突合。ドラフト情報が見つからない選手（主に外国人）は既定値 `ROOKIE_IMPORT_PCTL`
+- パーセンタイルは `ROOKIE_PCTL_MIN`〜`ROOKIE_PCTL_MAX` にクリップ
+
+この事前値は打撃・投手・守備すべての `_rate_block` に共通で渡す（`batting`/`pitching`/`fielding` は `name` 引数を受け取る）。
+投手は1軍・2軍とも成績が一切ない場合も `pitching(..., force=True)` で（全指標が事前値のみの）能力値を必ず生成するため、
+`is_pitcher` な選手の `pitching` が null になることはない（役割は判定不能なため `role: "救援"` 扱い）。
 
 ### 出力フォーマット（`generated/ratings/<年>_<phase>.json`）
 
@@ -84,12 +100,12 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
       "sample": {"pa_1": 1246.2, "pa_2": 0.0},                                     // 加重後の打席数
       "trajectory": 3                                                             // 弾道 1〜4（実数値のみ）
     },
-    "pitching": null | {
+    "pitching": null | {          // null は投手でない選手のみ。投手は成績ゼロでも必ずオブジェクトが入る
       "ratings": {"overall": {...}, "stamina": {...}, "k9": {...}, "bb9": {...}, "hr9": {...}},
       "abilities": ["奪三振", "被弾抑制"],
       "role": "先発" | "救援",
       "detail": {"fip": {...}, ...},
-      "velocity": {"kmh": 148, "source": "observed"} | null,  // observed/early_career/estimated
+      "velocity": {"kmh": 148, "source": "observed"},  // observed/early_career/estimated/provisional。nullにはならない
       "sample": {"outs_1": 1369.8, "outs_2": 0.0}
     },
     "fielding": {                    // 守備位置ごと（1軍・2軍いずれかで守備記録のある位置）
@@ -108,3 +124,4 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 - 守備成績もドラフト情報もない選手（2006年以前指名の未出場選手など）は `primary_pos: null`。全年データが揃えば解消する見込み
 - 2005〜2007年のチーム成績・表彰（data/2005〜2007）を取得済みのため、2008年 pre のフォールバックは解消（players.json・drafts.json が無い年はスキップして読み込む）
 - 球速・弾道の指標と代用ロジックは上記のとおり確定（係数は `tools/compute_ratings.py` 冒頭の `VELOCITY_*` / `TRAJECTORY_*` 定数で調整可能）
+- 新人の初期能力はドラフト順位＋出身区分ベースで確定（係数は `ROOKIE_*` 定数）。2軍成績が出れば既存の少サンプル補正でそのまま実績側に寄っていく
