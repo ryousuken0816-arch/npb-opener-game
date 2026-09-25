@@ -53,6 +53,8 @@
    クラウドでも Godot 4.7 を GitHub Releases から取得して xvfb で起動・スクショ確認できる（godot/README.md「メモ」）。ローカル（Windows・Godot 4.7）での見た目確認はユーザー側で
 4. ~~ハブ画面の見た目~~ → パワプロ風に作り直し済み（球団カラーのテーマ、明るい背景、色付きの大きなメニューボタン、説明文・日付・順位表パネル、同梱フォント）。采配 = 選手一覧
 5. 次の候補（どれから進めるかユーザーと相談）
+   - 日程表画面（docs/references/README.md「schedule_pawapuro.webp」。3日分の全カードのタイル＋順位表＋早送り）。日程生成が前提 … 日程生成は Opus、画面は Sonnet 向き
+   - 2009年以降の能力値の生成（data/2008〜2026 が揃ったので `tools/compute_ratings.py --year <年>`。現状 generated/ratings は 2008 のみで、ゲームを進めると 2009_pre.json が無い警告が出る）… Sonnet 向き
    - 選手詳細画面（概要／成績／経歴／契約の4タブ。実数値は ratings の `detail`）… Sonnet 向き
    - 試合シミュレーション（打席単位、docs/SPEC.md の8段階）＋ 日程生成 … Opus 向き
    - セーブ/ロード（`GameState` の内容を user:// に保存）… Sonnet 向き
