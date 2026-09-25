@@ -8,6 +8,7 @@ extends VBoxContainer
 ##   1軍 ⇔ 1軍（投手）… 持ち場の入れ替え ／ 「あき」… その持ち場へ移す・2軍から上げる
 ## 人数の上限・外国人枠・抹消後10日間の再登録制限は SimTeam（RosterRules）が判定し、できないときは理由を表示する。
 ## コントローラー：十字キーで札を選び Ⓐ で選択→相手の札で Ⓐ。入れ替えて作り直しても、フォーカスは同じ位置に残る。
+## 選んでいる札をもう一度 Ⓐ・クリック（または右クリック、右の「詳細」）で選手詳細。Ⓑ はまず選択を取り消す。
 
 signal roster_changed
 
@@ -45,6 +46,8 @@ var _active_box: VBoxContainer
 var _farm_title: Label
 var _farm_box: VBoxContainer
 var _summary_box: VBoxContainer
+## 札の並び（選手詳細の十字キーで送る順）
+var _order_ids: Array[String] = []
 
 
 func setup(p: UiTheme.Palette, is_pitchers: bool) -> void:
@@ -103,12 +106,23 @@ func refresh(reset_selection: bool = false) -> void:
 			focus_box = box
 			focus_at = i
 	_names = NameTag.short_names(_team.players)
+	_order_ids.clear()
 	_render_counts()
 	_render_active()
 	_render_farm()
 	_render_summary()
 	if focus_box != null:
 		UiInput.focus_nth(focus_box, focus_at)
+
+
+## 選んでいる札を取り消す（取り消したら true。Ⓑ で画面を戻る前に呼ぶ）
+func clear_selection() -> bool:
+	if _selected == null:
+		return false
+	_selected = null
+	_message = ""
+	refresh()
+	return true
 
 
 ## 画面を開いたとき：1軍の最初の札にフォーカス
@@ -246,6 +260,7 @@ func _player_item(p: SimPlayer, flags: String) -> Control:
 	tag.dimmed = _is_waiting(p)
 	tag.pressed.connect(_on_player_pressed.bind(p))
 	row.add_child(tag)
+	_order_ids.append(p.id)
 	var flag_label := UiTheme.small_label(flags, 13, Color("c2185b"), 800)
 	flag_label.custom_minimum_size = Vector2(FLAG_WIDTH, 0)
 	flag_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -323,6 +338,13 @@ func _render_summary() -> void:
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_summary_box.add_child(spacer)
+	var detail := Button.new()
+	detail.text = "詳細を見る"
+	detail.tooltip_text = "選手詳細（能力・成績・経歴）。札をもう一度押しても開きます"
+	detail.focus_mode = Control.FOCUS_NONE
+	UiTheme.style_button(detail, Color("1e88e5"), Color.WHITE)
+	detail.pressed.connect(_open_detail.bind(p))
+	_summary_box.add_child(detail)
 	if GameState.can_edit_roster():
 		var button := Button.new()
 		button.focus_mode = Control.FOCUS_NONE
@@ -456,8 +478,12 @@ func _age(birth: String) -> int:
 # --- 操作 --------------------------------------------------------------------------
 
 func _on_player_pressed(p: SimPlayer) -> void:
-	if not GameState.can_edit_roster() or _selected == null or _selected == p:
-		_selected = null if _selected == p else p
+	if _selected == p:
+		# 選んでいる札をもう一度：選手詳細（選択はそのまま）
+		_open_detail(p)
+		return
+	if not GameState.can_edit_roster() or _selected == null:
+		_selected = p
 		_message = ""
 		refresh()
 		return
@@ -500,6 +526,11 @@ func _on_empty_pressed(role: String) -> void:
 		_done("%sを1軍に登録しました" % p.name)
 	else:
 		_fail(err)
+
+
+func _open_detail(p: SimPlayer) -> void:
+	var from: Control = get_viewport().gui_get_focus_owner()
+	PlayerDetail.open(from if from != null else self, p.id, _order_ids)
 
 
 func _promote_selected() -> void:
