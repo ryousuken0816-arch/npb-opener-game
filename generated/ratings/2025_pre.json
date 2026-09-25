@@ -1,5 +1,5 @@
 {
- "schema_version": 3,
+ "schema_version": 4,
  "year": 2025,
  "phase": "pre",
  "stats_through": 2024,
@@ -155746,6 +155746,2626 @@
       }
      }
     }
+   }
+  }
+ ],
+ "mlb_players": [
+  {
+   "id": "61965110",
+   "provisional_id": false,
+   "name": "ダルビッシュ 有",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "右",
+   "birth": "1986-08-16",
+   "height": 196,
+   "weight": 98,
+   "draft": "2004年ドラフト1巡目",
+   "career": "東北高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 55,
+      "rank": "D"
+     },
+     "power": {
+      "value": 54,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
+     "speed": {
+      "value": 49,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 76,
+      "rank": "B"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": null,
+      "blended": 0.244,
+      "weight": 0.0
+     },
+     "contact": {
+      "observed": null,
+      "blended": 0.7741,
+      "weight": 0.0
+     },
+     "iso": {
+      "observed": null,
+      "blended": 0.0972,
+      "weight": 0.0
+     },
+     "bb": {
+      "observed": null,
+      "blended": 0.0692,
+      "weight": 0.0
+     },
+     "sb_att": {
+      "observed": null,
+      "blended": 0.0256,
+      "weight": 0.0
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.5,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": null,
+      "blended": 0.0,
+      "weight": 0.0
+     },
+     "hr_rate": {
+      "observed": null,
+      "blended": 0.0148,
+      "weight": 0.0
+     }
+    },
+    "sample": {
+     "pa_1": 0.0,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 81,
+      "rank": "A"
+     },
+     "stamina": {
+      "value": 73,
+      "rank": "B"
+     },
+     "k9": {
+      "value": 85,
+      "rank": "A"
+     },
+     "bb9": {
+      "value": 78,
+      "rank": "B"
+     },
+     "hr9": {
+      "value": 65,
+      "rank": "C"
+     }
+    },
+    "abilities": [
+     "奪三振"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 2.4973,
+      "blended": 2.4973,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 9.0429,
+      "blended": 9.0429,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 1.7942,
+      "blended": 1.7942,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.7533,
+      "blended": 0.7533,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 17.3421,
+      "blended": 17.3421,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 156,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 922.6,
+     "outs_2": 0.0
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 28,
+     "defense": {
+      "value": 76,
+      "rank": "B"
+     },
+     "gold_glove": true,
+     "detail": {
+      "err": {
+       "observed": 0.0211,
+       "blended": 0.0088,
+       "weight": 0.418
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 506433,
+    "npb_team_before": "北海道日本ハム",
+    "left_after": 2011,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2012,
+     2013,
+     2014,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024
+    ]
+   }
+  },
+  {
+   "id": "01105111",
+   "provisional_id": false,
+   "name": "岩隈 久志",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "右",
+   "birth": "1981-04-12",
+   "height": 190,
+   "weight": 95,
+   "draft": "1999年ドラフト5位",
+   "career": "堀越高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 43,
+      "rank": "E"
+     },
+     "power": {
+      "value": 44,
+      "rank": "E"
+     },
+     "eye": {
+      "value": 45,
+      "rank": "E"
+     },
+     "speed": {
+      "value": 39,
+      "rank": "F"
+     },
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.0,
+      "blended": 0.2414,
+      "weight": 0.011
+     },
+     "contact": {
+      "observed": 0.3571,
+      "blended": 0.7653,
+      "weight": 0.021
+     },
+     "iso": {
+      "observed": 0.0,
+      "blended": 0.0958,
+      "weight": 0.014
+     },
+     "bb": {
+      "observed": 0.0,
+      "blended": 0.0677,
+      "weight": 0.021
+     },
+     "sb_att": {
+      "observed": null,
+      "blended": 0.0256,
+      "weight": 0.0
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.5,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": null,
+      "blended": 0.0,
+      "weight": 0.0
+     },
+     "hr_rate": {
+      "observed": 0.0,
+      "blended": 0.0146,
+      "weight": 0.014
+     }
+    },
+    "sample": {
+     "pa_1": 4.2,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 55,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 65,
+      "rank": "C"
+     },
+     "k9": {
+      "value": 49,
+      "rank": "E"
+     },
+     "bb9": {
+      "value": 71,
+      "rank": "B"
+     },
+     "hr9": {
+      "value": 49,
+      "rank": "E"
+     }
+    },
+    "abilities": [
+     "制球力"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 3.2456,
+      "blended": 3.2456,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 6.6928,
+      "blended": 6.6928,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 1.624,
+      "blended": 1.624,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.8662,
+      "blended": 0.8662,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 17.9405,
+      "blended": 17.9405,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 148,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 804.0,
+     "outs_2": 21.0
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 17,
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "detail": {
+      "err": {
+       "observed": 0.0278,
+       "blended": 0.012,
+       "weight": 0.432
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 547874,
+    "npb_team_before": "東北楽天",
+    "left_after": 2011,
+    "returned": null,
+    "stats_through": 2017,
+    "drift_years": 7,
+    "mlb_seasons": [
+     2012,
+     2013,
+     2014,
+     2015,
+     2016,
+     2017
+    ]
+   }
+  },
+  {
+   "id": "51655114",
+   "provisional_id": false,
+   "name": "前田 健太",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "右",
+   "birth": "1988-04-11",
+   "height": 185,
+   "weight": 83,
+   "draft": "2006年高校生ドラフト1巡目",
+   "career": "PL学園高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 55,
+      "rank": "D"
+     },
+     "power": {
+      "value": 54,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
+     "speed": {
+      "value": 49,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 85,
+      "rank": "A"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": null,
+      "blended": 0.244,
+      "weight": 0.0
+     },
+     "contact": {
+      "observed": null,
+      "blended": 0.7741,
+      "weight": 0.0
+     },
+     "iso": {
+      "observed": null,
+      "blended": 0.0972,
+      "weight": 0.0
+     },
+     "bb": {
+      "observed": null,
+      "blended": 0.0692,
+      "weight": 0.0
+     },
+     "sb_att": {
+      "observed": null,
+      "blended": 0.0256,
+      "weight": 0.0
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.5,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": null,
+      "blended": 0.0,
+      "weight": 0.0
+     },
+     "hr_rate": {
+      "observed": null,
+      "blended": 0.0148,
+      "weight": 0.0
+     }
+    },
+    "sample": {
+     "pa_1": 0.0,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 70,
+      "rank": "B"
+     },
+     "stamina": {
+      "value": 61,
+      "rank": "C"
+     },
+     "k9": {
+      "value": 81,
+      "rank": "A"
+     },
+     "bb9": {
+      "value": 76,
+      "rank": "B"
+     },
+     "hr9": {
+      "value": 49,
+      "rank": "E"
+     }
+    },
+    "abilities": [
+     "奪三振"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 3.0071,
+      "blended": 3.0071,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 8.715,
+      "blended": 8.715,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 1.9145,
+      "blended": 1.9145,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 1.0636,
+      "blended": 1.06,
+      "weight": 0.979
+     },
+     "stamina": {
+      "observed": 12.8253,
+      "blended": 12.8253,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 153,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 587.4,
+     "outs_2": 0.0
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 29,
+     "defense": {
+      "value": 85,
+      "rank": "A"
+     },
+     "gold_glove": true,
+     "detail": {
+      "err": {
+       "observed": 0.0631,
+       "blended": 0.0344,
+       "weight": 0.545
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 628317,
+    "npb_team_before": "広島東洋",
+    "left_after": 2015,
+    "returned": 2026,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2023,
+     2024
+    ]
+   }
+  },
+  {
+   "id": "01305137",
+   "provisional_id": false,
+   "name": "大谷 翔平",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "左",
+   "birth": "1994-07-05",
+   "height": 193,
+   "weight": 97,
+   "draft": "2012年ドラフト1位",
+   "career": "花巻東高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 88,
+      "rank": "A"
+     },
+     "power": {
+      "value": 100,
+      "rank": "S"
+     },
+     "eye": {
+      "value": 94,
+      "rank": "S"
+     },
+     "speed": {
+      "value": 100,
+      "rank": "S"
+     },
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.3346,
+      "blended": 0.3346,
+      "weight": 1.0
+     },
+     "contact": {
+      "observed": 0.7577,
+      "blended": 0.7577,
+      "weight": 1.0
+     },
+     "iso": {
+      "observed": 0.4891,
+      "blended": 0.4891,
+      "weight": 1.0
+     },
+     "bb": {
+      "observed": 0.1407,
+      "blended": 0.1407,
+      "weight": 1.0
+     },
+     "sb_att": {
+      "observed": 0.2514,
+      "blended": 0.2514,
+      "weight": 1.0
+     },
+     "sb_pct": {
+      "observed": 0.8634,
+      "blended": 0.8634,
+      "weight": 1.0
+     },
+     "triple": {
+      "observed": 0.0613,
+      "blended": 0.0613,
+      "weight": 1.0
+     },
+     "hr_rate": {
+      "observed": 0.1345,
+      "blended": 0.1345,
+      "weight": 1.0
+     }
+    },
+    "sample": {
+     "pa_1": 1609.8,
+     "pa_2": 0.0
+    },
+    "trajectory": 4
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 92,
+      "rank": "S"
+     },
+     "stamina": {
+      "value": 73,
+      "rank": "B"
+     },
+     "k9": {
+      "value": 100,
+      "rank": "S"
+     },
+     "bb9": {
+      "value": 66,
+      "rank": "C"
+     },
+     "hr9": {
+      "value": 69,
+      "rank": "C"
+     }
+    },
+    "abilities": [
+     "奪三振"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 2.0202,
+      "blended": 2.0202,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 11.6313,
+      "blended": 11.6313,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 2.4484,
+      "blended": 2.4484,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.6749,
+      "blended": 0.6749,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 17.1917,
+      "blended": 17.1917,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 157,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 615.6,
+     "outs_2": 6.6
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 5,
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     },
+     "gold_glove": false,
+     "detail": {
+      "err": {
+       "observed": 0.0228,
+       "blended": 0.0056,
+       "weight": 0.246
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 660271,
+    "npb_team_before": "北海道日本ハム",
+    "left_after": 2017,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024
+    ]
+   }
+  },
+  {
+   "id": "51755131",
+   "provisional_id": false,
+   "name": "菊池 雄星",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "左",
+   "bats": "左",
+   "birth": "1991-06-17",
+   "height": 184,
+   "weight": 100,
+   "draft": "2009年ドラフト1位",
+   "career": "花巻東高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 55,
+      "rank": "D"
+     },
+     "power": {
+      "value": 54,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
+     "speed": {
+      "value": 49,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 81,
+      "rank": "A"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": null,
+      "blended": 0.244,
+      "weight": 0.0
+     },
+     "contact": {
+      "observed": null,
+      "blended": 0.7741,
+      "weight": 0.0
+     },
+     "iso": {
+      "observed": null,
+      "blended": 0.0972,
+      "weight": 0.0
+     },
+     "bb": {
+      "observed": null,
+      "blended": 0.0692,
+      "weight": 0.0
+     },
+     "sb_att": {
+      "observed": null,
+      "blended": 0.0256,
+      "weight": 0.0
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.5,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": null,
+      "blended": 0.0,
+      "weight": 0.0
+     },
+     "hr_rate": {
+      "observed": null,
+      "blended": 0.0148,
+      "weight": 0.0
+     }
+    },
+    "sample": {
+     "pa_1": 0.0,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 79,
+      "rank": "B"
+     },
+     "stamina": {
+      "value": 65,
+      "rank": "C"
+     },
+     "k9": {
+      "value": 99,
+      "rank": "S"
+     },
+     "bb9": {
+      "value": 70,
+      "rank": "B"
+     },
+     "hr9": {
+      "value": 54,
+      "rank": "D"
+     }
+    },
+    "abilities": [
+     "奪三振"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 2.5854,
+      "blended": 2.5854,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 10.3906,
+      "blended": 10.3906,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 2.204,
+      "blended": 2.204,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.9716,
+      "blended": 0.9716,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 14.3761,
+      "blended": 14.3761,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 148,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 1110.6,
+     "outs_2": 18.6
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 23,
+     "defense": {
+      "value": 81,
+      "rank": "A"
+     },
+     "gold_glove": true,
+     "detail": {
+      "err": {
+       "observed": 0.0698,
+       "blended": 0.0288,
+       "weight": 0.413
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 579328,
+    "npb_team_before": "埼玉西武",
+    "left_after": 2018,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024
+    ]
+   }
+  },
+  {
+   "id": "81785137",
+   "provisional_id": false,
+   "name": "鈴木 誠也",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "右",
+   "birth": "1994-08-18",
+   "height": 181,
+   "weight": 98,
+   "draft": "2012年ドラフト2位",
+   "career": "二松学舎大付高",
+   "is_pitcher": false,
+   "primary_pos": "外野手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 78,
+      "rank": "B"
+     },
+     "power": {
+      "value": 100,
+      "rank": "S"
+     },
+     "eye": {
+      "value": 82,
+      "rank": "A"
+     },
+     "speed": {
+      "value": 79,
+      "rank": "B"
+     },
+     "defense": {
+      "value": 85,
+      "rank": "A"
+     },
+     "arm": {
+      "value": 90,
+      "rank": "S"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.313,
+      "blended": 0.313,
+      "weight": 1.0
+     },
+     "contact": {
+      "observed": 0.7444,
+      "blended": 0.7444,
+      "weight": 1.0
+     },
+     "iso": {
+      "observed": 0.2809,
+      "blended": 0.2809,
+      "weight": 1.0
+     },
+     "bb": {
+      "observed": 0.1182,
+      "blended": 0.1182,
+      "weight": 1.0
+     },
+     "sb_att": {
+      "observed": 0.1174,
+      "blended": 0.1174,
+      "weight": 1.0
+     },
+     "sb_pct": {
+      "observed": 0.6637,
+      "blended": 0.6637,
+      "weight": 1.0
+     },
+     "triple": {
+      "observed": 0.0418,
+      "blended": 0.0418,
+      "weight": 1.0
+     },
+     "hr_rate": {
+      "observed": 0.0663,
+      "blended": 0.0663,
+      "weight": 1.0
+     }
+    },
+    "sample": {
+     "pa_1": 1319.0,
+     "pa_2": 5.0
+    },
+    "trajectory": 4
+   },
+   "pitching": null,
+   "fielding": {
+    "外野手": {
+     "games": 125,
+     "defense": {
+      "value": 85,
+      "rank": "A"
+     },
+     "gold_glove": true,
+     "detail": {
+      "err": {
+       "observed": 0.0107,
+       "blended": 0.0107,
+       "weight": 1.0
+      },
+      "arm": {
+       "observed": 0.0757,
+       "blended": 0.0757,
+       "weight": 1.0
+      }
+     },
+     "arm": {
+      "value": 90,
+      "rank": "S"
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 673548,
+    "npb_team_before": "広島東洋",
+    "left_after": 2021,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2022,
+     2023,
+     2024
+    ]
+   }
+  },
+  {
+   "id": "01005133",
+   "provisional_id": false,
+   "name": "千賀 滉大",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "左",
+   "birth": "1993-01-30",
+   "height": 186,
+   "weight": 92,
+   "draft": "2010年育成選手ドラフト4位",
+   "career": "蒲郡高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 37,
+      "rank": "F"
+     },
+     "power": {
+      "value": 43,
+      "rank": "E"
+     },
+     "eye": {
+      "value": 42,
+      "rank": "E"
+     },
+     "speed": {
+      "value": 41,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.0,
+      "blended": 0.216,
+      "weight": 0.004
+     },
+     "contact": {
+      "observed": 0.5,
+      "blended": 0.7148,
+      "weight": 0.009
+     },
+     "iso": {
+      "observed": 0.0,
+      "blended": 0.057,
+      "weight": 0.006
+     },
+     "bb": {
+      "observed": 0.0,
+      "blended": 0.0442,
+      "weight": 0.009
+     },
+     "sb_att": {
+      "observed": null,
+      "blended": 0.0,
+      "weight": 0.0
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.0429,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": null,
+      "blended": 0.0,
+      "weight": 0.0
+     },
+     "hr_rate": {
+      "observed": 0.0,
+      "blended": 0.0037,
+      "weight": 0.006
+     }
+    },
+    "sample": {
+     "pa_1": 1.8,
+     "pa_2": 0.0
+    },
+    "trajectory": 1
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 87,
+      "rank": "A"
+     },
+     "stamina": {
+      "value": 74,
+      "rank": "B"
+     },
+     "k9": {
+      "value": 99,
+      "rank": "S"
+     },
+     "bb9": {
+      "value": 53,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 78,
+      "rank": "B"
+     }
+    },
+    "abilities": [
+     "奪三振"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 2.2479,
+      "blended": 2.2479,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 10.3623,
+      "blended": 10.3623,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 3.1214,
+      "blended": 3.1214,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.5124,
+      "blended": 0.5124,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 17.8123,
+      "blended": 17.8123,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 164,
+     "source": "observed"
+    },
+    "sample": {
+     "outs_1": 674.4,
+     "outs_2": 94.0
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 22,
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "gold_glove": true,
+     "detail": {
+      "err": {
+       "observed": 0.0202,
+       "blended": 0.1114,
+       "weight": 0.257
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 673540,
+    "npb_team_before": "福岡ソフトバンク",
+    "left_after": 2022,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2023,
+     2024
+    ]
+   }
+  },
+  {
+   "id": "63165132",
+   "provisional_id": false,
+   "name": "吉田 正尚",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "左",
+   "birth": "1993-07-15",
+   "height": 173,
+   "weight": 85,
+   "draft": "2015年ドラフト1位",
+   "career": "敦賀気比高 - 青山学院大",
+   "is_pitcher": false,
+   "primary_pos": "外野手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 100,
+      "rank": "S"
+     },
+     "power": {
+      "value": 86,
+      "rank": "A"
+     },
+     "eye": {
+      "value": 69,
+      "rank": "C"
+     },
+     "speed": {
+      "value": 58,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 64,
+      "rank": "C"
+     },
+     "arm": {
+      "value": 60,
+      "rank": "C"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.3223,
+      "blended": 0.3223,
+      "weight": 1.0
+     },
+     "contact": {
+      "observed": 0.877,
+      "blended": 0.877,
+      "weight": 1.0
+     },
+     "iso": {
+      "observed": 0.2124,
+      "blended": 0.2124,
+      "weight": 1.0
+     },
+     "bb": {
+      "observed": 0.0934,
+      "blended": 0.0934,
+      "weight": 1.0
+     },
+     "sb_att": {
+      "observed": 0.0327,
+      "blended": 0.0327,
+      "weight": 1.0
+     },
+     "sb_pct": {
+      "observed": 1.0,
+      "blended": 0.8219,
+      "weight": 0.466
+     },
+     "triple": {
+      "observed": 0.0103,
+      "blended": 0.0103,
+      "weight": 1.0
+     },
+     "hr_rate": {
+      "observed": 0.0472,
+      "blended": 0.0472,
+      "weight": 1.0
+     }
+    },
+    "sample": {
+     "pa_1": 1189.8,
+     "pa_2": 11.0
+    },
+    "trajectory": 4
+   },
+   "pitching": null,
+   "fielding": {
+    "外野手": {
+     "games": 39,
+     "defense": {
+      "value": 64,
+      "rank": "C"
+     },
+     "gold_glove": false,
+     "detail": {
+      "err": {
+       "observed": 0.0108,
+       "blended": 0.0108,
+       "weight": 1.0
+      },
+      "arm": {
+       "observed": 0.0304,
+       "blended": 0.0304,
+       "weight": 1.0
+      }
+     },
+     "arm": {
+      "value": 60,
+      "rank": "C"
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 807799,
+    "npb_team_before": "オリックス",
+    "left_after": 2022,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2023,
+     2024
+    ]
+   }
+  },
+  {
+   "id": "01305132",
+   "provisional_id": false,
+   "name": "今永 昇太",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "左",
+   "bats": "左",
+   "birth": "1993-09-01",
+   "height": 178,
+   "weight": 86,
+   "draft": "2015年ドラフト1位",
+   "career": "北筑高 - 駒沢大",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 60,
+      "rank": "C"
+     },
+     "power": {
+      "value": 58,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 49,
+      "rank": "E"
+     },
+     "speed": {
+      "value": 61,
+      "rank": "C"
+     },
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.2272,
+      "blended": 0.2522,
+      "weight": 0.163
+     },
+     "contact": {
+      "observed": 0.7505,
+      "blended": 0.7849,
+      "weight": 0.326
+     },
+     "iso": {
+      "observed": 0.0708,
+      "blended": 0.1109,
+      "weight": 0.217
+     },
+     "bb": {
+      "observed": 0.0092,
+      "blended": 0.0567,
+      "weight": 0.326
+     },
+     "sb_att": {
+      "observed": 0.0,
+      "blended": 0.0327,
+      "weight": 0.261
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.6667,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": 0.0656,
+      "blended": 0.0221,
+      "weight": 0.163
+     },
+     "hr_rate": {
+      "observed": 0.0,
+      "blended": 0.0162,
+      "weight": 0.217
+     }
+    },
+    "sample": {
+     "pa_1": 64.2,
+     "pa_2": 2.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 82,
+      "rank": "A"
+     },
+     "stamina": {
+      "value": 77,
+      "rank": "B"
+     },
+     "k9": {
+      "value": 88,
+      "rank": "A"
+     },
+     "bb9": {
+      "value": 85,
+      "rank": "A"
+     },
+     "hr9": {
+      "value": 56,
+      "rank": "D"
+     }
+    },
+    "abilities": [
+     "奪三振",
+     "制球力"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 2.4831,
+      "blended": 2.4831,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 9.3215,
+      "blended": 9.3215,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 1.3953,
+      "blended": 1.3953,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.9261,
+      "blended": 0.9261,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 18.9035,
+      "blended": 18.9035,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 153,
+     "source": "observed"
+    },
+    "sample": {
+     "outs_1": 1133.8,
+     "outs_2": 121.8
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 22,
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     },
+     "gold_glove": false,
+     "detail": {
+      "err": {
+       "observed": 0.0081,
+       "blended": 0.0024,
+       "weight": 0.296
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 684007,
+    "npb_team_before": "横浜DeNA",
+    "left_after": 2023,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2024
+    ]
+   }
+  },
+  {
+   "id": "53355134",
+   "provisional_id": false,
+   "name": "山本 由伸",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "右",
+   "birth": "1998-08-17",
+   "height": 178,
+   "weight": 80,
+   "draft": "2016年ドラフト4位",
+   "career": "都城高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 44,
+      "rank": "E"
+     },
+     "power": {
+      "value": 47,
+      "rank": "E"
+     },
+     "eye": {
+      "value": 48,
+      "rank": "E"
+     },
+     "speed": {
+      "value": 46,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 80,
+      "rank": "A"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.0,
+      "blended": 0.2268,
+      "weight": 0.009
+     },
+     "contact": {
+      "observed": 0.3889,
+      "blended": 0.7373,
+      "weight": 0.018
+     },
+     "iso": {
+      "observed": 0.0,
+      "blended": 0.072,
+      "weight": 0.012
+     },
+     "bb": {
+      "observed": 0.0,
+      "blended": 0.0541,
+      "weight": 0.018
+     },
+     "sb_att": {
+      "observed": null,
+      "blended": 0.0121,
+      "weight": 0.0
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.4171,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": null,
+      "blended": 0.0,
+      "weight": 0.0
+     },
+     "hr_rate": {
+      "observed": 0.0,
+      "blended": 0.0077,
+      "weight": 0.012
+     }
+    },
+    "sample": {
+     "pa_1": 3.6,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 100,
+      "rank": "S"
+     },
+     "stamina": {
+      "value": 79,
+      "rank": "B"
+     },
+     "k9": {
+      "value": 92,
+      "rank": "S"
+     },
+     "bb9": {
+      "value": 79,
+      "rank": "B"
+     },
+     "hr9": {
+      "value": 91,
+      "rank": "S"
+     }
+    },
+    "abilities": [
+     "奪三振",
+     "被弾抑制"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 1.5594,
+      "blended": 1.5594,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 9.6786,
+      "blended": 9.6786,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 1.7117,
+      "blended": 1.7117,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.2577,
+      "blended": 0.2577,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 19.4571,
+      "blended": 19.4571,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 159,
+     "source": "observed"
+    },
+    "sample": {
+     "outs_1": 1011.0,
+     "outs_2": 21.0
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 23,
+     "defense": {
+      "value": 80,
+      "rank": "A"
+     },
+     "gold_glove": true,
+     "detail": {
+      "err": {
+       "observed": 0.0078,
+       "blended": 0.0568,
+       "weight": 0.41
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 808967,
+    "npb_team_before": "オリックス",
+    "left_after": 2023,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2024
+    ]
+   }
+  },
+  {
+   "id": "81285139",
+   "provisional_id": false,
+   "name": "松井 裕樹",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "左",
+   "bats": "左",
+   "birth": "1995-10-30",
+   "height": 174,
+   "weight": 74,
+   "draft": "2013年ドラフト1位",
+   "career": "桐光学園高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 55,
+      "rank": "D"
+     },
+     "power": {
+      "value": 54,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
+     "speed": {
+      "value": 49,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 73,
+      "rank": "B"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": null,
+      "blended": 0.244,
+      "weight": 0.0
+     },
+     "contact": {
+      "observed": null,
+      "blended": 0.7741,
+      "weight": 0.0
+     },
+     "iso": {
+      "observed": null,
+      "blended": 0.0972,
+      "weight": 0.0
+     },
+     "bb": {
+      "observed": null,
+      "blended": 0.0692,
+      "weight": 0.0
+     },
+     "sb_att": {
+      "observed": null,
+      "blended": 0.0256,
+      "weight": 0.0
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.5,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": null,
+      "blended": 0.0,
+      "weight": 0.0
+     },
+     "hr_rate": {
+      "observed": null,
+      "blended": 0.0148,
+      "weight": 0.0
+     }
+    },
+    "sample": {
+     "pa_1": 0.0,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 81,
+      "rank": "A"
+     },
+     "stamina": {
+      "value": 34,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 89,
+      "rank": "A"
+     },
+     "bb9": {
+      "value": 68,
+      "rank": "C"
+     },
+     "hr9": {
+      "value": 62,
+      "rank": "C"
+     }
+    },
+    "abilities": [
+     "奪三振"
+    ],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": 2.0155,
+      "blended": 2.1109,
+      "weight": 0.93
+     },
+     "k9": {
+      "observed": 11.3779,
+      "blended": 11.3779,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 2.7645,
+      "blended": 2.7645,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.645,
+      "blended": 0.6648,
+      "weight": 0.698
+     },
+     "stamina": {
+      "observed": 2.9273,
+      "blended": 2.9273,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 154,
+     "source": "observed"
+    },
+    "sample": {
+     "outs_1": 418.6,
+     "outs_2": 0.0
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 59,
+     "defense": {
+      "value": 73,
+      "rank": "B"
+     },
+     "gold_glove": false,
+     "detail": {
+      "err": {
+       "observed": 0.0,
+       "blended": 0.0,
+       "weight": 0.098
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 673513,
+    "npb_team_before": "東北楽天",
+    "left_after": 2023,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": [
+     2024
+    ]
+   }
+  },
+  {
+   "id": "31035151",
+   "provisional_id": false,
+   "name": "佐々木 朗希",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "右",
+   "birth": "2001-11-03",
+   "height": 192,
+   "weight": 92,
+   "draft": "2019年ドラフト1位",
+   "career": "大船渡高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 51,
+      "rank": "D"
+     },
+     "power": {
+      "value": 54,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 54,
+      "rank": "D"
+     },
+     "speed": {
+      "value": 49,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.0,
+      "blended": 0.2395,
+      "weight": 0.019
+     },
+     "contact": {
+      "observed": 0.2162,
+      "blended": 0.7535,
+      "weight": 0.037
+     },
+     "iso": {
+      "observed": 0.0,
+      "blended": 0.0948,
+      "weight": 0.025
+     },
+     "bb": {
+      "observed": 0.0,
+      "blended": 0.0666,
+      "weight": 0.037
+     },
+     "sb_att": {
+      "observed": null,
+      "blended": 0.0256,
+      "weight": 0.0
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.5,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": null,
+      "blended": 0.0,
+      "weight": 0.0
+     },
+     "hr_rate": {
+      "observed": 0.0,
+      "blended": 0.0144,
+      "weight": 0.025
+     }
+    },
+    "sample": {
+     "pa_1": 7.4,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 100,
+      "rank": "S"
+     },
+     "stamina": {
+      "value": 77,
+      "rank": "B"
+     },
+     "k9": {
+      "value": 100,
+      "rank": "S"
+     },
+     "bb9": {
+      "value": 73,
+      "rank": "B"
+     },
+     "hr9": {
+      "value": 92,
+      "rank": "S"
+     }
+    },
+    "abilities": [
+     "奪三振",
+     "被弾抑制"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 1.303,
+      "blended": 1.303,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 11.7337,
+      "blended": 11.7337,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 2.0451,
+      "blended": 2.0451,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.241,
+      "blended": 0.241,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 18.6714,
+      "blended": 18.6714,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 164,
+     "source": "observed"
+    },
+    "sample": {
+     "outs_1": 784.2,
+     "outs_2": 0.0
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 18,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false,
+     "detail": {
+      "err": {
+       "observed": 0.1892,
+       "blended": 0.0224,
+       "weight": 0.118
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 808963,
+    "npb_team_before": "千葉ロッテ",
+    "left_after": 2024,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": []
+   }
+  },
+  {
+   "id": "71575132",
+   "provisional_id": false,
+   "name": "小笠原 慎之介",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "左",
+   "bats": "左",
+   "birth": "1997-10-08",
+   "height": 180,
+   "weight": 93,
+   "draft": "2015年ドラフト1位",
+   "career": "東海大相模高",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 16,
+      "rank": "G"
+     },
+     "power": {
+      "value": 46,
+      "rank": "E"
+     },
+     "eye": {
+      "value": 43,
+      "rank": "E"
+     },
+     "speed": {
+      "value": 47,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.0957,
+      "blended": 0.202,
+      "weight": 0.283
+     },
+     "contact": {
+      "observed": 0.4644,
+      "blended": 0.5988,
+      "weight": 0.566
+     },
+     "iso": {
+      "observed": 0.0143,
+      "blended": 0.0659,
+      "weight": 0.377
+     },
+     "bb": {
+      "observed": 0.0265,
+      "blended": 0.045,
+      "weight": 0.566
+     },
+     "sb_att": {
+      "observed": 0.0,
+      "blended": 0.014,
+      "weight": 0.453
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.5,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": 0.0,
+      "blended": 0.0,
+      "weight": 0.283
+     },
+     "hr_rate": {
+      "observed": 0.0,
+      "blended": 0.0092,
+      "weight": 0.377
+     }
+    },
+    "sample": {
+     "pa_1": 113.2,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 74,
+      "rank": "B"
+     },
+     "stamina": {
+      "value": 77,
+      "rank": "B"
+     },
+     "k9": {
+      "value": 61,
+      "rank": "C"
+     },
+     "bb9": {
+      "value": 75,
+      "rank": "B"
+     },
+     "hr9": {
+      "value": 71,
+      "rank": "B"
+     }
+    },
+    "abilities": [],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 2.8065,
+      "blended": 2.8065,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 6.8449,
+      "blended": 6.8449,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 1.9553,
+      "blended": 1.9553,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.6374,
+      "blended": 0.6374,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 18.8591,
+      "blended": 18.8591,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 153,
+     "source": "observed"
+    },
+    "sample": {
+     "outs_1": 1082.6,
+     "outs_2": 3.6
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 24,
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     },
+     "gold_glove": false,
+     "detail": {
+      "err": {
+       "observed": 0.0167,
+       "blended": 0.0056,
+       "weight": 0.335
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 829272,
+    "npb_team_before": "中日",
+    "left_after": 2024,
+    "returned": 2026,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": []
+   }
+  },
+  {
+   "id": "41745137",
+   "provisional_id": false,
+   "name": "菅野 智之",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "右",
+   "birth": "1989-10-11",
+   "height": 186,
+   "weight": 95,
+   "draft": "2012年ドラフト1位",
+   "career": "東海大相模高 - 東海大",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 30,
+      "rank": "F"
+     },
+     "power": {
+      "value": 50,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 48,
+      "rank": "E"
+     },
+     "speed": {
+      "value": 55,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 92,
+      "rank": "S"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.105,
+      "blended": 0.2177,
+      "weight": 0.259
+     },
+     "contact": {
+      "observed": 0.5342,
+      "blended": 0.6631,
+      "weight": 0.518
+     },
+     "iso": {
+      "observed": 0.0091,
+      "blended": 0.0831,
+      "weight": 0.345
+     },
+     "bb": {
+      "observed": 0.0328,
+      "blended": 0.0554,
+      "weight": 0.518
+     },
+     "sb_att": {
+      "observed": 0.0,
+      "blended": 0.0259,
+      "weight": 0.414
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.6667,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": 0.0,
+      "blended": 0.0101,
+      "weight": 0.259
+     },
+     "hr_rate": {
+      "observed": 0.0,
+      "blended": 0.0136,
+      "weight": 0.345
+     }
+    },
+    "sample": {
+     "pa_1": 103.6,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 74,
+      "rank": "B"
+     },
+     "stamina": {
+      "value": 77,
+      "rank": "B"
+     },
+     "k9": {
+      "value": 55,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 87,
+      "rank": "A"
+     },
+     "hr9": {
+      "value": 68,
+      "rank": "C"
+     }
+    },
+    "abilities": [
+     "制球力"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 2.8423,
+      "blended": 2.8423,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 6.3064,
+      "blended": 6.3064,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 1.2938,
+      "blended": 1.2938,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.7034,
+      "blended": 0.7034,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 18.6188,
+      "blended": 18.6188,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 154,
+     "source": "observed"
+    },
+    "sample": {
+     "outs_1": 921.0,
+     "outs_2": 23.6
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 24,
+     "defense": {
+      "value": 92,
+      "rank": "S"
+     },
+     "gold_glove": true,
+     "detail": {
+      "err": {
+       "observed": 0.0299,
+       "blended": 0.0064,
+       "weight": 0.214
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": 608372,
+    "npb_team_before": "読売",
+    "left_after": 2024,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": []
+   }
+  },
+  {
+   "id": "71175132",
+   "provisional_id": false,
+   "name": "青柳 晃洋",
+   "team": null,
+   "team_id": null,
+   "league": null,
+   "throws": "右",
+   "bats": "右",
+   "birth": "1993-12-11",
+   "height": 183,
+   "weight": 83,
+   "draft": "2015年ドラフト5位",
+   "career": "川崎工科高 - 帝京大",
+   "is_pitcher": true,
+   "primary_pos": "投手",
+   "batting": {
+    "ratings": {
+     "meet": {
+      "value": 33,
+      "rank": "F"
+     },
+     "power": {
+      "value": 48,
+      "rank": "E"
+     },
+     "eye": {
+      "value": 45,
+      "rank": "E"
+     },
+     "speed": {
+      "value": 48,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 71,
+      "rank": "B"
+     }
+    },
+    "detail": {
+     "avg": {
+      "observed": 0.1095,
+      "blended": 0.2171,
+      "weight": 0.2
+     },
+     "contact": {
+      "observed": 0.5533,
+      "blended": 0.6858,
+      "weight": 0.4
+     },
+     "iso": {
+      "observed": 0.0118,
+      "blended": 0.0744,
+      "weight": 0.267
+     },
+     "bb": {
+      "observed": 0.02,
+      "blended": 0.0495,
+      "weight": 0.4
+     },
+     "sb_att": {
+      "observed": 0.0,
+      "blended": 0.0174,
+      "weight": 0.32
+     },
+     "sb_pct": {
+      "observed": null,
+      "blended": 0.5,
+      "weight": 0.0
+     },
+     "triple": {
+      "observed": 0.0,
+      "blended": 0.0,
+      "weight": 0.2
+     },
+     "hr_rate": {
+      "observed": 0.0,
+      "blended": 0.0108,
+      "weight": 0.267
+     }
+    },
+    "sample": {
+     "pa_1": 80.0,
+     "pa_2": 0.0
+    },
+    "trajectory": 2
+   },
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 70,
+      "rank": "B"
+     },
+     "stamina": {
+      "value": 73,
+      "rank": "B"
+     },
+     "k9": {
+      "value": 54,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 61,
+      "rank": "C"
+     },
+     "hr9": {
+      "value": 83,
+      "rank": "A"
+     }
+    },
+    "abilities": [
+     "被弾抑制"
+    ],
+    "role": "先発",
+    "detail": {
+     "fip": {
+      "observed": 3.028,
+      "blended": 3.028,
+      "weight": 1.0
+     },
+     "k9": {
+      "observed": 6.1729,
+      "blended": 6.1729,
+      "weight": 1.0
+     },
+     "bb9": {
+      "observed": 2.7071,
+      "blended": 2.7071,
+      "weight": 1.0
+     },
+     "hr9": {
+      "observed": 0.4036,
+      "blended": 0.4036,
+      "weight": 1.0
+     },
+     "stamina": {
+      "observed": 17.182,
+      "blended": 17.182,
+      "weight": 1.0
+     }
+    },
+    "velocity": {
+     "kmh": 150,
+     "source": "observed"
+    },
+    "sample": {
+     "outs_1": 716.0,
+     "outs_2": 248.4
+    }
+   },
+   "fielding": {
+    "投手": {
+     "games": 12,
+     "defense": {
+      "value": 71,
+      "rank": "B"
+     },
+     "gold_glove": false,
+     "detail": {
+      "err": {
+       "observed": 0.0365,
+       "blended": 0.0088,
+       "weight": 0.241
+      }
+     }
+    }
+   },
+   "mlb": {
+    "mlb_id": null,
+    "npb_team_before": "阪神",
+    "left_after": 2024,
+    "returned": null,
+    "stats_through": 2024,
+    "drift_years": 0,
+    "mlb_seasons": []
    }
   }
  ]

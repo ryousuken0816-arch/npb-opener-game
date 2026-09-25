@@ -23,17 +23,22 @@ var unknown_teams: Array[String] = []
 
 var _rng := RandomNumberGenerator.new()
 var _games_by_date := {}
+var _debut_years := {}
 
 
-## ratings: 能力値ファイルの中身、schedule: schedule.json の中身、
+## ratings: {"players": 所属している選手}（GameData.rostered_players()。team が空の選手は除く）、
+## schedule: schedule.json の中身、
 ## debut_years: 選手ID → 1軍初出場の年（外国人枠の判定用。GameData.load_debut_years()）
 func _init(season_year: int, ratings: Dictionary, schedule: Array, seed_value: int = 0,
 		debut_years: Dictionary = {}) -> void:
 	year = season_year
 	_rng.seed = seed_value if seed_value != 0 else hash("season-%d" % year)
+	_debut_years = debut_years
 	var by_team := {}
 	for p: Dictionary in ratings.get("players", []):
 		var team: String = p["team"]
+		if team.is_empty():
+			continue
 		if not by_team.has(team):
 			by_team[team] = []
 		by_team[team].append(p)
@@ -185,6 +190,18 @@ func last_played_date() -> String:
 ## リーグの順位表。各行は {team, wins, losses, draws, runs, runs_allowed}（並べ替えは GameState）
 func record_of(team: String) -> Dictionary:
 	return records.get(team, {"w": 0, "l": 0, "d": 0, "rs": 0, "ra": 0})
+
+
+## シーズン中の移籍（史実のトレード）：選手を to_team へ移し、両球団の1軍を自動で組み直す（CPU球団どうしのみ）。
+## p は能力値データ（GameData.player()）。今季の成績はそのまま引き継ぐ
+func transfer(p: Dictionary, to_team: String) -> void:
+	var id: String = p["id"]
+	var from_team: String = players.get(id, {}).get("team", "")
+	if teams.has(from_team):
+		teams[from_team].remove_player(id)
+	if teams.has(to_team):
+		teams[to_team].add_player(p, _debut_years)
+	players[id] = {"name": p["name"], "team": to_team}
 
 
 func player_name(id: String) -> String:

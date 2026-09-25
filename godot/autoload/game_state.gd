@@ -72,12 +72,19 @@ var wins: int = 0
 var losses: int = 0
 var draws: int = 0
 
+## 所属・年俸・年越しの史実の出来事（誰がどの球団にいるか。年が変わっても引き継ぐ）
+var league: LeagueRoster = null
+
 ## 自球団の采配方針（SimTeam.tactics と同じ形。年をまたいでも引き継ぐ）
 var tactics := {"bunt": 0, "steal": 0, "relief": 0}
 
 ## 早送りの目標日（この日の試合が終わるまで進める）。早送りしていなければ -1
 var fast_forward_target: int = -1
+## 所属が変わるたびに増える（一覧の作り直しの判定用）
+var roster_version := 0
 var _fast_forward_time := 0.0
+## オフの編成（所属が変わるたびに作り直す。球団名 → SimTeam）
+var _offseason_teams := {}
 
 
 func new_game(team_name: String, start_year: int = START_YEAR) -> void:
@@ -87,6 +94,9 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	phase = Phase.SEASON
 	GameData.load_ratings(year, "pre")
+	league = LeagueRoster.new()
+	league.start(year, GameData.ratings, _opening_date(), team, randi() + 1)
+	_sync_roster()
 	_start_season()
 	changed.emit()
 
@@ -138,9 +148,41 @@ func stop_fast_forward() -> void:
 	changed.emit()
 
 
-## 自球団の編成（その年のペナントの SimTeam）。日程データが無い年は null
+## 自球団の編成（シーズン中はその年のペナントの SimTeam、オフは今の所属で自動編成したもの）。
+## シーズン中で日程データが無い年は null
 func my_team() -> SimTeam:
-	return season.teams.get(team) if season != null else null
+	return sim_team_of(team)
+
+
+## 球団の編成（my_team() と同じ。オフは所属が変わるたびに作り直す）
+func sim_team_of(team_name: String) -> SimTeam:
+	if phase == Phase.SEASON:
+		return season.teams.get(team_name) if season != null else null
+	if not _offseason_teams.has(team_name):
+		var members := GameData.players_of(team_name)
+		if members.is_empty():
+			return null
+		_offseason_teams[team_name] = SimTeam.new(team_name, GameData.league_of(team_name), members, year,
+				GameData.load_debut_years(year))
+	return _offseason_teams[team_name]
+
+
+## 外国人市場の選手を自球団で獲得する（オフのみ）。失敗したら理由の文を返す
+func sign_foreign(id: String) -> String:
+	if phase == Phase.SEASON:
+		return "シーズン中は獲得できません"
+	var error := league.sign_foreign(id, team)
+	if error.is_empty():
+		_sync_roster()
+		changed.emit()
+	return error
+
+
+## 外国人市場が開いているか（FA・トレード・ポスティング〜春季キャンプ）
+func market_open() -> bool:
+	if phase == Phase.SEASON or phase == Phase.AWARDS or league == null:
+		return false
+	return not league.market.is_empty()
 
 
 ## 自球団の采配方針を変える（今季の SimTeam にもすぐ反映）
@@ -165,6 +207,8 @@ func _advance_one_day() -> void:
 	if season != null:
 		season.sim_until_day(day + 1)
 		_sync_record()
+	# 今日までの史実のトレード（CPU球団どうし）
+	_apply_trades(Season.date_of_day(day))
 	var old_month := month
 	day += 1
 	if day > season_last_day():
@@ -327,26 +371,88 @@ func record_text() -> String:
 	return "%d勝 %d敗 %d分" % [wins, losses, draws]
 
 
+## フェーズに入ったときの処理。年越しの史実の出来事（LeagueRoster）はここで起こす：
+## FA・トレード・ポスティング＝メジャー移籍・年内のトレード・来季の準備（復帰・外国人市場）、契約更改＝年俸、
+## 戦力外・引退＝引退、ドラフト＝新人（史実の球団へ）、春季キャンプ＝新しい年。CPU球団は外国人市場から少しずつ獲得する
 func _enter(new_phase: Phase) -> void:
+	phase = new_phase
 	match new_phase:
 		Phase.AWARDS:
 			# シーズン後の能力値に更新（当年までの成績で再計算したもの）
 			GameData.load_ratings(year, "post")
+		Phase.FA_TRADE:
+			league.depart_mlb(year)
+			_apply_trades("%d-12-31" % year)
+			var next := GameData.peek_ratings(year + 1, "pre")
+			if not next.is_empty():
+				GameData.set_supplement(next)
+				league.prepare_next_year(year, next, GameData.peek_ratings(year + 1, "post"))
+				league.apply_returns()
+		Phase.CONTRACT:
+			league.renew_contracts(year, season)
+			league.cpu_market_round()
+		Phase.RELEASE:
+			league.apply_retirements()
+			league.cpu_market_round()
+		Phase.DRAFT:
+			league.apply_newcomers()
+			league.cpu_market_round()
 		Phase.CAMP:
 			year += 1
 			GameData.load_ratings(year, "pre")
+			league.begin_year(year, GameData.ratings)
+			team = league.user_team
+			league.cpu_market_round(-1)
+			_apply_trades("%d-01-31" % year)
 		Phase.SEASON:
 			_start_season()
-	phase = new_phase
+	_sync_roster()
 	changed.emit()
 
 
-## その年の日程を読み込み、開幕前の状態にする（能力値は開幕時点の pre を使う）
+## 所属が変わった・能力値ファイルを読み替えたとき：能力値データに所属を書き込み、オフの編成を作り直す
+func _sync_roster() -> void:
+	if league != null:
+		GameData.apply_roster(league.team_of)
+	_offseason_teams.clear()
+	roster_version += 1
+
+
+## date までの史実のトレードを起こす（シーズン中はペナントの編成にもすぐ反映）
+func _apply_trades(date: String) -> void:
+	if league == null:
+		return
+	var moves := league.apply_trades_until(date)
+	if moves.is_empty():
+		return
+	_sync_roster()
+	if phase == Phase.SEASON and season != null:
+		for mv in moves:
+			season.transfer(GameData.player(mv["pid"]), mv["to"])
+
+
+## 開幕日（"YYYY-MM-DD"）。日程データが無い年は既定の開始日
+func _opening_date() -> String:
+	var first := ""
+	for g: Dictionary in GameData.load_schedule(year):
+		if first.is_empty() or g["date"] < first:
+			first = g["date"]
+	return first if not first.is_empty() else "%d-%s" % [year, DEFAULT_SEASON_START]
+
+
+## その年の日程を読み込み、開幕前の状態にする（能力値は開幕時点の pre を使う）。
+## 開幕前日までの史実のトレードを起こし、外国人市場を閉じてから、今の所属で各球団を編成する
 func _start_season() -> void:
-	var schedule := GameData.load_schedule(year)
 	season = null
+	if league != null:
+		var opening := Season.day_number(_opening_date())
+		_apply_trades(Season.date_of_day(opening - 1))
+		league.close_market()
+		_sync_roster()
+	var schedule := GameData.load_schedule(year)
 	if not schedule.is_empty() and GameData.has_ratings():
-		season = Season.new(year, GameData.ratings, schedule, randi() + 1,
+		var roster := {"players": GameData.rostered_players()} if league != null else GameData.ratings
+		season = Season.new(year, roster, schedule, randi() + 1,
 				GameData.load_debut_years(year))
 		var mine: SimTeam = season.teams.get(team)
 		if mine != null:

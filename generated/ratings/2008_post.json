@@ -1,5 +1,5 @@
 {
- "schema_version": 3,
+ "schema_version": 4,
  "year": 2008,
  "phase": "post",
  "stats_through": 2008,
@@ -128577,5 +128577,6 @@
     }
    }
   }
- ]
+ ],
+ "mlb_players": []
 }

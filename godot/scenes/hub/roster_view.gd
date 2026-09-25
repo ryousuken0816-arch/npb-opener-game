@@ -12,6 +12,7 @@ const PITCHER_COLUMNS := [
 	["bb9", "制球"], ["hr9", "被弾抑制"],
 ]
 const RANK_COLUMN_WIDTH := 72
+const SALARY_COLUMN_WIDTH := 150
 ## 今季の成績タブ（GameState.season）の列 [見出し, 幅]
 const BATTING_STAT_COLUMNS := [
 	["試合", 48], ["打席", 52], ["打率", 56], ["本塁打", 60], ["打点", 48],
@@ -28,8 +29,8 @@ var _shown_key := ""
 ## 表示中と同じ球団・能力値なら作り直さない
 func show_team(team: String) -> void:
 	var season := GameState.season
-	var key := "%s|%s|%s|%d" % [team, GameData.ratings.get("year"), GameData.ratings.get("phase"),
-		season.played_count() if season != null else -1]
+	var key := "%s|%s|%s|%d|%d" % [team, GameData.ratings.get("year"), GameData.ratings.get("phase"),
+		season.played_count() if season != null else -1, GameState.roster_version]
 	var tab := current_tab
 	if key == _shown_key:
 		return
@@ -98,19 +99,20 @@ func _open_detail(tree: Tree) -> void:
 
 
 func _make_batter_tree(players: Array) -> Tree:
-	var tree := _make_tree(["名前", "守備位置", "投打"], BATTER_COLUMNS)
+	var tree := _make_tree(["名前", "守備位置", "投打"], BATTER_COLUMNS, ["年俸"])
 	for p: Dictionary in players:
 		var item := tree.create_item()
 		item.set_text(0, p["name"])
 		item.set_text(1, _str(p["primary_pos"]))
 		item.set_text(2, _throws_bats(p))
 		_set_ranks(item, 3, p["batting"]["ratings"], BATTER_COLUMNS)
+		_set_salary(item, 3 + BATTER_COLUMNS.size(), p["id"])
 		item.set_metadata(0, p["id"])
 	return tree
 
 
 func _make_pitcher_tree(players: Array) -> Tree:
-	var tree := _make_tree(["名前", "役割", "投打"], PITCHER_COLUMNS, ["特殊能力"])
+	var tree := _make_tree(["名前", "役割", "投打"], PITCHER_COLUMNS, ["特殊能力", "年俸"])
 	for p: Dictionary in players:
 		var pitching: Dictionary = p["pitching"] if p["pitching"] else {}
 		var item := tree.create_item()
@@ -121,6 +123,7 @@ func _make_pitcher_tree(players: Array) -> Tree:
 		_set_ranks(item, 3, ratings if ratings is Dictionary else {}, PITCHER_COLUMNS)
 		var abilities := PackedStringArray(pitching.get("abilities", []))
 		item.set_text(3 + PITCHER_COLUMNS.size(), " ".join(abilities))
+		_set_salary(item, 4 + PITCHER_COLUMNS.size(), p["id"])
 		item.set_metadata(0, p["id"])
 	return tree
 
@@ -220,7 +223,9 @@ func _make_tree(text_headers: Array, rank_columns: Array, trailing_headers: Arra
 		col += 1
 	for header: String in trailing_headers:
 		tree.set_column_title(col, header)
-		tree.set_column_expand(col, true)
+		tree.set_column_expand(col, header != "年俸")
+		if header == "年俸":
+			tree.set_column_custom_minimum_width(col, SALARY_COLUMN_WIDTH)
 		col += 1
 	tree.create_item()  # 非表示のルート
 	return tree
@@ -239,6 +244,13 @@ func _set_ranks(item: TreeItem, first_col: int, ratings: Dictionary, columns: Ar
 		item.set_custom_font(col, UiTheme.font(800))
 		item.set_custom_font_size(col, 22)
 		item.set_tooltip_text(col, str(int(rating["value"])))
+
+
+## 年俸（GameState.league）
+func _set_salary(item: TreeItem, col: int, id: String) -> void:
+	item.set_text_alignment(col, HORIZONTAL_ALIGNMENT_RIGHT)
+	var league := GameState.league
+	item.set_text(col, Salary.text(league.salary_of(id)) if league != null else "-")
 
 
 func _throws_bats(p: Dictionary) -> String:

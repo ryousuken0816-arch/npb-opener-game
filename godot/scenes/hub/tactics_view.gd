@@ -7,7 +7,8 @@ extends HBoxContainer
 ## - 起用設定 … OrderPage（DHあり／なしのスタメンと控え）
 ## - 思考設定 … 采配方針（送りバント・盗塁の積極性・継投の傾向。docs/SPEC.md「采配」）
 ## - 選手一覧 … RosterView（能力のランクと今季の成績）
-## - 練習設定・登録設定・情報 … 未実装
+## - 情報 … InfoPage（12球団の年俸総額と自球団の年俸）
+## - 練習設定・登録設定 … 未実装
 ## 編成は今季の自球団の SimTeam（GameState.my_team()）を直接書き換え、次の試合から反映される。
 ## コントローラー：サブメニューは十字キー＋Ⓐ、Ⓑで一覧→ハブへ戻る。LB/RB でサブ画面を順に切り替え
 ## （選手一覧ではタブを切り替え）。画面を開くと最初の項目にフォーカスする。
@@ -24,7 +25,7 @@ const MENUS := [
 	["order", "起用設定", "DHあり・なしのスタメン（打順と守備位置）と控えを決めます。", true],
 	["strategy", "思考設定", "送りバント・盗塁・継投など、チームの采配方針を決めます。", true],
 	["rules", "登録設定", "1・2軍の入れ替えを自動で行うかなどを決めます。（未実装）", false],
-	["info", "情報", "チームの成績や故障者などの情報を見ます。（未実装）", false],
+	["info", "情報", "12球団の年俸総額と、自球団の選手の年俸を見ます。", true],
 	["list", "選手一覧", "所属選手の能力（ランク）と今季の打撃成績・投手成績を見ます。", true],
 ]
 const HOME_DESCRIPTION := "1・2軍の入れ替え、オーダーや起用法の設定、所属選手の確認をします。"
@@ -54,6 +55,7 @@ var _register_fielders: RegisterPage
 var _order: OrderPage
 var _strategy: VBoxContainer
 var _roster: RosterView
+var _info: InfoPage
 var _placeholder: Label
 
 
@@ -76,6 +78,8 @@ func setup(p: UiTheme.Palette) -> void:
 	_strategy = VBoxContainer.new()
 	_strategy.add_theme_constant_override("separation", 12)
 	_roster = RosterView.new()
+	_info = InfoPage.new()
+	_info.setup(p)
 	_placeholder = Label.new()
 	_placeholder.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_placeholder.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -144,6 +148,8 @@ func refresh() -> void:
 			_render_strategy()
 		"list":
 			_roster.show_team(GameState.team)
+		"info":
+			_info.refresh()
 
 
 func _build_menu() -> Control:
@@ -216,6 +222,9 @@ func _show_page(key: String, focus_page: bool = false) -> void:
 		"list":
 			_roster.visible = true
 			_roster.show_team(GameState.team)
+		"info":
+			_info.visible = true
+			_info.refresh()
 		_:
 			_placeholder.visible = true
 			_placeholder.text = "（未実装）"
@@ -248,6 +257,8 @@ func _focus_page() -> void:
 			_order.focus_first()
 		"list":
 			_roster.focus_content()
+		"info":
+			_info.focus_first()
 		"strategy":
 			for b in UiInput.focusables(_strategy):
 				if b is Button and (b as Button).button_pressed:
@@ -263,7 +274,8 @@ func _focus_page() -> void:
 
 
 func _pages() -> Array[Control]:
-	return [_home, _register_pitchers, _register_fielders, _order, _strategy, _roster, _placeholder]
+	return [_home, _register_pitchers, _register_fielders, _order, _strategy, _roster, _info,
+		_placeholder]
 
 
 func _page_description() -> String:

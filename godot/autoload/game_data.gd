@@ -1,3 +1,4 @@
+# gdlint: disable=max-public-methods
 extends Node
 ## 能力値データ（tools/compute_ratings.py の出力）の読み込みと参照。
 ##
@@ -70,10 +71,33 @@ const RANK_COLORS := {
 	"G": Color("8a9199"),
 }
 
-## 現在の能力値ファイルの中身（schema_version 3）
+## 球団の略称（史実のデータ：trades.json・mlb_moves.json の表記）→ 正式名。
+## 「横浜」は2012年から DeNA（resolve_team で年を見て切り替える）
+const TEAM_ALIASES := {
+	"読売": "読売ジャイアンツ", "巨人": "読売ジャイアンツ", "阪神": "阪神タイガース", "中日": "中日ドラゴンズ",
+	"横浜DeNA": "横浜DeNAベイスターズ", "DeNA": "横浜DeNAベイスターズ", "広島東洋": "広島東洋カープ",
+	"広島": "広島東洋カープ", "東京ヤクルト": "東京ヤクルトスワローズ", "ヤクルト": "東京ヤクルトスワローズ",
+	"埼玉西武": "埼玉西武ライオンズ", "西武": "埼玉西武ライオンズ", "オリックス": "オリックス・バファローズ",
+	"福岡ソフトバンク": "福岡ソフトバンクホークス", "ソフトバンク": "福岡ソフトバンクホークス",
+	"北海道日本ハム": "北海道日本ハムファイターズ", "日本ハム": "北海道日本ハムファイターズ",
+	"千葉ロッテ": "千葉ロッテマリーンズ", "ロッテ": "千葉ロッテマリーンズ",
+	"東北楽天": "東北楽天ゴールデンイーグルス", "楽天": "東北楽天ゴールデンイーグルス",
+}
+const DENA_FROM_YEAR := 2012
+
+## 現在の能力値ファイルの中身（schema_version 4）。
+## 各選手の team / league は、ゲーム内の所属（GameState.league）を apply_roster() で書き込んだもの。
+## 史実（能力値ファイル）の球団は hist_team に残す。所属していない選手（外国人市場の候補など）は team が空
 var ratings: Dictionary = {}
 var _players_by_team: Dictionary = {}
 var _players_by_id: Dictionary = {}
+## 来季の能力値ファイルの選手（オフに加わった新人・復帰選手・外国人市場の候補を、年が変わる前から引けるように）
+var _supplement: Dictionary = {}
+## メジャーにいる選手の能力値（能力値ファイルの mlb_players。引き留めたときに使う）
+var _mlb_by_id: Dictionary = {}
+var _team_league: Dictionary = {}
+var _parsed_cache: Dictionary = {}
+var _drafts_cache: Dictionary = {}
 var _loaded_file := ""
 var _pages_year := -1
 var _pages := {}
@@ -88,14 +112,120 @@ func load_ratings(year: int, phase: String) -> bool:
 	if path.is_empty():
 		push_warning("能力値ファイルがありません: %d_%s.json" % [year, phase])
 		return false
+	var parsed := _parse_ratings(path)
+	if parsed.is_empty():
+		return false
+	ratings = parsed
+	_parsed_cache.erase(path)
+	_loaded_file = path
+	_supplement.clear()
+	_index_players()
+	return true
+
+
+## 能力値ファイルを今のデータを変えずに読む（来季の準備用。読んだものは load_ratings() でそのまま使う）
+func peek_ratings(year: int, phase: String) -> Dictionary:
+	var path := find_ratings_path(year, phase)
+	if path.is_empty():
+		return {}
+	if path == _loaded_file:
+		return ratings
+	if not _parsed_cache.has(path):
+		var parsed := _parse_ratings(path)
+		if parsed.is_empty():
+			return {}
+		for p: Dictionary in parsed.get("players", []):
+			p["hist_team"] = p["team"]
+		_parsed_cache[path] = parsed
+	return _parsed_cache[path]
+
+
+func _parse_ratings(path: String) -> Dictionary:
+	if _parsed_cache.has(path):
+		return _parsed_cache[path]
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("能力値ファイルを読めません: " + path)
-		return false
-	ratings = parsed
-	_loaded_file = path
-	_index_players()
-	return true
+		return {}
+	return parsed
+
+
+## 来季の能力値ファイルの選手を、今のファイルに無い選手の能力値として引けるようにする
+func set_supplement(next_ratings: Dictionary) -> void:
+	_supplement.clear()
+	for p: Dictionary in next_ratings.get("players", []):
+		if not _players_by_id.has(p["id"]):
+			_supplement[p["id"]] = p
+			var team: String = p.get("hist_team", p["team"])
+			if not _team_league.has(team) and p.get("league") != null:
+				_team_league[team] = p["league"]
+
+
+## ゲーム内の所属（選手ID → 球団）を能力値データに書き込み、球団別の一覧を作り直す
+func apply_roster(team_of: Dictionary) -> void:
+	_players_by_team.clear()
+	for p: Dictionary in ratings.get("players", []):
+		if not team_of.has(p["id"]):
+			p["team"] = ""
+	for p: Dictionary in _supplement.values():
+		if not team_of.has(p["id"]):
+			p["team"] = ""
+	for id: String in team_of:
+		var p := player(id)
+		if p.is_empty():
+			continue
+		var team: String = team_of[id]
+		p["team"] = team
+		p["league"] = _team_league.get(team, p.get("league"))
+		if not _players_by_team.has(team):
+			_players_by_team[team] = []
+		_players_by_team[team].append(p)
+
+
+## 所属している全選手（Season を作るときに渡す）
+func rostered_players() -> Array:
+	var result: Array = []
+	for team: String in teams():
+		result.append_array(_players_by_team[team])
+	return result
+
+
+## メジャーにいる選手の能力値（その年のファイルの mlb_players。無ければ空）
+func mlb_player(id: String) -> Dictionary:
+	return _mlb_by_id.get(id, {})
+
+
+## 史実のデータの球団の略称 → 正式名（その年の名前。「横浜」は2012年から DeNA）
+func resolve_team(short: String, year: int) -> String:
+	if short == "横浜":
+		return "横浜DeNAベイスターズ" if year >= DENA_FROM_YEAR else "横浜ベイスターズ"
+	if TEAM_ALIASES.has(short):
+		return TEAM_ALIASES[short]
+	for team: String in TEAM_ORDER:
+		if team.begins_with(short):
+			return team
+	return short
+
+
+## data/ 直下の JSON（trades.json・mlb_moves.json など）。無ければ null
+func read_data(file_name: String) -> Variant:
+	return _read_repo_json(file_name)
+
+
+## その年のドラフト会議で指名された選手（名前で探す）。{round, school, ikusei, ...}。見つからなければ空。
+## data/<年+1>/drafts.json に「前年秋＋当年秋」の2回分がある（2007年以前は data/drafts_2001-2007.json）
+func draft_entry(name: String, draft_year: int) -> Dictionary:
+	if not _drafts_cache.has(draft_year):
+		var by_name := {}
+		var parsed: Variant = _read_repo_json("%d/drafts.json" % (draft_year + 1))
+		if not parsed is Array:
+			parsed = _read_repo_json("drafts_2001-2007.json")
+		if parsed is Array:
+			for d: Dictionary in parsed:
+				if int(d.get("draft_year", 0)) == draft_year:
+					by_name[LeagueRoster.norm_name(d["name"])] = d
+		_drafts_cache[draft_year] = by_name
+	return _drafts_cache[draft_year].get(LeagueRoster.norm_name(name), {})
 
 
 func find_ratings_path(year: int, phase: String) -> String:
@@ -172,9 +302,9 @@ func _read_repo_json(relative: String) -> Variant:
 	return JSON.parse_string(FileAccess.get_file_as_string(path))
 
 
-## 選手IDから能力値ファイルの選手データを引く（無ければ空）
+## 選手IDから能力値ファイルの選手データを引く（今のファイルに無ければ来季のファイル。無ければ空）
 func player(id: String) -> Dictionary:
-	return _players_by_id.get(id, {})
+	return _players_by_id.get(id, _supplement.get(id, {}))
 
 
 func has_ratings() -> bool:
@@ -221,11 +351,21 @@ func pos_index(pos: Variant) -> int:
 	return i if i >= 0 else POS_ORDER.size()
 
 
+## 読み込んだ直後は史実（能力値ファイル）の球団で分ける（apply_roster() でゲーム内の所属に置き換える）
 func _index_players() -> void:
 	_players_by_team.clear()
 	_players_by_id.clear()
+	_mlb_by_id.clear()
+	_team_league.clear()
+	for p: Dictionary in ratings.get("mlb_players", []):
+		_mlb_by_id[p["id"]] = p
 	for p: Dictionary in ratings.get("players", []):
 		_players_by_id[p["id"]] = p
+		if not p.has("hist_team"):
+			p["hist_team"] = p["team"]
+		if not _team_league.has(p["hist_team"]) and p.get("league") != null:
+			_team_league[p["hist_team"]] = p["league"]
+		p["team"] = p["hist_team"]
 		var team: String = p["team"]
 		if not _players_by_team.has(team):
 			_players_by_team[team] = []

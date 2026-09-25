@@ -84,6 +84,28 @@ func _init(team_name: String, league_code: String, ratings_players: Array,
 	auto_register()
 
 
+## 選手を加える（シーズン中の移籍。1軍・持ち場・スタメンは自動で組み直す）
+func add_player(p: Dictionary, debut_years: Dictionary = {}) -> void:
+	if by_id.has(p["id"]):
+		return
+	var s := SimPlayer.from_rating(p)
+	s.team = name
+	s.is_foreign = RosterRules.is_foreign(p, year, debut_years.get(s.id))
+	players.append(s)
+	by_id[s.id] = s
+	auto_register()
+
+
+## 選手を外す（シーズン中の移籍。1軍・持ち場・スタメンは自動で組み直す）
+func remove_player(id: String) -> void:
+	if not by_id.has(id):
+		return
+	players.erase(by_id[id])
+	by_id.erase(id)
+	active.erase(id)
+	auto_register()
+
+
 ## 野手の守備位置（中堅手などは fielding の「外野手」を見る）
 static func field_key(slot: String) -> String:
 	if slot in ["左翼手", "中堅手", "右翼手"]:

@@ -13,7 +13,7 @@ const MENUS := [
 	["tactics", "采配", "tactics", Color("f57c00"),
 		"1・2軍の入れ替え、オーダーや起用法の設定、所属選手の確認をします。"],
 	["scout", "新戦力", "scout", Color("00a396"),
-		"トレード交渉、外国人選手の獲得、ドラフト候補のスカウティングをします。"],
+		"外国人選手の獲得（外国人市場）と、移籍・引退などの出来事を見ます。（トレード交渉・スカウティングは未実装）"],
 	["records", "記録室", "records", Color("e0a400"),
 		"個人成績・通算成績、タイトル・表彰歴、チーム成績の推移などを見ます。"],
 	["system", "システム", "system", Color("7e57c2"),
@@ -22,7 +22,6 @@ const MENUS := [
 
 ## 未実装画面の内容（docs/SPEC.md「UI/画面構成」）
 const PLACEHOLDERS := {
-	"scout": "トレード交渉、外国人選手の獲得、ドラフト候補の事前スカウティング。",
 	"records": "リーグ全体の個人成績・通算成績、タイトル・表彰歴、チーム成績推移、\n達成記録（ノーヒットノーラン等）、ドラフト履歴。",
 	"system": "セーブ/ロード、難易度（CPUの未来視ノイズ）、表示/サウンド、早送り速度。",
 }
@@ -40,6 +39,7 @@ var _buttons := {}
 var _focused_key := "advance"
 var _open_key := ""
 var _guide := PadGuide.new()
+var _scout_view := ScoutView.new()
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -75,6 +75,10 @@ func _ready() -> void:
 	_standings.setup(_palette, GameData.league_of(GameState.team))
 	_schedule_view.setup(_palette)
 	_tactics_view.setup(_palette)
+	_scout_view.setup(_palette)
+	_scout_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_scout_view.visible = false
+	_placeholder_label.get_parent().add_child(_scout_view)
 	_tactics_view.title_changed.connect(func(text: String) -> void: _sub_title_label.text = text)
 	_tactics_view.description_changed.connect(func(text: String) -> void:
 		_description_label.text = text)
@@ -98,6 +102,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_schedule_view.switch_tab(delta)
 			"tactics":
 				_tactics_view.switch_tab(delta)
+			"scout":
+				_scout_view.switch_tab(delta)
 		get_viewport().set_input_as_handled()
 
 
@@ -206,6 +212,8 @@ func _refresh() -> void:
 		_tactics_view.refresh()
 	elif _open_key == "schedule":
 		_schedule_view.refresh()
+	elif _open_key == "scout":
+		_scout_view.refresh()
 
 
 func _summary_text() -> String:
@@ -258,9 +266,11 @@ func _open_sub_screen(key: String) -> void:
 			_sub_title_label.text = menu[1]
 	var is_tactics := key == "tactics"
 	var is_schedule := key == "schedule"
+	var is_scout := key == "scout"
 	_tactics_view.visible = is_tactics
 	_schedule_view.visible = is_schedule
-	_placeholder_label.visible = not is_tactics and not is_schedule
+	_scout_view.visible = is_scout
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
 	_set_wide(is_tactics)
 	UiFx.slide_in(_sub_screen)
@@ -270,6 +280,9 @@ func _open_sub_screen(key: String) -> void:
 		_sub_title_label.text = "日程表"
 		_schedule_view.refresh()
 		_schedule_view.focus_default()
+	elif is_scout:
+		_scout_view.refresh()
+		_scout_view.focus_first()
 	else:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
 		%BackButton.grab_focus()
