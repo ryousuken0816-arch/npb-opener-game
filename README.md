@@ -14,3 +14,8 @@ python collect.py all --start 2008 --end 2026
 段階: rosters → players → teamstats → awards → drafts → link。
 取得HTMLは `cache/`（git管理外）に保存し、再実行時は通信しない。
 名前突合の手動補正は `overrides.json`（キー: `年|球団名|成績表上の名前` → 選手ID）。
+
+## tools/
+
+`python tools/compute_ratings.py --year 2008` で能力値（1〜100 + G〜Sランク）を `generated/ratings/<年>.json` に出力。
+詳細は [tools/README.md](tools/README.md)。
