@@ -14,6 +14,9 @@ extends RefCounted
 ##   kept_mlb に入り、来季以降はメジャーにいた年の能力値＝GameData.mlb_player、無ければ直前のNPBの能力値を使う）
 ## - 国内FA：FreeAgency（宣言・入札・移籍）。決まった年俸は契約年数のあいだ据え置き（contract_until）
 ## - 引退：来季の能力値ファイルにいない選手（成績が無く能力を計算できない）は「戦力外・引退」で引退
+## - 戦力外：「戦力外・引退」（Releases）で支配下の上限 ROSTER_LIMIT に合わせて決める。来季のファイルにいる選手は
+##   市場（market。外国人市場と同じ一覧で、market_info に released）に入り他球団が獲得できる。いなければ引退扱い。
+##   開幕までにどこも獲らなければ引退（released に残り、以後の年に新加入として戻ってこない）
 ## - 新人・その他の新加入：「ドラフト」で史実の球団に入る（ドラフト画面ができたら差し替える）
 ## - 新外国人：「外国人市場」の候補になる。自球団は新戦力の画面で獲得、CPU球団はオフのフェーズごとに自動で獲得
 ##   （各球団が史実で獲得した人数ぶん。能力の高い順）。開幕までに誰も獲らなかった選手は来日しない
@@ -25,6 +28,19 @@ const MARKET_NOISE := 0.5
 
 ## 球団名が変わった球団（旧 → 新）。新しい年の能力値ファイルに旧名が無ければ付け替える
 const TEAM_SUCCESSOR := {"横浜ベイスターズ": "横浜DeNAベイスターズ"}
+
+## 支配下登録の上限（育成選手は数えない）
+const ROSTER_LIMIT := 70
+## CPU球団が戦力外にするとき、投手・野手それぞれ最低これだけは残す
+const MIN_KEEP_PITCHERS := 26
+const MIN_KEEP_FIELDERS := 26
+## CPU球団が市場の戦力外の選手を獲る評価（market_info.value）の下限と、1つのフェーズで獲る最大人数
+const RELEASE_SIGN_MIN := -0.6
+const RELEASE_SIGN_PER_ROUND := 1
+## 戦力外の選手の市場での提示額（来季の見立ての年俸に対する割合）
+const RELEASE_ASKING_RATE := 0.7
+## 戦力外にした選手の出来事の種類（今オフに加わった選手＝戦力外にしない、の判定に使う）
+const JOINED_KINDS := ["mlb_return", "fa_move", "fa_stay", "mlb_keep", "foreign_sign", "release_sign", "trade"]
 
 var year: int
 var user_team := ""
@@ -46,9 +62,16 @@ var kept_mlb := {}
 var fa: FreeAgency = null
 ## このオフの契約更改（契約更改の段階で作る。それ以外は前のオフのまま）
 var contracts: ContractRenewal = null
+## このオフの戦力外・引退（戦力外・引退の段階で作る。それ以外は前のオフのまま）
+var releases: Releases = null
+## 戦力外にした選手 → {year, from, market: 市場に出たか}
+var released := {}
+## 支配下の上限を守る（最初の戦力外・引退の段階から。2008年の開幕時点の編成はそのまま）
+var limit_active := false
 ## 出来事の記録 {year, date, kind, id, name, from, to, text}。kind: trade / trade_skipped / mlb_leave /
 ## mlb_return / retire / rookie / join / foreign_candidate / foreign_sign / foreign_unsigned /
-## rename / fa_declare / fa_move / fa_stay / mlb_keep / mlb_keep_failed
+## rename / fa_declare / fa_move / fa_stay / mlb_keep / mlb_keep_failed / release / release_sign / release_unsigned /
+## release_trim
 var log: Array[Dictionary] = []
 
 var _trades: Array[Dictionary] = []  ## trade_id ごと、日付順 {id, date, moves: [{pid, name, from, to}]}
@@ -275,7 +298,7 @@ func prepare_next_year(season_year: int, next: Dictionary, next_post: Dictionary
 	market_info.clear()
 	cpu_demand.clear()
 	for id: String in entries:
-		if team_of.has(id) or renamed_to.has(id):
+		if team_of.has(id) or renamed_to.has(id) or released.has(id):
 			continue
 		var p: Dictionary = entries[id]
 		var m: Dictionary = _moves_by_id.get(id, {})
@@ -286,7 +309,7 @@ func prepare_next_year(season_year: int, next: Dictionary, next_post: Dictionary
 		else:
 			newcomers.append(id)
 	_plan = {"year": next_year, "entries": entries, "renames": renames, "retire": retire,
-		"returns": returns, "newcomers": newcomers, "debut": debut}
+		"returns": returns, "newcomers": newcomers, "debut": debut, "post": post}
 
 
 func _add_candidate(p: Dictionary, next_year: int, post: Dictionary) -> void:
@@ -416,6 +439,7 @@ func apply_retirements() -> void:
 ## ドラフト：新人とその他の新加入（史実の球団へ）
 func apply_newcomers() -> void:
 	var next_year: int = _plan.get("year", year + 1)
+	_plan["newcomers_done"] = true
 	for id: String in _plan.get("newcomers", []):
 		var p: Dictionary = _plan["entries"][id]
 		var team := _current_name(p.get("hist_team", p["team"]))
@@ -442,9 +466,14 @@ func sign_foreign(id: String, team: String) -> String:
 	market.erase(id)
 	var info: Dictionary = market_info[id]
 	team_of[id] = team
+	var name: String = names.get(id, id)
+	if info.has("released"):
+		_set_salary(id, info["asking"], _plan.get("year", year + 1))
+		_log("", "release_sign", id, name, info["released"], team, "%s：%s が獲得（%s、%sを戦力外）" % [
+			name, GameData.short_name(team), Salary.text(info["asking"]), GameData.short_name(info["released"])])
+		return ""
 	joined[id] = _plan.get("year", year + 1)
 	_set_salary(id, info["asking"], joined[id])
-	var name: String = names.get(id, id)
 	_log("", "foreign_sign", id, name, "", team, "%s：%s が獲得（%s、史実は%s）" % [
 		name, GameData.short_name(team), Salary.text(info["asking"]),
 		GameData.short_name(_current_name(info["hist_team"]))])
@@ -487,7 +516,7 @@ func _best_candidate(pitcher: bool) -> String:
 	var best := ""
 	var best_value := -INF
 	for id in market:
-		if market_info[id]["pitcher"] != pitcher:
+		if market_info[id]["pitcher"] != pitcher or market_info[id].has("released"):
 			continue
 		var value: float = market_info[id]["value"]
 		if value > best_value:
@@ -533,6 +562,274 @@ func begin_year(new_year: int, ratings: Dictionary) -> void:
 			team_of.erase(id)
 
 
+# --- 戦力外 ---------------------------------------------------------------------------
+
+## 育成選手か：ドラフトが育成指名（選手ページの「育成ドラフト」、無ければドラフト会議の一覧の育成）で、
+## その年までに1軍に出ていない（debut：選手ID → 1軍初出場の年）。データに育成の区別が無いので近似
+func is_ikusei(id: String, p: Dictionary, at_year: int, debut: Dictionary) -> bool:
+	if p.is_empty():
+		return false
+	var d: Variant = debut.get(id)
+	if d != null and int(d) <= at_year:
+		return false
+	var text: String = p.get("draft") if p.get("draft") is String else ""
+	if not text.is_empty():
+		return "育成" in text
+	if id.begins_with("tmp:"):
+		var entry := GameData.draft_entry(str(p.get("name", "")), int(joined.get(id, at_year)) - 1)
+		return bool(entry.get("ikusei", false))
+	return false
+
+
+## 支配下の人数を数える年と1軍初出場の年（オフは来季。戦力外は来季の編成に向けて決める）
+func _count_year() -> int:
+	return int(_plan.get("year", year))
+
+
+func _count_debut() -> Dictionary:
+	return _plan["debut"] if _plan.has("debut") else GameData.load_debut_years(year)
+
+
+## 球団の支配下の人数（育成選手を除く）
+func registered_count(team: String) -> int:
+	var at := _count_year()
+	var debut := _count_debut()
+	var n := 0
+	for id: String in team_of:
+		if team_of[id] == team and not is_ikusei(id, GameData.player(id), at, debut):
+			n += 1
+	return n
+
+
+## 来季に入る見込みの支配下の人数：ドラフト（史実の新人・新加入のうち支配下。ドラフトの段階で入る）と、
+## CPU球団は外国人市場で獲る予定の残り（cpu_demand）
+func incoming(team: String) -> int:
+	var n := 0
+	if _plan.has("newcomers") and not _plan.get("newcomers_done", false):
+		var at := _count_year()
+		var debut: Dictionary = _plan["debut"]
+		for id: String in _plan["newcomers"]:
+			var p: Dictionary = _plan["entries"][id]
+			if _current_name(p.get("hist_team", p["team"])) == team and not is_ikusei(id, p, at, debut):
+				n += 1
+	if team != user_team and cpu_demand.has(team):
+		n += int(cpu_demand[team]["p"]) + int(cpu_demand[team]["b"])
+	return n
+
+
+## 支配下の空き（上限 − 今の支配下 − 入る見込み）
+func room(team: String) -> int:
+	return ROSTER_LIMIT - registered_count(team) - incoming(team)
+
+
+## 残す価値（低いほど戦力外の候補）：能力（Salary.ability の実力z＋出場量）・年齢（若手は伸びしろで上乗せ、
+## ベテランは減点）・年俸（高いほど残す）
+func keep_score(id: String, at_year: int) -> float:
+	var p := GameData.player(id)
+	if p.is_empty():
+		return -9.0
+	var a := Salary.ability(p)
+	var score: float = float(a[0]) + 0.6 * float(a[1])
+	var age := FreeAgency.age_of(p, at_year)
+	if age > 0:
+		if age <= 22:
+			score += 0.9
+		elif age <= 25:
+			score += 0.5
+		elif age >= 33:
+			score -= 0.3 + 0.15 * (age - 33)
+	score += minf(0.6, 0.12 * sqrt(maxf(0.0, salary_of(id) / 1000.0)))
+	return score
+
+
+## 戦力外にできない理由（複数年契約中・引き留め・今オフに加わった選手）。できるなら空
+## joins：recent_joins() の結果（省略すると毎回数える）
+func protected_reason(id: String, season_year: int, joins: Dictionary = {}) -> String:
+	if int(contract_until.get(id, 0)) >= season_year + 1:
+		return "%d年まで複数年契約" % int(contract_until[id])
+	if kept_mlb.has(id):
+		return "メジャー移籍を引き留めた"
+	if (joins if not joins.is_empty() else recent_joins(season_year)).has(id):
+		return "今オフに加入"
+	return ""
+
+
+## season_year のオフ以降に加わった選手（FA・復帰・引き留め・外国人・戦力外からの獲得・トレード）
+func recent_joins(season_year: int) -> Dictionary:
+	var result := {"": true}
+	for i in range(log.size() - 1, -1, -1):
+		var e: Dictionary = log[i]
+		if e["year"] < season_year:
+			break
+		if e["kind"] in JOINED_KINDS:
+			result[e["id"]] = true
+	return result
+
+
+## 戦力外・引退の段階を始める（apply_retirements のあと）。CPU球団の戦力外はここで決めて実行する
+func open_releases(season_year: int) -> Releases:
+	limit_active = true
+	releases = Releases.new(season_year, user_team)
+	var debut := _count_debut()
+	var at := _count_year()
+	for e in events(year, "retire"):
+		var id: String = e["id"]
+		var p := GameData.player(id)
+		releases.retired_rows.append({"id": id, "name": e["name"], "team": e["from"],
+			"age": FreeAgency.age_of(p, season_year), "pitcher": p.get("is_pitcher", false),
+			"foreign": str(e["text"]).ends_with("退団")})
+	var user := user_team
+	releases.retired_rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		var ua: bool = a["team"] == user
+		var ub: bool = b["team"] == user
+		if ua != ub:
+			return ua
+		return a["team"] < b["team"] if a["team"] != b["team"] else a["id"] < b["id"])
+	# 自球団の候補
+	var rel := releases
+	var joins := recent_joins(season_year)
+	var mine := players_of(user_team)
+	for id in mine:
+		rel.scores[id] = keep_score(id, season_year)
+		if is_ikusei(id, GameData.player(id), at, debut):
+			rel.ikusei[id] = true
+		var reason := protected_reason(id, season_year, joins)
+		if not reason.is_empty():
+			rel.protected[id] = reason
+	mine.sort_custom(func(a: String, b: String) -> bool:
+		return rel.scores[a] < rel.scores[b] if rel.scores[a] != rel.scores[b] else a < b)
+	rel.order = mine
+	# CPU球団
+	for team: String in GameData.teams():
+		if team == user_team:
+			continue
+		for id in _cpu_cuts(team, season_year, -room(team)):
+			rel.cpu_rows.append(release_player(id))
+	return rel
+
+
+## CPU球団が戦力外にする選手（count 人。keep_score の低い順、投手・野手の最低人数は残す）
+func _cpu_cuts(team: String, season_year: int, count: int) -> Array[String]:
+	var cuts: Array[String] = []
+	if count <= 0:
+		return cuts
+	var at := _count_year()
+	var debut := _count_debut()
+	var candidates: Array[String] = []
+	var pitchers := 0
+	var fielders := 0
+	var scores := {}
+	var joins := recent_joins(season_year)
+	for id in players_of(team):
+		var p := GameData.player(id)
+		if is_ikusei(id, p, at, debut):
+			continue
+		if p.get("is_pitcher", false):
+			pitchers += 1
+		else:
+			fielders += 1
+		if protected_reason(id, season_year, joins).is_empty():
+			scores[id] = keep_score(id, season_year) + _rng.randfn(0.0, 0.15)
+			candidates.append(id)
+	candidates.sort_custom(func(a: String, b: String) -> bool:
+		return scores[a] < scores[b] if scores[a] != scores[b] else a < b)
+	for id in candidates:
+		if cuts.size() >= count:
+			break
+		var pitcher: bool = GameData.player(id).get("is_pitcher", false)
+		if pitcher and pitchers <= MIN_KEEP_PITCHERS or not pitcher and fielders <= MIN_KEEP_FIELDERS:
+			continue
+		if pitcher:
+			pitchers -= 1
+		else:
+			fielders -= 1
+		cuts.append(id)
+	return cuts
+
+
+## 選手を戦力外にする。来季の能力値ファイルにいれば（同じ選手IDで）市場へ、いなければ引退。{id, name, team, market}
+func release_player(id: String) -> Dictionary:
+	var from: String = team_of.get(id, "")
+	team_of.erase(id)
+	var name: String = names.get(id, id)
+	var entries: Dictionary = _plan.get("entries", {})
+	var to_market := entries.has(id)
+	released[id] = {"year": year, "from": from, "market": to_market}
+	if to_market:
+		var next_p: Dictionary = entries[id]
+		var post: Dictionary = _plan.get("post", {}).get(id, {})
+		var basis := post if not post.is_empty() else next_p
+		var a := Salary.ability(basis)
+		var noise := _rng.randfn(0.0, MARKET_NOISE)
+		var next_year := _count_year()
+		var asking := Salary.round_amount(maxf(Salary.minimum(next_year),
+				Salary.initial(next_p, years_in_npb(id, next_year), false, next_year) * RELEASE_ASKING_RATE))
+		market.append(id)
+		market_info[id] = {"hist_team": next_p.get("hist_team", next_p["team"]), "released": from,
+			"pitcher": next_p.get("is_pitcher", false), "value": a[0] + 0.5 * a[1] + noise, "asking": asking}
+	else:
+		retired[id] = year
+	_log("", "release", id, name, from, "", "%s（%s）戦力外%s" % [name, GameData.short_name(from),
+		" → 市場へ" if to_market else " → 引退"])
+	return {"id": id, "name": name, "team": from, "market": to_market}
+
+
+## 市場の戦力外の選手（獲得されていない）
+func released_in_market() -> Array[String]:
+	var result: Array[String] = []
+	for id in market:
+		if market_info[id].has("released"):
+			result.append(id)
+	return result
+
+
+## CPU球団が市場の戦力外の選手を獲る（支配下に空きがある球団が、評価の高い順に1巡で最大
+## RELEASE_SIGN_PER_ROUND 人。元の球団は獲らない）。rounds 巡くり返す
+func cpu_release_round(rounds: int = 1) -> void:
+	if not limit_active:
+		return
+	var order: Array[String] = []
+	for team: String in GameData.teams():
+		if team != user_team:
+			order.append(team)
+	for r in rounds:
+		for i in range(order.size() - 1, 0, -1):
+			var j := _rng.randi_range(0, i)
+			var tmp := order[i]
+			order[i] = order[j]
+			order[j] = tmp
+		for team in order:
+			for k in RELEASE_SIGN_PER_ROUND:
+				if room(team) <= 0:
+					break
+				var best := ""
+				var best_value := RELEASE_SIGN_MIN
+				for id in released_in_market():
+					var info: Dictionary = market_info[id]
+					if info["released"] == team or float(info["value"]) < best_value:
+						continue
+					best_value = info["value"]
+					best = id
+				if best.is_empty():
+					break
+				sign_foreign(best, team)
+
+
+## 開幕：支配下の上限を超えている CPU球団（年明けの史実のトレードの人数差など）は、超えた分を戦力外にする（引退扱い）
+func trim_to_limit() -> void:
+	if not limit_active:
+		return
+	for team: String in GameData.teams():
+		if team == user_team:
+			continue
+		for id in _cpu_cuts(team, year - 1, registered_count(team) - ROSTER_LIMIT):
+			team_of.erase(id)
+			retired[id] = year - 1
+			released[id] = {"year": year - 1, "from": team, "market": false}
+			_log("", "release_trim", id, names.get(id, id), team, "", "%s（%s）支配下の上限で戦力外 → 引退" % [
+				names.get(id, id), GameData.short_name(team)])
+
+
 func _rename(old: String, new_id: String) -> void:
 	for dict: Dictionary in [team_of, salary, salary_history, joined, names]:
 		if dict.has(old):
@@ -545,6 +842,12 @@ func _rename(old: String, new_id: String) -> void:
 ## 開幕：外国人市場を閉じる（残った選手は来日しない）
 func close_market() -> void:
 	for id in market:
+		if market_info[id].has("released"):
+			retired[id] = year - 1
+			_log("", "release_unsigned", id, names.get(id, id), market_info[id]["released"], "",
+					"%s：どの球団とも契約せず引退（%sを戦力外）" % [names.get(id, id),
+						GameData.short_name(market_info[id]["released"])])
+			continue
 		_log("", "foreign_unsigned", id, names.get(id, id), "", "", "%s：どの球団とも契約せず" % names.get(id, id))
 	market.clear()
 	cpu_demand.clear()

@@ -126,6 +126,8 @@ func advance() -> void:
 		fa_resolve()
 	if phase == Phase.CONTRACT:
 		contract_resolve()
+	if phase == Phase.RELEASE:
+		release_resolve()
 	_enter(next_phase())
 
 
@@ -171,10 +173,16 @@ func sim_team_of(team_name: String) -> SimTeam:
 	return _offseason_teams[team_name]
 
 
-## 外国人市場の選手を自球団で獲得する（オフのみ）。失敗したら理由の文を返す
+## 外国人市場（戦力外の選手を含む）の選手を自球団で獲得する（オフのみ）。失敗したら理由の文を返す。
+## 戦力外・引退の段階からは支配下の上限（70人。来季の新人の見込みと、戦力外に選んだ選手を差し引いて数える）を守る
 func sign_foreign(id: String) -> String:
 	if phase == Phase.SEASON:
 		return "シーズン中は獲得できません"
+	var info: Dictionary = league.market_info.get(id, {})
+	if info.get("released", "") == team:
+		return "自球団が戦力外にした選手は獲得できません"
+	if league.limit_active and user_room() <= 0:
+		return "支配下登録が上限（%d人）です。戦力外で枠を空けてください" % LeagueRoster.ROSTER_LIMIT
 	var error := league.sign_foreign(id, team)
 	if error.is_empty():
 		_sync_roster()
@@ -266,6 +274,65 @@ func contract_resolve() -> void:
 		return
 	c.resolved = true
 	changed.emit()
+
+
+## このオフの戦力外・引退（戦力外・引退の段階のみ。それ以外は null）
+func releases() -> Releases:
+	if phase != Phase.RELEASE or league == null:
+		return null
+	return league.releases
+
+
+## 戦力外の選択が残っている（戦力外・引退の段階で、まだ締めていない）
+func release_open() -> bool:
+	var r := releases()
+	return r != null and not r.resolved
+
+
+## 自球団の選手の戦力外の印を付ける／外す。だめなら理由の文
+func release_toggle(id: String) -> String:
+	var r := releases()
+	if r == null:
+		return "戦力外はオフの「戦力外・引退」の段階で決めます"
+	var error := r.toggle(id)
+	if error.is_empty():
+		changed.emit()
+	return error
+
+
+## 足りない人数をおまかせで選ぶ。選んだ人数
+func release_auto() -> int:
+	var r := releases()
+	if r == null or r.resolved:
+		return 0
+	var n := r.auto_fill(league)
+	changed.emit()
+	return n
+
+
+## 自球団があと何人戦力外にする必要があるか（段階の外は 0）
+func release_need() -> int:
+	var r := releases()
+	return r.need(league) if r != null else 0
+
+
+## 戦力外を締める（足りなければ自動で選ぶ。可変ボタンで次へ進むときにも自動で行う）
+func release_resolve() -> void:
+	var r := releases()
+	if r == null or r.resolved:
+		return
+	r.resolve(league)
+	_sync_roster()
+	changed.emit()
+
+
+## 自球団の支配下の空き（来季の新人の見込みと、戦力外に選んで締めていない選手を差し引く）
+func user_room() -> int:
+	if league == null:
+		return 0
+	var r := releases()
+	var marked := r.marked_registered() if r != null and not r.resolved else 0
+	return league.room(team) + marked
 
 
 ## 外国人市場が開いているか（FA・トレード・ポスティング〜春季キャンプ）
@@ -373,6 +440,8 @@ func button_text() -> String:
 		return "FA・移籍交渉"
 	if contract_open():
 		return "契約更改"
+	if release_open():
+		return "戦力外・引退"
 	return PHASE_BUTTON[next_phase()]
 
 
@@ -467,7 +536,8 @@ func record_text() -> String:
 
 ## フェーズに入ったときの処理。年越しの史実の出来事（LeagueRoster）はここで起こす：
 ## FA・トレード・ポスティング＝メジャー移籍・年内のトレード・来季の準備（復帰・外国人市場）、契約更改＝年俸、
-## 戦力外・引退＝引退、ドラフト＝新人（史実の球団へ）、春季キャンプ＝新しい年。CPU球団は外国人市場から少しずつ獲得する
+## 戦力外・引退＝引退と戦力外（Releases。CPU球団はここで決め、自球団は画面で選ぶ）、ドラフト＝新人（史実の球団へ）、春季キャンプ＝新しい年。
+## CPU球団は外国人市場（戦力外の選手を含む）から少しずつ獲得する
 func _enter(new_phase: Phase) -> void:
 	phase = new_phase
 	match new_phase:
@@ -489,15 +559,19 @@ func _enter(new_phase: Phase) -> void:
 		Phase.RELEASE:
 			league.apply_retirements()
 			league.cpu_market_round()
+			_sync_roster()
+			league.open_releases(year)
 		Phase.DRAFT:
 			league.apply_newcomers()
 			league.cpu_market_round()
+			league.cpu_release_round()
 		Phase.CAMP:
 			year += 1
 			GameData.load_ratings(year, "pre")
 			league.begin_year(year, GameData.ratings)
 			team = league.user_team
 			league.cpu_market_round(-1)
+			league.cpu_release_round(2)
 			_apply_trades("%d-01-31" % year)
 		Phase.SEASON:
 			_start_season()
@@ -544,6 +618,8 @@ func _start_season() -> void:
 		var opening := Season.day_number(_opening_date())
 		_apply_trades(Season.date_of_day(opening - 1))
 		league.close_market()
+		_sync_roster()
+		league.trim_to_limit()
 		_sync_roster()
 	var schedule := GameData.load_schedule(year)
 	if not schedule.is_empty() and GameData.has_ratings():
