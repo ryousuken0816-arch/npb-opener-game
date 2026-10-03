@@ -4,9 +4,8 @@
 
 ## ローカルで動かす場合（2026-10-03 追記：クラウドクレジットを使い切ったため）
 
-- 作業フォルダはユーザーのPCの `C:UsersuserDesktop
-pb-opener-game`（GitHub の main と同じ）。作業ブランチを切って進め、終わったら main にマージして push する
-- Godot は `C:UsersuserDownloadsGodot_v4.7.2-stable_win64.exeGodot_v4.7.2-stable_win64_console.exe`（Windows）。xvfb-run は無い
+- 作業フォルダはユーザーのPCの `C:/Users/user/Desktop/npb-opener-game`（GitHub の main と同じ）。作業ブランチを切って進め、終わったら main にマージして push する
+- Godot は `C:/Users/user/Downloads/Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe`（Windows）。xvfb-run は無い
 - テストは基本 `--headless` で流す。ウィンドウ付き（スクショを撮るテスト）は、画面上のマウス位置が操作に割り込んで偶然失敗することがあるので、先に PowerShell でカーソルを画面の端に移す：`Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(0,0)`。それでも失敗したら1回だけ流し直す
 - npb.jp などへのアクセスはローカルなら可能。データを足した場合は data/ に入れて HANDOFF.md に書く
 - 使用量はクラウドクレジットではなく通常のプラン枠から減る。5時間枠の上限に当たったら、その時点の作業を終わらせて HANDOFF.md と表を更新してから止まる
