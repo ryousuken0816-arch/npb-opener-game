@@ -77,6 +77,7 @@ var log: Array[Dictionary] = []
 var _trades: Array[Dictionary] = []  ## trade_id ごと、日付順 {id, date, moves: [{pid, name, from, to}]}
 var _trade_index := 0
 var _moves_by_id := {}
+var _roster_teams := {}  ## 年 → 選手ID → [球団]（_infer_trade_dest 用）
 var _plan := {}
 var _rng := RandomNumberGenerator.new()
 
@@ -115,7 +116,7 @@ func start(start_year: int, ratings: Dictionary, opening_date: String, user: Str
 			break
 		for mv: Dictionary in t["moves"]:
 			var pid: String = mv["pid"]
-			if not team_of.has(pid):
+			if not team_of.has(pid) or str(mv["to"]).is_empty():
 				continue
 			if date < opening_date:
 				team_of[pid] = _team_name(mv["to"], start_year)
@@ -145,11 +146,39 @@ func _load_trades() -> void:
 		if not by_id.has(key):
 			by_id[key] = {"id": key, "date": r["date"], "moves": []}
 			_trades.append(by_id[key])
-		by_id[key]["moves"].append({
-			"pid": r["player_id"] if r.get("player_id") != null else "",
-			"name": r["name"], "from": r["from_team"], "to": r["to_team"]})
+		var pid: String = r["player_id"] if r.get("player_id") != null else ""
+		var to: String = r["to_team"]
+		if to.is_empty() or to.is_valid_int():
+			to = _infer_trade_dest(pid, r["date"], r["from_team"])
+		by_id[key]["moves"].append({"pid": pid, "name": r["name"], "from": r["from_team"], "to": to})
 	_trades.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return a["date"] < b["date"] if a["date"] != b["date"] else a["id"] < b["id"])
+
+
+## trades.json の2018年度以降は移籍先（to_team）が背番号や空欄になっている行がある（取得時の列ずれ）。
+## その選手がトレードの後にいる球団を data/<年>/rosters.json から探す（11月以降のトレードは翌年の名簿を先に見る）。
+## 移籍元と違う球団が見つからなければ空（apply_trades_until で「移籍先が不明」として起こさない）
+func _infer_trade_dest(pid: String, date: String, from_short: String) -> String:
+	if pid.is_empty():
+		return ""
+	var y := int(date.substr(0, 4))
+	var years := [y + 1, y] if int(date.substr(5, 2)) >= 11 else [y, y + 1]
+	for ry: int in years:
+		var from := GameData.resolve_team(from_short, ry)
+		if not _roster_teams.has(ry):
+			var by_pid := {}
+			var rows: Variant = GameData.read_data("%d/rosters.json" % ry)
+			if rows is Array:
+				for row: Dictionary in rows:
+					if row.get("player_id") != null:
+						if not by_pid.has(row["player_id"]):
+							by_pid[row["player_id"]] = []
+						by_pid[row["player_id"]].append(row["team"])
+			_roster_teams[ry] = by_pid
+		for team: String in _roster_teams[ry].get(pid, []):
+			if team != from:
+				return team
+	return ""
 
 
 ## date（"YYYY-MM-DD"）までの史実のトレードを実行する。実行した移籍 [{pid, from, to}] を返す
@@ -165,7 +194,9 @@ func apply_trades_until(date: String) -> Array[Dictionary]:
 			var from := _team_name(mv["from"], trade_year)
 			var to := _team_name(mv["to"], trade_year)
 			moves.append({"pid": mv["pid"], "name": mv["name"], "from": from, "to": to})
-			if from == user_team or to == user_team:
+			if to.is_empty():
+				reason = "%sの移籍先が不明" % mv["name"]
+			elif from == user_team or to == user_team:
 				reason = "自球団が関わる"
 			elif reason.is_empty() and (mv["pid"].is_empty() or team_of.get(mv["pid"], "") != from):
 				reason = "%sが%sにいない" % [mv["name"], GameData.short_name(from)]

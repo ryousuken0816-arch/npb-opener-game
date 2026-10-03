@@ -114,7 +114,11 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel") and not _open_key.is_empty():
+	# デバッグ用：F9 でシーズンを自動で消化してその年のオフのドラフトの段階へ（サブ画面を開いていないとき）
+	if event is InputEventKey and event.pressed and not event.echo 			and (event as InputEventKey).keycode == KEY_F9 and _open_key.is_empty():
+		GameState.skip_to_phase(GameState.Phase.DRAFT)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_cancel") and not _open_key.is_empty():
 		_on_back()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(UiInput.TAB_PREV) or event.is_action_pressed(UiInput.TAB_NEXT):
