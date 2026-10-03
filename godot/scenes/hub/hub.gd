@@ -42,6 +42,7 @@ var _guide := PadGuide.new()
 var _scout_view := ScoutView.new()
 var _fa_view := FaView.new()
 var _contract_view := ContractView.new()
+var _release_view := ReleaseView.new()
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -89,6 +90,13 @@ func _ready() -> void:
 	_contract_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_contract_view.visible = false
 	_placeholder_label.get_parent().add_child(_contract_view)
+	_release_view.setup(_palette)
+	_release_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_release_view.visible = false
+	_placeholder_label.get_parent().add_child(_release_view)
+	_release_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "release":
+			_description_label.text = text)
 	_contract_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "contract":
 			_description_label.text = text)
@@ -124,6 +132,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_fa_view.switch_tab(delta)
 			"contract":
 				_contract_view.switch_tab(delta)
+			"release":
+				_release_view.switch_tab(delta)
 		get_viewport().set_input_as_handled()
 
 
@@ -226,7 +236,7 @@ func _refresh() -> void:
 	_team_name_label.text = GameState.team
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
-	if _open_key != "tactics" and _open_key != "fa" and _open_key != "contract":
+	if _open_key not in ["tactics", "fa", "contract", "release"]:
 		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_tactics_view.refresh()
@@ -238,6 +248,8 @@ func _refresh() -> void:
 		_fa_view.refresh()
 	elif _open_key == "contract":
 		_contract_view.refresh()
+	elif _open_key == "release":
+		_release_view.refresh()
 
 
 func _summary_text() -> String:
@@ -265,6 +277,8 @@ func _description(key: String) -> String:
 			return "FA宣言した選手への提示と、メジャーへ移籍する自球団の選手の引き留めをします。"
 		if GameState.contract_open():
 			return "自球団の選手の来季の年俸を確認・調整します。12球団の年俸総額と予算上限も見られます。"
+		if GameState.release_open():
+			return "支配下の上限（70人）に合わせて自球団の戦力外を選びます。史実の引退と他球団の戦力外も見られます。"
 		return "オフシーズンを進めます。次は「%s」です。" % GameState.PHASE_NAMES[GameState.next_phase()]
 	for menu: Array in MENUS:
 		if menu[0] == key:
@@ -286,11 +300,16 @@ func _on_menu_chosen(key: String) -> void:
 		if GameState.contract_open():
 			_open_sub_screen("contract")
 			return
+		if GameState.release_open():
+			_open_sub_screen("release")
+			return
 		GameState.advance()
 		if GameState.fa_open():
 			_open_sub_screen("fa")
 		elif GameState.contract_open():
 			_open_sub_screen("contract")
+		elif GameState.release_open():
+			_open_sub_screen("release")
 		return
 	_open_sub_screen(key)
 
@@ -308,14 +327,16 @@ func _open_sub_screen(key: String) -> void:
 	var is_scout := key == "scout"
 	var is_fa := key == "fa"
 	var is_contract := key == "contract"
+	var is_release := key == "release"
 	_tactics_view.visible = is_tactics
 	_schedule_view.visible = is_schedule
 	_scout_view.visible = is_scout
 	_fa_view.visible = is_fa
 	_contract_view.visible = is_contract
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_contract
+	_release_view.visible = is_release
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_contract and not is_release
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
-	_set_wide(is_tactics or is_fa or is_contract)
+	_set_wide(is_tactics or is_fa or is_contract or is_release)
 	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
@@ -332,6 +353,9 @@ func _open_sub_screen(key: String) -> void:
 	elif is_contract:
 		_sub_title_label.text = "契約更改（%d年オフ）" % GameState.year
 		_contract_view.open()
+	elif is_release:
+		_sub_title_label.text = "戦力外・引退（%d年オフ）" % GameState.year
+		_release_view.open()
 	else:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
 		%BackButton.grab_focus()
@@ -347,6 +371,8 @@ func _on_back() -> void:
 	if _open_key == "fa" and _fa_view.back():
 		return
 	if _open_key == "contract" and _contract_view.back():
+		return
+	if _open_key == "release" and _release_view.back():
 		return
 	_close_sub_screen()
 
@@ -374,5 +400,5 @@ func _close_sub_screen() -> void:
 	_description_label.text = _description(_focused_key)
 	if _buttons.has(key):
 		_buttons[key].grab_button_focus()
-	elif key == "fa" or key == "contract":
+	elif key in ["fa", "contract", "release"]:
 		_buttons["advance"].grab_button_focus()

@@ -3,14 +3,17 @@ extends TabContainer
 ## 「新戦力」画面（ハブ）。今は外国人市場と、年越しの出来事の一覧だけ（トレード交渉・スカウティングは未実装）。
 ##
 ## - 外国人市場：史実で来日した新外国人の候補（GameState.league.market）。オフ（FA・トレード・ポスティング〜
-##   春季キャンプ）に「獲得する」で自球団に入る（年俸は提示額）。CPU球団もオフのフェーズごとに獲得していく
+##   春季キャンプ）に「獲得する」で自球団に入る（年俸は提示額）。CPU球団もオフのフェーズごとに獲得していく。
+##   「戦力外・引退」の段階からは、戦力外になった選手（来季の成績がある選手）も並ぶ（史実の球団の列に「戦力外（元の球団）」）。
+##   戦力外・引退の段階からは支配下の上限（70人）に空きが無いと獲れない
 ## - 出来事：メジャー移籍・復帰、史実のトレード、引退、新人、外国人の獲得など（LeagueRoster.log の新しい順）
 ## 行をⒶ（Enter）／クリックで選手詳細。LB/RB でタブ切り替え。
 
 const MARKET_COLUMNS := [["名前", 0], ["投野", 64], ["守備位置", 96], ["主な能力", 170],
 	["提示額", 130], ["史実の球団", 120]]
 const LOG_KINDS := ["mlb_leave", "mlb_return", "trade", "retire", "rookie", "join", "foreign_sign",
-	"foreign_unsigned", "rename", "fa_declare", "fa_move", "fa_stay", "mlb_keep", "mlb_keep_failed"]
+	"foreign_unsigned", "rename", "fa_declare", "fa_move", "fa_stay", "mlb_keep", "mlb_keep_failed", "release",
+	"release_sign", "release_unsigned", "release_trim"]
 const LOG_LIMIT := 400
 
 var _palette: UiTheme.Palette
@@ -82,8 +85,11 @@ func _render_market(league: LeagueRoster) -> void:
 	elif league.market.is_empty():
 		_status.text = "外国人市場に残っている選手はいません。"
 	else:
+		var released := league.released_in_market().size()
 		_status.text = "来季の新外国人 %d人。「獲得する」で自球団に入ります（年俸は提示額。高いほど評判が良い）。" \
-			% league.market.size() + "CPU球団はフェーズが進むたびに獲得し、開幕までに残った選手は来日しません。"
+			% (league.market.size() - released) + "CPU球団はフェーズが進むたびに獲得し、開幕までに残った選手は来日しません。"
+		if released > 0:
+			_status.text += "戦力外の選手も%d人います（開幕までに残ると引退）。" % released
 	var ids: Array[String] = league.market.duplicate()
 	ids.sort_custom(func(a: String, b: String) -> bool:
 		return league.market_info[a]["asking"] > league.market_info[b]["asking"])
@@ -97,7 +103,10 @@ func _render_market(league: LeagueRoster) -> void:
 		item.set_text(3, _ability_text(p, info["pitcher"]))
 		item.set_text(4, Salary.text(info["asking"]))
 		item.set_text_alignment(4, HORIZONTAL_ALIGNMENT_RIGHT)
-		item.set_text(5, GameData.short_name(info["hist_team"]))
+		var origin := GameData.short_name(info["hist_team"])
+		if info.has("released"):
+			origin = "戦力外（%s）" % GameData.short_name(info["released"])
+		item.set_text(5, origin)
 		item.set_metadata(0, id)
 	_sign_button.disabled = not open or ids.is_empty()
 	_sign_button.visible = GameState.phase not in [GameState.Phase.SEASON, GameState.Phase.AWARDS]
