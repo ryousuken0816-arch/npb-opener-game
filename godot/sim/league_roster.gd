@@ -10,7 +10,9 @@ extends RefCounted
 ## - トレード（data/trades.json）：日付が来たら実行（シーズン中は毎日、オフはフェーズごと）。CPU球団同士で、
 ##   その時点で全員がまだ移籍元にいる場合だけ。自球団が関わるトレードは起きない
 ## - メジャー移籍（data/mlb_moves.json）：史実の年のオフ（FA・トレード・ポスティング）に退団し、戻る年の前のオフに
-##   史実の球団へ復帰する（引き留めは FA・ポスティングの画面で作る）
+##   史実の球団へ復帰する。自球団の選手は FA・ポスティングの画面で引き留めを試せる（FreeAgency。成功したら
+##   kept_mlb に入り、来季以降はメジャーにいた年の能力値＝GameData.mlb_player、無ければ直前のNPBの能力値を使う）
+## - 国内FA：FreeAgency（宣言・入札・移籍）。決まった年俸は契約年数のあいだ据え置き（contract_until）
 ## - 引退：来季の能力値ファイルにいない選手（成績が無く能力を計算できない）は「戦力外・引退」で引退
 ## - 新人・その他の新加入：「ドラフト」で史実の球団に入る（ドラフト画面ができたら差し替える）
 ## - 新外国人：「外国人市場」の候補になる。自球団は新戦力の画面で獲得、CPU球団はオフのフェーズごとに自動で獲得
@@ -36,9 +38,15 @@ var in_mlb := {}               ## 選手ID → mlb_moves の1件（今メジャ�
 var market: Array[String] = [] ## 外国人市場の候補（未契約）
 var market_info := {}          ## 選手ID → {hist_team, asking, pitcher}
 var cpu_demand := {}           ## CPU球団 → {"p": 投手の残り人数, "b": 野手の残り人数}
+var contract_until := {}       ## 選手ID → 複数年契約の最終年（その年まで契約更改で年俸が変わらない）
+var fa_year := {}              ## 選手ID → 最後にFA権を行使した年（宣言した年）
+## 引き留めたメジャー移籍の選手 → {move: mlb_moves の1件, fallback: 直前のNPBの能力値, last: 能力値を使う最後の年}
+var kept_mlb := {}
+## このオフの FA・ポスティング（FA・トレード・ポスティングの段階で作る。それ以外は前のオフのまま）
+var fa: FreeAgency = null
 ## 出来事の記録 {year, date, kind, id, name, from, to, text}。kind: trade / trade_skipped / mlb_leave /
 ## mlb_return / retire / rookie / join / foreign_candidate / foreign_sign / foreign_unsigned /
-## rename
+## rename / fa_declare / fa_move / fa_stay / mlb_keep / mlb_keep_failed
 var log: Array[Dictionary] = []
 
 var _trades: Array[Dictionary] = []  ## trade_id ごと、日付順 {id, date, moves: [{pid, name, from, to}]}
@@ -159,9 +167,12 @@ static func _trade_label(moves: Array[Dictionary]) -> String:
 
 # --- オフ ---------------------------------------------------------------------------
 
-## FA・トレード・ポスティング：史実でこのオフにメジャーへ移籍する選手が退団する
-func depart_mlb(season_year: int) -> void:
-	for id: String in team_of.keys():
+## FA・トレード・ポスティング：史実でこのオフにメジャーへ移籍する選手が退団する。退団した選手 [{id, from, route}]
+func depart_mlb(season_year: int) -> Array[Dictionary]:
+	var leaving: Array[Dictionary] = []
+	var ids: Array = team_of.keys()
+	ids.sort()
+	for id: String in ids:
 		var m: Dictionary = _moves_by_id.get(id, {})
 		if m.is_empty() or int(m["left_after"]) != season_year:
 			continue
@@ -171,6 +182,69 @@ func depart_mlb(season_year: int) -> void:
 		var route := "ポスティング" if m.get("route") == "posting" else "海外FA等"
 		_log("", "mlb_leave", id, names.get(id, m["name"]), from, "",
 				"%s：%s → メジャー（%s）" % [names.get(id, m["name"]), GameData.short_name(from), route])
+		leaving.append({"id": id, "from": from, "route": route})
+	return leaving
+
+
+## FA・ポスティングの段階を始める（depart_mlb・prepare_next_year のあと）。自球団の入札・引き留めは fa で行う
+func open_fa(season_year: int, leaving: Array[Dictionary]) -> FreeAgency:
+	fa = FreeAgency.new()
+	fa.open(self, season_year, leaving, _rng.randi())
+	return fa
+
+
+## このオフに引退する予定の選手（prepare_next_year で決めたもの）
+func plan_retirements() -> Array:
+	return _plan.get("retire", [])
+
+
+## FAの移籍・残留を決める（FreeAgency.resolve から）。bidders: 入札した球団の数
+func sign_fa(id: String, from: String, to: String, amount: int, years: int, next_year: int,
+		bidders: int) -> void:
+	team_of[id] = to
+	_set_salary(id, amount, next_year)
+	contract_until[id] = next_year + years - 1
+	fa_year[id] = next_year - 1
+	var name: String = names.get(id, id)
+	if to == from:
+		_log("", "fa_stay", id, name, from, to, "%s：%sに残留（FA、%s・%d年）" % [
+			name, GameData.short_name(to), Salary.text(amount), years])
+	else:
+		_log("", "fa_move", id, name, from, to, "%s：%s → %s（FA、%s・%d年、%d球団が入札）" % [
+			name, GameData.short_name(from), GameData.short_name(to), Salary.text(amount), years, bidders])
+
+
+## メジャー移籍の引き留めに成功：元の球団に戻し、来季以降の能力値の出どころを覚えておく
+func keep_from_mlb(id: String, team: String, amount: int, years: int, next_year: int) -> void:
+	var m: Dictionary = in_mlb.get(id, _moves_by_id.get(id, {}))
+	in_mlb.erase(id)
+	team_of[id] = team
+	_set_salary(id, amount, next_year)
+	contract_until[id] = next_year + years - 1
+	var last := 9999
+	if m.get("returned") == null and m.get("mlb_last") != null:
+		last = int(m["mlb_last"])
+	kept_mlb[id] = {"move": m, "fallback": GameData.player(id).duplicate(true), "last": last}
+	_log("", "mlb_keep", id, names.get(id, id), team, team, "%s：メジャー移籍をやめて%sに残留（引き留め、%s・%d年）" % [
+		names.get(id, id), GameData.short_name(team), Salary.text(amount), years])
+
+
+## 引き留めた選手の能力値の代わり（選手ID → 直前のNPBの能力値。GameData.set_kept_players へ）
+func kept_fallbacks() -> Dictionary:
+	var result := {}
+	for id: String in kept_mlb:
+		result[id] = kept_mlb[id]["fallback"]
+	return result
+
+
+## 引き留めた選手で、その年も能力値を使える（来季のファイルにいなくても引退させない）
+func _kept_in(id: String, at_year: int) -> bool:
+	return kept_mlb.has(id) and at_year <= int(kept_mlb[id]["last"])
+
+
+## 画面などから出来事を記録する
+func log_event(kind: String, id: String, from: String, to: String, text: String) -> void:
+	_log("", kind, id, names.get(id, id), from, to, text)
 
 
 ## 来季（season_year + 1）の準備。next: 来季の開幕時点の能力値ファイル、next_post: 来季のシーズン後の能力値
@@ -191,7 +265,7 @@ func prepare_next_year(season_year: int, next: Dictionary, next_post: Dictionary
 		renamed_to[renames[old]] = old
 	var retire: Array[String] = []
 	for id: String in team_of:
-		if not entries.has(id) and not renames.has(id):
+		if not entries.has(id) and not renames.has(id) and not _kept_in(id, next_year):
 			retire.append(id)
 	var returns: Array[String] = []
 	var newcomers: Array[String] = []
@@ -271,7 +345,7 @@ func renew_contracts(season_year: int, season: Season) -> void:
 	var retiring: Array = _plan.get("retire", [])
 	var debut := GameData.load_debut_years(season_year)
 	for id: String in team_of:
-		if id in retiring or not salary.has(id):
+		if id in retiring or not salary.has(id) or int(contract_until.get(id, 0)) >= next_year:
 			continue
 		# このオフに加わった選手（メジャーからの復帰など）は加入時の額のまま
 		var history: Array = salary_history.get(id, [])
@@ -411,8 +485,12 @@ func begin_year(new_year: int, ratings: Dictionary) -> void:
 	var ids := {}
 	for p: Dictionary in ratings.get("players", []):
 		ids[p["id"]] = true
+	# 引き留めた選手：史実でNPBに戻って能力値ファイルにいれば、以後は普通の選手
+	for id: String in kept_mlb.keys():
+		if ids.has(id):
+			kept_mlb.erase(id)
 	for id: String in team_of.keys():
-		if not ids.has(id):
+		if not ids.has(id) and not kept_mlb.has(id):
 			push_warning("能力値の無い選手を所属から外します: %s %s" % [id, names.get(id, "")])
 			retired[id] = new_year - 1
 			team_of.erase(id)
