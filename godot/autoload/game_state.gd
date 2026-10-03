@@ -124,6 +124,8 @@ func advance() -> void:
 		return
 	if phase == Phase.FA_TRADE:
 		fa_resolve()
+	if phase == Phase.CONTRACT:
+		contract_resolve()
 	_enter(next_phase())
 
 
@@ -233,6 +235,39 @@ func fa_resolve() -> void:
 	changed.emit()
 
 
+## このオフの契約更改（契約更改の段階のみ。それ以外は null）
+func contracts() -> ContractRenewal:
+	if phase != Phase.CONTRACT or league == null:
+		return null
+	return league.contracts
+
+
+## 契約更改の提示が残っている（契約更改の段階で、まだ締めていない）
+func contract_open() -> bool:
+	var c := contracts()
+	return c != null and not c.resolved
+
+
+## 自球団の選手の来季の年俸（提示額）を変える。だめなら理由の文
+func contract_set(id: String, amount: int) -> String:
+	var c := contracts()
+	if c == null:
+		return "契約更改はオフの「契約更改」の段階で行います"
+	var error := c.set_amount(league, id, amount)
+	if error.is_empty():
+		changed.emit()
+	return error
+
+
+## 契約更改を締める（可変ボタンで次へ進むときにも自動で行う）
+func contract_resolve() -> void:
+	var c := contracts()
+	if c == null or c.resolved:
+		return
+	c.resolved = true
+	changed.emit()
+
+
 ## 外国人市場が開いているか（FA・トレード・ポスティング〜春季キャンプ）
 func market_open() -> bool:
 	if phase == Phase.SEASON or phase == Phase.AWARDS or league == null:
@@ -336,6 +371,8 @@ func button_text() -> String:
 		return "試合へ"
 	if fa_open():
 		return "FA・移籍交渉"
+	if contract_open():
+		return "契約更改"
 	return PHASE_BUTTON[next_phase()]
 
 

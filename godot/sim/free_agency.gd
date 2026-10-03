@@ -26,7 +26,7 @@ const PRIME_AGE := [27, 33]
 const OLD_AGE := 34
 ## 希望額：市場価値（Salary.initial）のこの倍率と今の年俸の大きいほう
 const ASKING_RATE := 1.1
-## 提示額の範囲（希望額に対する倍率）。予算上限ができるまでの仮の上限は BID_CAP（10億円）
+## 提示額の範囲（希望額に対する倍率）。上限は BID_CAP（10億円）。自球団はさらに予算の残りまで（bid_range）
 const BID_MIN_RATE := 0.7
 const BID_MAX_RATE := 2.0
 const BID_CAP := 100000
@@ -56,11 +56,14 @@ var resolved := false
 var force_roll := -1.0
 
 var _rng := RandomNumberGenerator.new()
+## LeagueRoster（league.fa から参照し返すので循環しないよう弱参照）
+var _league_ref: WeakRef = null
 
 
 ## FA宣言とメジャー移籍の一覧を作る。leaving: LeagueRoster.depart_mlb() の戻り値 [{id, from, route}]
 func open(league: LeagueRoster, season_year: int, leaving: Array[Dictionary], seed_value: int) -> void:
 	year = season_year
+	_league_ref = weakref(league)
 	_rng.seed = seed_value
 	var retiring: Array = league.plan_retirements()
 	var debut := GameData.load_debut_years(season_year)
@@ -125,14 +128,48 @@ func asking(league: LeagueRoster, id: String) -> int:
 	return Salary.round_amount(maxf(league.salary_of(id), market * ASKING_RATE))
 
 
-## 提示できる年俸の範囲 [下限, 上限]
-func bid_range(id: String) -> Array[int]:
+## 提示できる年俸の範囲 [下限, 上限]（CPU球団の入札の範囲。予算は考えない）
+func base_range(id: String) -> Array[int]:
 	var base: int = info[id]["asking"] if info.has(id) else mlb_info[id]["asking"]
 	var low := maxi(Salary.minimum(year + 1), Salary.round_amount(base * BID_MIN_RATE))
 	if mlb_info.has(id):
 		low = base
 	var high := Salary.round_amount(minf(BID_CAP, base * BID_MAX_RATE))
 	return [low, maxi(low, high)]
+
+
+## 自球団が提示できる年俸の範囲 [下限, 上限]。上限は base_range の上限と予算の残り（budget_room）の小さいほう。
+## 予算の残りが下限より少なくても下限の額は提示できる（予算オーバーは画面で注意するだけ）
+func bid_range(id: String) -> Array[int]:
+	var r := base_range(id)
+	if _league() == null:
+		return r
+	var room := budget_room(id)
+	return [r[0], clampi(Salary.round_amount(room), r[0], r[1])]
+
+
+## 自球団の予算の残り（万円）：予算上限 − 来季の年俸総額の見込み − ほかの選手への提示の上積み。
+## id が自球団の選手なら、その選手の今の年俸は総額に入っているので足し戻す
+func budget_room(id: String = "") -> int:
+	var league := _league()
+	if league == null:
+		return 0
+	var user := league.user_team
+	var room := ContractRenewal.budget(user) - league.next_payroll(user)
+	for other: String in user_bids:
+		if other == id:
+			continue
+		var add: int = user_bids[other]["amount"]
+		if info.has(other) and info[other]["from"] == user:
+			add -= league.salary_of(other)
+		room -= add
+	if not id.is_empty() and league.team_of.get(id, "") == user:
+		room += league.salary_of(id)
+	return room
+
+
+func _league() -> LeagueRoster:
+	return _league_ref.get_ref() as LeagueRoster if _league_ref != null else null
 
 
 ## 自球団の提示（FA宣言した選手。自球団の選手なら引き留め）。だめなら理由の文
@@ -247,7 +284,7 @@ func _cpu_bids(league: LeagueRoster, id: String) -> Array[Dictionary]:
 	var kind := kind_of(p)
 	var from: String = league.team_of[id]
 	var base: int = info[id]["asking"]
-	var r := bid_range(id)
+	var r := base_range(id)
 	var teams := {}
 	for other: String in league.team_of:
 		teams[league.team_of[other]] = true
@@ -265,6 +302,10 @@ func _cpu_bids(league: LeagueRoster, id: String) -> Array[Dictionary]:
 			continue
 		var rate := _rng.randf_range(0.85, 1.15) * (0.9 + 0.3 * need)
 		var amount := clampi(Salary.round_amount(base * rate), r[0], r[1])
+		# 予算上限を超える入札はしない（元の球団はその選手の今の年俸の分を差し引いて考える）
+		var payroll := league.next_payroll(team) - (league.salary_of(id) if team == from else 0)
+		if payroll + amount > ContractRenewal.budget(team):
+			continue
 		bids.append({"team": team, "amount": amount, "years": _cpu_years(int(info[id]["age"])),
 			"need": need})
 	if bids.size() > CPU_BIDDERS_MAX:

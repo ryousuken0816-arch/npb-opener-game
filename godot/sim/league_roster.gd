@@ -44,6 +44,8 @@ var fa_year := {}              ## 選手ID → 最後にFA権を行使した年�
 var kept_mlb := {}
 ## このオフの FA・ポスティング（FA・トレード・ポスティングの段階で作る。それ以外は前のオフのまま）
 var fa: FreeAgency = null
+## このオフの契約更改（契約更改の段階で作る。それ以外は前のオフのまま）
+var contracts: ContractRenewal = null
 ## 出来事の記録 {year, date, kind, id, name, from, to, text}。kind: trade / trade_skipped / mlb_leave /
 ## mlb_return / retire / rookie / join / foreign_candidate / foreign_sign / foreign_unsigned /
 ## rename / fa_declare / fa_move / fa_stay / mlb_keep / mlb_keep_failed
@@ -339,17 +341,32 @@ func apply_returns() -> void:
 			p["name"], GameData.short_name(team)])
 
 
-## 契約更改：今季のゲーム内成績（season。無ければ能力値だけ）で来季の年俸を決める
-func renew_contracts(season_year: int, season: Season) -> void:
+## 契約更改：今季のゲーム内成績（season。無ければ能力値だけ）で全選手の来季の年俸を査定してすぐ反映する。
+## 自球団の選手は contracts（ContractRenewal）に提示額として持ち、締めるまで画面で調整できる。
+## 複数年契約中の選手・このオフに加わった選手（メジャーからの復帰・FAの残留など）は据え置き
+func renew_contracts(season_year: int, season: Season) -> ContractRenewal:
 	var next_year := season_year + 1
 	var retiring: Array = _plan.get("retire", [])
 	var debut := GameData.load_debut_years(season_year)
-	for id: String in team_of:
-		if id in retiring or not salary.has(id) or int(contract_until.get(id, 0)) >= next_year:
+	contracts = ContractRenewal.new(season_year, user_team)
+	var ids: Array = team_of.keys()
+	ids.sort()
+	for id: String in ids:
+		if id in retiring or not salary.has(id):
 			continue
-		# このオフに加わった選手（メジャーからの復帰など）は加入時の額のまま
+		var mine: bool = team_of[id] == user_team
+		var prev := int(salary[id])
 		var history: Array = salary_history.get(id, [])
-		if not history.is_empty() and history[-1]["year"] == next_year:
+		var fixed := ""
+		if int(contract_until.get(id, 0)) >= next_year:
+			fixed = "%d年まで複数年契約" % int(contract_until[id])
+		elif not history.is_empty() and history[-1]["year"] == next_year:
+			# このオフに加わった選手（メジャーからの復帰など）は加入時の額のまま
+			fixed = "今オフに契約済み"
+			prev = int(history[-2]["salary"]) if history.size() >= 2 else prev
+		if not fixed.is_empty():
+			if mine:
+				contracts.add_row(id, prev, int(salary[id]), fixed)
 			continue
 		var p := GameData.player(id)
 		if p.is_empty():
@@ -359,7 +376,27 @@ func renew_contracts(season_year: int, season: Season) -> void:
 			stats = (season.pitching if p.get("is_pitcher", false) else season.batting).get(id, {})
 		var foreign := RosterRules.is_foreign(p, next_year, debut.get(id))
 		var years := years_in_npb(id, next_year)
-		_set_salary(id, Salary.renew(salary[id], p, stats, years, foreign, next_year), next_year)
+		var amount := Salary.renew(prev, p, stats, years, foreign, next_year)
+		_set_salary(id, amount, next_year)
+		if mine:
+			contracts.add_row(id, prev, amount, "")
+	contracts.sort_rows()
+	return contracts
+
+
+## 契約更改で自球団が調整した来季の年俸（ContractRenewal.set_amount から）
+func set_next_salary(id: String, amount: int, next_year: int) -> void:
+	_set_salary(id, amount, next_year)
+
+
+## 来季の年俸総額の見込み（このオフに引退する予定の選手を除く）。予算との比較に使う
+func next_payroll(team: String) -> int:
+	var retiring: Array = _plan.get("retire", [])
+	var total := 0
+	for id: String in team_of:
+		if team_of[id] == team and id not in retiring:
+			total += int(salary.get(id, 0))
+	return total
 
 
 ## 戦力外・引退：来季の能力値ファイルにいない選手

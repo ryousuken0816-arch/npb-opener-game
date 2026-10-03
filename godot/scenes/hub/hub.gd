@@ -41,6 +41,7 @@ var _open_key := ""
 var _guide := PadGuide.new()
 var _scout_view := ScoutView.new()
 var _fa_view := FaView.new()
+var _contract_view := ContractView.new()
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -84,6 +85,13 @@ func _ready() -> void:
 	_fa_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_fa_view.visible = false
 	_placeholder_label.get_parent().add_child(_fa_view)
+	_contract_view.setup(_palette)
+	_contract_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_contract_view.visible = false
+	_placeholder_label.get_parent().add_child(_contract_view)
+	_contract_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "contract":
+			_description_label.text = text)
 	_fa_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "fa":
 			_description_label.text = text)
@@ -114,6 +122,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_scout_view.switch_tab(delta)
 			"fa":
 				_fa_view.switch_tab(delta)
+			"contract":
+				_contract_view.switch_tab(delta)
 		get_viewport().set_input_as_handled()
 
 
@@ -216,7 +226,7 @@ func _refresh() -> void:
 	_team_name_label.text = GameState.team
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
-	if _open_key != "tactics" and _open_key != "fa":
+	if _open_key != "tactics" and _open_key != "fa" and _open_key != "contract":
 		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_tactics_view.refresh()
@@ -226,6 +236,8 @@ func _refresh() -> void:
 		_scout_view.refresh()
 	elif _open_key == "fa":
 		_fa_view.refresh()
+	elif _open_key == "contract":
+		_contract_view.refresh()
 
 
 func _summary_text() -> String:
@@ -251,6 +263,8 @@ func _description(key: String) -> String:
 				GameState.month, GameState.games_left_in_month(), goal]
 		if GameState.fa_open():
 			return "FA宣言した選手への提示と、メジャーへ移籍する自球団の選手の引き留めをします。"
+		if GameState.contract_open():
+			return "自球団の選手の来季の年俸を確認・調整します。12球団の年俸総額と予算上限も見られます。"
 		return "オフシーズンを進めます。次は「%s」です。" % GameState.PHASE_NAMES[GameState.next_phase()]
 	for menu: Array in MENUS:
 		if menu[0] == key:
@@ -269,9 +283,14 @@ func _on_menu_chosen(key: String) -> void:
 		if GameState.fa_open():
 			_open_sub_screen("fa")
 			return
+		if GameState.contract_open():
+			_open_sub_screen("contract")
+			return
 		GameState.advance()
 		if GameState.fa_open():
 			_open_sub_screen("fa")
+		elif GameState.contract_open():
+			_open_sub_screen("contract")
 		return
 	_open_sub_screen(key)
 
@@ -288,13 +307,15 @@ func _open_sub_screen(key: String) -> void:
 	var is_schedule := key == "schedule"
 	var is_scout := key == "scout"
 	var is_fa := key == "fa"
+	var is_contract := key == "contract"
 	_tactics_view.visible = is_tactics
 	_schedule_view.visible = is_schedule
 	_scout_view.visible = is_scout
 	_fa_view.visible = is_fa
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa
+	_contract_view.visible = is_contract
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_contract
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
-	_set_wide(is_tactics or is_fa)
+	_set_wide(is_tactics or is_fa or is_contract)
 	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
@@ -308,6 +329,9 @@ func _open_sub_screen(key: String) -> void:
 	elif is_fa:
 		_sub_title_label.text = "FA・ポスティング（%d年オフ）" % GameState.year
 		_fa_view.open()
+	elif is_contract:
+		_sub_title_label.text = "契約更改（%d年オフ）" % GameState.year
+		_contract_view.open()
 	else:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
 		%BackButton.grab_focus()
@@ -321,6 +345,8 @@ func _on_back() -> void:
 	if _open_key == "tactics" and _tactics_view.back():
 		return
 	if _open_key == "fa" and _fa_view.back():
+		return
+	if _open_key == "contract" and _contract_view.back():
 		return
 	_close_sub_screen()
 
@@ -348,5 +374,5 @@ func _close_sub_screen() -> void:
 	_description_label.text = _description(_focused_key)
 	if _buttons.has(key):
 		_buttons[key].grab_button_focus()
-	elif key == "fa":
+	elif key == "fa" or key == "contract":
 		_buttons["advance"].grab_button_focus()
