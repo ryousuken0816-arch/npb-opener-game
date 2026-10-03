@@ -7,12 +7,25 @@ extends Node
 ## - Switch 配置向けに決定と戻るのボタンを入れ替えられる（SWAP_CONFIRM_CANCEL。システム設定ができたらそちらへ）
 ## - マウスを乗せたときだけ出るツールチップを、十字キー・キーボードでフォーカスしたときにも出す
 ## - どこにもフォーカスがないときに十字キーを押したら、画面の最初のボタンにフォーカスする
+## - 十字キー・左スティックを倒し続けたら、キーボードの長押しと同じく連続でフォーカスを動かす
+##   （最初の1回は Godot 標準の ui_* の動き。REPEAT_DELAY 秒後から REPEAT_INTERVAL 秒ごとに
+##   InputEventAction を viewport に送る。Input の押下状態は変えない）
 
 ## true にすると Ⓐ（下のボタン）が戻る、Ⓑ（右のボタン）が決定になる（Switch の配置）
 const SWAP_CONFIRM_CANCEL := false
 const TAB_PREV := "ui_tab_prev"
 const TAB_NEXT := "ui_tab_next"
 const TOOLTIP_DELAY := 0.35
+## 押しっぱなしの連続移動：最初の待ち時間と、その後の間隔（秒）
+const REPEAT_DELAY := 0.35
+const REPEAT_INTERVAL := 0.08
+## 左スティックをこれより小さく倒しただけでは動かない（ui_* の deadzone にも使う）
+const STICK_DEADZONE := 0.5
+const DIRECTIONS := ["ui_up", "ui_down", "ui_left", "ui_right"]
+const DPAD_DIRECTION := {
+	JOY_BUTTON_DPAD_UP: "ui_up", JOY_BUTTON_DPAD_DOWN: "ui_down",
+	JOY_BUTTON_DPAD_LEFT: "ui_left", JOY_BUTTON_DPAD_RIGHT: "ui_right",
+}
 
 ## 最後の操作がマウスだったか（ツールチップをどちらの仕組みで出すかに使う）
 var using_mouse := true
@@ -22,6 +35,13 @@ var _tip_panel := PanelContainer.new()
 var _tip_label := Label.new()
 var _tip_timer := Timer.new()
 var _tip_target: Control
+
+## 押しっぱなしの十字キー（"デバイス:ボタン" → 方向）と左スティックの傾き（デバイス → Vector2）
+var _dpad_held := {}
+var _stick := {}
+## 連続移動中の方向（無ければ ""）と、次に送る時刻（ミリ秒）
+var _repeat_dir := ""
+var _repeat_next_msec := 0
 
 
 func _ready() -> void:
@@ -50,6 +70,9 @@ func _ready() -> void:
 	_tip_timer.timeout.connect(_show_tip)
 	add_child(_tip_timer)
 	get_viewport().gui_focus_changed.connect(_on_focus_changed)
+	Input.joy_connection_changed.connect(func(_device: int, _connected: bool) -> void:
+		_dpad_held.clear()
+		_stick.clear())
 
 
 func _setup_actions() -> void:
@@ -57,6 +80,8 @@ func _setup_actions() -> void:
 	_add_action(TAB_NEXT, [KEY_E, KEY_PAGEDOWN], [JOY_BUTTON_RIGHT_SHOULDER])
 	_set_joy_button("ui_accept", JOY_BUTTON_B if SWAP_CONFIRM_CANCEL else JOY_BUTTON_A)
 	_set_joy_button("ui_cancel", JOY_BUTTON_A if SWAP_CONFIRM_CANCEL else JOY_BUTTON_B)
+	for dir: String in DIRECTIONS:
+		InputMap.action_set_deadzone(dir, STICK_DEADZONE)
 
 
 func _add_action(action: String, keys: Array, buttons: Array) -> void:
@@ -83,6 +108,7 @@ func _set_joy_button(action: String, button: JoyButton) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	_track_held(event)
 	if event is InputEventMouseMotion or event is InputEventMouseButton:
 		if not using_mouse:
 			using_mouse = true
@@ -98,6 +124,57 @@ func _input(event: InputEvent) -> void:
 					if focus_first(get_tree().current_scene):
 						get_viewport().set_input_as_handled()
 					return
+
+
+# --- 押しっぱなしの連続移動 -------------------------------------------------------------
+
+func _track_held(event: InputEvent) -> void:
+	if event is InputEventJoypadButton:
+		var jb := event as InputEventJoypadButton
+		if DPAD_DIRECTION.has(jb.button_index):
+			var key := "%d:%d" % [jb.device, jb.button_index]
+			if jb.pressed:
+				_dpad_held[key] = DPAD_DIRECTION[jb.button_index]
+			else:
+				_dpad_held.erase(key)
+	elif event is InputEventJoypadMotion:
+		var jm := event as InputEventJoypadMotion
+		if jm.axis == JOY_AXIS_LEFT_X or jm.axis == JOY_AXIS_LEFT_Y:
+			var v: Vector2 = _stick.get(jm.device, Vector2.ZERO)
+			if jm.axis == JOY_AXIS_LEFT_X:
+				v.x = jm.axis_value
+			else:
+				v.y = jm.axis_value
+			_stick[jm.device] = v
+
+
+## いま押しっぱなしの方向（十字キー優先。スティックは大きく倒しているほうの軸）。無ければ ""
+func _held_direction() -> String:
+	for dir: String in _dpad_held.values():
+		return dir
+	for v: Vector2 in _stick.values():
+		if absf(v.x) < STICK_DEADZONE and absf(v.y) < STICK_DEADZONE:
+			continue
+		if absf(v.y) >= absf(v.x):
+			return "ui_down" if v.y > 0.0 else "ui_up"
+		return "ui_right" if v.x > 0.0 else "ui_left"
+	return ""
+
+
+func _process(_delta: float) -> void:
+	var dir := _held_direction()
+	var now := Time.get_ticks_msec()
+	if dir != _repeat_dir:
+		_repeat_dir = dir
+		_repeat_next_msec = now + int(REPEAT_DELAY * 1000.0)
+		return
+	if dir.is_empty() or now < _repeat_next_msec:
+		return
+	_repeat_next_msec = now + int(REPEAT_INTERVAL * 1000.0)
+	var e := InputEventAction.new()
+	e.action = dir
+	e.pressed = true
+	get_viewport().push_input(e)
 
 
 # --- フォーカスの補助 -----------------------------------------------------------------

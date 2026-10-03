@@ -32,6 +32,35 @@ func _run() -> void:
 	_check("タイトル：最初の球団にフォーカス", _focus_text() == "読売ジャイアンツ", _focus_text())
 	await _key(KEY_DOWN)
 	_check("タイトル：↓で次の球団", _focus_text() == "阪神タイガース", _focus_text())
+
+	# --- コントローラーの押しっぱなしで連続移動（十字キー・左スティック） ---
+	var title := current_scene
+	var start := int(ui_input.call("focus_index", title))
+	await _joy_button(JOY_BUTTON_DPAD_DOWN, true)
+	await _frames(2)
+	_check("十字キー↓：押した瞬間は1つ", int(ui_input.call("focus_index", title)) == start + 1,
+		"%d→%d" % [start, ui_input.call("focus_index", title)])
+	await create_timer(0.65, true, false, true).timeout
+	await _joy_button(JOY_BUTTON_DPAD_DOWN, false)
+	var after_hold := int(ui_input.call("focus_index", title))
+	_check("十字キー↓：押しっぱなしで複数個動く", after_hold >= start + 3,
+		"%d→%d" % [start, after_hold])
+	await create_timer(0.3, true, false, true).timeout
+	_check("十字キー↓：離したら止まる", int(ui_input.call("focus_index", title)) == after_hold, "")
+	await _joy_axis(JOY_AXIS_LEFT_Y, 0.3)
+	await create_timer(0.6, true, false, true).timeout
+	_check("左スティック：小さな傾きでは動かない", int(ui_input.call("focus_index", title)) == after_hold, "")
+	await _joy_axis(JOY_AXIS_LEFT_Y, -0.9)
+	await create_timer(0.65, true, false, true).timeout
+	await _joy_axis(JOY_AXIS_LEFT_Y, 0.0)
+	var after_stick := int(ui_input.call("focus_index", title))
+	_check("左スティック↑：倒し続けて複数個動く", after_stick <= after_hold - 3,
+		"%d→%d" % [after_hold, after_stick])
+	for i in 15:
+		if _focus_text() == "阪神タイガース":
+			break
+		await _key(KEY_UP if int(ui_input.call("focus_index", title)) > start else KEY_DOWN)
+	_check("キーボードで阪神に戻る", _focus_text() == "阪神タイガース", _focus_text())
 	await _shot("p1_title")
 	await _key(KEY_ENTER)
 	await _frames(6)
@@ -200,6 +229,22 @@ func _key(keycode: Key) -> void:
 		e.pressed = pressed
 		Input.parse_input_event(e)
 		await _frames(2)
+
+
+func _joy_button(button: JoyButton, pressed: bool) -> void:
+	var e := InputEventJoypadButton.new()
+	e.button_index = button
+	e.pressed = pressed
+	Input.parse_input_event(e)
+	await _frames(2)
+
+
+func _joy_axis(axis: JoyAxis, value: float) -> void:
+	var e := InputEventJoypadMotion.new()
+	e.axis = axis
+	e.axis_value = value
+	Input.parse_input_event(e)
+	await _frames(2)
 
 
 func _frames(n: int) -> void:
