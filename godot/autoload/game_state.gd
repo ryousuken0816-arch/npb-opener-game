@@ -122,6 +122,8 @@ func advance() -> void:
 		advance_through(_month_end_day(day))
 		changed.emit()
 		return
+	if phase == Phase.FA_TRADE:
+		fa_resolve()
 	_enter(next_phase())
 
 
@@ -176,6 +178,59 @@ func sign_foreign(id: String) -> String:
 		_sync_roster()
 		changed.emit()
 	return error
+
+
+## このオフの FA・ポスティング（FA・トレード・ポスティングの段階のみ。それ以外は null）
+func fa() -> FreeAgency:
+	if phase != Phase.FA_TRADE or league == null:
+		return null
+	return league.fa
+
+
+## FAの交渉が残っている（FA・トレード・ポスティングの段階で、まだ締め切っていない）
+func fa_open() -> bool:
+	var f := fa()
+	return f != null and not f.resolved
+
+
+## FA宣言した選手に自球団が条件を出す（自球団の選手なら引き留め）。だめなら理由の文
+func fa_offer(id: String, amount: int, years: int) -> String:
+	var f := fa()
+	if f == null:
+		return "FAの交渉はオフの「FA・トレード・ポスティング」で行います"
+	var error := f.offer(id, amount, years)
+	if error.is_empty():
+		changed.emit()
+	return error
+
+
+func fa_cancel(id: String) -> void:
+	var f := fa()
+	if f != null:
+		f.cancel_offer(id)
+		changed.emit()
+
+
+## メジャー移籍する自球団の選手を引き留める（1人1回）。{ok, chance, text}
+func mlb_keep(id: String, amount: int, years: int) -> Dictionary:
+	var f := fa()
+	if f == null:
+		return {"ok": false, "chance": 0.0, "text": "引き留めはオフの「FA・トレード・ポスティング」で行います"}
+	var result := f.keep_mlb(league, id, amount, years)
+	if result["ok"]:
+		_sync_roster()
+	changed.emit()
+	return result
+
+
+## FAの交渉を締め切り、移籍先を決める（可変ボタンで次へ進むときにも自動で行う）
+func fa_resolve() -> void:
+	var f := fa()
+	if f == null or f.resolved:
+		return
+	f.resolve(league)
+	_sync_roster()
+	changed.emit()
 
 
 ## 外国人市場が開いているか（FA・トレード・ポスティング〜春季キャンプ）
@@ -279,6 +334,8 @@ func next_phase() -> Phase:
 func button_text() -> String:
 	if phase == Phase.SEASON:
 		return "試合へ"
+	if fa_open():
+		return "FA・移籍交渉"
 	return PHASE_BUTTON[next_phase()]
 
 
@@ -381,13 +438,14 @@ func _enter(new_phase: Phase) -> void:
 			# シーズン後の能力値に更新（当年までの成績で再計算したもの）
 			GameData.load_ratings(year, "post")
 		Phase.FA_TRADE:
-			league.depart_mlb(year)
+			var leaving := league.depart_mlb(year)
 			_apply_trades("%d-12-31" % year)
 			var next := GameData.peek_ratings(year + 1, "pre")
 			if not next.is_empty():
 				GameData.set_supplement(next)
 				league.prepare_next_year(year, next, GameData.peek_ratings(year + 1, "post"))
 				league.apply_returns()
+			league.open_fa(year, leaving)
 		Phase.CONTRACT:
 			league.renew_contracts(year, season)
 			league.cpu_market_round()
@@ -413,6 +471,7 @@ func _enter(new_phase: Phase) -> void:
 ## 所属が変わった・能力値ファイルを読み替えたとき：能力値データに所属を書き込み、オフの編成を作り直す
 func _sync_roster() -> void:
 	if league != null:
+		GameData.set_kept_players(league.kept_fallbacks())
 		GameData.apply_roster(league.team_of)
 	_offseason_teams.clear()
 	roster_version += 1

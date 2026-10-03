@@ -40,6 +40,7 @@ var _focused_key := "advance"
 var _open_key := ""
 var _guide := PadGuide.new()
 var _scout_view := ScoutView.new()
+var _fa_view := FaView.new()
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -79,6 +80,13 @@ func _ready() -> void:
 	_scout_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scout_view.visible = false
 	_placeholder_label.get_parent().add_child(_scout_view)
+	_fa_view.setup(_palette)
+	_fa_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_fa_view.visible = false
+	_placeholder_label.get_parent().add_child(_fa_view)
+	_fa_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "fa":
+			_description_label.text = text)
 	_tactics_view.title_changed.connect(func(text: String) -> void: _sub_title_label.text = text)
 	_tactics_view.description_changed.connect(func(text: String) -> void:
 		_description_label.text = text)
@@ -104,6 +112,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_tactics_view.switch_tab(delta)
 			"scout":
 				_scout_view.switch_tab(delta)
+			"fa":
+				_fa_view.switch_tab(delta)
 		get_viewport().set_input_as_handled()
 
 
@@ -206,7 +216,7 @@ func _refresh() -> void:
 	_team_name_label.text = GameState.team
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
-	if _open_key != "tactics":
+	if _open_key != "tactics" and _open_key != "fa":
 		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_tactics_view.refresh()
@@ -214,6 +224,8 @@ func _refresh() -> void:
 		_schedule_view.refresh()
 	elif _open_key == "scout":
 		_scout_view.refresh()
+	elif _open_key == "fa":
+		_fa_view.refresh()
 
 
 func _summary_text() -> String:
@@ -237,6 +249,8 @@ func _description(key: String) -> String:
 				return "%s。（%d年の日程データがないため試合は行いません）" % [goal, GameState.year]
 			return "%d月の残り%d試合（全球団）をまとめて行い、%s。日程表からは1日ずつ進められます。" % [
 				GameState.month, GameState.games_left_in_month(), goal]
+		if GameState.fa_open():
+			return "FA宣言した選手への提示と、メジャーへ移籍する自球団の選手の引き留めをします。"
 		return "オフシーズンを進めます。次は「%s」です。" % GameState.PHASE_NAMES[GameState.next_phase()]
 	for menu: Array in MENUS:
 		if menu[0] == key:
@@ -251,7 +265,13 @@ func _on_menu_focused(key: String) -> void:
 
 func _on_menu_chosen(key: String) -> void:
 	if key == "advance":
+		# FA・トレード・ポスティングの段階は、締め切るまで可変ボタンで FA の画面を開く
+		if GameState.fa_open():
+			_open_sub_screen("fa")
+			return
 		GameState.advance()
+		if GameState.fa_open():
+			_open_sub_screen("fa")
 		return
 	_open_sub_screen(key)
 
@@ -267,12 +287,14 @@ func _open_sub_screen(key: String) -> void:
 	var is_tactics := key == "tactics"
 	var is_schedule := key == "schedule"
 	var is_scout := key == "scout"
+	var is_fa := key == "fa"
 	_tactics_view.visible = is_tactics
 	_schedule_view.visible = is_schedule
 	_scout_view.visible = is_scout
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout
+	_fa_view.visible = is_fa
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
-	_set_wide(is_tactics)
+	_set_wide(is_tactics or is_fa)
 	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
@@ -283,6 +305,9 @@ func _open_sub_screen(key: String) -> void:
 	elif is_scout:
 		_scout_view.refresh()
 		_scout_view.focus_first()
+	elif is_fa:
+		_sub_title_label.text = "FA・ポスティング（%d年オフ）" % GameState.year
+		_fa_view.open()
 	else:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
 		%BackButton.grab_focus()
@@ -294,6 +319,8 @@ func _on_back() -> void:
 		GameState.stop_fast_forward()
 		return
 	if _open_key == "tactics" and _tactics_view.back():
+		return
+	if _open_key == "fa" and _fa_view.back():
 		return
 	_close_sub_screen()
 
@@ -321,3 +348,5 @@ func _close_sub_screen() -> void:
 	_description_label.text = _description(_focused_key)
 	if _buttons.has(key):
 		_buttons[key].grab_button_focus()
+	elif key == "fa":
+		_buttons["advance"].grab_button_focus()

@@ -95,6 +95,8 @@ var _players_by_id: Dictionary = {}
 var _supplement: Dictionary = {}
 ## メジャーにいる選手の能力値（能力値ファイルの mlb_players。引き留めたときに使う）
 var _mlb_by_id: Dictionary = {}
+## 引き留めたメジャー移籍の選手（今のファイルの players にいない）として _players_by_id に足した選手ID
+var _kept_ids: Array[String] = []
 var _team_league: Dictionary = {}
 var _parsed_cache: Dictionary = {}
 var _drafts_cache: Dictionary = {}
@@ -161,12 +163,33 @@ func set_supplement(next_ratings: Dictionary) -> void:
 				_team_league[team] = p["league"]
 
 
+## 引き留めたメジャー移籍の選手（選手ID → 直前のNPBの能力値）を、今のファイルの players にいなければ
+## 選手として引けるようにする。能力値は今のファイルの mlb_players（メジャーにいた年の換算）、無ければ直前のNPBの値
+func set_kept_players(fallbacks: Dictionary) -> void:
+	for id in _kept_ids:
+		_players_by_id.erase(id)
+	_kept_ids.clear()
+	for id: String in fallbacks:
+		if _players_by_id.has(id):
+			continue
+		var src: Dictionary = _mlb_by_id.get(id, fallbacks[id])
+		var p: Dictionary = src.duplicate(true)
+		p["hist_team"] = ""
+		p["team"] = ""
+		p["kept_from_mlb"] = "mlb" if _mlb_by_id.has(id) else "npb"
+		_players_by_id[id] = p
+		_kept_ids.append(id)
+
+
 ## ゲーム内の所属（選手ID → 球団）を能力値データに書き込み、球団別の一覧を作り直す
 func apply_roster(team_of: Dictionary) -> void:
 	_players_by_team.clear()
 	for p: Dictionary in ratings.get("players", []):
 		if not team_of.has(p["id"]):
 			p["team"] = ""
+	for id in _kept_ids:
+		if not team_of.has(id):
+			_players_by_id[id]["team"] = ""
 	for p: Dictionary in _supplement.values():
 		if not team_of.has(p["id"]):
 			p["team"] = ""
@@ -355,6 +378,7 @@ func pos_index(pos: Variant) -> int:
 func _index_players() -> void:
 	_players_by_team.clear()
 	_players_by_id.clear()
+	_kept_ids.clear()
 	_mlb_by_id.clear()
 	_team_league.clear()
 	for p: Dictionary in ratings.get("mlb_players", []):
