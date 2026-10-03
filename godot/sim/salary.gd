@@ -58,6 +58,16 @@ const CUT_LIMIT_LOW := 0.25
 const CUT_LIMIT_BORDER := 10000
 const RAISE_MAX := 3.0  ## 1回の更改で上がる上限（倍）
 const RAISE_MAX_AMOUNT := 15000  ## 1回の更改で上がる上限（額）
+const ADJUST_FLOOR_RATE := 0.9  ## 自球団の提示は査定額のこの割合までしか下げられない
+## 今季の成績がはっきり良い年（今季の実力 z と出場量がこれ以上）は少なくとも GOOD_SEASON_RAISE 倍（MAX まで）、
+## 悪い年（z がこれ以下で出場量が SEASON_PLAYING_MIN×0.7 以上、年俸 BAD_SEASON_MIN_SALARY 以上）は
+## BAD_SEASON_CUT 倍以下にする（年俸の安い若手は出場が増えれば成績が悪くても上がってよい）
+const GOOD_SEASON_Z := 0.5
+const SEASON_PLAYING_MIN := 0.6
+const GOOD_SEASON_RAISE := 1.05
+const BAD_SEASON_Z := -0.5
+const BAD_SEASON_CUT := 0.95
+const BAD_SEASON_MIN_SALARY := 3000
 ## 目標額：今季のゲーム内成績と能力値の配分、出場量の配分
 const SEASON_WEIGHT := 0.5
 const SEASON_PLAYING_WEIGHT := 0.6
@@ -157,9 +167,25 @@ static func renew(current: int, p: Dictionary, season_stats: Dictionary, years: 
 	var value := market_value(z, playing, a[2])
 	var target := cap(value * (FOREIGN_PREMIUM if foreign else seniority(years)))
 	target = maxf(target, FOREIGN_MIN if foreign else floor_for(years, year))
+	# 今季の成績がはっきり良い（悪い）年は、能力値（直近3年）が下り坂（上り坂）でも下げない（上げない）
+	if season[0] >= GOOD_SEASON_Z and season[1] >= SEASON_PLAYING_MIN:
+		target = maxf(target, minf(current * GOOD_SEASON_RAISE, maxf(MAX, current)))
+	elif season[0] <= BAD_SEASON_Z and season[1] >= SEASON_PLAYING_MIN * 0.7 and current >= BAD_SEASON_MIN_SALARY:
+		target = minf(target, current * BAD_SEASON_CUT)
 	var cut := CUT_LIMIT_HIGH if current > CUT_LIMIT_BORDER else CUT_LIMIT_LOW
 	var upper := minf(current * RAISE_MAX, current + RAISE_MAX_AMOUNT)
 	return round_amount(clampf(target, current * (1.0 - cut), maxf(upper, current)))
+
+
+## 契約更改で自球団が提示できる範囲 [下限, 上限]。current：今の年俸、proposed：査定額（renew の結果）。
+## 下限は史実の減額制限（1億円超40%・以下25%）と、査定額の ADJUST_FLOOR_RATE（それより下げると選手が納得しない）の
+## 高いほう。上限は上げ幅の上限（RAISE_MAX 倍・+RAISE_MAX_AMOUNT の小さいほう。査定額より下にはしない）
+static func renew_limits(current: int, proposed: int, year: int) -> Array[int]:
+	var cut := CUT_LIMIT_HIGH if current > CUT_LIMIT_BORDER else CUT_LIMIT_LOW
+	var low := maxi(minimum(year), round_amount(maxf(current * (1.0 - cut), proposed * ADJUST_FLOOR_RATE)))
+	low = mini(low, proposed)
+	var high := maxi(proposed, round_amount(minf(current * RAISE_MAX, current + RAISE_MAX_AMOUNT)))
+	return [low, high]
 
 
 ## 今季のゲーム内成績から [実力 z, 出場量]（打者は OPS、投手は防御率。少ないほど z を0へ縮める）

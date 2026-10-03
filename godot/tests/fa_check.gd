@@ -45,6 +45,9 @@ func _run() -> void:
 
 func _check_offseasons() -> void:
 	print("== 2008〜%d年のオフ（自球団：%s） ==" % [LAST_OFF, USER_TEAM])
+	# 毎年上限の額で獲得するので、ここでは予算上限を外す（予算の効き方は tests/contract_check.gd で確かめる）
+	var contract_renewal: GDScript = load("res://sim/contract_renewal.gd")
+	contract_renewal.set_budget_override(USER_TEAM, 10000000)
 	_gs.new_game(USER_TEAM)
 	var league: Variant = _gs.league
 	var total_declared := 0
@@ -125,6 +128,7 @@ func _check_offseasons() -> void:
 				_check(league.salary_of(id) == contract[id], "%sの年俸は契約年数のあいだ据え置き" % league.names[id])
 		if y >= LAST_OFF:
 			break
+	contract_renewal.set_budget_override(USER_TEAM, -1)
 	print("FA宣言 計%d人、CPU球団どうしの移籍 %d人、自球団の獲得 %d人、引き留め %d人" % [
 		total_declared, cpu_moves, bought, kept])
 	_check(total_declared >= 10, "5年でFA宣言が10人以上（%d人）" % total_declared)
