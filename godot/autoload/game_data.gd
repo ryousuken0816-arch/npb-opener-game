@@ -220,6 +220,8 @@ func mlb_player(id: String) -> Dictionary:
 
 ## 史実のデータの球団の略称 → 正式名（その年の名前。「横浜」は2012年から DeNA）
 func resolve_team(short: String, year: int) -> String:
+	if short.is_empty():
+		return ""
 	if short == "横浜":
 		return "横浜DeNAベイスターズ" if year >= DENA_FROM_YEAR else "横浜ベイスターズ"
 	if TEAM_ALIASES.has(short):

@@ -48,6 +48,9 @@ const PHASE_BUTTON := {
 }
 
 const START_YEAR := 2008
+## デバッグ用の開始年の範囲（タイトル画面で選べる。どの年も generated/ratings と data/<年>/schedule.json がある）
+const DEBUG_FIRST_YEAR := 2008
+const DEBUG_LAST_YEAR := 2025
 ## 日程データ（data/<年>/schedule.json）が無い年のシーズン期間（月日）
 const DEFAULT_SEASON_START := "04-01"
 const DEFAULT_SEASON_END := "10-31"
@@ -129,6 +132,24 @@ func advance() -> void:
 	if phase == Phase.RELEASE:
 		release_resolve()
 	_enter(next_phase())
+
+
+## デバッグ用：シーズン中ならその年の残り試合をすべてシミュレーションしてシーズン終了まで進め、
+## オフを target の段階まで進める（途中の段階の自球団の選択は可変ボタンで進めたときと同じく自動で締める）。
+## target がその年のオフに無い・もう過ぎている（現役ドラフトの2021年以前など）ときは春季キャンプの手前で止まる。
+## target に着いたら true。将来ドラフトの段階ができても Phase.DRAFT を渡せば同じように直接飛べる
+func skip_to_phase(target: Phase) -> bool:
+	stop_fast_forward()
+	if target == Phase.SEASON:
+		return false
+	if phase == Phase.SEASON:
+		advance_through(season_last_day())
+	while phase != target and phase != Phase.SEASON:
+		if phase == Phase.CAMP or (next_phase() == Phase.CAMP and target != Phase.CAMP):
+			break
+		advance()
+	changed.emit()
+	return phase == target
 
 
 ## target_day（通し日数）の試合が終わるまで一気に進める（最終日を越えるとシーズン終了へ）

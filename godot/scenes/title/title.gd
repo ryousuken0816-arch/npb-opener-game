@@ -2,8 +2,18 @@ extends Control
 ## タイトル（ニューゲーム：球団選択）。能力値ファイルから球団一覧を作る。
 ## 球団ボタンは各球団のチームカラーの立体ボタン（縁は球団のサブカラー）。
 ## コントローラー：十字キーで球団を選び Ⓐ で決定（右上に操作ガイド）。
+##
+## デバッグ用（下の控えめな行）：開始年（2008〜2025。LB/RB＝Q/E でも変えられる）と
+## 「すぐドラフトへ」（シーズンを自動で消化して、その年のオフのドラフトの段階から始める。
+## GameState.skip_to_phase）。十字キーで球団の一覧の下へ移ると選べる
 
 const HUB_SCENE := "res://scenes/hub/hub.tscn"
+## 「すぐドラフトへ」で飛ぶ段階
+const SKIP_TARGET := GameState.Phase.DRAFT
+
+var start_year := GameState.START_YEAR
+var _year_option: OptionButton
+var _skip_check: CheckButton
 
 @onready var _title_label: Label = %TitleLabel
 @onready var _sub_label: Label = %SubLabel
@@ -18,19 +28,84 @@ func _ready() -> void:
 	_title_label.label_settings.shadow_offset = Vector2(3, 5)
 	UiTheme.heading(_sub_label, 20, UiTheme.TEXT, Color.WHITE, 6, false)
 	var guide := PadGuide.new()
-	guide.set_items([["A", "決定"]])
+	guide.set_items([["A", "決定"], ["LB/RB", "開始年"]])
 	add_child(guide)
 	guide.position = Vector2(size.x - guide.size.x - 24, 5)
 	resized.connect(func() -> void: guide.position = Vector2(size.x - guide.size.x - 24, 5))
 	UiFx.install(self)
-	if not GameData.load_ratings(GameState.START_YEAR, "pre"):
-		_sub_label.text = "能力値ファイル（generated/ratings/%d_pre.json）が見つかりません" % GameState.START_YEAR
-		return
-	_sub_label.text = "%d年開幕：担当する球団を選んでください" % GameState.START_YEAR
-	for league: String in GameData.LEAGUE_NAMES:
-		_leagues.add_child(_make_league_column(league))
+	$Center/VBox.add_child(_make_debug_row())
+	_build_teams()
 	UiInput.focus_first(_leagues)
 	UiFx.fade_in($Center/VBox)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed(UiInput.TAB_PREV) or event.is_action_pressed(UiInput.TAB_NEXT):
+		set_start_year(start_year + (-1 if event.is_action_pressed(UiInput.TAB_PREV) else 1))
+		get_viewport().set_input_as_handled()
+
+
+## 開始年を変えて球団の一覧を作り直す（範囲外は端で止める）
+func set_start_year(new_year: int) -> void:
+	new_year = clampi(new_year, GameState.DEBUG_FIRST_YEAR, GameState.DEBUG_LAST_YEAR)
+	if new_year == start_year:
+		return
+	start_year = new_year
+	_year_option.select(start_year - GameState.DEBUG_FIRST_YEAR)
+	var focused := get_viewport().gui_get_focus_owner()
+	var had_focus := focused == null or _leagues.is_ancestor_of(focused)
+	_build_teams()
+	if had_focus:
+		UiInput.focus_first(_leagues)
+
+
+func _build_teams() -> void:
+	for child in _leagues.get_children():
+		_leagues.remove_child(child)
+		child.queue_free()
+	if not GameData.load_ratings(start_year, "pre"):
+		_sub_label.text = "能力値ファイル（generated/ratings/%d_pre.json）が見つかりません" % start_year
+		return
+	_sub_label.text = "%d年開幕：担当する球団を選んでください" % start_year
+	for league: String in GameData.LEAGUE_NAMES:
+		_leagues.add_child(_make_league_column(league))
+
+
+## デバッグ用の行（小さめの文字・半透明の地）：開始年のプルダウンと「すぐドラフトへ」
+func _make_debug_row() -> Control:
+	var panel := PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var style := UiTheme.box(Color(1, 1, 1, 0.55), 8, Color(0, 0, 0, 0.15), 1)
+	style.set_content_margin_all(6)
+	style.content_margin_left = 12
+	style.content_margin_right = 12
+	panel.add_theme_stylebox_override("panel", style)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	panel.add_child(row)
+	var caption := UiTheme.small_label("デバッグ用　開始年", 14)
+	caption.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(caption)
+	_year_option = OptionButton.new()
+	_year_option.add_theme_font_size_override("font_size", 14)
+	for y in range(GameState.DEBUG_FIRST_YEAR, GameState.DEBUG_LAST_YEAR + 1):
+		_year_option.add_item("%d年" % y, y)
+	_year_option.select(start_year - GameState.DEBUG_FIRST_YEAR)
+	_year_option.tooltip_text = "開始年（その年の所属・能力・日程で始めます）。LB/RB（Q/E）でも変えられます"
+	_year_option.item_selected.connect(func(index: int) -> void:
+		set_start_year(_year_option.get_item_id(index)))
+	row.add_child(_year_option)
+	_skip_check = CheckButton.new()
+	_skip_check.text = "すぐドラフトへ"
+	_skip_check.add_theme_font_size_override("font_size", 14)
+	_skip_check.tooltip_text = "シーズンを自動で消化し（試合はシミュレーション）、その年のオフのドラフトの段階から始めます。ハブでは F9 でも同じことができます"
+	row.add_child(_skip_check)
+	return panel
+
+
+## 「すぐドラフトへ」が入っているか（テスト用に外からも切り替えられる）
+func set_skip_to_draft(on: bool) -> void:
+	_skip_check.button_pressed = on
 
 
 func _make_league_column(league: String) -> VBoxContainer:
@@ -65,5 +140,10 @@ func _make_team_button(team: String) -> Button:
 
 
 func _on_team_chosen(team: String) -> void:
-	GameState.new_game(team)
+	GameState.new_game(team, start_year)
+	if _skip_check.button_pressed:
+		_sub_label.text = "%d年のシーズンを消化中…" % start_year
+		await get_tree().process_frame
+		await get_tree().process_frame
+		GameState.skip_to_phase(SKIP_TARGET)
 	get_tree().change_scene_to_file(HUB_SCENE)
