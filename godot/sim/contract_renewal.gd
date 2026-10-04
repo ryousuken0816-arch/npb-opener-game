@@ -99,3 +99,17 @@ func total_change() -> int:
 	for id: String in rows:
 		d += int(rows[id]["amount"]) - int(rows[id]["prev"])
 	return d
+
+
+# --- セーブ／ロード ----------------------------------------------------------------------
+
+func to_save() -> Dictionary:
+	return {"year": year, "team": team, "rows": rows, "order": order, "resolved": resolved}
+
+
+static func from_save(d: Dictionary) -> ContractRenewal:
+	var c := ContractRenewal.new(int(d["year"]), str(d["team"]))
+	c.rows = d.get("rows", {})
+	c.order.assign(d.get("order", []))
+	c.resolved = bool(d.get("resolved", false))
+	return c

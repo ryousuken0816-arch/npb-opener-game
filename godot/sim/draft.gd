@@ -796,3 +796,47 @@ static func rank_of(value: float, thresholds: Array) -> String:
 		if value >= float(thresholds[i]):
 			return RANK_LETTERS[i]
 	return RANK_LETTERS[-1]
+
+
+# --- セーブ／ロード ----------------------------------------------------------------------
+
+## 途中経過（候補・指名・入札・抽選・順番・乱数）をすべて持つ。仮の候補の選手データ（candidates[].player）も含む
+func to_save() -> Dictionary:
+	return {
+		"year": year, "user_team": user_team, "stage": stage, "teams": teams, "candidates": candidates,
+		"quota": quota, "picks": picks, "wave": wave, "bids": bids, "lotteries": lotteries,
+		"last_wave": last_wave, "order": order, "round": round, "turn_team": _turn_team,
+		"done_reg": done_reg, "done_ikusei": done_ikusei, "user_auto": user_auto, "user_room": user_room,
+		"resolved": resolved, "data_through": data_through, "rng": SaveUtil.rng_state(_rng),
+		"team_noise": _team_noise, "need": _need,
+	}
+
+
+static func from_save(d: Dictionary) -> Draft:
+	var dr := Draft.new()
+	dr.year = int(d["year"])
+	dr.user_team = str(d["user_team"])
+	dr.stage = int(d.get("stage", Stage.DONE)) as Stage
+	dr.teams.assign(d.get("teams", []))
+	dr.candidates.assign(d.get("candidates", []))
+	for c in dr.candidates:
+		dr.by_id[c["id"]] = c
+	dr.quota = d.get("quota", {})
+	dr.picks.assign(d.get("picks", []))
+	dr.wave = int(d.get("wave", 1))
+	dr.bids = d.get("bids", {})
+	dr.lotteries.assign(d.get("lotteries", []))
+	dr.last_wave.assign(d.get("last_wave", []))
+	dr.order.assign(d.get("order", []))
+	dr.round = int(d.get("round", 2))
+	dr._turn_team = str(d.get("turn_team", ""))
+	dr.done_reg = d.get("done_reg", {})
+	dr.done_ikusei = d.get("done_ikusei", {})
+	dr.user_auto = bool(d.get("user_auto", false))
+	dr.user_room = int(d.get("user_room", -1))
+	dr.resolved = bool(d.get("resolved", false))
+	dr.data_through = int(d.get("data_through", 0))
+	SaveUtil.set_rng_state(dr._rng, d.get("rng", ""))
+	dr._team_noise = d.get("team_noise", {})
+	dr._need = d.get("need", {})
+	return dr

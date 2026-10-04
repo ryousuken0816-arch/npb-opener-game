@@ -1163,3 +1163,79 @@ static func norm_name(s: String) -> String:
 			["瀨", "瀬"], ["齋", "斎"], ["齊", "斉"], ["櫻", "桜"], ["澤", "沢"], ["眞", "真"]]:
 		result = result.replace(pair[0], pair[1])
 	return result
+
+
+# --- セーブ／ロード ----------------------------------------------------------------------
+
+## _plan のうち能力値ファイルから作り直せるもの（entries・post・debut）は保存しない（restore_plan で読み直す）
+const PLAN_RELOADED := ["entries", "post", "debut"]
+
+
+## 所属・年俸・推移・出来事・市場・引退などと、このオフの FA・契約更改・戦力外・ドラフトの途中経過
+func to_save() -> Dictionary:
+	var plan := {}
+	for key: String in _plan:
+		if key not in PLAN_RELOADED:
+			plan[key] = _plan[key]
+	return {
+		"year": year, "user_team": user_team, "team_of": team_of, "salary": salary,
+		"salary_history": salary_history, "joined": joined, "names": names, "retired": retired,
+		"in_mlb": in_mlb, "market": market, "market_info": market_info, "cpu_demand": cpu_demand,
+		"contract_until": contract_until, "fa_year": fa_year, "kept_mlb": kept_mlb, "released": released,
+		"drafted": drafted, "draft_synth": draft_synth, "draft_unsigned": draft_unsigned,
+		"limit_active": limit_active, "log": log, "trade_index": _trade_index, "plan": plan,
+		"rng": SaveUtil.rng_state(_rng),
+		"fa": fa.to_save() if fa != null else null,
+		"contracts": contracts.to_save() if contracts != null else null,
+		"releases": releases.to_save() if releases != null else null,
+		"draft": draft.to_save() if draft != null else null,
+	}
+
+
+## to_save() の中身を戻す（d は SaveUtil.ints() で整数を戻したもの）。オフの途中なら続けて restore_plan() を呼ぶ
+func from_save(d: Dictionary) -> void:
+	year = int(d["year"])
+	user_team = str(d["user_team"])
+	team_of = d.get("team_of", {})
+	salary = d.get("salary", {})
+	salary_history = d.get("salary_history", {})
+	joined = d.get("joined", {})
+	names = d.get("names", {})
+	retired = d.get("retired", {})
+	in_mlb = d.get("in_mlb", {})
+	market.assign(d.get("market", []))
+	market_info = d.get("market_info", {})
+	cpu_demand = d.get("cpu_demand", {})
+	contract_until = d.get("contract_until", {})
+	fa_year = d.get("fa_year", {})
+	kept_mlb = d.get("kept_mlb", {})
+	released = d.get("released", {})
+	drafted = d.get("drafted", {})
+	draft_synth = d.get("draft_synth", {})
+	draft_unsigned = d.get("draft_unsigned", {})
+	limit_active = bool(d.get("limit_active", false))
+	log.assign(d.get("log", []))
+	_trade_index = int(d.get("trade_index", 0))
+	_plan = d.get("plan", {})
+	SaveUtil.set_rng_state(_rng, d.get("rng", ""))
+	fa = FreeAgency.from_save(d["fa"], self) if d.get("fa") is Dictionary else null
+	contracts = ContractRenewal.from_save(d["contracts"]) if d.get("contracts") is Dictionary else null
+	releases = Releases.from_save(d["releases"]) if d.get("releases") is Dictionary else null
+	draft = Draft.from_save(d["draft"]) if d.get("draft") is Dictionary else null
+
+
+## 来季の準備（_plan）の能力値ファイルの部分を読み直す（FA・トレード・ポスティング〜春季キャンプのロード時）
+func restore_plan() -> void:
+	if not _plan.has("year"):
+		return
+	var next_year := int(_plan["year"])
+	_plan["year"] = next_year
+	var entries := {}
+	for p: Dictionary in GameData.peek_ratings(next_year, "pre").get("players", []):
+		entries[p["id"]] = p
+	var post := {}
+	for p: Dictionary in GameData.peek_ratings(next_year, "post").get("players", []):
+		post[p["id"]] = p
+	_plan["entries"] = entries
+	_plan["post"] = post
+	_plan["debut"] = GameData.load_debut_years(next_year)

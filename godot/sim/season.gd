@@ -305,3 +305,60 @@ static func batting_avg(b: Dictionary) -> float:
 
 static func era(p: Dictionary) -> float:
 	return p.get("er", 0) * 27.0 / p["outs"] if p.get("outs", 0) > 0 else 0.0
+
+
+# --- セーブ／ロード ----------------------------------------------------------------------
+
+## 全試合（日程・結果）・球団成績・個人成績・各球団の編成と乱数の状態
+func to_save() -> Dictionary:
+	var team_states := {}
+	for team: String in teams:
+		team_states[team] = teams[team].to_save()
+	return {
+		"year": year, "games": games, "leagues": leagues, "players": players, "records": records,
+		"batting": batting, "pitching": pitching, "next_index": next_index,
+		"unknown_teams": unknown_teams, "rng": SaveUtil.rng_state(_rng), "teams": team_states,
+	}
+
+
+## to_save() から作り直す。各球団の編成は保存した選手ID（オフでも今季の顔ぶれのまま）で能力値データ
+## （GameData.player）から作り、保存した1軍・オーダー・登板間隔を当てる。能力値データにいない選手（春季キャンプでの
+## 引退選手など）は飛ばす。d は SaveUtil.ints() で整数を戻したもの
+## player_of: 選手ID → 能力値データ（GameData.player。このクラスはオートロードを直接参照しない）
+static func from_save(d: Dictionary, debut_years: Dictionary, player_of: Callable) -> Season:
+	var roster: Array = []
+	var states: Dictionary = d.get("teams", {})
+	var saved_leagues: Dictionary = d.get("leagues", {})
+	for team: String in states:
+		for id: Variant in states[team].get("players", []):
+			var src: Dictionary = player_of.call(str(id))
+			if src.is_empty():
+				continue
+			var p := src.duplicate()
+			p["team"] = team
+			p["league"] = saved_leagues.get(team, p.get("league"))
+			roster.append(p)
+	var s := Season.new(int(d["year"]), {"players": roster}, [], 1, debut_years)
+	s.games.assign(d.get("games", []))
+	for g in s.games:
+		if not s._games_by_date.has(g["date"]):
+			s._games_by_date[g["date"]] = []
+		s._games_by_date[g["date"]].append(g)
+	for team: String in d.get("leagues", {}):
+		s.leagues[team] = d["leagues"][team]
+	s.players = d.get("players", {})
+	s.records = d.get("records", {})
+	for team: String in s.teams:
+		if not s.records.has(team):
+			s.records[team] = {"w": 0, "l": 0, "d": 0, "rs": 0, "ra": 0}
+	s.batting = d.get("batting", {})
+	s.pitching = d.get("pitching", {})
+	s.next_index = int(d.get("next_index", 0))
+	s.unknown_teams.assign(d.get("unknown_teams", []))
+	SaveUtil.set_rng_state(s._rng, d.get("rng", ""))
+	for team: String in s.teams:
+		if states.has(team):
+			s.teams[team].from_save(states[team])
+		else:
+			s.teams[team].opening_day = s.first_day()
+	return s

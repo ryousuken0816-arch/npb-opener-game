@@ -6,6 +6,9 @@ extends Control
 ## デバッグ用（下の控えめな行）：開始年（2008〜2025。LB/RB＝Q/E でも変えられる）と
 ## 「すぐドラフトへ」（シーズンを自動で消化して、その年のオフのドラフトの段階から始める。
 ## GameState.skip_to_phase）。十字キーで球団の一覧の下へ移ると選べる
+##
+## 続きから（セーブが1つでもあるときだけ、球団の一覧の上に出る。最初はここにフォーカス）：押すとセーブの枠の一覧
+## （SaveView のロードだけ）→ 枠を選ぶとロードしてハブへ。Ⓑ（Esc）／「戻る」で球団選択に戻る
 
 const HUB_SCENE := "res://scenes/hub/hub.tscn"
 ## 「すぐドラフトへ」で飛ぶ段階
@@ -14,6 +17,10 @@ const SKIP_TARGET := GameState.Phase.DRAFT
 var start_year := GameState.START_YEAR
 var _year_option: OptionButton
 var _skip_check: CheckButton
+var _debug_row: Control
+var _continue_button: Button
+var _continue_panel: PanelContainer
+var _save_view: SaveView
 
 @onready var _title_label: Label = %TitleLabel
 @onready var _sub_label: Label = %SubLabel
@@ -33,13 +40,24 @@ func _ready() -> void:
 	guide.position = Vector2(size.x - guide.size.x - 24, 5)
 	resized.connect(func() -> void: guide.position = Vector2(size.x - guide.size.x - 24, 5))
 	UiFx.install(self)
-	$Center/VBox.add_child(_make_debug_row())
+	_debug_row = _make_debug_row()
+	$Center/VBox.add_child(_debug_row)
+	_make_continue(palette)
 	_build_teams()
-	UiInput.focus_first(_leagues)
+	if _continue_button.visible:
+		_continue_button.grab_focus()
+	else:
+		UiInput.focus_first(_leagues)
 	UiFx.fade_in($Center/VBox)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _continue_panel.visible:
+		if event.is_action_pressed("ui_cancel"):
+			if not _save_view.back():
+				show_continue(false)
+			get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed(UiInput.TAB_PREV) or event.is_action_pressed(UiInput.TAB_NEXT):
 		set_start_year(start_year + (-1 if event.is_action_pressed(UiInput.TAB_PREV) else 1))
 		get_viewport().set_input_as_handled()
@@ -69,6 +87,63 @@ func _build_teams() -> void:
 	_sub_label.text = "%d年開幕：担当する球団を選んでください" % start_year
 	for league: String in GameData.LEAGUE_NAMES:
 		_leagues.add_child(_make_league_column(league))
+
+
+## 「続きから」のボタンと、セーブの枠の一覧（最初は隠しておく）
+func _make_continue(palette: UiTheme.Palette) -> void:
+	var vbox: VBoxContainer = $Center/VBox
+	_continue_button = Button.new()
+	_continue_button.text = "続きから"
+	_continue_button.custom_minimum_size = Vector2(320, 48)
+	_continue_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_continue_button.add_theme_font_size_override("font_size", 22)
+	_continue_button.add_theme_font_override("font", UiTheme.font(800))
+	_continue_button.tooltip_text = "セーブした続きから遊びます（スロット1〜3・オートセーブ）"
+	UiTheme.style_button(_continue_button, Color("7e57c2"))
+	_continue_button.pressed.connect(show_continue.bind(true))
+	_continue_button.visible = SaveGame.has_any()
+	vbox.add_child(_continue_button)
+	vbox.move_child(_continue_button, _leagues.get_index())
+	_continue_panel = PanelContainer.new()
+	var style := UiTheme.card(palette.main, 12, 3, 0.97)
+	style.set_content_margin_all(14)
+	_continue_panel.add_theme_stylebox_override("panel", style)
+	_continue_panel.custom_minimum_size = Vector2(720, 0)
+	_continue_panel.visible = false
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 10)
+	_continue_panel.add_child(box)
+	_save_view = SaveView.new()
+	_save_view.setup(palette, true)
+	_save_view.loaded.connect(func() -> void: get_tree().change_scene_to_file(HUB_SCENE))
+	box.add_child(_save_view)
+	var back := Button.new()
+	back.text = "戻る"
+	back.custom_minimum_size = Vector2(160, 44)
+	back.size_flags_horizontal = Control.SIZE_SHRINK_END
+	back.add_theme_font_size_override("font_size", 20)
+	UiTheme.style_button(back, Color("8a9199"), Color.WHITE)
+	back.pressed.connect(show_continue.bind(false))
+	box.add_child(back)
+	vbox.add_child(_continue_panel)
+	vbox.move_child(_continue_panel, _leagues.get_index())
+
+
+## セーブの枠の一覧を出す／隠す（隠すと球団選択に戻る）
+func show_continue(on: bool) -> void:
+	_continue_panel.visible = on
+	_leagues.visible = not on
+	_debug_row.visible = not on
+	_continue_button.visible = not on and SaveGame.has_any()
+	if on:
+		_sub_label.text = "続きから：ロードする枠を選んでください"
+		_save_view.open()
+	else:
+		_sub_label.text = "%d年開幕：担当する球団を選んでください" % start_year
+		if _continue_button.visible:
+			_continue_button.grab_focus()
+		else:
+			UiInput.focus_first(_leagues)
 
 
 ## デバッグ用の行（小さめの文字・半透明の地）：開始年のプルダウンと「すぐドラフトへ」

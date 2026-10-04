@@ -353,3 +353,27 @@ static func age_of(p: Dictionary, at_year: int) -> int:
 	if birth is String and birth.length() >= 4 and birth.substr(0, 4).is_valid_int():
 		return at_year - int(birth.substr(0, 4))
 	return 0
+
+
+# --- セーブ／ロード ----------------------------------------------------------------------
+
+func to_save() -> Dictionary:
+	return {"year": year, "declared": declared, "info": info, "cpu_bids": cpu_bids, "user_bids": user_bids,
+		"mlb": mlb, "mlb_info": mlb_info, "results": results, "resolved": resolved,
+		"rng": SaveUtil.rng_state(_rng)}
+
+
+static func from_save(d: Dictionary, league: LeagueRoster) -> FreeAgency:
+	var f := FreeAgency.new()
+	f.year = int(d["year"])
+	f._league_ref = weakref(league)
+	f.declared.assign(d.get("declared", []))
+	f.info = d.get("info", {})
+	f.cpu_bids = d.get("cpu_bids", {})
+	f.user_bids = d.get("user_bids", {})
+	f.mlb.assign(d.get("mlb", []))
+	f.mlb_info = d.get("mlb_info", {})
+	f.results.assign(d.get("results", []))
+	f.resolved = bool(d.get("resolved", false))
+	SaveUtil.set_rng_state(f._rng, d.get("rng", ""))
+	return f

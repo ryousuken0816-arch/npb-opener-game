@@ -88,10 +88,15 @@ var roster_version := 0
 var _fast_forward_time := 0.0
 ## オフの編成（所属が変わるたびに作り直す。球団名 → SimTeam）
 var _offseason_teams := {}
+## オートセーブを次のフレームで書く（月替わり・段階の切り替わりで立てる。同じフレームで何度立っても1回）
+var _autosave_pending := false
+## skip_to_phase などの自動処理の途中（セーブしない）
+var _busy := false
 
 
 func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	stop_fast_forward()
+	_autosave_pending = false
 	team = team_name
 	year = start_year
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
@@ -105,6 +110,9 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 
 
 func _process(delta: float) -> void:
+	if _autosave_pending and not _busy:
+		_autosave_pending = false
+		SaveGame.autosave()
 	if fast_forward_target < 0:
 		return
 	_fast_forward_time += delta
@@ -144,12 +152,14 @@ func skip_to_phase(target: Phase) -> bool:
 	stop_fast_forward()
 	if target == Phase.SEASON:
 		return false
+	_busy = true
 	if phase == Phase.SEASON:
 		advance_through(season_last_day())
 	while phase != target and phase != Phase.SEASON:
 		if phase == Phase.CAMP or (next_phase() == Phase.CAMP and target != Phase.CAMP):
 			break
 		advance()
+	_busy = false
 	changed.emit()
 	return phase == target
 
@@ -469,6 +479,7 @@ func _advance_one_day() -> void:
 	if month != old_month:
 		# 月替わりのイベント（故障・トレード、育成コマンド）はここに挟む（未実装）
 		month_started.emit(month)
+		_autosave_pending = true
 
 
 ## シーズンの初日（開幕日）・最終日の通し日数。日程データが無い年は既定の期間
@@ -678,6 +689,7 @@ func _enter(new_phase: Phase) -> void:
 		Phase.SEASON:
 			_start_season()
 	_sync_roster()
+	_autosave_pending = true
 	changed.emit()
 
 
@@ -742,3 +754,79 @@ func _sync_record() -> void:
 	wins = rec.get("w", 0)
 	losses = rec.get("l", 0)
 	draws = rec.get("d", 0)
+
+
+# --- セーブ／ロード（SaveGame） -----------------------------------------------------------
+
+## いまセーブできるか（早送り中・自動処理の途中はできない）
+func can_save() -> bool:
+	return save_block_reason().is_empty()
+
+
+## セーブできない理由（できるなら空）
+func save_block_reason() -> String:
+	if team.is_empty() or league == null:
+		return "ゲームを始めていません"
+	if is_fast_forwarding():
+		return "早送り中はセーブできません（早送りを止めてから）"
+	if _busy:
+		return "自動で進めている途中はセーブできません"
+	return ""
+
+
+## セーブの一覧に出す概要
+func save_summary() -> Dictionary:
+	var text := "%s　%s　%s" % [date_text(), GameData.short_name(team), record_text()]
+	if phase == Phase.SEASON:
+		var lg := GameData.league_of(team)
+		for row: Dictionary in standings(lg):
+			if row["team"] == team:
+				text += "（%s %d位）" % [GameData.LEAGUE_NAMES.get(lg, ""), int(row["rank"])]
+	else:
+		text = "%s（%s）　%s　%s" % [date_text(), phase_name(), GameData.short_name(team), record_text()]
+	return {"year": year, "date": date_text(), "phase": phase, "phase_name": phase_name(), "team": team,
+		"wins": wins, "losses": losses, "draws": draws, "text": text}
+
+
+## ゲームの状態（年・日付・段階・自球団・成績・方針、所属（LeagueRoster）、ペナント（Season））
+func to_save() -> Dictionary:
+	return {
+		"year": year, "day": day, "phase": phase, "team": team, "tactics": tactics,
+		"wins": wins, "losses": losses, "draws": draws,
+		"league": league.to_save() if league != null else null,
+		"season": season.to_save() if season != null else null,
+	}
+
+
+## to_save() の中身で再開する（d は SaveUtil.ints() で整数を戻したもの）。能力値ファイルはその年・段階のものを
+## 読み直し（シーズン中・春季キャンプは開幕前、オフはシーズン後）、オフの途中なら来季のファイルも読んでから所属を当てる
+func load_state(d: Dictionary) -> void:
+	stop_fast_forward()
+	_autosave_pending = false
+	_busy = false
+	year = int(d["year"])
+	day = int(d.get("day", 0))
+	phase = int(d.get("phase", Phase.SEASON)) as Phase
+	team = str(d["team"])
+	tactics = {"bunt": 0, "steal": 0, "relief": 0}
+	for key: String in d.get("tactics", {}):
+		tactics[key] = int(d["tactics"][key])
+	GameData.load_ratings(year, "pre" if phase in [Phase.SEASON, Phase.CAMP] else "post")
+	GameData.set_kept_players({})
+	GameData.set_extra_players({})
+	var next := {}
+	if phase in [Phase.FA_TRADE, Phase.CONTRACT, Phase.RELEASE, Phase.DRAFT]:
+		next = GameData.peek_ratings(year + 1, "pre")
+	GameData.set_supplement(next)
+	league = LeagueRoster.new()
+	league.from_save(d["league"])
+	league.restore_plan()
+	_sync_roster()
+	season = null
+	if d.get("season") is Dictionary:
+		var sd: Dictionary = d["season"]
+		season = Season.from_save(sd, GameData.load_debut_years(int(sd["year"])), GameData.player)
+	wins = int(d.get("wins", 0))
+	losses = int(d.get("losses", 0))
+	draws = int(d.get("draws", 0))
+	changed.emit()
