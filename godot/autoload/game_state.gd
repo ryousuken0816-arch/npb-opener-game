@@ -131,6 +131,8 @@ func advance() -> void:
 		contract_resolve()
 	if phase == Phase.RELEASE:
 		release_resolve()
+	if phase == Phase.DRAFT:
+		draft_resolve()
 	_enter(next_phase())
 
 
@@ -347,6 +349,78 @@ func release_resolve() -> void:
 	changed.emit()
 
 
+## このオフのドラフト（ドラフトの段階のみ。それ以外は null）
+func draft() -> Draft:
+	if phase != Phase.DRAFT or league == null:
+		return null
+	return league.draft
+
+
+## ドラフトが残っている（ドラフトの段階で、まだ終えていない）
+func draft_open() -> bool:
+	var d := draft()
+	return d != null and not d.resolved
+
+
+## ドラフトの画面で指名を進めたあとに呼ぶ：終わっていれば入団させる（結果を反映）
+func draft_sync() -> void:
+	var d := draft()
+	if d == null:
+		return
+	if d.stage == Draft.Stage.DONE and not d.resolved:
+		league.apply_draft()
+		_sync_roster()
+	changed.emit()
+
+
+## ドラフトを終える（残りはおまかせ。可変ボタンで次へ進むときにも自動で行う）
+func draft_resolve() -> void:
+	var d := draft()
+	if d == null or d.resolved:
+		return
+	d.auto_complete()
+	league.apply_draft()
+	_sync_roster()
+	changed.emit()
+
+
+## ドラフトの2巡目の指名順（下位から）：交流戦で負け越したリーグの最下位から、セ・パ交互に
+func draft_waiver_order() -> Array[String]:
+	var first := _interleague_loser()
+	var a := standings(first)
+	var b := standings("P" if first == "C" else "C")
+	a.reverse()
+	b.reverse()
+	var result: Array[String] = []
+	for i in maxi(a.size(), b.size()):
+		if i < a.size():
+			result.append(a[i]["team"])
+		if i < b.size():
+			result.append(b[i]["team"])
+	return result
+
+
+## 交流戦で負け越したリーグ（"C"/"P"）。試合結果が無ければ年の偶奇で決める
+func _interleague_loser() -> String:
+	var wins := {"C": 0, "P": 0}
+	if season != null:
+		for g: Dictionary in season.games:
+			if g.get("kind", "") != "interleague" or not g.has("result"):
+				continue
+			var r: Dictionary = g["result"]
+			var hs := int(r.get("home_score", 0))
+			var aws := int(r.get("away_score", 0))
+			if hs == aws:
+				continue
+			var winner: String = g["home"] if hs > aws else g["away"]
+			var lg := GameData.league_of(winner)
+			if wins.has(lg):
+				wins[lg] += 1
+	if wins["C"] == wins["P"]:
+		return "C" if year % 2 == 0 else "P"
+	return "C" if wins["C"] < wins["P"] else "P"
+
+
 ## 自球団の支配下の空き（来季の新人の見込みと、戦力外に選んで締めていない選手を差し引く）
 func user_room() -> int:
 	if league == null:
@@ -463,6 +537,8 @@ func button_text() -> String:
 		return "契約更改"
 	if release_open():
 		return "戦力外・引退"
+	if draft_open():
+		return "ドラフト会議"
 	return PHASE_BUTTON[next_phase()]
 
 
@@ -557,7 +633,8 @@ func record_text() -> String:
 
 ## フェーズに入ったときの処理。年越しの史実の出来事（LeagueRoster）はここで起こす：
 ## FA・トレード・ポスティング＝メジャー移籍・年内のトレード・来季の準備（復帰・外国人市場）、契約更改＝年俸、
-## 戦力外・引退＝引退と戦力外（Releases。CPU球団はここで決め、自球団は画面で選ぶ）、ドラフト＝新人（史実の球団へ）、春季キャンプ＝新しい年。
+## 戦力外・引退＝引退と戦力外（Releases。CPU球団はここで決め、自球団は画面で選ぶ）、ドラフト＝ドラフト以外の新加入
+## （史実の球団へ）とドラフト会議（Draft。新人は指名した球団へ。画面で進めるか、次へ進むときにおまかせで終える）、春季キャンプ＝新しい年。
 ## CPU球団は外国人市場（戦力外の選手を含む）から少しずつ獲得する
 func _enter(new_phase: Phase) -> void:
 	phase = new_phase
@@ -584,6 +661,10 @@ func _enter(new_phase: Phase) -> void:
 			league.open_releases(year)
 		Phase.DRAFT:
 			league.apply_newcomers()
+			_sync_roster()
+			league.draft = null
+			if league.draft_available():
+				league.open_draft(year, draft_waiver_order(), GameData.teams())
 			league.cpu_market_round()
 			league.cpu_release_round()
 		Phase.CAMP:
@@ -604,6 +685,7 @@ func _enter(new_phase: Phase) -> void:
 func _sync_roster() -> void:
 	if league != null:
 		GameData.set_kept_players(league.kept_fallbacks())
+		GameData.set_extra_players(league.extra_players())
 		GameData.apply_roster(league.team_of)
 	_offseason_teams.clear()
 	roster_version += 1

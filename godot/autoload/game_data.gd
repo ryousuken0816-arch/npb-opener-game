@@ -97,6 +97,8 @@ var _supplement: Dictionary = {}
 var _mlb_by_id: Dictionary = {}
 ## 引き留めたメジャー移籍の選手（今のファイルの players にいない）として _players_by_id に足した選手ID
 var _kept_ids: Array[String] = []
+## 能力値ファイルにいない選手（ドラフトの仮の新人など）として _players_by_id に足した選手ID
+var _extra_ids: Array[String] = []
 var _team_league: Dictionary = {}
 var _parsed_cache: Dictionary = {}
 var _drafts_cache: Dictionary = {}
@@ -181,6 +183,19 @@ func set_kept_players(fallbacks: Dictionary) -> void:
 		_kept_ids.append(id)
 
 
+## 能力値ファイルにいない選手（選手ID → 選手データ。LeagueRoster.extra_players）を引けるようにする。
+## 今のファイルか来季のファイルにいれば（本来の選手として出てきたら）そちらを使う
+func set_extra_players(extra: Dictionary) -> void:
+	for id in _extra_ids:
+		_players_by_id.erase(id)
+	_extra_ids.clear()
+	for id: String in extra:
+		if _players_by_id.has(id) or _supplement.has(id):
+			continue
+		_players_by_id[id] = extra[id]
+		_extra_ids.append(id)
+
+
 ## ゲーム内の所属（選手ID → 球団）を能力値データに書き込み、球団別の一覧を作り直す
 func apply_roster(team_of: Dictionary) -> void:
 	_players_by_team.clear()
@@ -188,6 +203,9 @@ func apply_roster(team_of: Dictionary) -> void:
 		if not team_of.has(p["id"]):
 			p["team"] = ""
 	for id in _kept_ids:
+		if not team_of.has(id):
+			_players_by_id[id]["team"] = ""
+	for id in _extra_ids:
 		if not team_of.has(id):
 			_players_by_id[id]["team"] = ""
 	for p: Dictionary in _supplement.values():
@@ -253,6 +271,54 @@ func draft_entry(name: String, draft_year: int) -> Dictionary:
 	return _drafts_cache[draft_year].get(LeagueRoster.norm_name(name), {})
 
 
+## 選手（能力値ファイルの行）のドラフト会議の一覧の行。名前で見つからなければ（登録名「雄星」・異体字など）、選手ページの
+## 「<年>年ドラフト<n>位」と順位・育成が同じ行のうち、名前の一部が重なるか出身校が経歴にある行が1つだけならそれ
+func draft_entry_for(p: Dictionary, draft_year: int) -> Dictionary:
+	var player_name := str(p.get("name", ""))
+	var entry := draft_entry(player_name, draft_year)
+	if not entry.is_empty():
+		return entry
+	var text: String = p.get("draft") if p.get("draft") is String else ""
+	if not text.begins_with("%d年" % draft_year):
+		return {}
+	var ikusei := "育成" in text
+	var k := text.find("ドラフト")
+	var rnd := _first_digits(text.substr(k + 4) if k >= 0 else "")
+	var key := LeagueRoster.norm_name(player_name)
+	var career := str(p.get("career", ""))
+	# 名前の一部が重なる・出身校が経歴にある（末尾の「高」は省いて比べる）の合計点が最も高い行が1つだけならそれ
+	var best: Array[Dictionary] = []
+	var best_score := 0
+	for d: Dictionary in _drafts_cache.get(draft_year, {}).values():
+		if bool(d.get("ikusei", false)) != ikusei:
+			continue
+		if not rnd.is_empty() and _first_digits(str(d.get("round", ""))) != rnd:
+			continue
+		var dn := LeagueRoster.norm_name(str(d["name"]))
+		var school := str(d.get("school", "")).trim_suffix("高")
+		var score := 0
+		if key.length() >= 2 and (dn.contains(key) or key.contains(dn)):
+			score += 1
+		if not school.is_empty() and career.contains(school):
+			score += 1
+		if score > best_score:
+			best_score = score
+			best = [d]
+		elif score == best_score and score > 0:
+			best.append(d)
+	return best[0] if best.size() == 1 else {}
+
+
+static func _first_digits(text: String) -> String:
+	var digits := ""
+	for ch in text:
+		if ch.is_valid_int():
+			digits += ch
+		elif not digits.is_empty():
+			break
+	return digits
+
+
 func find_ratings_path(year: int, phase: String) -> String:
 	var file_name := "%d_%s.json" % [year, phase]
 	# res:// の外（リポジトリの generated/）はエディタ実行時のみ参照できる
@@ -265,6 +331,14 @@ func find_ratings_path(year: int, phase: String) -> String:
 		if FileAccess.file_exists(path):
 			return path
 	return ""
+
+
+## リポジトリ直下の generated/ の JSON（draft_future.json など）。無ければ null
+func read_generated(file_name: String) -> Variant:
+	var path := ProjectSettings.globalize_path("res://").path_join("../generated").path_join(file_name).simplify_path()
+	if not FileAccess.file_exists(path):
+		return null
+	return JSON.parse_string(FileAccess.get_file_as_string(path))
 
 
 ## data/<年>/schedule.json の中身（試合の配列）。無ければ空配列
@@ -381,6 +455,7 @@ func _index_players() -> void:
 	_players_by_team.clear()
 	_players_by_id.clear()
 	_kept_ids.clear()
+	_extra_ids.clear()
 	_mlb_by_id.clear()
 	_team_league.clear()
 	for p: Dictionary in ratings.get("mlb_players", []):

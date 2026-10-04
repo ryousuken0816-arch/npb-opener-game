@@ -103,10 +103,11 @@ func _run() -> void:
 		"%d/%d" % [season24.played_count(), played])
 	_check("2024年すぐドラフトへ：自球団の成績が付く", _gs.games_played() >= 140, _gs.record_text())
 	var league: RefCounted = _gs.league
-	_check("2024年すぐドラフトへ：オフの段階を通った（引退・新人の出来事）",
-		not league.call("events", 2024, "retire").is_empty() and not league.call("events", 2024, "rookie").is_empty(),
+	# 新人の入団はドラフト会議が終わってから（ドラフトの段階に入った時点では引退だけ）
+	_check("2024年すぐドラフトへ：オフの段階を通った（引退の出来事・ドラフト会議が開いている）",
+		not league.call("events", 2024, "retire").is_empty() and _gs.draft_open(),
 		"引退%d 新人%d" % [league.call("events", 2024, "retire").size(), league.call("events", 2024, "rookie").size()])
-	_check("2024年すぐドラフトへ：可変ボタンは春季キャンプへ", _gs.button_text() == "春季キャンプへ",
+	_check("2024年すぐドラフトへ：可変ボタンはドラフト会議", _gs.button_text() == "ドラフト会議",
 		_gs.button_text())
 
 	# --- 2025年開始：すぐドラフトへ → 翌年へ ---

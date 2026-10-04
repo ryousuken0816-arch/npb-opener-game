@@ -17,7 +17,9 @@ extends RefCounted
 ## - 戦力外：「戦力外・引退」（Releases）で支配下の上限 ROSTER_LIMIT に合わせて決める。来季のファイルにいる選手は
 ##   市場（market。外国人市場と同じ一覧で、market_info に released）に入り他球団が獲得できる。いなければ引退扱い。
 ##   開幕までにどこも獲らなければ引退（released に残り、以後の年に新加入として戻ってこない）
-## - 新人・その他の新加入：「ドラフト」で史実の球団に入る（ドラフト画面ができたら差し替える）
+## - 新人：「ドラフト」（Draft。その年の史実のドラフト指名選手が候補）で指名した球団に入る。指名されなかった候補は入団しない
+##   （draft_unsigned に残り、以後の年にも新加入として来ない）。能力値ファイルにいない候補は仮の選手（draft_synth）
+## - その他の新加入（ドラフト以外。来季のファイルに初めて出てくる日本人）：「ドラフト」の段階で史実の球団に入る
 ## - 新外国人：「外国人市場」の候補になる。自球団は新戦力の画面で獲得、CPU球団はオフのフェーズごとに自動で獲得
 ##   （各球団が史実で獲得した人数ぶん。能力の高い順）。開幕までに誰も獲らなかった選手は来日しない
 ## - 1軍に出ていない選手の仮ID（tmp:…）は、1軍に出た年に本来の選手IDへ付け替える（名前で突合）
@@ -41,6 +43,8 @@ const RELEASE_SIGN_PER_ROUND := 1
 const RELEASE_ASKING_RATE := 0.7
 ## 戦力外にした選手の出来事の種類（今オフに加わった選手＝戦力外にしない、の判定に使う）
 const JOINED_KINDS := ["mlb_return", "fa_move", "fa_stay", "mlb_keep", "foreign_sign", "release_sign", "trade"]
+## 能力値ファイルにいないドラフトの新人（仮の選手）を何シーズン置いておくか（その間にファイルに出てこなければ引退）
+const SYNTH_SEASONS := 3
 
 var year: int
 var user_team := ""
@@ -66,6 +70,14 @@ var contracts: ContractRenewal = null
 var releases: Releases = null
 ## 戦力外にした選手 → {year, from, market: 市場に出たか}
 var released := {}
+## このオフのドラフト（ドラフトの段階で作る。それ以外は前のオフのまま）
+var draft: Draft = null
+## ドラフトで入団した選手 → {year, team, round, ikusei, label}（育成の判定・選手詳細に使う）
+var drafted := {}
+## 能力値ファイルにいないドラフトの新人（仮の選手）→ 選手データ（GameData.set_extra_players で引けるようにする）
+var draft_synth := {}
+## ドラフトで指名されなかった候補（名前（norm_name）→ ドラフトの年）。以後の年に新加入として来ない
+var draft_unsigned := {}
 ## 支配下の上限を守る（最初の戦力外・引退の段階から。2008年の開幕時点の編成はそのまま）
 var limit_active := false
 ## 出来事の記録 {year, date, kind, id, name, from, to, text}。kind: trade / trade_skipped / mlb_leave /
@@ -321,10 +333,12 @@ func prepare_next_year(season_year: int, next: Dictionary, next_post: Dictionary
 		renamed_to[renames[old]] = old
 	var retire: Array[String] = []
 	for id: String in team_of:
-		if not entries.has(id) and not renames.has(id) and not _kept_in(id, next_year):
+		if not entries.has(id) and not renames.has(id) and not _kept_in(id, next_year) \
+				and not _synth_alive(id, next_year):
 			retire.append(id)
 	var returns: Array[String] = []
 	var newcomers: Array[String] = []
+	var draftees: Array[String] = []
 	market.clear()
 	market_info.clear()
 	cpu_demand.clear()
@@ -332,15 +346,55 @@ func prepare_next_year(season_year: int, next: Dictionary, next_post: Dictionary
 		if team_of.has(id) or renamed_to.has(id) or released.has(id):
 			continue
 		var p: Dictionary = entries[id]
+		if _was_unsigned(p):
+			continue
 		var m: Dictionary = _moves_by_id.get(id, {})
 		if not m.is_empty() and m.get("returned") != null and int(m["returned"]) == next_year:
 			returns.append(id)
 		elif RosterRules.is_foreign(p, next_year, debut.get(id)):
 			_add_candidate(p, next_year, post.get(id, {}))
+		elif _is_draftee(p, season_year):
+			draftees.append(id)
 		else:
 			newcomers.append(id)
 	_plan = {"year": next_year, "entries": entries, "renames": renames, "retire": retire,
-		"returns": returns, "newcomers": newcomers, "debut": debut, "post": post}
+		"returns": returns, "newcomers": newcomers, "draftees": draftees, "debut": debut, "post": post,
+		"draft_quota": _draft_quota(season_year)}
+
+
+## その年のドラフト会議の指名選手か（ドラフト会議の一覧に名前があり、選手ページのドラフトの年が違わない）
+static func _is_draftee(p: Dictionary, draft_year: int) -> bool:
+	var text: String = p.get("draft") if p.get("draft") is String else ""
+	if not text.is_empty() and not text.begins_with("%d年" % draft_year):
+		return false
+	return not GameData.draft_entry_for(p, draft_year).is_empty()
+
+
+## ドラフトで指名されなかった候補（同じ年のドラフトの選手）か
+func _was_unsigned(p: Dictionary) -> bool:
+	var key := norm_name(str(p.get("name", "")))
+	if not draft_unsigned.has(key):
+		return false
+	var text: String = p.get("draft") if p.get("draft") is String else ""
+	return text.is_empty() or text.begins_with("%d年" % int(draft_unsigned[key]))
+
+
+## 史実のドラフトで各球団が指名した人数（今の所属の球団名 → {reg, ikusei}）。来季の新人の見込みに使う
+func _draft_quota(draft_year: int) -> Dictionary:
+	var result := {}
+	for d in Draft.draft_rows(draft_year):
+		var team := _current_name(Draft.hist_team_of(d, draft_year))
+		if team.is_empty():
+			continue
+		if not result.has(team):
+			result[team] = {"reg": 0, "ikusei": 0}
+		result[team]["ikusei" if d.get("ikusei", false) else "reg"] += 1
+	return result
+
+
+## 仮の選手（ドラフトの新人で能力値ファイルにいない）を at_year にも置いておくか
+func _synth_alive(id: String, at_year: int) -> bool:
+	return draft_synth.has(id) and at_year <= int(drafted.get(id, {}).get("year", 0)) + SYNTH_SEASONS
 
 
 func _add_candidate(p: Dictionary, next_year: int, post: Dictionary) -> void:
@@ -467,7 +521,7 @@ func apply_retirements() -> void:
 			names.get(id, id), GameData.short_name(team), "退団" if foreign else "引退"])
 
 
-## ドラフト：新人とその他の新加入（史実の球団へ）
+## ドラフトの段階：ドラフト以外の新加入（史実の球団へ）。ドラフトの新人は apply_draft で入る
 func apply_newcomers() -> void:
 	var next_year: int = _plan.get("year", year + 1)
 	_plan["newcomers_done"] = true
@@ -488,6 +542,93 @@ func apply_newcomers() -> void:
 		var what := "新人" if kind == "rookie" else "入団"
 		var text := "%s：%s（%s）" % [p["name"], GameData.short_name(team), what]
 		_log("", kind, id, p["name"], "", team, text)
+
+
+## このオフにドラフトができるか（来季の能力値ファイルとドラフト会議の一覧がある）
+func draft_available() -> bool:
+	return not _plan.get("draft_quota", {}).is_empty()
+
+
+## ドラフトの段階を始める（apply_newcomers のあと）。waiver_order：2巡目の指名順（下位から）
+func open_draft(season_year: int, waiver_order: Array[String], teams: Array[String]) -> Draft:
+	draft = Draft.new()
+	var pool := {}
+	var entries: Dictionary = _plan.get("entries", {})
+	for id: String in _plan.get("draftees", []):
+		pool[id] = entries[id]
+	draft.setup(season_year, user_team, teams, pool, team_of, waiver_order, _rng.randi())
+	var counts := {}
+	for id: String in team_of:
+		var team: String = team_of[id]
+		if not counts.has(team):
+			counts[team] = {}
+		var group := pos_group(GameData.player(id))
+		counts[team][group] = int(counts[team].get(group, 0)) + 1
+	draft.set_team_counts(counts)
+	draft.user_room = draft_room(user_team)
+	return draft
+
+
+## 守備位置の4区分（投手・捕手・内野手・外野手）
+static func pos_group(p: Dictionary) -> String:
+	if p.get("is_pitcher", false):
+		return "投手"
+	var pos: Variant = p.get("primary_pos")
+	if pos == "捕手":
+		return "捕手"
+	if pos in ["外野手", "左翼手", "中堅手", "右翼手"]:
+		return "外野手"
+	return "内野手"
+
+
+## ドラフトで本指名できる人数（支配下の上限 − 今の支配下 − ドラフト以外の入る見込み）
+func draft_room(team: String) -> int:
+	return ROSTER_LIMIT - registered_count(team) - _incoming_other(team)
+
+
+## ドラフトの結果で入団させる（指名されなかった候補は入団しない）
+func apply_draft() -> void:
+	if draft == null or draft.resolved:
+		return
+	draft.resolved = true
+	_plan["draft_done"] = true
+	var next_year: int = _plan.get("year", year + 1)
+	var synth := draft.synthetic_players()
+	for rec in draft.picks:
+		var id: String = rec["id"]
+		var c: Dictionary = draft.by_id[id]
+		var team: String = rec["team"]
+		team_of[id] = team
+		names[id] = c["name"]
+		retired.erase(id)
+		joined[id] = next_year
+		drafted[id] = {"year": draft.year, "team": team, "round": rec["round"], "ikusei": rec["ikusei"],
+			"label": rec["label"]}
+		if synth.has(id):
+			draft_synth[id] = synth[id]
+		var amount := Salary.rookie({"round": rec["round"], "high_school": c["career"] == "高校生",
+			"ikusei": rec["ikusei"]}, next_year)
+		_set_salary(id, amount, next_year)
+		var hist := "" if c["hist_team"] == team and c["hist_label"] == rec["label"] else "、史実は%s%s" % [
+			GameData.short_name(c["hist_team"]), c["hist_label"]]
+		_log("", "rookie", id, c["name"], "", team, "%s：%s（ドラフト%s%s）" % [c["name"],
+			GameData.short_name(team), rec["label"], hist])
+	for c in draft.remaining():
+		draft_unsigned[norm_name(c["name"])] = draft.year
+		_log("", "draft_unsigned", c["id"], c["name"], "", "", "%s：ドラフトで指名されず（史実は%s%s）" % [
+			c["name"], GameData.short_name(c["hist_team"]), c["hist_label"]])
+
+
+## GameData に足す選手（能力値ファイルにいない選手）：所属している・引退した仮の新人と、ドラフト中の仮の候補
+## （引退した仮の新人も戦力外・引退の一覧や出来事で名前を引くので残す）
+func extra_players() -> Dictionary:
+	var result := {}
+	for id: String in draft_synth:
+		if team_of.has(id) or retired.has(id):
+			result[id] = draft_synth[id]
+	if draft != null and not draft.resolved:
+		result.merge(draft.synthetic_players())
+	return result
 
 
 ## 外国人市場の選手を獲得する（自球団・CPU球団とも）。獲得できなければ空でないエラー文
@@ -587,7 +728,7 @@ func begin_year(new_year: int, ratings: Dictionary) -> void:
 		if ids.has(id):
 			kept_mlb.erase(id)
 	for id: String in team_of.keys():
-		if not ids.has(id) and not kept_mlb.has(id):
+		if not ids.has(id) and not kept_mlb.has(id) and not _synth_alive(id, new_year):
 			push_warning("能力値の無い選手を所属から外します: %s %s" % [id, names.get(id, "")])
 			retired[id] = new_year - 1
 			team_of.erase(id)
@@ -600,14 +741,19 @@ func begin_year(new_year: int, ratings: Dictionary) -> void:
 func is_ikusei(id: String, p: Dictionary, at_year: int, debut: Dictionary) -> bool:
 	if p.is_empty():
 		return false
+	# ゲームのドラフトで育成指名した選手は、入団1年目は史実で1軍に出ていても育成（支配下の枠を指名時の見込みどおりにする）
+	if drafted.has(id) and bool(drafted[id]["ikusei"]) and at_year <= int(drafted[id]["year"]) + 1:
+		return true
 	var d: Variant = debut.get(id)
 	if d != null and int(d) <= at_year:
 		return false
+	if drafted.has(id):
+		return bool(drafted[id]["ikusei"])
 	var text: String = p.get("draft") if p.get("draft") is String else ""
 	if not text.is_empty():
 		return "育成" in text
 	if id.begins_with("tmp:"):
-		var entry := GameData.draft_entry(str(p.get("name", "")), int(joined.get(id, at_year)) - 1)
+		var entry := GameData.draft_entry_for(p, int(joined.get(id, at_year)) - 1)
 		return bool(entry.get("ikusei", false))
 	return false
 
@@ -632,9 +778,17 @@ func registered_count(team: String) -> int:
 	return n
 
 
-## 来季に入る見込みの支配下の人数：ドラフト（史実の新人・新加入のうち支配下。ドラフトの段階で入る）と、
-## CPU球団は外国人市場で獲る予定の残り（cpu_demand）
+## 来季に入る見込みの支配下の人数：ドラフト（ドラフトが終わるまでは史実でその球団が本指名した人数）、
+## ドラフト以外の新加入（支配下）と、CPU球団は外国人市場で獲る予定の残り（cpu_demand）
 func incoming(team: String) -> int:
+	var n := _incoming_other(team)
+	if _plan.has("draft_quota") and not _plan.get("draft_done", false):
+		n += int(_plan["draft_quota"].get(team, {}).get("reg", 0))
+	return n
+
+
+## ドラフト以外で来季に入る見込みの支配下の人数（ドラフト以外の新加入と、CPU球団の外国人市場の残り）
+func _incoming_other(team: String) -> int:
 	var n := 0
 	if _plan.has("newcomers") and not _plan.get("newcomers_done", false):
 		var at := _count_year()
@@ -862,10 +1016,11 @@ func trim_to_limit() -> void:
 
 
 func _rename(old: String, new_id: String) -> void:
-	for dict: Dictionary in [team_of, salary, salary_history, joined, names]:
+	for dict: Dictionary in [team_of, salary, salary_history, joined, names, drafted]:
 		if dict.has(old):
 			dict[new_id] = dict[old]
 			dict.erase(old)
+	draft_synth.erase(old)
 	_log("", "rename", new_id, names.get(new_id, ""), old, new_id, "%s：仮ID %s → %s" % [
 		names.get(new_id, ""), old, new_id])
 
@@ -974,7 +1129,7 @@ static func _rookie_draft(p: Dictionary, draft_year: int) -> Dictionary:
 	if not text.is_empty() and not text.begins_with("%d年" % draft_year):
 		return {}
 	# 選手ページのない選手（1軍出場なし）はドラフト会議の指名一覧から名前で探す
-	var entry: Dictionary = GameData.draft_entry(p["name"], draft_year)
+	var entry: Dictionary = GameData.draft_entry_for(p, draft_year)
 	if entry.is_empty() and text.is_empty():
 		return {}
 	var result := {"round": 6, "high_school": false, "ikusei": false}
@@ -1003,8 +1158,8 @@ static func _rookie_draft(p: Dictionary, draft_year: int) -> Dictionary:
 
 ## 名前の突合用（空白を除き、異体字をそろえる）
 static func norm_name(s: String) -> String:
-	var result := s.replace(" ", "").replace("　", "").replace("・", "")
-	for pair: Array in [["﨑", "崎"], ["髙", "高"], ["濵", "浜"], ["邊", "辺"], ["邉", "辺"], ["德", "徳"],
+	var result := s.replace(" ", "").replace("　", "").replace("・", "").replace("※", "")
+	for pair: Array in [["攝", "摂"], ["靍", "鶴"], ["﨑", "崎"], ["髙", "高"], ["濵", "浜"], ["邊", "辺"], ["邉", "辺"], ["德", "徳"],
 			["瀨", "瀬"], ["齋", "斎"], ["齊", "斉"], ["櫻", "桜"], ["澤", "沢"], ["眞", "真"]]:
 		result = result.replace(pair[0], pair[1])
 	return result
