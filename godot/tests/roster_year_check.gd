@@ -154,9 +154,10 @@ func _report_offseason(y: int) -> void:
 	_check(rookies.size() > 50, "%d年ドラフトの新人が入団（%d人、自球団%d人）" % [y, rookies.size(), mine])
 	for e in rookies:
 		var p: Dictionary = _gd.player(e["id"])
-		_check(p.get("hist_team", "") == e["to"] or (e["to"] == "横浜ベイスターズ" and p.get("hist_team") ==
-				"横浜DeNAベイスターズ") or p.get("hist_team", "") == league.team_of.get(e["id"], "?"),
-				"新人は史実の球団へ: %s" % e["name"])
+		# 新人の入団先はドラフト会議（Draft）の指名結果で決まる（史実の球団とは限らない）
+		_check(p.is_empty() or (league.drafted.has(e["id"]) and league.drafted[e["id"]]["team"] == e["to"]),
+				"新人はドラフトで指名した球団へ: %s（%s → %s）" % [e["name"], str(league.drafted.get(e["id"], "指名なし")),
+					e["to"]])
 	var candidates: Array[Dictionary] = league.events(y, "foreign_candidate")
 	var signed := 0
 	var same := 0

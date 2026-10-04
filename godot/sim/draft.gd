@@ -132,7 +132,9 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 	var by_name := {}
 	for id: String in entries:
 		if not taken.has(id):
-			by_name[LeagueRoster.norm_name(entries[id]["name"])] = id
+			# 登録名（雄星など）の選手はドラフト会議の一覧の名前（菊池 雄星）で引けるようにする
+			var row := GameData.draft_entry_for(entries[id], year)
+			by_name[LeagueRoster.norm_name(str(row.get("name", entries[id]["name"])))] = id
 	for t in teams:
 		quota[t] = {"reg": 0, "ikusei": 0}
 	var missing: Array[Dictionary] = []

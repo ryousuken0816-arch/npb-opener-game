@@ -275,6 +275,9 @@ func _build_top() -> Control:
 	_turn_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_turn_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	UiTheme.heading(_turn_label, 20, UiTheme.TEXT, Color.WHITE, 5, false)
+	# 長い説明で画面の右がはみ出さないよう折り返す
+	_turn_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_turn_label.custom_minimum_size = Vector2(200, 0)
 	row.add_child(_turn_label)
 	var count_panel := PanelContainer.new()
 	count_panel.add_theme_stylebox_override("panel", UiTheme.card(Color("2f7fd8"), 8, 3, 1.0))

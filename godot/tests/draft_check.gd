@@ -130,11 +130,12 @@ func _check_2008() -> void:
 	var present := 0
 	var ik_ok := true
 	var salary_ok := true
+	var debut09: Dictionary = _gd.load_debut_years(2009)
 	for rec: Dictionary in mine:
 		if league.team_of.get(rec["id"], "") == USER:
 			present += 1
 		var p: Dictionary = _gd.player(rec["id"])
-		if rec["ikusei"] != league.is_ikusei(rec["id"], p, 2009, _gd.load_debut_years(2009)):
+		if rec["ikusei"] != league.is_ikusei(rec["id"], p, 2009, debut09):
 			ik_ok = false
 		var c: Dictionary = d.by_id[rec["id"]]
 		var expected: int = _salary.rookie({"round": rec["round"], "high_school": c["career"] == "高校生",
@@ -325,6 +326,31 @@ func _check_2024_ui() -> void:
 			in_sim += 1
 	_check(in_sim == mine.size() and mine.size() > 0, "2025年の開幕：指名選手 %d/%d人が自球団の編成にいる" % [
 		in_sim, mine.size()])
+	# 新人は能力が低く自動編成では1軍に入らないことが多いので、1人を1軍に上げてスタメン（投手なら先発）に入れる
+	var rookie: Variant = null
+	for rec: Dictionary in mine:
+		var sp: Variant = roster.by_id.get(rec["id"]) if roster != null else null
+		if sp != null and (rookie == null or (rookie.is_pitcher and not sp.is_pitcher)):
+			rookie = sp
+	var reg_err := "指名選手なし"
+	if rookie != null and roster.is_active(rookie):
+		reg_err = ""
+	elif rookie != null:
+		var out_p: Variant = null
+		if rookie.is_pitcher:
+			for sp: Variant in roster.active_players(true):
+				if roster.pitcher_role(sp)[0] == "rotation":
+					out_p = sp
+					break
+		else:
+			var order: Array = roster.lineup(true)
+			for i in range(order.size() - 1, -1, -1):
+				if order[i][0] != null and order[i][1] != "投手":
+					out_p = order[i][0]
+					break
+		reg_err = "入れ替える選手なし" if out_p == null else str(roster.swap_registration(out_p, rookie, _gs.day))
+	_check(reg_err.is_empty(), "指名選手を1軍に登録できる（%s%s）" % [
+		rookie.name if rookie != null else "", reg_err])
 	_gs.advance_through(_gs.season_last_day())
 	var played: Array[String] = []
 	for rec: Dictionary in mine:

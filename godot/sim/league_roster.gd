@@ -367,7 +367,7 @@ static func _is_draftee(p: Dictionary, draft_year: int) -> bool:
 	var text: String = p.get("draft") if p.get("draft") is String else ""
 	if not text.is_empty() and not text.begins_with("%d年" % draft_year):
 		return false
-	return not GameData.draft_entry(str(p.get("name", "")), draft_year).is_empty()
+	return not GameData.draft_entry_for(p, draft_year).is_empty()
 
 
 ## ドラフトで指名されなかった候補（同じ年のドラフトの選手）か
@@ -619,11 +619,12 @@ func apply_draft() -> void:
 			c["name"], GameData.short_name(c["hist_team"]), c["hist_label"]])
 
 
-## GameData に足す選手（能力値ファイルにいない選手）：所属している仮の新人と、ドラフト中の仮の候補
+## GameData に足す選手（能力値ファイルにいない選手）：所属している・引退した仮の新人と、ドラフト中の仮の候補
+## （引退した仮の新人も戦力外・引退の一覧や出来事で名前を引くので残す）
 func extra_players() -> Dictionary:
 	var result := {}
 	for id: String in draft_synth:
-		if team_of.has(id):
+		if team_of.has(id) or retired.has(id):
 			result[id] = draft_synth[id]
 	if draft != null and not draft.resolved:
 		result.merge(draft.synthetic_players())
@@ -740,6 +741,9 @@ func begin_year(new_year: int, ratings: Dictionary) -> void:
 func is_ikusei(id: String, p: Dictionary, at_year: int, debut: Dictionary) -> bool:
 	if p.is_empty():
 		return false
+	# ゲームのドラフトで育成指名した選手は、入団1年目は史実で1軍に出ていても育成（支配下の枠を指名時の見込みどおりにする）
+	if drafted.has(id) and bool(drafted[id]["ikusei"]) and at_year <= int(drafted[id]["year"]) + 1:
+		return true
 	var d: Variant = debut.get(id)
 	if d != null and int(d) <= at_year:
 		return false
@@ -749,7 +753,7 @@ func is_ikusei(id: String, p: Dictionary, at_year: int, debut: Dictionary) -> bo
 	if not text.is_empty():
 		return "育成" in text
 	if id.begins_with("tmp:"):
-		var entry := GameData.draft_entry(str(p.get("name", "")), int(joined.get(id, at_year)) - 1)
+		var entry := GameData.draft_entry_for(p, int(joined.get(id, at_year)) - 1)
 		return bool(entry.get("ikusei", false))
 	return false
 
@@ -1125,7 +1129,7 @@ static func _rookie_draft(p: Dictionary, draft_year: int) -> Dictionary:
 	if not text.is_empty() and not text.begins_with("%d年" % draft_year):
 		return {}
 	# 選手ページのない選手（1軍出場なし）はドラフト会議の指名一覧から名前で探す
-	var entry: Dictionary = GameData.draft_entry(p["name"], draft_year)
+	var entry: Dictionary = GameData.draft_entry_for(p, draft_year)
 	if entry.is_empty() and text.is_empty():
 		return {}
 	var result := {"round": 6, "high_school": false, "ikusei": false}
@@ -1154,8 +1158,8 @@ static func _rookie_draft(p: Dictionary, draft_year: int) -> Dictionary:
 
 ## 名前の突合用（空白を除き、異体字をそろえる）
 static func norm_name(s: String) -> String:
-	var result := s.replace(" ", "").replace("　", "").replace("・", "")
-	for pair: Array in [["﨑", "崎"], ["髙", "高"], ["濵", "浜"], ["邊", "辺"], ["邉", "辺"], ["德", "徳"],
+	var result := s.replace(" ", "").replace("　", "").replace("・", "").replace("※", "")
+	for pair: Array in [["攝", "摂"], ["靍", "鶴"], ["﨑", "崎"], ["髙", "高"], ["濵", "浜"], ["邊", "辺"], ["邉", "辺"], ["德", "徳"],
 			["瀨", "瀬"], ["齋", "斎"], ["齊", "斉"], ["櫻", "桜"], ["澤", "沢"], ["眞", "真"]]:
 		result = result.replace(pair[0], pair[1])
 	return result

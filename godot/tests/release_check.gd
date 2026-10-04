@@ -321,7 +321,7 @@ func _check_ui(y: int) -> void:
 	_check(not r.marked.has(fielder), "もう一度クリックで取り消し")
 	await _key(KEY_E)
 	_check(view.get("_tab") == "retire" and view.list_ids().size() == r.retired_rows.size(),
-			"E で引退（史実）タブ（%d人）" % view.list_ids().size())
+			"E で引退（史実）タブ（%s：%d人／引退%d人）" % [view.get("_tab"), view.list_ids().size(), r.retired_rows.size()])
 	await _shot("r3_retire")
 	await _key(KEY_E)
 	_check(view.get("_tab") == "cpu" and view.list_ids().size() == r.cpu_rows.size(),
