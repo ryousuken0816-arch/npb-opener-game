@@ -17,13 +17,12 @@ const MENUS := [
 	["records", "記録室", "records", Color("e0a400"),
 		"個人成績・通算成績、タイトル・表彰歴、チーム成績の推移などを見ます。"],
 	["system", "システム", "system", Color("7e57c2"),
-		"セーブ／ロード、難易度、表示・サウンド、早送り速度の設定をします。"],
+		"セーブ／ロード（スロット3つ＋オートセーブ）をします。（難易度・表示・サウンド・早送り速度の設定は未実装）"],
 ]
 
 ## 未実装画面の内容（docs/SPEC.md「UI/画面構成」）
 const PLACEHOLDERS := {
 	"records": "リーグ全体の個人成績・通算成績、タイトル・表彰歴、チーム成績推移、\n達成記録（ノーヒットノーラン等）、ドラフト履歴。",
-	"system": "セーブ/ロード、難易度（CPUの未来視ノイズ）、表示/サウンド、早送り速度。",
 }
 
 const ICON_DIR := "res://assets/icons"
@@ -44,6 +43,7 @@ var _fa_view := FaView.new()
 var _contract_view := ContractView.new()
 var _release_view := ReleaseView.new()
 var _draft_view := DraftView.new()
+var _save_view := SaveView.new()
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -99,6 +99,15 @@ func _ready() -> void:
 	_draft_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_draft_view.visible = false
 	_placeholder_label.get_parent().add_child(_draft_view)
+	_save_view.setup(_palette)
+	_save_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_save_view.visible = false
+	_placeholder_label.get_parent().add_child(_save_view)
+	_save_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "system":
+			_description_label.text = text)
+	# ロードしたらハブを作り直す（球団・年・段階が変わるので）
+	_save_view.loaded.connect(func() -> void: get_tree().reload_current_scene.call_deferred())
 	_draft_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "draft":
 			_description_label.text = text)
@@ -148,6 +157,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_release_view.switch_tab(delta)
 			"draft":
 				_draft_view.switch_tab(delta)
+			"system":
+				_save_view.switch_tab(delta)
 		get_viewport().set_input_as_handled()
 
 
@@ -250,7 +261,7 @@ func _refresh() -> void:
 	_team_name_label.text = GameState.team
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
-	if _open_key not in ["tactics", "fa", "contract", "release", "draft"]:
+	if _open_key not in ["tactics", "fa", "contract", "release", "draft", "system"]:
 		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_tactics_view.refresh()
@@ -266,6 +277,8 @@ func _refresh() -> void:
 		_release_view.refresh()
 	elif _open_key == "draft":
 		_draft_view.refresh()
+	elif _open_key == "system":
+		_save_view.refresh()
 
 
 func _summary_text() -> String:
@@ -352,6 +365,8 @@ func _open_sub_screen(key: String) -> void:
 	var is_contract := key == "contract"
 	var is_release := key == "release"
 	var is_draft := key == "draft"
+	var is_system := key == "system"
+	_save_view.visible = is_system
 	_draft_view.visible = is_draft
 	_tactics_view.visible = is_tactics
 	_schedule_view.visible = is_schedule
@@ -359,7 +374,7 @@ func _open_sub_screen(key: String) -> void:
 	_fa_view.visible = is_fa
 	_contract_view.visible = is_contract
 	_release_view.visible = is_release
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_contract and not is_release and not is_draft
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_contract and not is_release and not is_draft and not is_system
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
 	_set_wide(is_tactics or is_fa or is_contract or is_release or is_draft)
 	UiFx.slide_in(_sub_screen)
@@ -384,6 +399,9 @@ func _open_sub_screen(key: String) -> void:
 	elif is_draft:
 		_sub_title_label.text = "ドラフト会議（%d年）" % GameState.year
 		_draft_view.open()
+	elif is_system:
+		_sub_title_label.text = "システム：セーブ／ロード"
+		_save_view.open()
 	else:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
 		%BackButton.grab_focus()
@@ -403,6 +421,8 @@ func _on_back() -> void:
 	if _open_key == "release" and _release_view.back():
 		return
 	if _open_key == "draft" and _draft_view.back():
+		return
+	if _open_key == "system" and _save_view.back():
 		return
 	_close_sub_screen()
 

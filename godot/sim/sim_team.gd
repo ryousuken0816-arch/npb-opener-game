@@ -736,3 +736,89 @@ func record_outing(p: SimPlayer, day: int, pitches: int, started: bool) -> void:
 	outings = outings.filter(func(o: Array) -> bool: return o[0] >= day - 3)
 	outings.append([day, pitches])
 	recent_outings[p.id] = outings
+
+
+# --- セーブ／ロード ----------------------------------------------------------------------
+
+## 編成の状態（1軍登録・オーダー・ローテ・ブルペン・抹消日・登板間隔・方針）。選手は ID で持つ
+func to_save() -> Dictionary:
+	var ids := func(list: Array) -> Array:
+		var result := []
+		for p: SimPlayer in list:
+			result.append(p.id)
+		return result
+	var lineup_ids := func(order: Array) -> Array:
+		var result := []
+		for entry: Array in order:
+			result.append([entry[0].id if entry[0] != null else null, entry[1]])
+		return result
+	return {
+		"players": ids.call(players), "active": active.keys(), "demoted_day": demoted_day,
+		"opening_day": opening_day, "lineup_dh": lineup_ids.call(lineup_dh),
+		"lineup_no_dh": lineup_ids.call(lineup_no_dh), "bench_dh": ids.call(bench_dh),
+		"bench_no_dh": ids.call(bench_no_dh), "rotation": ids.call(rotation),
+		"closer": closer.id if closer != null else null, "relievers": ids.call(relievers),
+		"tactics": tactics, "last_pitched": last_pitched, "last_started": last_started,
+		"recent_outings": recent_outings, "rotation_index": _rotation_index,
+	}
+
+
+## to_save() の中身を戻す（選手はこの編成にいる選手だけ。いない ID は飛ばす）
+func from_save(d: Dictionary) -> void:
+	var order: Array = d.get("players", [])
+	var rank := {}
+	for i in order.size():
+		rank[str(order[i])] = i
+	players.sort_custom(func(a: SimPlayer, b: SimPlayer) -> bool:
+		return int(rank.get(a.id, 1 << 30)) < int(rank.get(b.id, 1 << 30)))
+	active.clear()
+	for id: Variant in d.get("active", []):
+		if by_id.has(str(id)):
+			active[str(id)] = true
+	demoted_day = _int_values(d.get("demoted_day", {}))
+	opening_day = int(d.get("opening_day", opening_day))
+	lineup_dh = _lineup_from(d.get("lineup_dh", []))
+	lineup_no_dh = _lineup_from(d.get("lineup_no_dh", []))
+	bench_dh = _players_from(d.get("bench_dh", []))
+	bench_no_dh = _players_from(d.get("bench_no_dh", []))
+	rotation = _players_from(d.get("rotation", []))
+	closer = by_id.get(str(d["closer"])) if d.get("closer") != null else null
+	relievers = _players_from(d.get("relievers", []))
+	_rebuild_bullpen()
+	for key: String in d.get("tactics", {}):
+		tactics[key] = int(d["tactics"][key])
+	last_pitched = _int_values(d.get("last_pitched", {}))
+	last_started = _int_values(d.get("last_started", {}))
+	recent_outings.clear()
+	var outings: Dictionary = d.get("recent_outings", {})
+	for id: String in outings:
+		var list: Array = []
+		for o: Array in outings[id]:
+			list.append([int(o[0]), int(o[1])])
+		recent_outings[id] = list
+	_rotation_index = int(d.get("rotation_index", 0))
+
+
+func _players_from(ids: Array) -> Array[SimPlayer]:
+	var result: Array[SimPlayer] = []
+	for id: Variant in ids:
+		if by_id.has(str(id)):
+			result.append(by_id[str(id)])
+	return result
+
+
+func _lineup_from(entries: Array) -> Array:
+	var result: Array = []
+	for entry: Array in entries:
+		var p: SimPlayer = by_id.get(str(entry[0])) if entry[0] != null else null
+		if entry[0] != null and p == null:
+			continue
+		result.append([p, str(entry[1])])
+	return result
+
+
+static func _int_values(d: Dictionary) -> Dictionary:
+	var result := {}
+	for key: Variant in d:
+		result[str(key)] = int(d[key])
+	return result

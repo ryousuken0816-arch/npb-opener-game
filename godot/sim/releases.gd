@@ -102,3 +102,25 @@ func resolve(league: LeagueRoster) -> void:
 			continue
 		user_rows.append(league.release_player(id))
 	resolved = true
+
+
+# --- セーブ／ロード ----------------------------------------------------------------------
+
+func to_save() -> Dictionary:
+	return {"year": year, "team": team, "retired_rows": retired_rows, "cpu_rows": cpu_rows,
+		"user_rows": user_rows, "order": order, "scores": scores, "ikusei": ikusei, "protected": protected,
+		"marked": marked, "resolved": resolved}
+
+
+static func from_save(d: Dictionary) -> Releases:
+	var r := Releases.new(int(d["year"]), str(d["team"]))
+	r.retired_rows.assign(d.get("retired_rows", []))
+	r.cpu_rows.assign(d.get("cpu_rows", []))
+	r.user_rows.assign(d.get("user_rows", []))
+	r.order.assign(d.get("order", []))
+	r.scores = d.get("scores", {})
+	r.ikusei = d.get("ikusei", {})
+	r.protected = d.get("protected", {})
+	r.marked = d.get("marked", {})
+	r.resolved = bool(d.get("resolved", false))
+	return r
