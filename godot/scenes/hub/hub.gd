@@ -24,9 +24,12 @@ const MENUS := [
 const PLACEHOLDERS := {}
 
 const ICON_DIR := "res://assets/icons"
-## サブ画面の左上（hub.tscn の SubScreen と同じ値。采配は広げて表示する）
+## サブ画面の四辺の余白（hub.tscn の SubScreen と同じ値。采配などは広げて表示する）
 const SUB_SCREEN_LEFT := 420.0
 const SUB_SCREEN_TOP := 100.0
+const SUB_SCREEN_RIGHT := 24.0
+const SUB_SCREEN_BOTTOM := 104.0
+const WIDE_LEFT := 24.0
 ## 采配を広げたときの上端（操作ガイドは見出しの行の「戻る」の左へ移す）
 const WIDE_TOP := 20.0
 const TITLE_SCENE := "res://scenes/title/title.tscn"
@@ -220,6 +223,7 @@ func _style_labels() -> void:
 	_year_label.label_settings = _label_settings(32, p.ink, 8, Color.WHITE, Color.TRANSPARENT, 800)
 	_month_label.label_settings = _label_settings(44, p.ink, 10, Color.WHITE, Color(p.ink, 0.3))
 	_sub_title_label.label_settings = _label_settings(28, p.ink, 7, Color.WHITE)
+	UiTheme.fit_label(_sub_title_label)
 	_description_label.add_theme_font_size_override("font_size", 21)
 	_description_label.add_theme_font_override("font", UiTheme.font(700))
 
@@ -239,6 +243,8 @@ func _style_labels() -> void:
 	screen.content_margin_top = 12
 	screen.content_margin_bottom = 16
 	_sub_screen.add_theme_stylebox_override("panel", screen)
+	# サブ画面の中身が枠より大きくなっても、パネルを画面の外へ広げずにスクロールさせる（余白は包みの内側へ）
+	UiTheme.fit_scroll(%Fit, %VBox, screen)
 
 
 func _label_settings(font_size: int, color: Color, outline: int, outline_color: Color,
@@ -467,9 +473,14 @@ func _on_back() -> void:
 	_close_sub_screen()
 
 
+## サブ画面の配置。切り替えの演出を止めてから四辺の余白をすべて置き直す
+## （演出の途中の位置が余白に残ると、開く・閉じるのたびに右へずれて画面の外へはみ出していった。作業11）
 func _set_wide(wide: bool) -> void:
-	_sub_screen.offset_left = 24.0 if wide else SUB_SCREEN_LEFT
+	UiFx.stop_slide(_sub_screen)
+	_sub_screen.offset_left = WIDE_LEFT if wide else SUB_SCREEN_LEFT
 	_sub_screen.offset_top = WIDE_TOP if wide else SUB_SCREEN_TOP
+	_sub_screen.offset_right = -SUB_SCREEN_RIGHT
+	_sub_screen.offset_bottom = -SUB_SCREEN_BOTTOM
 	_menu_box.visible = not wide
 	_event_label.visible = not wide
 	_move_guide(wide)

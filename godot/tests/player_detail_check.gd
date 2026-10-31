@@ -6,7 +6,7 @@ extends SceneTree
 ##   選手一覧：行で Enter／クリックで開く、前後の選手は一覧の並び
 ##   日付を進めると今季成績が増える（開いたまま・開き直し）
 ##   全球団の全選手で4つのタブを表示してエラーが出ない（2008年・2026年）
-## を調べる。xvfb-run で実行するとスクリーンショットも保存する。
+## を調べる。ヘッドレス可（約6分）。xvfb-run で実行するとスクリーンショットも保存する。
 ##
 ##   xvfb-run godot --path godot --resolution 1280x720 \
 ##       --script res://tests/player_detail_check.gd -- <出力先>
@@ -395,11 +395,13 @@ func _click(c: Control, button := MOUSE_BUTTON_LEFT) -> void:
 	await _click_at(c.get_global_rect().get_center(), button)
 
 
-func _click_at(pos: Vector2, button := MOUSE_BUTTON_LEFT) -> void:
+## マウスのクリック（ヘッドレスでは Input.parse_input_event のマウスが GUI に届かないので、ビューポートへ直接送る）
+func _click_at(canvas_pos: Vector2, button := MOUSE_BUTTON_LEFT) -> void:
+	var pos := root.get_final_transform() * canvas_pos
 	var motion := InputEventMouseMotion.new()
 	motion.position = pos
 	motion.global_position = pos
-	Input.parse_input_event(motion)
+	root.push_input(motion)
 	await _frames(1)
 	for pressed in [true, false]:
 		var e := InputEventMouseButton.new()
@@ -408,7 +410,7 @@ func _click_at(pos: Vector2, button := MOUSE_BUTTON_LEFT) -> void:
 		e.position = pos
 		e.global_position = pos
 		e.pressed = pressed
-		Input.parse_input_event(e)
+		root.push_input(e)
 		await _frames(2)
 
 
