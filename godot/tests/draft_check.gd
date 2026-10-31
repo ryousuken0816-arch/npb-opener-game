@@ -49,6 +49,7 @@ func _run() -> void:
 	_check_2008()
 	await _check_2024_ui()
 	_check_2025()
+	_check_2023_first()
 	print("\n== 結果: %s ==" % ("ALL OK" if _failures == 0 else "FAILED（%d件）" % _failures))
 	quit(1 if _failures > 0 else 0)
 
@@ -383,6 +384,11 @@ func _check_2025() -> void:
 	if d == null:
 		return
 	_check(d.year >= d.data_through - 2, "2025年は将来性の元データが少ない年として扱う（data_through=%d）" % d.data_through)
+	var partial := 0
+	for c: Dictionary in d.candidates:
+		if c.get("first", {}).get("partial", false):
+			partial += 1
+	_check(partial == d.candidates.size(), "2025年秋の新人の1年目は「シーズン途中」（%d/%d人）" % [partial, d.candidates.size()])
 	_gs.advance()
 	_check(d.resolved and _gs.phase == _gs.Phase.CAMP and _gs.year == 2026, "次へ進むとおまかせで終わり2026年の春季キャンプ")
 	_check_quota(d, "2025年")
@@ -392,6 +398,39 @@ func _check_2025() -> void:
 			present += 1
 	_check(present == d.picks_of("北海道日本ハムファイターズ").size() and present > 0,
 		"2026年：日本ハムの指名選手 %d人が所属" % present)
+
+
+# --- 4) 1年目の能力（作業13） ----------------------------------------------------------------
+
+func _check_2023_first() -> void:
+	print("== 2023年のドラフト：1年目の能力 ==")
+	_gs.new_game("埼玉西武ライオンズ", 2023)
+	_gs.skip_to_phase(_gs.Phase.DRAFT)
+	var d: RefCounted = _gs.draft()
+	if d == null:
+		_check(false, "2023年オフのドラフトに飛べる")
+		return
+	var takeuchi := _find(d, "武内 夏暉")
+	var watarai := _find(d, "度会 隆輝")
+	var kusaka := _find(d, "草加 勝")
+	var tf: Dictionary = takeuchi.get("first", {})
+	_check(tf.get("status") == "1軍" and int(tf.get("overall", -1)) >= 80
+		and int(tf.get("overall", -1)) > int(takeuchi.get("ratings", {}).get("overall", 0)),
+		"武内夏暉の1年目の総合がA以上で、今の能力より高い（1年目 %d／今 %d）" % [int(tf.get("overall", -1)),
+			int(takeuchi.get("ratings", {}).get("overall", -1))])
+	var wf: Dictionary = watarai.get("first", {})
+	_check(wf.get("status") == "1軍" and int(wf.get("ratings", {}).get("meet", -1)) >= 70,
+		"度会隆輝の1年目のミートがB以上（%d、総合 %d）" % [int(wf.get("ratings", {}).get("meet", -1)),
+			int(wf.get("overall", -1))])
+	_check(kusaka.get("first", {}).get("status") == "なし" and int(kusaka.get("first", {}).get("overall", 0)) == -1,
+		"1年目に出場のない選手（草加勝）は「出場なし」（%s）" % kusaka.get("first", {}).get("status", "?"))
+	_check(not tf.get("partial", true), "2023年の新人の1年目はシーズン途中ではない")
+	# 1年目の並び替え：武内が上位
+	var ids: Array = d.candidates.map(func(c: Dictionary) -> String: return c["id"])
+	ids.sort_custom(func(a: String, b: String) -> bool:
+		return _ds.sort_value(d.by_id[a], "first") > _ds.sort_value(d.by_id[b], "first"))
+	var top: Array = ids.slice(0, 5).map(func(id: String) -> String: return d.by_id[id]["name"])
+	_check(ids.slice(0, 5).has(takeuchi.get("id", "")), "1年目の順で武内が上位5人に入る（%s）" % ", ".join(top))
 
 
 func _frames(n: int) -> void:

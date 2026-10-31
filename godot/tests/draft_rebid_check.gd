@@ -8,7 +8,7 @@ extends SceneTree
 ## 最後の通りはドラフトの終わりまで進め、可変ボタンで翌年の春季キャンプへ進んでハブの年が追従するかも調べる。
 ##
 ##   godot --headless --path godot -s res://tests/draft_rebid_check.gd -- [出力先]
-##   （出力先はウィンドウ付きのときだけ。CPU球団の外れ1位の結果の演出をスクショ）
+##   （出力先はウィンドウ付きのときだけ。CPU球団の外れ1位の結果の演出と、2019年の候補一覧（1年目の順）をスクショ）
 
 const CASES := [
 	{"year": 2012, "team": "阪神タイガース"},
@@ -178,6 +178,14 @@ func _play_first(hub: Node, kind: String) -> Dictionary:
 func _finish_draft(hub: Node, year: int, team: String) -> void:
 	var d: RefCounted = _gs.draft()
 	var view: Node = _find_draft_view(hub)
+	if year == CASES[-1]["year"]:
+		# スクショ：投手能力のタブを1年目の順に並べ、先頭の候補の要約（1年目の能力。作業13）
+		view.call("switch_tab", 1)
+		view.call("set_sort", "first", true)
+		var top: Array = view.call("list_ids")
+		if not top.is_empty():
+			view.call("select_candidate", top[0])
+		await _shot("first_year_list", true)
 	var picked := 0
 	var guard := 0
 	while d.stage != _done and guard < 200:
@@ -225,10 +233,12 @@ func _frames(n: int) -> void:
 		await process_frame
 
 
-func _shot(name: String) -> void:
+## other：外れ1位の演出以外のスクショ（_shot_taken を立てない）
+func _shot(name: String, other := false) -> void:
 	if _out.is_empty() or DisplayServer.get_name() == "headless":
 		return
-	_shot_taken = true
+	if not other:
+		_shot_taken = true
 	await create_timer(0.35).timeout
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png(_out.path_join(name + ".png"))

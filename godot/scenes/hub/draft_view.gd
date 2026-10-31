@@ -21,13 +21,14 @@ const COLUMNS := {
 	"info": [["pos", "位置", 52], ["career", "経歴", 70], ["school", "出身", 210], ["age", "年齢", 58]],
 	"pitch": [["pos", "位置", 52], ["velocity", "球速", 80], ["overall", "総合", 62], ["stamina", "スタミナ", 78],
 		["k9", "奪三振", 70], ["bb9", "制球", 62]],
-	"bat": [["pos", "位置", 52], ["meet", "ミート", 66], ["power", "パワー", 66], ["eye", "選球眼", 66],
+	"bat": [["pos", "位置", 52], ["meet", "ミート", 62], ["power", "パワー", 62], ["eye", "選球眼", 62],
 		["speed", "走力", 58], ["arm", "肩力", 58], ["defense", "守備", 58]],
 }
-const TAIL_COLUMNS := [["hyouka", "評価", 58], ["future", "将来性", 70]]
+## 1年目＝入団1年目のシーズン後の総合（作業13。Draft._fill_first_years）
+const TAIL_COLUMNS := [["first", "1年目", 60], ["hyouka", "評価", 52], ["future", "将来性", 62]]
 ## 並び替えのキー（テスト用にまとめて）。名前・出身校以外は大きい順が先
 const SORT_KEYS := ["pos", "career", "age", "school", "name", "velocity", "overall", "stamina", "k9", "bb9",
-	"meet", "power", "eye", "speed", "arm", "defense", "hyouka", "future"]
+	"meet", "power", "eye", "speed", "arm", "defense", "first", "hyouka", "future"]
 ## 小さい順が自然なキー（最初に押したとき小さい順）
 const ASCENDING_FIRST := ["pos", "career", "age", "school", "name"]
 const FILTERS := [["all", "全選手"], ["left", "未指名"], ["投手", "投手"], ["捕手", "捕手"], ["内野手", "内野手"],
@@ -458,7 +459,16 @@ func _render_header() -> void:
 		b.add_theme_font_size_override("font_size", 15)
 		var color := Color("ff8a3d") if key == _sort_key else Color("4f86d6")
 		UiTheme.style_button(b, color, Color.WHITE, 6, 4)
+		# 見出しの文字で列が広がらないように（1年目の列を足して画面からはみ出した。作業13）
+		b.clip_text = true
+		for state: String in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
+			var sb := b.get_theme_stylebox(state)
+			sb.content_margin_left = 3
+			sb.content_margin_right = 3
 		b.tooltip_text = "%sで並び替え（もう一度押すと逆順）" % col[1]
+		if col[0] == "first":
+			b.tooltip_text = "1年目＝入団1年目のシーズン後の総合（史実の成績から。ノイズなし）
+" + b.tooltip_text
 		b.pressed.connect(_on_header_pressed.bind(key))
 		_header_box.add_child(b)
 		_header_buttons[key] = b
@@ -564,6 +574,8 @@ func _mark_label(d: Draft, c: Dictionary) -> Control:
 
 
 func _cell(c: Dictionary, key: String, width: int) -> Control:
+	if key == "first":
+		return _first_cell(c, width)
 	if key in ["hyouka", "future"]:
 		var rank: String = c["hyouka_rank"] if key == "hyouka" else c["future_rank"]
 		var label := UiTheme.rank_label({"rank": rank, "value": 0}, 22)
@@ -610,6 +622,43 @@ func _cell(c: Dictionary, key: String, width: int) -> Control:
 		l.tooltip_text = "生年月日のデータが無いので経歴からの目安"
 		l.mouse_filter = Control.MOUSE_FILTER_PASS
 	return l
+
+
+## 一覧の「1年目」の列：1年目の総合のランク（2軍の成績だけで動いた値は小さく「2軍」、出場なしは「-」）
+func _first_cell(c: Dictionary, width: int) -> Control:
+	var first: Dictionary = c.get("first", {})
+	var value := int(first.get("overall", -1))
+	var box := HBoxContainer.new()
+	box.custom_minimum_size = Vector2(width, 0)
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 2)
+	box.tooltip_text = _first_text(c)
+	box.mouse_filter = Control.MOUSE_FILTER_PASS
+	if value < 0:
+		box.add_child(UiTheme.small_label("-", 16, UiTheme.TEXT_SUB, 700))
+		return box
+	box.add_child(UiTheme.rank_label({"rank": ability_rank(value), "value": value}, 19))
+	if first.get("status") == "2軍":
+		box.add_child(UiTheme.small_label("2軍", 12, UiTheme.TEXT_SUB, 700))
+	return box
+
+
+## 1年目の説明の1行（要約・一覧のヒント）
+func _first_text(c: Dictionary) -> String:
+	var first: Dictionary = c.get("first", {})
+	var d := GameState.draft()
+	var entry_year: int = (d.year + 1) if d != null else 0
+	var text := "1年目（%d年）" % entry_year
+	match first.get("status", "なし"):
+		"1軍":
+			text += "のシーズン後の能力"
+		"2軍":
+			text += "：1軍出場なし（2軍の成績での能力）"
+		_:
+			text += "：出場なし"
+	if first.get("partial", false):
+		text += "　※%d年はシーズン途中のデータ" % entry_year
+	return text
 
 
 ## 能力値のランク（tools/compute_ratings.py と同じしきい値）
@@ -714,6 +763,8 @@ func _hint_text(d: Draft) -> String:
 	if d.year >= d.data_through - 2:
 		lines.append("※%d年のドラフトは入団後の成績がまだ少ないため、将来性は当てになりません（当時の評価で補っています）。" \
 			% d.year)
+	if d.year + 1 >= Draft.IN_PROGRESS_YEAR:
+		lines.append("※%d年秋の新人の1年目（%d年）はシーズン途中のデータです。" % [d.year, d.year + 1])
 	return "\n".join(lines)
 
 
@@ -754,6 +805,7 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	ranks.add_child(UiTheme.rank_label({"rank": c["future_rank"], "value": 0}, 30))
 	_summary_box.add_child(ranks)
 	_summary_box.add_child(_ability_grid(c))
+	_summary_box.add_child(_first_grid(c))
 	var intro := UiTheme.small_label("「%s」" % c["intro"], 15, Color("1e63c8"), 700)
 	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	intro.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
@@ -792,6 +844,37 @@ func _ability_grid(c: Dictionary) -> Control:
 		else:
 			grid.add_child(UiTheme.rank_label({"rank": ability_rank(value), "value": value}, 20))
 	return grid
+
+
+## 要約の1年目の能力：見出しの1行と主要能力のランク（3組ずつ）
+func _first_grid(c: Dictionary) -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 1)
+	var first: Dictionary = c.get("first", {})
+	var title := UiTheme.small_label(_first_text(c), 14, Color("8a5cc8"), 800)
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	box.add_child(title)
+	if int(first.get("overall", -1)) < 0:
+		return box
+	var grid := GridContainer.new()
+	grid.columns = 6
+	grid.add_theme_constant_override("h_separation", 4)
+	grid.add_theme_constant_override("v_separation", 0)
+	var keys: Array = [["overall", "総合"], ["stamina", "スタミナ"], ["bb9", "制球"], ["k9", "奪三振"]] 		if c["pitcher"] else [["overall", "総合"], ["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"],
+		["speed", "走力"], ["defense", "守備"]]
+	for k: Array in keys:
+		var value := int(first["overall"]) if k[0] == "overall" and not c["pitcher"] 			else int(first.get("ratings", {}).get(k[0], -1))
+		grid.add_child(UiTheme.small_label(k[1], 14, UiTheme.TEXT, 800))
+		if value < 0:
+			grid.add_child(UiTheme.small_label("-", 15, UiTheme.TEXT_SUB, 700))
+		else:
+			grid.add_child(UiTheme.rank_label({"rank": ability_rank(value), "value": value}, 17))
+	if c["pitcher"] and int(first.get("velocity", 0)) > 0:
+		grid.add_child(UiTheme.small_label("球速", 14, UiTheme.TEXT, 800))
+		grid.add_child(UiTheme.small_label("%dkm" % int(first["velocity"]), 14, UiTheme.TEXT, 800))
+	box.add_child(grid)
+	return box
 
 
 func _render_actions(d: Draft, c: Dictionary) -> void:
