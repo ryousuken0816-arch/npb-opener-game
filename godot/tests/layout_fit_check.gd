@@ -5,6 +5,8 @@ extends SceneTree
 ## - 毎年の開幕・7月：ハブ、日程表、采配の一覧と全サブ画面（1軍登録は全選手を1人ずつ選ぶ）、新戦力、トレード交渉（両側3人＋金銭・全タブ）、システム、選手詳細の4タブ
 ## - 毎年のオフの各段階：ハブ、采配（オフは「見るだけ」の文言が出る）、FA・契約更改・戦力外の画面（全タブ・選手を選ぶ）、
 ##   ドラフト（開幕の演出・候補を選んで入札・抽選・指名一覧）、新戦力、トレード交渉
+## - 記録室の全タブ（打撃・投手は今季／通算・規定の切り替え、デプスは全球団・全並び順）：毎年の開幕・7月・オフの表彰の段階
+## - 表彰の画面の全タブ（作業9）：毎年のオフの表彰の段階
 ## - 切り替えの演出の途中で開く・閉じるをくり返したあと（作業11の不具合の原因。最初と毎年の開幕・7月）
 ## スクロールの中（clip_contents の子）は親が画面内なら見えないので調べない。画面のルートの包み
 ## （UiTheme.fit_scroll）の中は、その枠からはみ出したもの（見えずに欠ける）と、スクロールバーが出た＝中身が枠に
@@ -100,6 +102,7 @@ func _check_season(y: int, when: String) -> void:
 		_hub.call("_close_sub_screen")
 	await _check_tactics(when, TACTICS_PAGES, _gs.month >= 7)
 	await _check_trade(when)
+	await _check_records(when)
 	await _check_detail(when)
 	await _check_quick_switch(when)
 	await _settle()
@@ -209,6 +212,54 @@ func _check_detail(when: String) -> void:
 		await _frames(2)
 
 
+## 記録室（作業10）：全タブ。打撃・投手は今季／通算と規定の有無、デプスは12球団と3つの並び順
+func _check_records(when: String) -> void:
+	await _open("records")
+	var view: Node = _hub.get("_records_view")
+	for t: Array in view.TABS:
+		view.set_tab(t[0])
+		await _check_screen("%s：記録室 %s" % [when, t[1]], 0.0)
+		if t[0] in ["bat", "pit"]:
+			for mode: Array in [[false, false], [true, true], [true, false]]:
+				view.set("_career", mode[0])
+				view.set("_qualified", mode[1])
+				view.refresh()
+				await _check_screen("%s：記録室 %s（%s・%s）" % [when, t[1], "通算" if mode[0] else "今季",
+					"規定以上" if mode[1] else "全員"], 0.0)
+			view.set("_career", false)
+			view.set("_qualified", true)
+		elif t[0] == "depth":
+			for team: String in root.get_node("GameData").teams():
+				view.set_team(team)
+				for sort: String in ["now", "future", "age"]:
+					view.set("_depth_sort", sort)
+					view.refresh()
+					await _frames(2)
+					var over := _overflows()
+					_checked += 1
+					if not over.is_empty():
+						_report("%s：記録室 デプス（%s・%s）" % [when, team, sort], over)
+			view.set("_depth_sort", "now")
+			view.set_team(_gs.team)
+		elif t[0] == "awards":
+			# 表彰の画面を記録室の中に入れたもの（高さが表彰の段階より狭い）
+			var inner: Node = view.get("_awards_view")
+			for a: Array in inner.TABS:
+				inner.set_tab(a[0])
+				await _check_screen("%s：記録室 表彰の歴代 %s" % [when, a[1]], 0.0)
+	_hub.call("_close_sub_screen")
+
+
+## 表彰（作業9）：全タブ
+func _check_awards(when: String) -> void:
+	await _open("awards")
+	var view: Node = _hub.get("_awards_view")
+	for t: Array in view.TABS:
+		view.set_tab(t[0])
+		await _check_screen("%s：表彰 %s" % [when, t[1]], 0.0)
+	_hub.call("_close_sub_screen")
+
+
 # --- オフ ---------------------------------------------------------------------------------
 
 func _check_offseason(y: int) -> void:
@@ -223,6 +274,9 @@ func _check_offseason(y: int) -> void:
 	await _check_screen("%s：新戦力" % when)
 	_hub.call("_close_sub_screen")
 	await _check_trade(when)
+	if _gs.phase == _gs.Phase.AWARDS:
+		await _check_awards(when)
+		await _check_records(when)
 	if _gs.fa_open():
 		await _check_phase_view("fa", "_fa_view", when)
 	elif _gs.contract_open():

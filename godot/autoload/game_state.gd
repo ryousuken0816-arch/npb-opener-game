@@ -81,6 +81,16 @@ var league: LeagueRoster = null
 ## 自球団の采配方針（SimTeam.tactics と同じ形。年をまたいでも引き継ぐ）
 var tactics := {"bunt": 0, "steal": 0, "relief": 0}
 
+## 表彰の履歴（年の文字列 → Awards.compute() の結果）。シーズン終了・表彰の段階に入ったときに足す
+var awards_history := {}
+## ゲーム内の過去のシーズンの成績（年の文字列 → {batting, pitching, players, records, leagues}）。
+## シーズン終了時に Season から写す（新人王の資格・記録室の通算成績に使う）
+var stats_history := {}
+## このゲームを始めた年（これより前の成績は史実の1軍成績を使う）
+var first_year: int = START_YEAR
+## 表彰をまだ画面で見ていない（シーズン終了・表彰の段階で、可変ボタンがまず表彰の画面を開く）
+var awards_pending := false
+
 ## 早送りの目標日（この日の試合が終わるまで進める）。早送りしていなければ -1
 var fast_forward_target: int = -1
 ## 所属が変わるたびに増える（一覧の作り直しの判定用）
@@ -99,6 +109,11 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	_autosave_pending = false
 	team = team_name
 	year = start_year
+	first_year = start_year
+	_depth = null
+	awards_pending = false
+	awards_history = {}
+	stats_history = {}
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	phase = Phase.SEASON
 	GameData.load_ratings(year, "pre")
@@ -615,6 +630,8 @@ func next_phase() -> Phase:
 func button_text() -> String:
 	if phase == Phase.SEASON:
 		return "試合へ"
+	if phase == Phase.AWARDS and awards_pending:
+		return "表彰式"
 	if fa_open():
 		return "FA・移籍交渉"
 	if contract_open():
@@ -726,6 +743,8 @@ func _enter(new_phase: Phase) -> void:
 		Phase.AWARDS:
 			# シーズン後の能力値に更新（当年までの成績で再計算したもの）
 			GameData.load_ratings(year, "post")
+			_archive_season()
+			awards_pending = awards_history.has(str(year))
 		Phase.FA_TRADE:
 			var leaving := league.depart_mlb(year)
 			_apply_trades("%d-12-31" % year)
@@ -829,6 +848,137 @@ func _sync_record() -> void:
 	draws = rec.get("d", 0)
 
 
+# --- 表彰・過去の成績 ---------------------------------------------------------------------
+
+## シーズン終了時：今季の成績を履歴に写し、表彰を決める（同じ年を2回通っても上書きするだけ）
+func _archive_season() -> void:
+	if season == null or season.played_count() == 0:
+		return
+	var key := str(year)
+	stats_history[key] = {
+		"batting": season.batting.duplicate(true), "pitching": season.pitching.duplicate(true),
+		"players": season.players.duplicate(true), "records": season.records.duplicate(true),
+		"leagues": season.leagues.duplicate(),
+		"feats": _season_feats(),
+	}
+	awards_history[key] = Awards.compute(season, GameData.player, is_rookie)
+
+
+## 今年の表彰（まだ無ければ空）
+func awards_of(y: int) -> Dictionary:
+	return awards_history.get(str(y), {})
+
+
+## 選手の受賞歴 [{year, name}]（ゲーム内の表彰のみ）
+func player_awards(id: String) -> Array:
+	return Awards.history_of(awards_history, id)
+
+
+## 新人王の資格：外国人でない、入団から5年以内、前年までの1軍が60打席・30投球回以内
+func is_rookie(id: String) -> bool:
+	if league == null:
+		return false
+	var p := GameData.player(id)
+	if p.is_empty() or RosterRules.is_foreign(p, year, GameData.load_debut_years(year).get(id)):
+		return false
+	var joined_year := int(league.joined.get(id, year))
+	if year - joined_year >= Awards.ROOKIE_YEARS:
+		return false
+	var prior := prior_play(id)
+	return prior["pa"] <= Awards.ROOKIE_MAX_PA and prior["outs"] <= Awards.ROOKIE_MAX_OUTS
+
+
+## 今年より前の1軍の打席数・アウト数（ゲームを始めた年より前は史実、それ以降はゲーム内の成績）
+func prior_play(id: String) -> Dictionary:
+	var pa := 0
+	var outs := 0
+	var page := GameData.player_page(year, id)
+	for row: Dictionary in page.get("batting", []):
+		if int(row.get("年度", 0)) < first_year:
+			pa += Records._n(row.get("打席"))
+	for row: Dictionary in page.get("pitching", []):
+		if int(row.get("年度", 0)) < first_year:
+			outs += Records._n(row.get("outs"))
+	for key: String in stats_history:
+		if int(key) >= year:
+			continue
+		var h: Dictionary = stats_history[key]
+		pa += int(h["batting"].get(id, {}).get("pa", 0))
+		outs += int(h["pitching"].get(id, {}).get("outs", 0))
+	return {"pa": pa, "outs": outs}
+
+
+# --- 記録室 ---------------------------------------------------------------------------------
+
+## 記録室で見られる年（古い順）：履歴にある年と、まだ履歴に入っていない今季（試合をしていれば）
+func records_years() -> Array[int]:
+	var result: Array[int] = []
+	for key: String in stats_history:
+		result.append(int(key))
+	if season != null and season.played_count() > 0 and not stats_history.has(str(season.year)):
+		result.append(season.year)
+	result.sort()
+	return result
+
+
+## その年の成績 {batting, pitching, players, records, leagues, feats}（無ければ空）。今季は Season をそのまま
+func season_stats(y: int) -> Dictionary:
+	if stats_history.has(str(y)):
+		return stats_history[str(y)]
+	if season != null and season.year == y:
+		return {"batting": season.batting, "pitching": season.pitching, "players": season.players,
+			"records": season.records, "leagues": season.leagues, "feats": _season_feats()}
+	return {}
+
+
+## 今季のノーヒットノーラン・サイクル安打（Records.feats）
+func _season_feats() -> Array:
+	var team_of := func(id: String) -> String: return season.players.get(id, {}).get("team", "")
+	return Records.feats(season.games, season.player_name, team_of)
+
+
+var _career_base := {}
+var _career_base_year := -1
+
+
+## ゲームを始めた年より前の史実の1軍成績の通算 {batting: {id: 成績}, pitching: {id: 成績}}（data/<開始年>/players.json）
+func career_base() -> Dictionary:
+	if _career_base_year == first_year:
+		return _career_base
+	_career_base_year = first_year
+	_career_base = {"batting": {}, "pitching": {}}
+	var pages := GameData.all_player_pages(first_year)
+	for id: String in pages:
+		var page: Dictionary = pages[id]
+		for kind: String in ["batting", "pitching"]:
+			for row: Variant in page.get(kind, []):
+				if not (row is Dictionary) or int(row.get("年度", 9999)) >= first_year:
+					continue
+				var line := Records.from_page_batting(row) if kind == "batting" else Records.from_page_pitching(row)
+				Records.add_into(_career_base[kind].get_or_add(id, {}), line)
+	return _career_base
+
+
+var _depth: Depth = null
+
+
+## デプスの計算（将来性のノイズはゲームごとに固定）
+func depth_tool() -> Depth:
+	if _depth == null:
+		var data: Variant = GameData.read_generated("player_future.json")
+		_depth = Depth.new(data if data is Dictionary else {}, "%d/%s" % [first_year, team],
+			Draft.DIFFICULTY_NOISE[Draft.DIFFICULTY])
+	return _depth
+
+
+## 球団のデプス（Depth.team_depth）。今の所属・編成で
+func depth_of(team_name: String) -> Dictionary:
+	var members := GameData.players_of(team_name)
+	var age_year := year if phase in [Phase.SEASON, Phase.CAMP, Phase.AWARDS] else year + 1
+	return depth_tool().team_depth(members, sim_team_of(team_name), year,
+		func(p: Dictionary) -> int: return FreeAgency.age_of(p, age_year))
+
+
 # --- セーブ／ロード（SaveGame） -----------------------------------------------------------
 
 ## いまセーブできるか（早送り中・自動処理の途中はできない）
@@ -866,6 +1016,8 @@ func to_save() -> Dictionary:
 	return {
 		"year": year, "day": day, "phase": phase, "team": team, "tactics": tactics,
 		"wins": wins, "losses": losses, "draws": draws,
+		"first_year": first_year, "awards_history": awards_history, "stats_history": stats_history,
+		"awards_pending": awards_pending,
 		"league": league.to_save() if league != null else null,
 		"season": season.to_save() if season != null else null,
 	}
@@ -881,6 +1033,11 @@ func load_state(d: Dictionary) -> void:
 	day = int(d.get("day", 0))
 	phase = int(d.get("phase", Phase.SEASON)) as Phase
 	team = str(d["team"])
+	first_year = int(d.get("first_year", year))
+	_depth = null
+	awards_pending = bool(d.get("awards_pending", false))
+	awards_history = d.get("awards_history", {})
+	stats_history = d.get("stats_history", {})
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	for key: String in d.get("tactics", {}):
 		tactics[key] = int(d["tactics"][key])
