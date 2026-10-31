@@ -221,6 +221,79 @@ func sim_team_of(team_name: String) -> SimTeam:
 	return _offseason_teams[team_name]
 
 
+## トレード交渉ができないときの理由（できるときは空）。シーズン中は7月31日まで、オフは FA・トレード・
+## ポスティングの段階から春季キャンプまで（契約更改・戦力外・ドラフトは締めてから）。docs/SPEC.md「決定事項：トレード交渉の時期」
+func trade_block_reason() -> String:
+	if league == null:
+		return "トレード交渉はゲームを始めてから行えます"
+	match phase:
+		Phase.SEASON:
+			if season == null:
+				return "この年の日程データが無いので交渉できません"
+			if Season.date_of_day(day).substr(5) > Trade.DEADLINE:
+				return "8月1日からシーズン終了までは交渉できません（移籍期限は7月31日）"
+		Phase.AWARDS, Phase.ACTIVE_DRAFT:
+			return "オフのトレード交渉は「FA・トレード・ポスティング」の段階から行えます"
+	if contract_open():
+		return "契約更改を締めてから交渉できます"
+	if release_open():
+		return "戦力外を確定してから交渉できます"
+	if draft_open():
+		return "ドラフト会議を終えてから交渉できます"
+	return ""
+
+
+## トレードで交渉できない選手（選手ID → 理由）。FA宣言して締め切り前の選手
+func trade_excluded() -> Dictionary:
+	var result := {}
+	var f := fa()
+	if f != null and not f.resolved:
+		for id: String in f.declared:
+			result[id] = "FA宣言中です"
+	return result
+
+
+## 断られたときに同じ球団と交渉できない単位（シーズン中は日付、オフは段階）
+func trade_day_key() -> String:
+	return Season.date_of_day(day) if phase == Phase.SEASON else "%d-%d" % [year, phase]
+
+
+## トレードの相手の見立て（Trade.evaluate）
+func trade_estimate(partner: String, give: Array, get_ids: Array, money: int) -> Dictionary:
+	return Trade.evaluate(league, year, partner, give, get_ids, money)
+
+
+## トレードを申し込む。{ok, text}。成立したら所属を入れ替え、シーズン中はペナントの編成にもすぐ反映する
+func trade_request(partner: String, give: Array, get_ids: Array, money: int) -> Dictionary:
+	var error := trade_block_reason()
+	if error.is_empty():
+		error = Trade.check(league, partner, give, get_ids, money, trade_excluded())
+	if error.is_empty() and league.trade_refused.get(partner, "") == trade_day_key():
+		error = "%sには今日はもう断られました（%s）" % [GameData.short_name(partner),
+			"明日以降にもう一度" if phase == Phase.SEASON else "次の段階でもう一度"]
+	if not error.is_empty():
+		return {"ok": false, "text": error}
+	var est := trade_estimate(partner, give, get_ids, money)
+	if randf() >= float(est["chance"]):
+		league.trade_refused[partner] = trade_day_key()
+		changed.emit()
+		return {"ok": false, "refused": true, "text": "%sに断られました（成功率：%s）" % [GameData.short_name(partner),
+			Trade.STAR_WORDS[est["stars"]]]}
+	var date := Season.date_of_day(day) if phase == Phase.SEASON else ""
+	var moves := Trade.execute(league, partner, give, get_ids, money, date)
+	_sync_roster()
+	if phase == Phase.SEASON and season != null:
+		for mv in moves:
+			season.transfer(GameData.player(mv["pid"]), mv["to"])
+	changed.emit()
+	var names: Array[String] = []
+	for mv in moves:
+		if mv["to"] == team:
+			names.append(mv["name"])
+	return {"ok": true, "text": "トレード成立！ %sから %s を獲得しました" % [GameData.short_name(partner),
+		"・".join(names)]}
+
+
 ## 外国人市場（戦力外の選手を含む）の選手を自球団で獲得する（オフのみ）。失敗したら理由の文を返す。
 ## 戦力外・引退の段階からは支配下の上限（70人。来季の新人の見込みと、戦力外に選んだ選手を差し引いて数える）を守る
 func sign_foreign(id: String) -> String:
