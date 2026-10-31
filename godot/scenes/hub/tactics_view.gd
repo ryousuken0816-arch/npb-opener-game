@@ -367,7 +367,8 @@ func _tag_block(title: String, sub: String, members: Array[SimPlayer],
 	grid.add_theme_constant_override("v_separation", 6)
 	for p in members:
 		var tag := NameTag.new()
-		tag.custom_minimum_size = Vector2(136, 34)
+		# 6列＋見出しが采配の広げた画面（1280x720 で幅986、縦のスクロールバーを含む）に収まる幅
+		tag.custom_minimum_size = Vector2(134, 34)
 		tag.setup_player(GameData.player(p.id), _names.get(p.id, p.name))
 		var pos := p.primary_pos if not p.primary_pos.is_empty() else "守備位置不明"
 		tag.tooltip_text = "%s（%s）" % [p.name, pos]

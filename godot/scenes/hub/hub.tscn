@@ -115,40 +115,45 @@ offset_bottom = -104.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="SubScreen"]
+[node name="Fit" type="ScrollContainer" parent="SubScreen"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="SubScreen/Fit"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Header" type="HBoxContainer" parent="SubScreen/VBox"]
+[node name="Header" type="HBoxContainer" parent="SubScreen/Fit/VBox"]
 layout_mode = 2
 
-[node name="SubTitleLabel" type="Label" parent="SubScreen/VBox/Header"]
+[node name="SubTitleLabel" type="Label" parent="SubScreen/Fit/VBox/Header"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "采配"
 
-[node name="BackButton" type="Button" parent="SubScreen/VBox/Header"]
+[node name="BackButton" type="Button" parent="SubScreen/Fit/VBox/Header"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 40)
 layout_mode = 2
 text = "戻る (Esc)"
 
-[node name="TacticsView" type="HBoxContainer" parent="SubScreen/VBox"]
+[node name="TacticsView" type="HBoxContainer" parent="SubScreen/Fit/VBox"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("5_tactics")
 
-[node name="ScheduleView" type="Control" parent="SubScreen/VBox"]
+[node name="ScheduleView" type="Control" parent="SubScreen/Fit/VBox"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("6_schedule")
 
-[node name="PlaceholderLabel" type="Label" parent="SubScreen/VBox"]
+[node name="PlaceholderLabel" type="Label" parent="SubScreen/Fit/VBox"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2

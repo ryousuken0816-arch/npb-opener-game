@@ -56,6 +56,8 @@ var _previous_focus: Control = null
 var _layer: CanvasLayer = null
 
 var _frame: PanelContainer
+## _frame の中身の包み（UiTheme.fit_scroll）
+var _fit: ScrollContainer
 var _tab_buttons: Array[Button] = []
 var _counter: Label
 var _header: HBoxContainer
@@ -129,9 +131,13 @@ func _ready() -> void:
 	add_child(_frame)
 	_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE,
 		MARGIN)
+	# 中身が枠より大きくなっても、枠を画面の外へ広げずにスクロールさせる（ハブのサブ画面と同じ）
+	_fit = ScrollContainer.new()
+	_frame.add_child(_fit)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 8)
-	_frame.add_child(box)
+	UiTheme.fit_scroll(_fit, box)
+	_fit.add_child(box)
 	box.add_child(_build_top_bar())
 	_header = HBoxContainer.new()
 	_header.add_theme_constant_override("separation", 12)
@@ -244,6 +250,7 @@ func _show_player() -> void:
 	style.bg_color = _palette.main.lerp(Color.WHITE, 0.9)
 	style.set_content_margin_all(14)
 	_frame.add_theme_stylebox_override("panel", style)
+	UiTheme.fit_scroll(_fit, _fit.get_child(0), style)
 	_counter.text = "%d / %d" % [_index + 1, _ids.size()]
 	_style_tabs()
 	_render_header()

@@ -121,14 +121,29 @@ static func _scale_to(c: Control, target: float, sec: float) -> void:
 	c.set_meta("_scale_tween", tw)
 
 
-## 画面の切り替え：少し横からすべり込みながらフェードイン（アンカー配置のパネル向け）
+## 画面の切り替え：少し横からすべり込みながらフェードイン（アンカー配置のパネル向け）。
+## position を動かす＝アンカーからの余白（offset_*）が動くので、途中で配置を変えるときは先に stop_slide() で止める
 static func slide_in(c: Control, from := Vector2(28, 0)) -> void:
+	stop_slide(c)
 	var end := c.position
+	c.set_meta("_slide_end", end)
 	c.position = end + from
 	c.modulate.a = 0.0
 	var tw := c.create_tween().set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tw.tween_property(c, "position", end, SWITCH_SEC)
 	tw.tween_property(c, "modulate:a", 1.0, SWITCH_SEC)
+	c.set_meta("_slide_tween", tw)
+
+
+## slide_in を途中で止めて、すべり込む先の位置に戻す。止めずに開き直すと途中の位置が余白に残り、
+## 開く・閉じるをくり返すたびにパネルがずれて画面の外へはみ出していた（docs/AUTORUN.md 作業11）
+static func stop_slide(c: Control) -> void:
+	var tw: Tween = c.get_meta("_slide_tween") if c.has_meta("_slide_tween") else null
+	if tw != null and tw.is_valid() and tw.is_running():
+		tw.kill()
+		c.position = c.get_meta("_slide_end")
+		c.modulate.a = 1.0
+	c.remove_meta("_slide_tween")
 
 
 ## 画面の切り替え：フェードイン＋わずかに拡大（コンテナの中の子でも位置を崩さない）
