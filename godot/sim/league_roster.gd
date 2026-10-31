@@ -86,6 +86,8 @@ var limit_active := false
 ## release_trim
 var log: Array[Dictionary] = []
 
+## 自球団のトレード交渉を断った球団 → 断った日（シーズン中は日付、オフは「年-段階」。同じ日にはもう交渉できない）
+var trade_refused := {}
 var _trades: Array[Dictionary] = []  ## trade_id ごと、日付順 {id, date, moves: [{pid, name, from, to}]}
 var _trade_index := 0
 var _moves_by_id := {}
@@ -311,6 +313,11 @@ func _kept_in(id: String, at_year: int) -> bool:
 
 
 ## 画面などから出来事を記録する
+## 自球団のトレードの出来事（出来事の一覧には史実のトレードと同じ「trade」で出る）
+func log_trade(date: String, mv: Dictionary, text: String) -> void:
+	_log(date, "trade", mv["pid"], mv["name"], mv["from"], mv["to"], text)
+
+
 func log_event(kind: String, id: String, from: String, to: String, text: String) -> void:
 	_log("", kind, id, names.get(id, id), from, to, text)
 
@@ -1184,6 +1191,7 @@ func to_save() -> Dictionary:
 		"contract_until": contract_until, "fa_year": fa_year, "kept_mlb": kept_mlb, "released": released,
 		"drafted": drafted, "draft_synth": draft_synth, "draft_unsigned": draft_unsigned,
 		"limit_active": limit_active, "log": log, "trade_index": _trade_index, "plan": plan,
+		"trade_refused": trade_refused,
 		"rng": SaveUtil.rng_state(_rng),
 		"fa": fa.to_save() if fa != null else null,
 		"contracts": contracts.to_save() if contracts != null else null,
@@ -1216,6 +1224,7 @@ func from_save(d: Dictionary) -> void:
 	limit_active = bool(d.get("limit_active", false))
 	log.assign(d.get("log", []))
 	_trade_index = int(d.get("trade_index", 0))
+	trade_refused = d.get("trade_refused", {})
 	_plan = d.get("plan", {})
 	SaveUtil.set_rng_state(_rng, d.get("rng", ""))
 	fa = FreeAgency.from_save(d["fa"], self) if d.get("fa") is Dictionary else null
