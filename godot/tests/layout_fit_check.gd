@@ -315,11 +315,12 @@ func _walk(node: Node, result: Array[String], clip: Rect2) -> void:
 		return
 	if node is CanvasLayer and not (node as CanvasLayer).visible:
 		return
-	if node is CanvasLayer:
+	# 別の層・top_level（ドラフトの演出など）は親の枠に切り取られず、画面全体に描かれる
+	if node is CanvasLayer or (node is CanvasItem and (node as CanvasItem).top_level):
 		clip = Rect2(Vector2.ZERO, SCREEN)
 	if node is Control:
 		var c := node as Control
-		var r := c.get_global_rect()
+		var r := _layout_rect(c)
 		if r.size.x > 0.0 and r.size.y > 0.0 and _outside(r, clip):
 			var where := "画面" if clip.size == SCREEN else "枠 %s" % _rect_text(clip)
 			result.append("%s %s が%sの外（最小 %s）%s" % [_name(c), _rect_text(r), where,
@@ -338,6 +339,14 @@ func _walk(node: Node, result: Array[String], clip: Rect2) -> void:
 			return  # スクロールの中など：親の枠で切り取られる
 	for child in node.get_children():
 		_walk(child, result, clip)
+
+
+## 画面上の矩形。選択中のボタンの拡大（UiFx、1.045倍）などの演出の拡大縮小は除く（配置そのものを調べる）
+func _layout_rect(c: Control) -> Rect2:
+	if c.scale == Vector2.ONE:
+		return c.get_global_rect()
+	var parent_xform := c.get_global_transform() * c.get_transform().affine_inverse()
+	return parent_xform * Rect2(c.position, c.size)
 
 
 func _outside(r: Rect2, clip: Rect2) -> bool:

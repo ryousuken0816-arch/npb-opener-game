@@ -75,8 +75,6 @@ func _ready() -> void:
 	_palette = UiTheme.team_palette(GameState.team)
 	theme = UiTheme.build(_palette)
 	_background.set_palette(_palette)
-	# サブ画面の中身が枠より大きくなっても、パネルを画面の外へ広げずにスクロールさせる
-	UiTheme.fit_scroll(%Fit, %VBox)
 	_style_labels()
 	_build_menu()
 	_add_guide()
@@ -227,6 +225,8 @@ func _style_labels() -> void:
 	screen.content_margin_top = 12
 	screen.content_margin_bottom = 16
 	_sub_screen.add_theme_stylebox_override("panel", screen)
+	# サブ画面の中身が枠より大きくなっても、パネルを画面の外へ広げずにスクロールさせる（余白は包みの内側へ）
+	UiTheme.fit_scroll(%Fit, %VBox, screen)
 
 
 func _label_settings(font_size: int, color: Color, outline: int, outline_color: Color,

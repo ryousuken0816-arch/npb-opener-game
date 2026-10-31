@@ -379,8 +379,9 @@ func _check_ui() -> void:
 	var confirm: Control = sv2.get("_confirm_panel")
 	var label: Label = sv2.get("_confirm_label")
 	# 1280x720 のときのサブ画面の高さ（hub.tscn：上100・下104）に、確認を出した状態の最小の高さが収まる
-	# （中身はスクロールの包み %Fit の中なので、中身の最小の高さ＋パネルの余白で測る）
+	# （中身はスクロールの包み %Fit の中なので、中身の最小の高さ＋余白（パネルの余白は包みの内側へ移してある）で測る）
 	var need := int(hub2.get_node("%VBox").get_combined_minimum_size().y
+		+ hub2.get_node("%Fit").get_theme_stylebox("panel").get_minimum_size().y
 		+ screen.get_theme_stylebox("panel").get_minimum_size().y)
 	_check(confirm.visible and need <= 720 - 100 - 104 and label.get_line_count() == 1,
 		"確認を出してもセーブ画面が枠に収まる（必要な高さ %d / 516、確認の行数 %d）" % [need, label.get_line_count()])

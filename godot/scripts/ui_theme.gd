@@ -420,8 +420,10 @@ static func fit_label(label: Label) -> Label:
 
 ## 画面のルートのパネル（ハブのサブ画面・選手詳細）の中身を包む ScrollContainer の設定。
 ## 中身の最小の大きさが枠を超えたときだけスクロールバーが出て、パネルが画面の外へ広がらない
-## （収まっているときは見た目は変わらない。docs/AUTORUN.md 作業11）
-static func fit_scroll(scroll: ScrollContainer, content: Control) -> void:
+## （収まっているときは見た目は変わらない。docs/AUTORUN.md 作業11）。
+## panel_style（パネルの StyleBox）を渡すと、その余白を包みの内側へ移す。切り取るのがパネルの縁になり、
+## 余白に少しはみ出す光の枠・影・選択中の拡大は今までどおり見える
+static func fit_scroll(scroll: ScrollContainer, content: Control, panel_style: StyleBox = null) -> void:
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.follow_focus = true
@@ -429,3 +431,9 @@ static func fit_scroll(scroll: ScrollContainer, content: Control) -> void:
 	scroll.set_meta("fit_guard", true)  # tests/layout_fit_check.gd がスクロールになっていないか調べる
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	if panel_style != null:
+		var inner := StyleBoxEmpty.new()
+		for side: Side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+			inner.set_content_margin(side, panel_style.get_margin(side))
+			panel_style.set_content_margin(side, 0)
+		scroll.add_theme_stylebox_override("panel", inner)
