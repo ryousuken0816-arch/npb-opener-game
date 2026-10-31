@@ -15,15 +15,13 @@ const MENUS := [
 	["scout", "新戦力", "scout", Color("00a396"),
 		"外国人選手の獲得（外国人市場）と、移籍・引退などの出来事を見ます。（トレード交渉・スカウティングは未実装）"],
 	["records", "記録室", "records", Color("e0a400"),
-		"個人成績・通算成績、タイトル・表彰歴、チーム成績の推移などを見ます。"],
+		"個人成績（セイバー指標）・通算成績、チームのデプス・守備位置ランク、チーム成績の推移、表彰の歴代、ドラフト・達成記録を見ます。"],
 	["system", "システム", "system", Color("7e57c2"),
 		"セーブ／ロード（スロット3つ＋オートセーブ）をします。（難易度・表示・サウンド・早送り速度の設定は未実装）"],
 ]
 
 ## 未実装画面の内容（docs/SPEC.md「UI/画面構成」）
-const PLACEHOLDERS := {
-	"records": "リーグ全体の個人成績・通算成績、タイトル・表彰歴、チーム成績推移、\n達成記録（ノーヒットノーラン等）、ドラフト履歴。",
-}
+const PLACEHOLDERS := {}
 
 const ICON_DIR := "res://assets/icons"
 ## サブ画面の四辺の余白（hub.tscn の SubScreen と同じ値。采配などは広げて表示する）
@@ -47,6 +45,8 @@ var _contract_view := ContractView.new()
 var _release_view := ReleaseView.new()
 var _draft_view := DraftView.new()
 var _save_view := SaveView.new()
+var _awards_view := AwardsView.new()
+var _records_view := RecordsView.new()
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -106,6 +106,20 @@ func _ready() -> void:
 	_save_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_save_view.visible = false
 	_placeholder_label.get_parent().add_child(_save_view)
+	_awards_view.setup(_palette)
+	_awards_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_awards_view.visible = false
+	_placeholder_label.get_parent().add_child(_awards_view)
+	_awards_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "awards":
+			_description_label.text = text)
+	_records_view.setup(_palette)
+	_records_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_records_view.visible = false
+	_placeholder_label.get_parent().add_child(_records_view)
+	_records_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "records":
+			_description_label.text = text)
 	_save_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "system":
 			_description_label.text = text)
@@ -162,6 +176,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				_draft_view.switch_tab(delta)
 			"system":
 				_save_view.switch_tab(delta)
+			"awards":
+				_awards_view.switch_tab(delta)
+			"records":
+				_records_view.switch_tab(delta)
 		get_viewport().set_input_as_handled()
 
 
@@ -267,7 +285,7 @@ func _refresh() -> void:
 	_team_name_label.text = GameState.team
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
-	if _open_key not in ["tactics", "fa", "contract", "release", "draft", "system"]:
+	if _open_key not in ["tactics", "fa", "contract", "release", "draft", "system", "awards", "records"]:
 		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_tactics_view.refresh()
@@ -285,6 +303,8 @@ func _refresh() -> void:
 		_draft_view.refresh()
 	elif _open_key == "system":
 		_save_view.refresh()
+	elif _open_key == "awards":
+		_awards_view.refresh()
 
 
 func _summary_text() -> String:
@@ -308,6 +328,8 @@ func _description(key: String) -> String:
 				return "%s。（%d年の日程データがないため試合は行いません）" % [goal, GameState.year]
 			return "%d月の残り%d試合（全球団）をまとめて行い、%s。日程表からは1日ずつ進められます。" % [
 				GameState.month, GameState.games_left_in_month(), goal]
+		if GameState.phase == GameState.Phase.AWARDS and GameState.awards_pending:
+			return "%d年のシーズン表彰（MVP・新人王・ベストナイン・ゴールデングラブ・タイトル・沢村賞）を発表します。" % GameState.year
 		if GameState.fa_open():
 			return "FA宣言した選手への提示と、メジャーへ移籍する自球団の選手の引き留めをします。"
 		if GameState.contract_open():
@@ -330,6 +352,11 @@ func _on_menu_focused(key: String) -> void:
 
 func _on_menu_chosen(key: String) -> void:
 	if key == "advance":
+		# シーズン終了・表彰の段階は、まず表彰の画面を開く（2回目からは次の段階へ）
+		if GameState.phase == GameState.Phase.AWARDS and GameState.awards_pending:
+			GameState.awards_pending = false
+			_open_sub_screen("awards")
+			return
 		# FA・トレード・ポスティングの段階は、締め切るまで可変ボタンで FA の画面を開く
 		if GameState.fa_open():
 			_open_sub_screen("fa")
@@ -344,7 +371,10 @@ func _on_menu_chosen(key: String) -> void:
 			_open_sub_screen("draft")
 			return
 		GameState.advance()
-		if GameState.fa_open():
+		if GameState.phase == GameState.Phase.AWARDS and GameState.awards_pending:
+			GameState.awards_pending = false
+			_open_sub_screen("awards")
+		elif GameState.fa_open():
 			_open_sub_screen("fa")
 		elif GameState.contract_open():
 			_open_sub_screen("contract")
@@ -372,6 +402,10 @@ func _open_sub_screen(key: String) -> void:
 	var is_release := key == "release"
 	var is_draft := key == "draft"
 	var is_system := key == "system"
+	var is_awards := key == "awards"
+	var is_records := key == "records"
+	_awards_view.visible = is_awards
+	_records_view.visible = is_records
 	_save_view.visible = is_system
 	_draft_view.visible = is_draft
 	_tactics_view.visible = is_tactics
@@ -380,9 +414,9 @@ func _open_sub_screen(key: String) -> void:
 	_fa_view.visible = is_fa
 	_contract_view.visible = is_contract
 	_release_view.visible = is_release
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_contract and not is_release and not is_draft and not is_system
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_contract and not is_release and not is_draft and not is_system and not is_awards and not is_records
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
-	_set_wide(is_tactics or is_fa or is_contract or is_release or is_draft)
+	_set_wide(is_tactics or is_fa or is_contract or is_release or is_draft or is_awards or is_records)
 	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
@@ -408,6 +442,12 @@ func _open_sub_screen(key: String) -> void:
 	elif is_system:
 		_sub_title_label.text = "システム：セーブ／ロード"
 		_save_view.open()
+	elif is_awards:
+		_sub_title_label.text = "シーズン表彰（%d年）" % GameState.year
+		_awards_view.open()
+	elif is_records:
+		_sub_title_label.text = "記録室"
+		_records_view.open()
 	else:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
 		%BackButton.grab_focus()
@@ -461,5 +501,5 @@ func _close_sub_screen() -> void:
 	_description_label.text = _description(_focused_key)
 	if _buttons.has(key):
 		_buttons[key].grab_button_focus()
-	elif key in ["fa", "contract", "release", "draft"]:
+	elif key in ["fa", "contract", "release", "draft", "awards"]:
 		_buttons["advance"].grab_button_focus()
