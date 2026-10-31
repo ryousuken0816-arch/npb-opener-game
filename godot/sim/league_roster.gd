@@ -382,7 +382,13 @@ func _was_unsigned(p: Dictionary) -> bool:
 ## 史実のドラフトで各球団が指名した人数（今の所属の球団名 → {reg, ikusei}）。来季の新人の見込みに使う
 func _draft_quota(draft_year: int) -> Dictionary:
 	var result := {}
-	for d in Draft.draft_rows(draft_year):
+	var rows := Draft.draft_rows(draft_year)
+	if not rows.is_empty() and bool(rows[0].get("amateur", false)):
+		# 史実の無い年（アマ選手の候補）：どの球団も同じ人数
+		for team: String in GameData.teams():
+			result[team] = Draft.AMATEUR_QUOTA.duplicate()
+		return result
+	for d in rows:
 		var team := _current_name(Draft.hist_team_of(d, draft_year))
 		if team.is_empty():
 			continue

@@ -388,7 +388,8 @@ func _check_2025() -> void:
 	for c: Dictionary in d.candidates:
 		if c.get("first", {}).get("partial", false):
 			partial += 1
-	_check(partial == d.candidates.size(), "2025年秋の新人の1年目は「シーズン途中」（%d/%d人）" % [partial, d.candidates.size()])
+	# 2026年は最終成績になった（作業16）ので、2025年秋の新人の1年目はもう「シーズン途中」ではない
+	_check(partial == 0, "2025年秋の新人の1年目は最終成績（シーズン途中 %d/%d人）" % [partial, d.candidates.size()])
 	_gs.advance()
 	_check(d.resolved and _gs.phase == _gs.Phase.CAMP and _gs.year == 2026, "次へ進むとおまかせで終わり2026年の春季キャンプ")
 	_check_quota(d, "2025年")

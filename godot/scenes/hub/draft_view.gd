@@ -635,7 +635,8 @@ func _first_cell(c: Dictionary, width: int) -> Control:
 	box.tooltip_text = _first_text(c)
 	box.mouse_filter = Control.MOUSE_FILTER_PASS
 	if value < 0:
-		box.add_child(UiTheme.small_label("-", 16, UiTheme.TEXT_SUB, 700))
+		var none := "未来" if first.get("status") == "未来" else "-"
+		box.add_child(UiTheme.small_label(none, 14 if none == "未来" else 16, UiTheme.TEXT_SUB, 700))
 		return box
 	box.add_child(UiTheme.rank_label({"rank": ability_rank(value), "value": value}, 19))
 	if first.get("status") == "2軍":
@@ -654,6 +655,8 @@ func _first_text(c: Dictionary) -> String:
 			text += "のシーズン後の能力"
 		"2軍":
 			text += "：1軍出場なし（2軍の成績での能力）"
+		"未来":
+			text += "：未来の選手（%d年は史実のデータがありません）" % entry_year
 		_:
 			text += "：出場なし"
 	if first.get("partial", false):
@@ -763,8 +766,10 @@ func _hint_text(d: Draft) -> String:
 	if d.year >= d.data_through - 2:
 		lines.append("※%d年のドラフトは入団後の成績がまだ少ないため、将来性は当てになりません（当時の評価で補っています）。" \
 			% d.year)
-	if d.year + 1 >= Draft.IN_PROGRESS_YEAR:
+	if d.year + 1 == Draft.IN_PROGRESS_YEAR:
 		lines.append("※%d年秋の新人の1年目（%d年）はシーズン途中のデータです。" % [d.year, d.year + 1])
+	if d.year > Draft.LAST_HISTORY_YEAR:
+		lines.append("※%d年は史実のドラフトがありません。候補は実在のアマ選手（報道での評価が当時の評価）で、" % d.year 			+ "将来性は当てになりません。")
 	return "\n".join(lines)
 
 
@@ -815,7 +820,10 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 		state = "済：%s %s" % [GameData.short_name(c["picked_by"]), c["pick_label"]]
 	else:
 		state = "未指名"
-	state += "　（史実：%s %s）" % [GameData.short_name(c["hist_team"]), c["hist_label"]]
+	if c.get("amateur", false):
+		state += "　（%s）" % ("架空の選手" if c.get("fictional", false) else "実在のアマ選手・報道の評価から推定")
+	else:
+		state += "　（史実：%s %s）" % [GameData.short_name(c["hist_team"]), c["hist_label"]]
 	if c.get("synthetic", false):
 		state += "\n※能力値データが無いため、近い候補の能力を仮に使っています"
 	var state_label := UiTheme.small_label(state, 14, UiTheme.TEXT_SUB, 700)

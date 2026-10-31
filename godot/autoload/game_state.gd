@@ -48,9 +48,10 @@ const PHASE_BUTTON := {
 }
 
 const START_YEAR := 2008
-## デバッグ用の開始年の範囲（タイトル画面で選べる。どの年も generated/ratings と data/<年>/schedule.json がある）
+## デバッグ用の開始年の範囲（タイトル画面で選べる。どの年も generated/ratings と data/<年>/schedule.json がある。
+## 2027年は史実が無く、日程は2026年の写し・能力は2026年シーズン後の引き継ぎ。docs/AUTORUN.md 作業17）
 const DEBUG_FIRST_YEAR := 2008
-const DEBUG_LAST_YEAR := 2025
+const DEBUG_LAST_YEAR := 2027
 ## 日程データ（data/<年>/schedule.json）が無い年のシーズン期間（月日）
 const DEFAULT_SEASON_START := "04-01"
 const DEFAULT_SEASON_END := "10-31"

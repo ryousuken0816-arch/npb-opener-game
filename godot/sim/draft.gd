@@ -6,6 +6,8 @@ extends RefCounted
 ## 候補はその年の史実のドラフト指名選手全員（data/<年+1>/drafts.json の当年秋の分。本指名と育成）。能力は来季の
 ## 開幕時点の能力値ファイル（新人の初期能力。1軍出場の無い選手は仮IDの選手）。ファイルにいない候補は似た候補の
 ## 能力を写した仮の選手（synthetic）を作る。指名されなかった候補は入団しない。
+## 史実の無い年（LAST_HISTORY_YEAR より後。2027年〜）は data/amateur/<年>.json の実在のアマ選手が候補（作業17）。
+## 当時の評価は報道での格付け（GRADE_AS_PICK）、CPU球団の指名人数は AMATEUR_QUOTA、能力は tools/amateur_ratings.py
 ##
 ## 進行（stage）：
 ## - FIRST：1位入札。全球団が同時に入札し（自球団は user_bid、CPU球団は _cpu_first_bid）、run_first_wave() で
@@ -71,8 +73,17 @@ const FUTURE_FULL_YEARS := 3.0
 ## 1年目の能力（作業13）：投手の項目と、野手の総合（打撃・走塁・守備の加重平均。Salary.ability と同じ重み）
 const FIRST_PITCH_KEYS := ["overall", "stamina", "k9", "bb9"]
 const FIRST_BAT_WEIGHTS := {"meet": 0.35, "power": 0.35, "eye": 0.1, "speed": 0.1, "defense": 0.1}
-## この年の能力値ファイルはシーズン途中のデータ（data/2026 は 9/25 時点）。この年に入団した新人の1年目は途中
-const IN_PROGRESS_YEAR := 2026
+## 史実（npb.jp）のシーズン・ドラフトがある最後の年。これより後の年に入団した新人の1年目は「未来」（表示しない）
+const LAST_HISTORY_YEAR := 2026
+## この年の能力値ファイルはシーズン途中のデータ。この年に入団した新人の1年目は途中（今は無し。2026年は最終成績）
+const IN_PROGRESS_YEAR := 0
+## 史実の指名が無い年（アマ選手の候補）に CPU球団が指名する人数
+const AMATEUR_QUOTA := {"reg": 6, "ikusei": 2}
+## アマ選手の報道での格付け（S〜D）→ 当時の評価を作る [順位, 競合数]。D は育成1位相当
+const GRADE_AS_PICK := {"S": [1, 3], "A": [1, 1], "B": [2, 0], "C": [4, 0], "D": [1, -1]}
+## 史実の指名がある年でも data/amateur/<年>.json に有識者の格付けがあれば、当時の評価にこの割合で混ぜる
+## （ユーザー指示 2026-11-01：当時の評価も有識者の評価を総合して決める）
+const SCOUT_HYOUKA_WEIGHT := 0.5
 const CAREER_ORDER := ["高校生", "大学生", "社会人"]
 const POS_GROUPS := ["投手", "捕手", "内野手", "外野手"]
 
@@ -134,6 +145,10 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 	var rows := draft_rows(year)
 	var first := _first_round_info(year)
 	var future := _load_future()
+	var scout_grades := {}
+	if not rows.is_empty() and not bool(rows[0].get("amateur", false)):
+		for a in amateur_rows(year):
+			scout_grades[LeagueRoster.norm_name(a["name"])] = a["grade"]
 	var by_name := {}
 	for id: String in entries:
 		if not taken.has(id):
@@ -146,17 +161,27 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 	for d: Dictionary in rows:
 		var key := LeagueRoster.norm_name(d["name"])
 		var hist := hist_team_of(d, year)
+		var amateur: bool = d.get("amateur", false)
 		var c := {
 			"name": d["name"], "pos": d.get("pos", ""), "pitcher": d.get("pos", "") == "投手",
 			"school": d.get("school", ""), "career": career_of(d.get("school", "")),
 			"hist_team": hist, "hist_ikusei": bool(d.get("ikusei", false)),
 			"hist_round": round_number(d.get("round", "")), "picked_by": "", "pick_label": "",
+			"amateur": amateur, "grade": str(d.get("grade", "")), "fictional": bool(d.get("fictional", false)),
 		}
 		c["hist_label"] = ("育成" if c["hist_ikusei"] else "") + "%d位" % c["hist_round"]
 		var fr: Dictionary = first.get(key, {})
 		c["bids"] = int(fr.get("bids", 1)) if c["hist_round"] == 1 and not c["hist_ikusei"] else 0
 		c["rebid"] = int(fr.get("wave", 1)) >= 2
 		c["hyouka"] = hyouka_value(c["hist_round"], c["hist_ikusei"], c["bids"], c["rebid"])
+		if amateur:
+			c["hist_label"] = ""
+			c["hist_round"] = 0
+			c["bids"] = 0
+			c["hyouka"] = grade_value(c["grade"])
+		elif scout_grades.has(key):
+			c["grade"] = str(scout_grades[key])
+			c["hyouka"] = lerpf(c["hyouka"], grade_value(c["grade"]), SCOUT_HYOUKA_WEIGHT)
 		c["hyouka_rank"] = rank_of(c["hyouka"], HYOUKA_RANKS)
 		c["future"] = _future_value(future.get(key, {}), c["hyouka"])
 		c["future_seen"] = c["future"] + _rng.randfn(0.0, DIFFICULTY_NOISE[DIFFICULTY])
@@ -175,6 +200,9 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 			continue
 		candidates.append(c)
 		by_id[c["id"]] = c
+	if not rows.is_empty() and bool(rows[0].get("amateur", false)):
+		for t in teams:
+			quota[t] = AMATEUR_QUOTA.duplicate()
 	for c in candidates:
 		_fill_profile(c, entries.get(c["id"], {}))
 	for c in missing:
@@ -664,7 +692,8 @@ func _fill_profile(c: Dictionary, p: Dictionary) -> void:
 		if pit.get("velocity") is Dictionary:
 			c["velocity"] = int(pit["velocity"].get("kmh", 0))
 	c["ratings"] = ratings
-	c["intro"] = intro_text(c)
+	var ama: Variant = p.get("amateur")
+	c["intro"] = str(ama["intro"]) if ama is Dictionary and ama.get("intro") is String else intro_text(c)
 
 
 ## 1年目の能力（入団1年目のシーズン後＝generated/ratings/<入団年>_post.json の値。ノイズなし。作業13）を
@@ -680,12 +709,15 @@ func _fill_first_years() -> void:
 			by_id_post[p["id"]] = p
 			by_name_post[LeagueRoster.norm_name(str(p.get("name", "")))] = p
 	for c in candidates:
+		if year + 1 > LAST_HISTORY_YEAR:
+			c["first"] = {"status": "未来", "overall": -1, "ratings": {}, "velocity": 0, "partial": false}
+			continue
 		var p: Dictionary = by_id_post.get(c["id"], {})
 		if p.is_empty() and c["synthetic"]:
 			p = by_name_post.get(LeagueRoster.norm_name(c["name"]), {})
 			if not str(p.get("draft", "")).begins_with("%d年" % year):
 				p = {}
-		c["first"] = first_year_of(p, c["pitcher"], year + 1 >= IN_PROGRESS_YEAR)
+		c["first"] = first_year_of(p, c["pitcher"], year + 1 == IN_PROGRESS_YEAR)
 
 
 ## 能力値ファイルの選手から1年目の能力（_fill_first_years の形）
@@ -793,15 +825,31 @@ func _load_future() -> Dictionary:
 
 # --- 静的 ----------------------------------------------------------------------------
 
-## その年のドラフト会議の指名一覧（drafts.json の当年秋の分。本指名が先、球団・順位順）
+## その年のドラフト会議の指名一覧（drafts.json の当年秋の分。本指名が先、球団・順位順）。史実の無い年は
+## アマ選手の候補（amateur_rows）
 static func draft_rows(draft_year: int) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	var parsed: Variant = GameData.read_data("%d/drafts.json" % (draft_year + 1))
 	if not parsed is Array:
-		return result
+		return amateur_rows(draft_year) if draft_year > LAST_HISTORY_YEAR else result
 	for d: Dictionary in parsed:
 		if int(d.get("draft_year", 0)) == draft_year and not str(d.get("name", "")).begins_with("("):
 			result.append(d)
+	return result
+
+
+## 史実の無い年のドラフト候補（data/amateur/<年>.json）を drafts.json の行の形にしたもの。
+## 球団（code）・順位は無く、amateur: true・grade（報道での格付け）・fictional（架空の選手）が付く
+static func amateur_rows(draft_year: int) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var parsed: Variant = GameData.read_data("amateur/%d.json" % draft_year)
+	if not parsed is Dictionary:
+		return result
+	for a: Dictionary in parsed.get("players", []):
+		var scout: Dictionary = a.get("scout", {}) if a.get("scout") is Dictionary else {}
+		result.append({"draft_year": draft_year, "name": a["name"], "pos": a.get("pos", ""),
+			"school": a.get("school", ""), "code": "", "round": "", "ikusei": false, "amateur": true,
+			"grade": str(scout.get("grade", a.get("eval_rank", "C"))), "fictional": bool(a.get("fictional", false))})
 	return result
 
 
@@ -847,6 +895,12 @@ static func hyouka_value(r: int, ikusei: bool, bid_count: int, rebid: bool) -> f
 			return REBID_BASE + REBID_PER_BID * maxi(0, bid_count - 1)
 		return FIRST_BASE + FIRST_PER_BID * maxi(0, bid_count - 1)
 	return float(ROUND_VALUE.get(r, LATE_ROUND_VALUE))
+
+
+## 有識者の格付け（S〜D）を当時の評価の値に（GRADE_AS_PICK の順位・競合数として）
+static func grade_value(grade: String) -> float:
+	var as_pick: Array = GRADE_AS_PICK.get(grade, GRADE_AS_PICK["C"])
+	return hyouka_value(as_pick[0], as_pick[1] < 0, maxi(as_pick[1], 1), false)
 
 
 static func rank_of(value: float, thresholds: Array) -> String:
