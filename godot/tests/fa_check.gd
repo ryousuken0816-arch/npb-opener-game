@@ -188,8 +188,12 @@ func _check_darvish(success: bool) -> void:
 	var hub := current_scene
 	_check(hub.get("_year_label").text == "2011" and hub.get("_month_label").text == "オフ",
 			"ハブ：2011年 オフ（%s %s）" % [hub.get("_year_label").text, hub.get("_month_label").text])
-	# 可変ボタン（「FA/トレードへ」）で FA・ポスティングの画面が開く
+	# 可変ボタンは最初「表彰式」（表彰の画面）→ Esc でハブへ → 2回目（「FA/トレードへ」）で FA・ポスティングの画面が開く
 	_check(_focus_key(hub) == "advance", "ハブ：可変ボタンにフォーカス")
+	await _key(KEY_ENTER)
+	_check(hub.get("_open_key") == "awards", "可変ボタンでまず表彰の画面（%s）" % hub.get("_open_key"))
+	await _key(KEY_ESCAPE)
+	_check(_focus_key(hub) == "advance", "表彰の画面から戻ると可変ボタンにフォーカス")
 	await _key(KEY_ENTER)
 	_check(_gs.phase == _gs.Phase.FA_TRADE and hub.get("_open_key") == "fa",
 			"可変ボタンで FA・ポスティングの画面（%s / %s）" % [_gs.phase_name(), hub.get("_open_key")])
