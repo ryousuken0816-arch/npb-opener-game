@@ -344,7 +344,9 @@ func _check_2024_ui() -> void:
 					out_p = sp
 					break
 		else:
-			var order: Array = roster.lineup(true)
+			# 巨人（セ）は DH なしのスタメンで戦う日がほとんど。DH なしの打順の選手と入れ替えないと、
+			# 新人が DH だけの枠に入って1年間出場しないことがある（以前のNGの原因）
+			var order: Array = roster.lineup(false)
 			for i in range(order.size() - 1, -1, -1):
 				if order[i][0] != null and order[i][1] != "投手":
 					out_p = order[i][0]

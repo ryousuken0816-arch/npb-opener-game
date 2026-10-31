@@ -33,6 +33,11 @@ const TEAM_SUCCESSOR := {"横浜ベイスターズ": "横浜DeNAベイスター�
 
 ## 支配下登録の上限（育成選手は数えない）
 const ROSTER_LIMIT := 70
+## 育成の契約年数（満了したら育成で再契約。_renew_ikusei）
+const IKUSEI_CONTRACT_YEARS := 3
+## CPU球団の育成からの昇格：支配下の実力の下からこの割合の選手より良ければ上げる。23歳以下は実力に足す
+const CPU_PROMOTE_SHARE := 0.5
+const CPU_PROMOTE_YOUTH := 0.3
 ## CPU球団が戦力外にするとき、投手・野手それぞれ最低これだけは残す
 const MIN_KEEP_PITCHERS := 26
 const MIN_KEEP_FIELDERS := 26
@@ -43,6 +48,8 @@ const RELEASE_SIGN_PER_ROUND := 1
 const RELEASE_ASKING_RATE := 0.7
 ## 戦力外にした選手の出来事の種類（今オフに加わった選手＝戦力外にしない、の判定に使う）
 const JOINED_KINDS := ["mlb_return", "fa_move", "fa_stay", "mlb_keep", "foreign_sign", "release_sign", "trade"]
+## 育成から支配下に登録した選手 → {year, date, team}（この年から支配下。docs/AUTORUN.md 作業19）
+var promoted := {}
 ## 能力値ファイルにいないドラフトの新人（仮の選手）を何シーズン置いておくか（その間にファイルに出てこなければ引退）
 const SYNTH_SEASONS := 3
 
@@ -88,6 +95,8 @@ var limit_active := false
 ## release_trim
 var log: Array[Dictionary] = []
 
+## 自球団のトレード交渉を断った球団 → 断った日（シーズン中は日付、オフは「年-段階」。同じ日にはもう交渉できない）
+var trade_refused := {}
 var _trades: Array[Dictionary] = []  ## trade_id ごと、日付順 {id, date, moves: [{pid, name, from, to}]}
 var _trade_index := 0
 var _moves_by_id := {}
@@ -324,6 +333,11 @@ func _kept_in(id: String, at_year: int) -> bool:
 
 
 ## 画面などから出来事を記録する
+## 自球団のトレードの出来事（出来事の一覧には史実のトレードと同じ「trade」で出る）
+func log_trade(date: String, mv: Dictionary, text: String) -> void:
+	_log(date, "trade", mv["pid"], mv["name"], mv["from"], mv["to"], text)
+
+
 func log_event(kind: String, id: String, from: String, to: String, text: String) -> void:
 	_log("", kind, id, names.get(id, id), from, to, text)
 
@@ -762,6 +776,7 @@ func begin_year(new_year: int, ratings: Dictionary) -> void:
 			push_warning("能力値の無い選手を所属から外します: %s %s" % [id, names.get(id, "")])
 			retired[id] = new_year - 1
 			team_of.erase(id)
+	_renew_ikusei(new_year)
 
 
 # --- 戦力外 ---------------------------------------------------------------------------
@@ -770,6 +785,9 @@ func begin_year(new_year: int, ratings: Dictionary) -> void:
 ## その年までに1軍に出ていない（debut：選手ID → 1軍初出場の年）。データに育成の区別が無いので近似
 func is_ikusei(id: String, p: Dictionary, at_year: int, debut: Dictionary) -> bool:
 	if p.is_empty():
+		return false
+	# 支配下に登録した選手（作業19）。登録した年から支配下
+	if promoted.has(id) and at_year >= int(promoted[id]["year"]):
 		return false
 	# ゲームのドラフトで育成指名した選手は、入団1年目は史実で1軍に出ていても育成（支配下の枠を指名時の見込みどおりにする）
 	if drafted.has(id) and bool(drafted[id]["ikusei"]) and at_year <= int(drafted[id]["year"]) + 1:
@@ -786,6 +804,94 @@ func is_ikusei(id: String, p: Dictionary, at_year: int, debut: Dictionary) -> bo
 		var entry := GameData.draft_entry_for(p, int(joined.get(id, at_year)) - 1)
 		return bool(entry.get("ikusei", false))
 	return false
+
+
+## 今の時点（オフは来季）で育成選手か
+func ikusei_now(id: String) -> bool:
+	return is_ikusei(id, GameData.player(id), _count_year(), _count_debut())
+
+
+## 球団の育成選手（選手ID → true）
+func ikusei_of(team: String) -> Dictionary:
+	var at := _count_year()
+	var debut := _count_debut()
+	var result := {}
+	for id: String in team_of:
+		if team_of[id] == team and is_ikusei(id, GameData.player(id), at, debut):
+			result[id] = true
+	return result
+
+
+## 育成選手を支配下に登録する（期限などの確認は GameState.promote_ikusei）。だめなら理由
+func promote_ikusei(id: String, date: String) -> String:
+	var team: String = team_of.get(id, "")
+	var name: String = str(names.get(id, GameData.player(id).get("name", id)))
+	if team.is_empty():
+		return "%sは所属がありません" % name
+	if not ikusei_now(id):
+		return "%sは育成選手ではありません" % name
+	# 上限は最初の戦力外の段階から（2008年の開幕は史実の編成のままで70人を超える球団がある）
+	if limit_active and registered_count(team) >= ROSTER_LIMIT:
+		return "支配下登録が上限（%d人）です。戦力外で枠を空けてください" % ROSTER_LIMIT
+	promoted[id] = {"year": _count_year(), "date": date, "team": team}
+	_log(date, "ikusei_promote", id, name, team, team, "%s：%sを育成から支配下に登録" % [GameData.short_name(team), name])
+	return ""
+
+
+## CPU球団が支配下に上げる育成選手（実力が支配下の下位 CPU_PROMOTE_SHARE より上の選手を、良い順に最大 count 人）
+func cpu_promotion_candidates(team: String, count: int) -> Array[String]:
+	var at := _count_year()
+	var debut := _count_debut()
+	var regular: Array[float] = []
+	var cands: Array = []
+	for id: String in team_of:
+		if team_of[id] != team:
+			continue
+		var p := GameData.player(id)
+		var z := float(Salary.ability(p)[0]) if not p.is_empty() else -9.0
+		if is_ikusei(id, p, at, debut):
+			var age := FreeAgency.age_of(p, at)
+			cands.append([id, z + (CPU_PROMOTE_YOUTH if age > 0 and age <= 23 else 0.0)])
+		else:
+			regular.append(z)
+	if cands.is_empty() or regular.is_empty():
+		return []
+	regular.sort()
+	var bar: float = regular[int(regular.size() * CPU_PROMOTE_SHARE)]
+	cands.sort_custom(func(a: Array, b: Array) -> bool: return a[1] > b[1])
+	var result: Array[String] = []
+	var room_left := ROSTER_LIMIT - registered_count(team)
+	for c: Array in cands:
+		if result.size() >= mini(count, room_left) or c[1] < bar:
+			break
+		result.append(c[0])
+	return result
+
+
+## 育成の契約（3年）が終わった選手（年が替わるとき。join の年から数える）。史実の育成選手と同じく
+## いったん自由契約にして育成で再契約したことにする（所属・年俸は変えず、出来事に残すだけ。作業19）
+func _renew_ikusei(new_year: int) -> void:
+	var debut := GameData.load_debut_years(new_year)
+	for id: String in team_of:
+		var joined_year := _ikusei_joined_year(id)
+		if joined_year <= 0 or (new_year - joined_year) % IKUSEI_CONTRACT_YEARS != 0 or new_year == joined_year:
+			continue
+		if not is_ikusei(id, GameData.player(id), new_year, debut):
+			continue
+		var name: String = str(names.get(id, GameData.player(id).get("name", id)))
+		_log("", "ikusei_renew", id, name, team_of[id], team_of[id],
+			"%s：%sの育成契約（%d年）が満了、育成で再契約" % [GameData.short_name(team_of[id]), name,
+				IKUSEI_CONTRACT_YEARS])
+
+
+## 育成選手の入団の年（ゲームのドラフト、無ければ能力値の経歴「2006年育成選手ドラフト1巡目」の翌年）。分からなければ 0
+func _ikusei_joined_year(id: String) -> int:
+	if drafted.has(id):
+		return int(drafted[id]["year"]) + 1
+	var text: Variant = GameData.player(id).get("draft")
+	if text is String and "育成" in text and (text as String).length() >= 5 and (text as String)[4] == "年":
+		return int((text as String).left(4)) + 1
+	return 0
 
 
 ## 支配下の人数を数える年と1軍初出場の年（オフは来季。戦力外は来季の編成に向けて決める）
@@ -1212,8 +1318,9 @@ func to_save() -> Dictionary:
 		"salary_history": salary_history, "joined": joined, "names": names, "retired": retired,
 		"in_mlb": in_mlb, "posting_promise": posting_promise, "market": market, "market_info": market_info, "cpu_demand": cpu_demand,
 		"contract_until": contract_until, "fa_year": fa_year, "kept_mlb": kept_mlb, "released": released,
-		"drafted": drafted, "draft_synth": draft_synth, "draft_unsigned": draft_unsigned,
+		"drafted": drafted, "promoted": promoted, "draft_synth": draft_synth, "draft_unsigned": draft_unsigned,
 		"limit_active": limit_active, "log": log, "trade_index": _trade_index, "plan": plan,
+		"trade_refused": trade_refused,
 		"rng": SaveUtil.rng_state(_rng),
 		"fa": fa.to_save() if fa != null else null,
 		"contracts": contracts.to_save() if contracts != null else null,
@@ -1242,11 +1349,13 @@ func from_save(d: Dictionary) -> void:
 	kept_mlb = d.get("kept_mlb", {})
 	released = d.get("released", {})
 	drafted = d.get("drafted", {})
+	promoted = d.get("promoted", {})
 	draft_synth = d.get("draft_synth", {})
 	draft_unsigned = d.get("draft_unsigned", {})
 	limit_active = bool(d.get("limit_active", false))
 	log.assign(d.get("log", []))
 	_trade_index = int(d.get("trade_index", 0))
+	trade_refused = d.get("trade_refused", {})
 	_plan = d.get("plan", {})
 	SaveUtil.set_rng_state(_rng, d.get("rng", ""))
 	fa = FreeAgency.from_save(d["fa"], self) if d.get("fa") is Dictionary else null

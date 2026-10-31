@@ -7,7 +7,7 @@ extends VBoxContainer
 ## 絞り込み・候補の人数。左に候補の一覧（済マーク・名前札・守備位置・経歴・出身・年齢・各能力・当時の評価・将来性）、
 ## 右に選んだ候補の要約と「入札する／指名する」。一覧の列の見出しを押すとその列で並び替え（もう一度押すと逆順）。
 ## 仕組みは Draft（GameState.draft()）。
-## 進行：開幕の演出 → 1位入札（全球団同時。重複は抽選の演出）→ 外れたら再入札 → 2位以降はウェーバー
+## 進行：開幕の演出 → 1位入札（全球団同時。重複は抽選の演出。3Dの Lottery3D、早送り中は2D）→ 外れたら再入札 → 2位以降はウェーバー
 ## （CPU球団の指名は自動で進み、「早送り」「自球団の番まで飛ばす」もできる。自球団の番で止まる）→ 育成 → 結果まとめ。
 ## 操作：札をⒶ／クリックで選び、もう一度Ⓐ／クリック（右クリック）で選手詳細。十字キーで右の「入札する」や上の見出しへ。
 ## LB/RB（Q/E）でタブ、Ⓑは選択の取り消し→ハブ（ドラフトは途中から再開できる）。
@@ -22,7 +22,7 @@ const COLUMNS := {
 	"pitch": [["pos", "位置", 52], ["velocity", "球速", 80], ["overall", "総合", 62], ["stamina", "スタミナ", 78],
 		["k9", "奪三振", 70], ["bb9", "制球", 62]],
 	"bat": [["pos", "位置", 52], ["meet", "ミート", 62], ["power", "パワー", 62], ["eye", "選球眼", 62],
-		["speed", "走力", 58], ["arm", "肩力", 58], ["defense", "守備", 58]],
+		["speed", "走力", 56], ["arm", "肩力", 56], ["defense", "守備", 56]],
 }
 ## 1年目＝入団1年目のシーズン後の総合（作業13。Draft._fill_first_years）
 const TAIL_COLUMNS := [["first", "1年目", 60], ["hyouka", "評価", 52], ["future", "将来性", 62]]
@@ -38,13 +38,18 @@ const NAME_WIDTH := 150
 const MARK_WIDTH := 56
 const ROW_HEIGHT := 36
 const RIGHT_WIDTH := 330
+## 右の要約の中身の幅（要約のスクロールバーの分を空ける）
+const SUMMARY_WIDTH := RIGHT_WIDTH - 40
 ## CPU球団の指名を自動で進める間隔（秒）。早送り中は FAST
 const CPU_STEP_SEC := 0.45
 const CPU_STEP_FAST_SEC := 0.06
-## 抽選の演出（秒）：光が回る時間と、決まってから次へ進むまで
+## 抽選の演出（秒）：光が回る時間と、決まってから次へ進むまで（2Dの演出。早送り中に使う）
 const LOTTERY_SPIN_SEC := 1.6
 const LOTTERY_HOLD_SEC := 1.0
 const OPENING_SEC := 1.8
+## 抽選の3D演出（作業20）。早送り中でなければこちら。他球団どうしの抽選は少し速く流す
+const LOTTERY_3D_SCENE := preload("res://scenes/draft/lottery_3d.tscn")
+const LOTTERY_3D_OTHERS_SPEED := 1.5
 const DONE_COLOR := Color("8a9199")
 const MINE_COLOR := Color("ff6d00")
 const BID_COLOR := Color("e53935")
@@ -255,6 +260,18 @@ func finish_overlays() -> void:
 
 func overlay_visible() -> bool:
 	return _overlay.visible
+
+
+## 抽選を3Dの演出で見せるか（早送り中は2Dの演出）
+func use_3d_lottery() -> bool:
+	return not _fast
+
+
+## いま出ている抽選の3D演出（無ければ null。テスト用）
+func lottery_3d() -> Node:
+	var item: Dictionary = _overlay.get_meta("item", {}) if _overlay.visible else {}
+	var node: Node = item.get("lottery3d")
+	return node if node != null and is_instance_valid(node) else null
 
 
 ## 右の「入札する／指名する」を押す（テスト用）
@@ -471,8 +488,7 @@ func _render_header() -> void:
 			sb.content_margin_right = 3
 		b.tooltip_text = "%sで並び替え（もう一度押すと逆順）" % col[1]
 		if col[0] == "first":
-			b.tooltip_text = "1年目＝入団1年目のシーズン後の総合（史実の成績から。ノイズなし）
-" + b.tooltip_text
+			b.tooltip_text = "1年目＝入団1年目のシーズン後の総合（史実の成績から。ノイズなし）\n" + b.tooltip_text
 		b.pressed.connect(_on_header_pressed.bind(key))
 		_header_box.add_child(b)
 		_header_buttons[key] = b
@@ -714,10 +730,15 @@ func _build_right() -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 6)
 	_right_panel.add_child(box)
+	# 要約は長くなる（1年目の能力など）ので、枠を押し広げないようスクロールの中に入れる（作業8のスクショで見つけた）
+	var summary_scroll := ScrollContainer.new()
+	summary_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	summary_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	box.add_child(summary_scroll)
 	_summary_box = VBoxContainer.new()
 	_summary_box.add_theme_constant_override("separation", 4)
-	_summary_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	box.add_child(_summary_box)
+	_summary_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	summary_scroll.add_child(_summary_box)
 	_action_button = Button.new()
 	_action_button.text = "1位で入札する"
 	_action_button.custom_minimum_size = Vector2(0, 50)
@@ -742,8 +763,10 @@ func _build_right() -> Control:
 	UiTheme.style_button(_finish_button, Color("6d7680"), Color.WHITE, 8, 4)
 	_finish_button.pressed.connect(_on_finish_pressed)
 	line.add_child(_finish_button)
+	# 直近の指名（4行まで。長い行は「…」で省いて折り返さない）
 	_log_label = UiTheme.small_label("", 14, UiTheme.TEXT_SUB, 700)
-	_log_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_log_label.clip_text = true
+	_log_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_log_label.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
 	box.add_child(_log_label)
 	return _right_panel
@@ -757,7 +780,7 @@ func _render_summary(d: Draft) -> void:
 	if c.is_empty():
 		var hint := UiTheme.small_label(_hint_text(d), 16, UiTheme.TEXT, 700)
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		hint.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+		hint.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 		_summary_box.add_child(hint)
 	else:
 		_fill_summary(d, c)
@@ -809,7 +832,7 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	var info := UiTheme.small_label("%s　%s　%s%s\n%s" % [c["name"], c["career"], age, hand, c["school"]], 16,
 		UiTheme.TEXT, 700)
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	info.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	info.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(info)
 	var ranks := HBoxContainer.new()
 	ranks.add_theme_constant_override("separation", 6)
@@ -822,7 +845,7 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	_summary_box.add_child(_first_grid(c))
 	var intro := UiTheme.small_label("「%s」" % c["intro"], 15, Color("1e63c8"), 700)
 	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	intro.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	intro.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(intro)
 	if c.get("mlb_intent", false):
 		_summary_box.add_child(_mlb_box(d, c))
@@ -839,7 +862,7 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 		state += "\n※能力値データが無いため、近い候補の能力を仮に使っています"
 	var state_label := UiTheme.small_label(state, 14, UiTheme.TEXT_SUB, 700)
 	state_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	state_label.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	state_label.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(state_label)
 
 
@@ -882,7 +905,7 @@ func _mlb_box(d: Draft, c: Dictionary) -> Control:
 
 func _ability_grid(c: Dictionary) -> Control:
 	var grid := GridContainer.new()
-	grid.columns = 4
+	grid.columns = 6
 	grid.add_theme_constant_override("h_separation", 6)
 	grid.add_theme_constant_override("v_separation", 2)
 	var keys: Array = [["velocity", "球速"], ["overall", "総合"], ["stamina", "スタミナ"], ["bb9", "制球"],
@@ -909,7 +932,7 @@ func _first_grid(c: Dictionary) -> Control:
 	var first: Dictionary = c.get("first", {})
 	var title := UiTheme.small_label(_first_text(c), 14, Color("8a5cc8"), 800)
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	title.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	box.add_child(title)
 	if int(first.get("overall", -1)) < 0:
 		return box
@@ -1372,16 +1395,20 @@ func _render_opening(d: Draft) -> void:
 func _render_lottery(lot: Dictionary) -> void:
 	var d := GameState.draft()
 	var c: Dictionary = d.by_id[lot["id"]]
+	var use_3d := use_3d_lottery()
 	var title := Label.new()
 	title.text = "1位 抽選（%d球団競合）" % lot["teams"].size()
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.heading(title, 30, Color("b3261e"), Color.WHITE, 8)
+	UiTheme.heading(title, 26 if use_3d else 30, Color("b3261e"), Color.WHITE, 8)
 	_overlay_box.add_child(title)
 	var who := Label.new()
 	who.text = "%s（%s・%s）" % [c["name"], c["pos"], c["school"]]
 	who.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.heading(who, 34, UiTheme.TEXT, Color.WHITE, 8)
+	UiTheme.heading(who, 28 if use_3d else 34, UiTheme.TEXT, Color.WHITE, 8)
 	_overlay_box.add_child(who)
+	if use_3d:
+		_render_lottery_3d(lot)
+		return
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 14)
@@ -1427,6 +1454,33 @@ func _render_lottery(lot: Dictionary) -> void:
 	tw.tween_callback(func() -> void: _reveal_lottery(item)).set_delay(0.25)
 
 
+
+## 3Dの演出（Lottery3D）：宴会場で各球団の代表者が順にくじを引き、同時に開けて、当たりが喜ぶ（作業20・29）。
+## 当たりは lot["winner"] をそのまま渡す。当選の瞬間に結果の文言を出す。Ⓐ（「結果を見る」）・Ⓑ（back）・演出のクリックで飛ばせる
+func _render_lottery_3d(lot: Dictionary) -> void:
+	var item: Dictionary = _overlay.get_meta("item")
+	var view := LOTTERY_3D_SCENE.instantiate() as Lottery3D
+	view.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_overlay_box.add_child(view)
+	var result := Label.new()
+	result.name = "LotteryResult"
+	result.text = "抽選中…"
+	result.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.heading(result, 28, Color("1e63c8"), Color.WHITE, 8)
+	_overlay_box.add_child(result)
+	_overlay_next.text = "結果を見る"
+	item["lottery3d"] = view
+	item["result"] = result
+	view.revealed.connect(func(_winner: String) -> void: _reveal_lottery(item))
+	view.clicked.connect(_skip_overlay)
+	var mine: bool = GameState.team in lot["teams"]
+	var d := GameState.draft()
+	view.play(lot, {"user_team": GameState.team, "speed": 1.0 if mine else LOTTERY_3D_OTHERS_SPEED,
+		"year": d.year, "all_teams": d.teams})
+	if instant:
+		_reveal_lottery(item)
+
+
 func _highlight(boxes: Array[PanelContainer], index: int) -> void:
 	for i in boxes.size():
 		var b := boxes[i]
@@ -1444,6 +1498,9 @@ func _reveal_lottery(item: Dictionary) -> void:
 	var tw: Tween = item.get("tween")
 	if tw != null and tw.is_valid():
 		tw.kill()
+	var view: Lottery3D = item.get("lottery3d")
+	if view != null and is_instance_valid(view):
+		view.skip()
 	var lot: Dictionary = item["lot"]
 	var boxes: Array = item.get("boxes", [])
 	for b: PanelContainer in boxes:
