@@ -59,7 +59,7 @@ func _check_season() -> void:
 	var p_out: Object = mine.relievers[-1]
 	var p_in: Object = null
 	for p: Object in mine.players_where(false, true):
-		if p.has_pitching and mine.reregister_day(p) < 0:
+		if p.has_pitching and not p.is_ikusei and mine.reregister_day(p) < 0:
 			p_in = p
 			break
 	var swap_error: String = mine.swap_registration(p_out, p_in, _gs.day) if p_in != null else "2軍の投手なし"
