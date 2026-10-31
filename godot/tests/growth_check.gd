@@ -261,7 +261,8 @@ func _check_league(growth: Growth, start_players: Array) -> void:
 				old[k].append_array(deltas[age][k])
 	_check(Growth.mean_sd(young[0])[0] > 0.2, "打者は24歳以下で伸びる")
 	_check(Growth.mean_sd(old[0])[0] < -0.5, "打者は35歳以上で衰える")
-	_check(Growth.mean_sd(old[1])[0] < -0.5, "投手は35歳以上で衰える")
+	# 史実でもリーグ平均くらいの35歳以上の投手の総合は1年で −0.4 ほど（年齢ごとの人数が少なく、ぶれる）
+	_check(Growth.mean_sd(old[1])[0] < -0.2, "投手は35歳以上で衰える")
 	_check(Growth.mean_sd(young[1])[0] > Growth.mean_sd(old[1])[0] + 1.0, "投手は若いほうが35歳以上より伸びる")
 	for pair: Array in [["B", "meet", "power"], ["B", "meet", "eye"], ["P", "overall", "k9"], ["P", "overall", "bb9"],
 			["P", "overall", "hr9"], ["P", "overall", "stamina"]]:

@@ -10538,19 +10538,23 @@
    "z",
    "playing",
    "foreign",
-   "pitcher"
+   "pitcher",
+   "foreign_z",
+   "foreign_playing"
   ],
   "weights": [
-   -1.2437,
-   0.3062,
-   -0.1757,
-   -0.3,
-   -0.7524,
-   -5.1232,
-   2.2704,
-   0.8765
+   -0.9128,
+   0.3145,
+   -0.1652,
+   -0.2974,
+   -0.4929,
+   -6.5896,
+   0.7905,
+   0.9244,
+   -1.4048,
+   4.0178
   ],
-  "note": "logit = Σ weights × features。age_30 = 年齢−30, over_33 = max(0,年齢−33), under_26 = max(0,26−年齢)。z・playing は Salary.ability。年齢は来季の満年齢",
+  "note": "logit = Σ weights × features。age_30 = 年齢−30, over_33 = max(0,年齢−33), under_26 = max(0,26−年齢)。z・playing は Salary.ability。年齢は来季の満年齢。foreign_z・foreign_playing は外国人のときだけ z・playing",
   "n": 15153,
   "rate": 0.1285
  }

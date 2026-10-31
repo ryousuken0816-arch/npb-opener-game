@@ -253,7 +253,8 @@ func _assign_rookie_fielding(p: Dictionary, block: Dictionary, rng: RandomNumber
 
 ## 出場の多い側の係数を使う割合（0〜1）。入団して最初の成長だけ、前年までの出場量（2軍は半分）で混ぜる
 static func _regular_weight(p: Dictionary, side: String, block: Dictionary) -> float:
-	if p.has("growth_year"):
+	# 架空の外国人（ForeignPlayers）は新人の側の係数（国内の新人から作った）を使わない
+	if p.has("growth_year") or p.get("import") is Dictionary:
 		return 1.0
 	var s: Variant = p["pitching" if side == "P" else "batting"].get("sample")
 	if not (s is Dictionary):
@@ -468,8 +469,10 @@ func retire_probability(p: Dictionary, year: int, foreign: bool, playing: float 
 	if age < 0:
 		age = TYPICAL_PEAK_AGE
 	var pl: float = ab[1] if playing < 0.0 else playing
+	var f := 1.0 if foreign else 0.0
+	# 特徴量の並びは generated/growth.json の retire.features（外国人は実力・出場との掛け算も）
 	var x := [1.0, age - 30.0, maxf(0.0, age - 33.0), maxf(0.0, 26.0 - age), float(ab[0]), pl,
-		1.0 if foreign else 0.0, 1.0 if p.get("is_pitcher", false) else 0.0]
+		f, 1.0 if p.get("is_pitcher", false) else 0.0, f * float(ab[0]), f * pl]
 	var w: Array = coeff["retire"]["weights"]
 	var t := 0.0
 	for i in w.size():

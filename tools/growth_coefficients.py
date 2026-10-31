@@ -334,12 +334,15 @@ def role_features(age: int, p: dict, low: bool) -> list[float]:
 
 # --- 引退（ロジスティック回帰） ------------------------------------------------------
 
-RETIRE_FEATURES = ["const", "age_30", "over_33", "under_26", "z", "playing", "foreign", "pitcher"]
+RETIRE_FEATURES = ["const", "age_30", "over_33", "under_26", "z", "playing", "foreign", "pitcher",
+                   "foreign_z", "foreign_playing"]
 
 
 def retire_features(age: int, z: float, playing: float, foreign: bool, pitcher: bool) -> list[float]:
+    """外国人は実力・出場で残すかがはっきり決まる（外れは1年で退団）ので、外国人との掛け算も入れる"""
+    f = 1.0 if foreign else 0.0
     return [1.0, age - 30.0, max(0.0, age - 33.0), max(0.0, 26.0 - age), z, playing,
-            1.0 if foreign else 0.0, 1.0 if pitcher else 0.0]
+            f, 1.0 if pitcher else 0.0, f * z, f * playing]
 
 
 def logistic_fit(xs: list[list[float]], ys: list[int]) -> list[float]:
@@ -520,7 +523,7 @@ def main() -> None:
         "features": RETIRE_FEATURES,
         "weights": [round(x, 4) for x in w],
         "note": "logit = Σ weights × features。age_30 = 年齢−30, over_33 = max(0,年齢−33), under_26 = max(0,26−年齢)。"
-                "z・playing は Salary.ability。年齢は来季の満年齢",
+                "z・playing は Salary.ability。年齢は来季の満年齢。foreign_z・foreign_playing は外国人のときだけ z・playing",
         "n": len(retire_y),
         "rate": round(sum(retire_y) / len(retire_y), 4),
     }
@@ -551,8 +554,12 @@ def report(out: dict, retire_rows: list, w: list[float]) -> None:
         pred = sum(1 / (1 + math.exp(-sum(a * b for a, b in zip(w, retire_features(*r[:5][:3], r[3], r[4] == "P")))))
                    for r in sub) / len(sub)
         print(f"  国内 {lo}-{hi}歳 n={len(sub)} 実際 {sum(r[5] for r in sub) / len(sub):.3f} 予測 {pred:.3f}")
-    sub = [r for r in retire_rows if r[3]]
-    print(f"  外国人 n={len(sub)} 実際 {sum(r[5] for r in sub) / len(sub):.3f}")
+    sub = sorted([r for r in retire_rows if r[3]], key=lambda r: r[1])
+    q = len(sub) // 4
+    for label, part in [("全員", sub), ("実力の下位4分の1", sub[:q]), ("上位4分の1", sub[-q:])]:
+        pred = sum(1 / (1 + math.exp(-sum(a * b for a, b in zip(w, retire_features(r[0], r[1], r[2], True, r[4] == "P")))))
+                   for r in part) / len(part)
+        print(f"  外国人 {label} n={len(part)} 実際 {sum(r[5] for r in part) / len(part):.3f} 予測 {pred:.3f}")
 
 
 if __name__ == "__main__":
