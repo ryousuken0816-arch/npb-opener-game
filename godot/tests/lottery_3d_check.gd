@@ -273,7 +273,9 @@ func _bid(d: RefCounted, view: Node, cand: Dictionary) -> Array:
 	view.call("select_candidate", cand["id"])
 	await _frames(2)
 	view.call("press_action")
-	await _frames(3)
+	await _frames(2)
+	view.call("skip_announcements")  # 1位の入札の発表（作業28）は飛ばす
+	await _frames(2)
 	var actual := {}
 	for lot: Dictionary in d.last_lotteries():
 		actual[lot["id"]] = lot

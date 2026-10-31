@@ -7,7 +7,8 @@ extends VBoxContainer
 ## 絞り込み・候補の人数。左に候補の一覧（済マーク・名前札・守備位置・経歴・出身・年齢・各能力・当時の評価・将来性）、
 ## 右に選んだ候補の要約と「入札する／指名する」。一覧の列の見出しを押すとその列で並び替え（もう一度押すと逆順）。
 ## 仕組みは Draft（GameState.draft()）。
-## 進行：開幕の演出 → 1位入札（全球団同時。重複は抽選の演出。3Dの Lottery3D、早送り中は2D）→ 外れたら再入札 → 2位以降はウェーバー
+## 進行：開幕の演出 → 1位入札（全球団同時。各球団の入札を1球団ずつ発表 → 重複は抽選の演出。3Dの Lottery3D、早送り中は2D）
+## → 外れたら再入札 → 2位以降はウェーバー（指名を1つずつ中継風の札 PickAnnounce で発表し、読み上げる。作業28）
 ## （CPU球団の指名は自動で進み、「早送り」「自球団の番まで飛ばす」もできる。自球団の番で止まる）→ 育成 → 結果まとめ。
 ## 操作：札をⒶ／クリックで選び、もう一度Ⓐ／クリック（右クリック）で選手詳細。十字キーで右の「入札する」や上の見出しへ。
 ## LB/RB（Q/E）でタブ、Ⓑは選択の取り消し→ハブ（ドラフトは途中から再開できる）。
@@ -50,6 +51,18 @@ const OPENING_SEC := 1.8
 ## 抽選の3D演出（作業20）。早送り中でなければこちら。他球団どうしの抽選は少し速く流す
 const LOTTERY_3D_SCENE := preload("res://scenes/draft/lottery_3d.tscn")
 const LOTTERY_3D_OTHERS_SPEED := 1.5
+## 指名の発表（作業28）：選手名が出るまで（読み上げなし／あり）・経歴が出るまでの間・出しておく秒（速さ「ふつう」）。
+## 速さの設定の倍率を掛け、自球団は長め・他球団は少し短め・早送り中は短く読み上げなし。読み上げは終わるまで待つ（上限あり）
+const ANNOUNCE_NAME_SEC := 0.9
+const ANNOUNCE_NAME_VOICE_SEC := 2.2
+const ANNOUNCE_SUB_GAP := 0.5
+const ANNOUNCE_HOLD_SEC := 1.4
+const ANNOUNCE_SPEEDS := [["ゆっくり", 1.4], ["ふつう", 1.0], ["速め", 0.6], ["自球団だけ", 0.6]]
+const ANNOUNCE_MINE_SCALE := 1.5
+const ANNOUNCE_OTHERS_SCALE := 0.85
+const ANNOUNCE_FAST_SCALE := 0.3
+const ANNOUNCE_VOICE_WAIT := 6.0
+const VOLUMES := [100, 80, 60, 40, 20]
 const DONE_COLOR := Color("8a9199")
 const MINE_COLOR := Color("ff6d00")
 const BID_COLOR := Color("e53935")
@@ -97,6 +110,11 @@ var _overlay_queue: Array = []
 var _ids: Array[String] = []
 var _tags := {}
 var _recent: Array[String] = []
+var _voice: DraftVoice
+var _announce_elapsed := 0.0
+var _announce_total := 0.0
+## Ⓑで発表を飛ばした：自球団の番が来るまで他球団の指名は発表しない
+var _announce_skip := false
 
 
 func setup(p: UiTheme.Palette) -> void:
@@ -123,6 +141,8 @@ func setup(p: UiTheme.Palette) -> void:
 	_picks_scroll.add_child(_picks_grid)
 	add_child(_build_bottom())
 	_build_overlay()
+	_voice = DraftVoice.new()
+	add_child(_voice)
 
 
 # --- 外から ------------------------------------------------------------------------------
@@ -143,10 +163,13 @@ func open() -> void:
 		_continue_first()  # 外れ1位の途中でセーブ・画面を閉じたとき
 
 
-## 戻る：演出中は飛ばす、選択中なら取り消す（true）。何もなければ false（ハブへ戻る）
+## 戻る：演出中は飛ばす（指名の発表中は発表をまとめて飛ばす）、選択中なら取り消す（true）。何もなければ false（ハブへ戻る）
 func back() -> bool:
 	if _overlay.visible:
-		_skip_overlay()
+		if announcing():
+			skip_announcements()
+		else:
+			_skip_overlay()
 		return true
 	if _selected.is_empty():
 		return false
@@ -208,7 +231,10 @@ func refresh() -> void:
 
 
 func _process(delta: float) -> void:
-	if not is_visible_in_tree() or _overlay.visible:
+	if not is_visible_in_tree():
+		return
+	if _overlay.visible:
+		_tick_announce(delta)
 		return
 	var d := GameState.draft()
 	if d == null or d.resolved or (d.stage != Draft.Stage.WAIVER and d.stage != Draft.Stage.IKUSEI):
@@ -256,6 +282,35 @@ func finish_overlays() -> void:
 
 func overlay_visible() -> bool:
 	return _overlay.visible
+
+
+## 指名の発表を出しているか
+func announcing() -> bool:
+	return _overlay.visible and _overlay.get_meta("item", {}).get("kind", "") == "announce"
+
+
+## いま出ている発表の札（無ければ null。テスト用）
+func announce_card() -> PickAnnounce:
+	if not announcing():
+		return null
+	var card: PickAnnounce = _overlay.get_meta("item").get("card")
+	return card if card != null and is_instance_valid(card) else null
+
+
+## 発表を飛ばす（Ⓑ）：待っている発表をすべて消す。ウェーバー・育成の途中なら、自球団の番が来るまで他球団の指名は発表しない
+func skip_announcements() -> void:
+	_overlay_queue = _overlay_queue.filter(func(it: Dictionary) -> bool: return it["kind"] != "announce")
+	_voice.stop()
+	var d := GameState.draft()
+	if d != null and (d.stage == Draft.Stage.WAIVER or d.stage == Draft.Stage.IKUSEI) and not d.is_user_turn():
+		_announce_skip = true
+	if announcing():
+		_next_overlay()
+
+
+## 読み上げ（テスト用）
+func voice() -> DraftVoice:
+	return _voice
 
 
 ## 抽選を3Dの演出で見せるか（早送り中は2Dの演出）
@@ -1082,6 +1137,7 @@ func _on_action_pressed() -> void:
 		refresh()
 		return
 	_note_pick(d, d.picks[-1])
+	_announce_pick(d.picks[-1])
 	_message = "%sを%sで指名しました。" % [c["name"], d.picks[-1]["label"]]
 	_after_change(d)
 
@@ -1138,8 +1194,10 @@ func _cpu_step(d: Draft) -> void:
 	var rec := d.cpu_step()
 	if not rec.is_empty():
 		_note_pick(d, rec)
+		_announce_pick(rec)
 	_after_change(d)
 	if d.is_user_turn():
+		_announce_skip = false
 		UiFx.bump(_turn_label, 1.08)
 		focus_first()
 
@@ -1184,6 +1242,15 @@ func _run_wave(d: Draft) -> void:
 	lots.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return (GameState.team in a["teams"]) and not (GameState.team in b["teams"]))
 	_overlay_queue.clear()
+	# 各球団の入札を1球団ずつ発表（2巡目の指名順）→ 抽選 → 結果の一覧
+	var wave_no := d.wave - 1
+	var bids := results.duplicate()
+	bids.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return d.order.find(a["team"]) < d.order.find(b["team"]))
+	for r: Dictionary in bids:
+		if _announce_on(r["team"] == GameState.team):
+			_overlay_queue.append({"kind": "announce", "rec": {"team": r["team"], "id": r["id"], "round": 1,
+				"ikusei": false}, "note": "" if wave_no <= 1 else "外れ1位（%d回目の入札）" % wave_no})
 	for lot in lots:
 		_overlay_queue.append({"kind": "lottery", "lot": lot})
 	_overlay_queue.append({"kind": "wave", "results": results, "wave": d.wave - 1})
@@ -1258,6 +1325,7 @@ func _show_opening(d: Draft) -> void:
 ## 次の演出を出す（無ければ閉じる）
 func _next_overlay() -> void:
 	if _overlay_queue.is_empty():
+		_voice.stop()
 		_overlay.visible = false
 		if _continue_first():
 			return
@@ -1274,6 +1342,8 @@ func _next_overlay() -> void:
 			_render_opening(item["draft"])
 		"lottery":
 			_render_lottery(item["lot"])
+		"announce":
+			_render_announce(item)
 		"wave":
 			_render_wave(item["results"], item["wave"])
 	_overlay_next.grab_focus()
@@ -1282,6 +1352,12 @@ func _next_overlay() -> void:
 
 func _skip_overlay() -> void:
 	var item: Dictionary = _overlay.get_meta("item", {})
+	if item.get("kind", "") == "announce":
+		var card: PickAnnounce = item.get("card")
+		if card != null and is_instance_valid(card) and not card.is_revealed():
+			card.reveal_all()
+			return
+		_voice.stop()
 	if item.get("kind", "") == "lottery" and not item.get("revealed", false):
 		_reveal_lottery(item)
 		return
@@ -1318,6 +1394,124 @@ func _render_opening(d: Draft) -> void:
 	title.scale = Vector2(0.6, 0.6)
 	var tw := title.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.tween_property(title, "scale", Vector2.ONE, 0.35)
+
+
+# --- 指名の発表（作業28） ------------------------------------------------------------------
+
+## 指名を発表するか：演出を飛ばすとき（テスト）はしない。自球団はいつも、他球団は Ⓑで飛ばした間と「自球団だけ」の設定ではしない
+func _announce_on(mine: bool) -> bool:
+	if instant:
+		return false
+	if mine:
+		return true
+	return not _announce_skip and int(GameSettings.get_value("draft", "announce_speed")) != ANNOUNCE_SPEEDS.size() - 1
+
+
+func _announce_pick(rec: Dictionary) -> void:
+	if not _announce_on(rec["team"] == GameState.team):
+		return
+	_overlay_queue.append({"kind": "announce", "rec": rec, "note": ""})
+	if not _overlay.visible:
+		_next_overlay()
+
+
+## 発表の札：球団の帯 → 選手名 → 守備位置・出身校。読み上げ（自球団はチャイムも）。時間が来て読み上げが終われば次へ
+func _render_announce(item: Dictionary) -> void:
+	var d := GameState.draft()
+	var info := PickAnnounce.info_for(d, item["rec"], GameState.team, str(item.get("note", "")))
+	var mine: bool = info["mine"]
+	var fast := _fast and not mine
+	var voice_on := bool(GameSettings.get_value("voice", "enabled")) and not fast
+	var speed: Array = ANNOUNCE_SPEEDS[clampi(int(GameSettings.get_value("draft", "announce_speed")), 0,
+		ANNOUNCE_SPEEDS.size() - 1)]
+	var k: float = float(speed[1]) * (ANNOUNCE_MINE_SCALE if mine else ANNOUNCE_OTHERS_SCALE) \
+		* (ANNOUNCE_FAST_SCALE if fast else 1.0)
+	var name_at := (ANNOUNCE_NAME_VOICE_SEC if voice_on else ANNOUNCE_NAME_SEC) * k
+	var sub_at := name_at + ANNOUNCE_SUB_GAP * k
+	_announce_total = sub_at + ANNOUNCE_HOLD_SEC * k
+	_announce_elapsed = 0.0
+	var card := PickAnnounce.new()
+	card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	card.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_skip_overlay())
+	_overlay_box.add_child(card)
+	card.play(info, name_at, sub_at)
+	item["card"] = card
+	_overlay_box.add_child(_announce_settings_row())
+	_overlay_next.text = "次へ"
+	if voice_on:
+		_voice.speak(PickAnnounce.voice_parts(info))
+	else:
+		_voice.stop()
+	if mine:
+		_voice.chime()
+
+
+func _tick_announce(delta: float) -> void:
+	if not announcing():
+		return
+	_announce_elapsed += delta
+	var voice_done := not _voice.is_busy() or _announce_elapsed >= _announce_total + ANNOUNCE_VOICE_WAIT
+	if _announce_elapsed >= _announce_total and voice_done:
+		_voice.stop()
+		_next_overlay()
+
+
+## 発表の下の操作：早送り・発表の速さ・読み上げのオンオフ・音量・発表を飛ばす（設定は user://settings.cfg に残る）
+func _announce_settings_row() -> Control:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 8)
+	var fast := _small_button("早送り", Color("2f7fd8"))
+	fast.toggle_mode = true
+	fast.button_pressed = _fast
+	fast.toggled.connect(func(on: bool) -> void:
+		_fast = on
+		_fast_button.set_pressed_no_signal(on))
+	row.add_child(fast)
+	var speed := _small_button("", Color("6d7680"))
+	var show_speed := func() -> void:
+		speed.text = "発表：%s" % ANNOUNCE_SPEEDS[int(GameSettings.get_value("draft", "announce_speed"))][0]
+	show_speed.call()
+	speed.pressed.connect(func() -> void:
+		GameSettings.set_value("draft", "announce_speed",
+			(int(GameSettings.get_value("draft", "announce_speed")) + 1) % ANNOUNCE_SPEEDS.size())
+		show_speed.call())
+	row.add_child(speed)
+	var voice_button := _small_button("", Color("6d7680"))
+	var show_voice := func() -> void:
+		voice_button.text = "読み上げ：%s" % ("オン" if bool(GameSettings.get_value("voice", "enabled")) else "オフ")
+	show_voice.call()
+	voice_button.pressed.connect(func() -> void:
+		var on := not bool(GameSettings.get_value("voice", "enabled"))
+		GameSettings.set_value("voice", "enabled", on)
+		if not on:
+			_voice.stop()
+		show_voice.call())
+	row.add_child(voice_button)
+	var volume := _small_button("", Color("6d7680"))
+	var show_volume := func() -> void:
+		volume.text = "音量：%d%%" % int(GameSettings.get_value("voice", "volume"))
+	show_volume.call()
+	volume.pressed.connect(func() -> void:
+		var i := VOLUMES.find(int(GameSettings.get_value("voice", "volume")))
+		GameSettings.set_value("voice", "volume", VOLUMES[(i + 1) % VOLUMES.size()])
+		show_volume.call())
+	row.add_child(volume)
+	var skip := _small_button("発表を飛ばす（Ⓑ）", Color("8a5cc8"))
+	skip.pressed.connect(skip_announcements)
+	row.add_child(skip)
+	return row
+
+
+func _small_button(text: String, color: Color) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.custom_minimum_size = Vector2(0, 34)
+	b.add_theme_font_size_override("font_size", 15)
+	UiTheme.style_button(b, color, Color.WHITE, 8, 4)
+	return b
 
 
 func _render_lottery(lot: Dictionary) -> void:
