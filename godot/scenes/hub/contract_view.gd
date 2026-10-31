@@ -329,7 +329,7 @@ func _render_deal(c: ContractRenewal) -> void:
 	_new_label.text = Salary.text(amount)
 	var diff := amount - prev
 	_diff_label.text = _diff_text(prev, amount)
-	_diff_label.add_theme_color_override("font_color", UP_COLOR if diff > 0 else (DOWN_COLOR if diff < 0 else SAME_COLOR))
+	_diff_label.label_settings.font_color = (UP_COLOR if diff > 0 else (DOWN_COLOR if diff < 0 else SAME_COLOR))
 	_amount_label.text = Salary.text(amount)
 	var adjustable := c.can_adjust(id)
 	_set_adjust_enabled(adjustable)
@@ -440,7 +440,7 @@ func _render_tabs(c: ContractRenewal) -> void:
 	var total: int = GameState.league.next_payroll(team) if GameState.league != null else 0
 	var budget := ContractRenewal.budget(team)
 	_count_label.text = "年俸総額 %s／予算 %s" % [_short_amount(total), _short_amount(budget)]
-	_count_label.add_theme_color_override("font_color", UP_COLOR if total > budget else UiTheme.TEXT)
+	_count_label.label_settings.font_color = (UP_COLOR if total > budget else UiTheme.TEXT)
 	_close_button.disabled = c == null or c.resolved
 	_close_button.text = "契約更改を終える" if c == null or not c.resolved else "契約更改は終わりました"
 

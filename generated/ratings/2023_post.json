@@ -64624,8 +64624,8 @@
    "weight": 93,
    "draft": "",
    "career": "ボリバリアーノドロレス高",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -64693,7 +64693,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 56,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 37,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 56,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 56,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.4783,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.6575,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.4748,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.8848,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9244,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 151,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
