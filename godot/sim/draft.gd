@@ -68,6 +68,11 @@ const FUTURE_FROM_HYOUKA := [-0.9, 0.55]
 const FUTURE_FULL_YEARS := 3.0
 
 ## 経歴の並び順
+## 1年目の能力（作業13）：投手の項目と、野手の総合（打撃・走塁・守備の加重平均。Salary.ability と同じ重み）
+const FIRST_PITCH_KEYS := ["overall", "stamina", "k9", "bb9"]
+const FIRST_BAT_WEIGHTS := {"meet": 0.35, "power": 0.35, "eye": 0.1, "speed": 0.1, "defense": 0.1}
+## この年の能力値ファイルはシーズン途中のデータ（data/2026 は 9/25 時点）。この年に入団した新人の1年目は途中
+const IN_PROGRESS_YEAR := 2026
 const CAREER_ORDER := ["高校生", "大学生", "社会人"]
 const POS_GROUPS := ["投手", "捕手", "内野手", "外野手"]
 
@@ -175,6 +180,7 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 	for c in missing:
 		c["player"] = _synthetic_player(c, entries)
 		_fill_profile(c, c["player"])
+	_fill_first_years()
 	for t in teams:
 		_team_noise[t] = {}
 		for c in candidates:
@@ -468,6 +474,8 @@ static func sort_value(c: Dictionary, key: String) -> Variant:
 			return str(c["name"])
 		"velocity":
 			return int(c.get("velocity", 0))
+		"first":
+			return int(c.get("first", {}).get("overall", -1))
 	return int(c.get("ratings", {}).get(key, -1))
 
 
@@ -657,6 +665,56 @@ func _fill_profile(c: Dictionary, p: Dictionary) -> void:
 			c["velocity"] = int(pit["velocity"].get("kmh", 0))
 	c["ratings"] = ratings
 	c["intro"] = intro_text(c)
+
+
+## 1年目の能力（入団1年目のシーズン後＝generated/ratings/<入団年>_post.json の値。ノイズなし。作業13）を
+## c["first"] に入れる：{status（"1軍"・"2軍"＝2軍の成績だけで動いた・"なし"＝出場なし／データなし）, overall,
+## ratings（キー → 値）, velocity, partial（入団年がシーズン途中のデータ）}
+func _fill_first_years() -> void:
+	var path := GameData.find_ratings_path(year + 1, "post")
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if not path.is_empty() else null
+	var by_id_post := {}
+	var by_name_post := {}
+	if parsed is Dictionary:
+		for p: Dictionary in parsed.get("players", []):
+			by_id_post[p["id"]] = p
+			by_name_post[LeagueRoster.norm_name(str(p.get("name", "")))] = p
+	for c in candidates:
+		var p: Dictionary = by_id_post.get(c["id"], {})
+		if p.is_empty() and c["synthetic"]:
+			p = by_name_post.get(LeagueRoster.norm_name(c["name"]), {})
+			if not str(p.get("draft", "")).begins_with("%d年" % year):
+				p = {}
+		c["first"] = first_year_of(p, c["pitcher"], year + 1 >= IN_PROGRESS_YEAR)
+
+
+## 能力値ファイルの選手から1年目の能力（_fill_first_years の形）
+static func first_year_of(p: Dictionary, pitcher: bool, partial: bool) -> Dictionary:
+	var result := {"status": "なし", "overall": -1, "ratings": {}, "velocity": 0, "partial": partial}
+	var part: Variant = p.get("pitching" if pitcher else "batting")
+	if not part is Dictionary or not part.get("ratings") is Dictionary:
+		return result
+	var sample: Dictionary = part.get("sample", {}) if part.get("sample") is Dictionary else {}
+	var first_team := float(sample.get("outs_1" if pitcher else "pa_1", 0.0))
+	var farm := float(sample.get("outs_2" if pitcher else "pa_2", 0.0))
+	if first_team <= 0.0 and farm <= 0.0:
+		return result
+	result["status"] = "1軍" if first_team > 0.0 else "2軍"
+	var keys: Array = FIRST_PITCH_KEYS if pitcher else FIRST_BAT_WEIGHTS.keys() + ["arm"]
+	for k: String in keys:
+		var r: Variant = part["ratings"].get(k)
+		if r is Dictionary and r.get("value") != null:
+			result["ratings"][k] = int(r["value"])
+	if pitcher:
+		result["overall"] = int(result["ratings"].get("overall", -1))
+		if part.get("velocity") is Dictionary:
+			result["velocity"] = int(part["velocity"].get("kmh", 0))
+	else:
+		var total := 0.0
+		for k: String in FIRST_BAT_WEIGHTS:
+			total += FIRST_BAT_WEIGHTS[k] * int(result["ratings"].get(k, 45))
+		result["overall"] = roundi(total)
+	return result
 
 
 ## 簡単な紹介文（アマ時代のニュースのデータが無いので、出身・守備位置・球速程度）
