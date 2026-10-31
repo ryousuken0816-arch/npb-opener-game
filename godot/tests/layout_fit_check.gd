@@ -417,6 +417,10 @@ func _check_draft(when: String) -> void:
 		await _check_screen("%s：ドラフト 候補を選ぶ" % when, 0.0)
 		view.press_action()
 		await _check_screen("%s：ドラフト 入札" % when)
+		# 1位の入札の発表（作業28）：札が出ていたら調べてから、Ⓑで発表を飛ばす
+		if view.announcing():
+			await _check_screen("%s：ドラフト 指名の発表" % when)
+			view.back()
 		# 抽選の3D演出（作業20）：途中と、飛ばしたあとの結果の場面
 		var lot3d: Node = view.lottery_3d()
 		if lot3d != null:

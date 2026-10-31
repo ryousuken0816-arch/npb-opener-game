@@ -1,4 +1,8 @@
 npb_collector/cache/
 npb_collector/__pycache__/
 *.log
+# ドラフトの読み上げの声（録音・音声合成のモデル）はリポジトリに入れない（作業28。godot/README.md「ドラフトの読み上げ」）
+voice/
+*.vvm
+*.onnx
 npb_collector/out*/

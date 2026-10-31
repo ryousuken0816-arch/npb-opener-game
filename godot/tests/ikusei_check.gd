@@ -87,6 +87,7 @@ func _run() -> void:
 	_sg.call("delete", "slot1")
 
 	print("\n-- 4) 2008〜2010年：CPU球団の昇格 --")
+	var total := 0
 	for y in [2008, 2009, 2010]:
 		if y > 2008:
 			while _gs.phase != _gs.Phase.SEASON:
@@ -99,9 +100,12 @@ func _run() -> void:
 			if e["kind"] == "ikusei_promote" and int(e["year"]) == y and e["from"] != _gs.team:
 				count += 1
 				teams[e["from"]] = true
-		_check(count >= 2, "%d年：CPU球団の昇格 %d人（%d球団）" % [y, count, teams.size()])
+		# 人数は支配下の空き（FA・トレードの乱数）しだいで年ごとに1〜8人ほどばらつく
+		_check(count >= 1, "%d年：CPU球団の昇格 %d人（%d球団）" % [y, count, teams.size()])
+		total += count
 		_check_no_ikusei_active("%d年の終盤" % y)
 		_gs.advance_through(_gs.season_last_day())
+	_check(total >= 6, "2008〜2010年：CPU球団の昇格が合わせて6人以上（%d人）" % total)
 	_check_renew()
 	_finish()
 

@@ -357,7 +357,26 @@
    - 画面 `godot/scenes/hub/comp_view.gd`（`CompView`）：自球団が決める補償が残っていると可変ボタンが「FAの補償」になり、この画面を開く。獲得した側はプロテクト28人（おまかせ・入れ外し・確定）、旧球団の側はプロテクト外から1人か金銭（2027年からは指名権か金銭）
    - 確認：`godot/tests/fa_comp_check.gd`（新、ヘッドレス約1分半）。2008〜2012年のオフで補償27件（人的15件）、自球団の両方の側を画面で操作、翌年の開幕で人的補償の選手が新しい球団にいる、2026年の35歳以上・2027年の指名権と金銭、指名権が移ったドラフト。
      layout_fit_check に補償の画面を追加。スクショ1回（プロテクトの画面）。全テストをヘッドレスで流してOK（他の担当の作業を取り込んだあとにもう一度全部流した）
-4.35 ~~2026年のシーズン・ドラフト（史実）、2027年ドラフト（実在のアマ選手）、メジャー志望の選手の説得~~ → 完了（2026-11-01、担当D）。docs/AUTORUN.md の作業16・17・26
+4.35 ~~フルスクリーン~~ → 完了（2026-11-01）。docs/AUTORUN.md の作業30
+   - 仕組み：`godot/scripts/user_settings.gd`（`UserSettings`、`user://settings.cfg` の ConfigFile。今は [display] fullscreen だけ）。`UiInput`（オートロード）が起動時に読んで反映し、`_input` で **F11・Alt+Enter**（押した瞬間だけ）を拾って `toggle_fullscreen()`（保存して次の起動でも同じ。`fullscreen_changed` シグナル）。ヘッドレスでは実際のウィンドウは変えない
+   - 画面：ハブの「システム」のセーブ／ロードの行の右端に「フルスクリーン：オン／オフ」のボタン（F11 で切り替えても表示が追従）
+   - `project.godot`：`window/stretch/aspect` を expand → **keep**（横長のモニターは左右、4:3・16:10 は上下に黒い帯。基準は 1280x720 のまま）、背景の既定色を黒に
+   - 確認：`godot/tests/fullscreen_check.gd`（新、ヘッドレス）：設定の保存・復元（ほかの項目を消さない）、F11・Alt+Enter・（リピート・離す・Enter だけ・Alt+ほかのキーでは切り替わらない）、システムのボタンの追従、aspect=keep。システム画面のスクショ1回（ボタンが枠に収まる）
+4.36 ~~ドラフトのCPUバランス調整~~ → 完了（2026-11-01）。docs/AUTORUN.md の作業7（担当B）
+   - `godot/sim/draft.gd` の `evaluate()`：2位以降は「当時の評価」と「将来性（ノイズ入り）」をそれぞれ候補全体の z にして、`CPU_HYOUKA_SHARE[DIFFICULTY]`（やさしい 0.8・ふつう 0.7・むずかしい 0.55）の割合で混ぜる（今までは将来性そのもの＋当時の評価×0.35で、将来性が強すぎて良い選手が上位で消えていた）。1位入札の式は今までどおり
+   - 目玉：各CPU球団が1〜2人（`TARGET_COUNT_MAX`）を、その球団の見立て（将来性＋球団ごとの見立ての違い）の上位から選び（`cpu_targets`、セーブに入る）、1位入札と2位（`TARGET_ROUNDS`）までの指名で評価に `TARGET_BONUS`（1.5）を足す。本当の大物は多くの球団の目玉になって上位で消え、中くらいのお宝は下位まで残る
+   - 結果（`godot/tests/draft_balance_check.gd`、変更前 → 変更後）：各順位の時点で残っている最高の将来性（ノイズなし）は 2012年 4位 C → S、2016年 5位 C → A・6位 D → B、2019年 6位 C のまま。
+     史実で4位以下・育成なのに活躍した選手（将来性B以上）がゲームの3位以下まで残った数は 2012年 0/2 → 1/2、2016年 3/8 → 5/8、2019年 1/3 → 1/3。史実の競合選手は全員2位までに消える（2024年の柴田・石塚（2球団競合）はゲームでは2位のことがある）
+   - 確認：draft_balance_check（新）と、既存の draft_check・draft_rebid_check・save_check。全テストをヘッドレスで1回：20本のうち NG は3本：layout_fit_check（2011年以降の選手詳細「経歴」タブが受賞歴の札で縦に、2012年の記録室「チーム成績の推移」が年が増えて縦スクロールが出た分だけ横にはみ出し）→ プロフィールを縦のスクロールの中へ、推移の列の幅を狭めて（担当Fも同じ修正を入れていたので main の 84 を採用）ALL OK（1761画面）。draft_check の「2025年に指名選手が試合に出た」（既知の乱数しだい）は流し直して OK。pad_flow_check の「タイトルで最初の球団にフォーカス」はユーザーの実際のセーブ（user://saves/slot1.json）があって「続きから」が選ばれるため（コードの問題ではない。セーブには触っていない）。他は全て OK。そのあと担当C・E・F（能力値の再生成・3D抽選・新聞）を取り込んで全テスト23本をもう1回流し、全て OK（layout_fit_check 1800画面。再生成後の draft_balance_check：2012年 お宝2/2・2016年 6/8・2019年 2/3 が3位以下まで残る）
+4.37 ~~ドラフトの指名発表を1球団ずつ（中継風の画面と読み上げ）~~ → 完了（2026-11-01）。docs/AUTORUN.md の作業28（担当E）
+   - 札 `godot/scenes/draft/pick_announce.gd`（`PickAnnounce`）・読み上げ `godot/scripts/draft_voice.gd`（`DraftVoice`）・設定 `godot/scripts/game_settings.gd`（`GameSettings`、`user://settings.cfg`）。使い方・声の差し込み方は godot/README.md「ドラフトの読み上げ」
+   - `DraftView`：1位の入札を締めると、入札した全球団の札を2巡目の指名順に1つずつ（外れ1位は「外れ1位（N回目の入札）」）→ 抽選（3D）→ 結果の一覧。2位以降は CPU球団・自球団の指名ごとに札を出し、出ている間は CPU の指名を進めない（`_process` は演出中は止まる）。
+     時間（`ANNOUNCE_*`）：ふつうで名前まで0.9秒（読み上げありは2.2秒）・経歴まで+0.5・出しておく+1.4、自球団×1.5、他球団×0.85、早送り×0.3（読み上げなし）、読み上げは終わるまで待つ（上限6秒）。`instant`（テスト用）のときは発表しない
+   - 発表の下の操作：早送り・発表の速さ（ゆっくり／ふつう／速め／自球団だけ）・読み上げのオンオフ・音量・発表を飛ばす（Ⓑ）。声の切り替え（os／voicevox／wav）と VOICEVOX の URL・話者・WAV のフォルダは settings.cfg を書き換える（画面は無し）
+   - `project.godot` に `audio/general/text_to_speech=true` を足した（OS の音声合成に必要）
+   - 確認：`godot/tests/draft_announce_check.gd`（新、ヘッドレス約1分）：読み上げの文、wav／os／voicevox（閉じたポートで OS に戻る）の段取り、2024年で1位の入札の札12枚・名前が遅れて出る・自動で次へ・Ⓐ・Ⓑで抽選へ・2位の CPU の指名の発表と読み上げの文・早送り・Ⓑで自球団の番まで発表なし・自球団の指名は長め。
+     lottery_3d_check・layout_fit_check は入札のあとの発表を飛ばしてから抽選を見る（layout_fit は発表の札も調べる）。スクショはウィンドウ付き1回（1位の入札の札・自球団の2位の札）
+4.38 ~~2026年のシーズン・ドラフト（史実）、2027年ドラフト（実在のアマ選手）、メジャー志望の選手の説得~~ → 完了（2026-11-01、担当D）。docs/AUTORUN.md の作業16・17・26
    - 作業16：2026年の日程・最終成績・2026年秋のドラフト（1位の競合は `data/draft_first_round.json`）を npb.jp から取得（上の「全年データ」）。`generated/ratings/2026_pre`・`2026_post` を最終成績で作り直し、`2027_pre` を作成。`tools/draft_future.py` は2026年の指名まで（`LAST_HISTORY_YEAR`＝2026。2027年以降の post は写しなので使わない）。開始年の上限 `GameState.DEBUG_LAST_YEAR` は2027
    - 作業17：`Draft.LAST_HISTORY_YEAR`（2026）より後の年は、候補が `data/amateur/<年>.json`（`Draft.amateur_rows`）。当時の評価は有識者の格付け（`GRADE_AS_PICK`）、CPU球団の指名人数は一律（`AMATEUR_QUOTA`）、1年目は「未来」、紹介文は集めた情報の `intro`。2026年の候補も、当時の評価に有識者の格付けを半々で混ぜる（`SCOUT_HYOUKA_WEIGHT`）
    - 能力値：`tools/amateur_ratings.py`（tools/README.md「アマ選手の初期能力」）。`rookies --draft-year 2026` で2026年秋の新人（仮ID `ama2026:<名前>`）を `2027_pre` に足し、`carry --year 2027` で `2027_post`（引き継ぎ）と `2028_pre`（＋2027年の候補、球団なし）を作る。作り直す順：compute_ratings（2026 pre/post、2027 pre）→ rookies → carry → draft_future。2027年は成績が無く球団のリーグが決まらないので `fill_leagues` で2026年の対応から埋める
