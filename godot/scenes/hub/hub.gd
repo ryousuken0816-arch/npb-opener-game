@@ -42,6 +42,7 @@ var _guide := PadGuide.new()
 var _scout_view := ScoutView.new()
 var _fa_view := FaView.new()
 var _trade_view := TradeView.new()
+var _comp_view := CompView.new()
 var _contract_view := ContractView.new()
 var _release_view := ReleaseView.new()
 var _draft_view := DraftView.new()
@@ -95,6 +96,13 @@ func _ready() -> void:
 	_trade_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_trade_view.visible = false
 	_placeholder_label.get_parent().add_child(_trade_view)
+	_comp_view.setup(_palette)
+	_comp_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_comp_view.visible = false
+	_placeholder_label.get_parent().add_child(_comp_view)
+	_comp_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "comp":
+			_description_label.text = text)
 	_scout_view.trade_requested.connect(func() -> void: _open_sub_screen("trade"))
 	_trade_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "trade":
@@ -179,6 +187,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_fa_view.switch_tab(delta)
 			"trade":
 				_trade_view.switch_tab(delta)
+			"comp":
+				_comp_view.switch_tab(delta)
 			"contract":
 				_contract_view.switch_tab(delta)
 			"release":
@@ -296,7 +306,7 @@ func _refresh() -> void:
 	_team_name_label.text = GameState.team
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
-	if _open_key not in ["tactics", "fa", "trade", "contract", "release", "draft", "system", "awards", "records"]:
+	if _open_key not in ["tactics", "fa", "trade", "comp", "contract", "release", "draft", "system", "awards", "records"]:
 		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_tactics_view.refresh()
@@ -308,6 +318,8 @@ func _refresh() -> void:
 		_fa_view.refresh()
 	elif _open_key == "trade":
 		_trade_view.refresh()
+	elif _open_key == "comp":
+		_comp_view.refresh()
 	elif _open_key == "contract":
 		_contract_view.refresh()
 	elif _open_key == "release":
@@ -345,6 +357,8 @@ func _description(key: String) -> String:
 			return "%d年のシーズン表彰（MVP・新人王・ベストナイン・ゴールデングラブ・タイトル・沢村賞）を発表します。" % GameState.year
 		if GameState.fa_open():
 			return "FA宣言した選手への提示と、メジャーへ移籍する自球団の選手の引き留めをします。"
+		if GameState.comp_open():
+			return "FA移籍の補償：自球団のプロテクト、または相手のプロテクト外から人的補償の選手（か金銭）を選びます。"
 		if GameState.contract_open():
 			return "自球団の選手の来季の年俸を確認・調整します。12球団の年俸総額と予算上限も見られます。"
 		if GameState.release_open():
@@ -373,6 +387,9 @@ func _on_menu_chosen(key: String) -> void:
 		# FA・トレード・ポスティングの段階は、締め切るまで可変ボタンで FA の画面を開く
 		if GameState.fa_open():
 			_open_sub_screen("fa")
+			return
+		if GameState.comp_open():
+			_open_sub_screen("comp")
 			return
 		if GameState.contract_open():
 			_open_sub_screen("contract")
@@ -412,6 +429,7 @@ func _open_sub_screen(key: String) -> void:
 	var is_scout := key == "scout"
 	var is_fa := key == "fa"
 	var is_trade := key == "trade"
+	var is_comp := key == "comp"
 	var is_contract := key == "contract"
 	var is_release := key == "release"
 	var is_draft := key == "draft"
@@ -427,11 +445,12 @@ func _open_sub_screen(key: String) -> void:
 	_scout_view.visible = is_scout
 	_fa_view.visible = is_fa
 	_trade_view.visible = is_trade
+	_comp_view.visible = is_comp
 	_contract_view.visible = is_contract
 	_release_view.visible = is_release
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_trade and not is_contract and not is_release and not is_draft and not is_system and not is_awards and not is_records
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_trade and not is_comp and not is_contract and not is_release and not is_draft and not is_system and not is_awards and not is_records
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
-	_set_wide(is_tactics or is_fa or is_trade or is_contract or is_release or is_draft or is_awards or is_records)
+	_set_wide(is_tactics or is_fa or is_trade or is_comp or is_contract or is_release or is_draft or is_awards or is_records)
 	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
@@ -448,6 +467,9 @@ func _open_sub_screen(key: String) -> void:
 	elif is_trade:
 		_sub_title_label.text = "新戦力：トレード交渉"
 		_trade_view.open()
+	elif is_comp:
+		_sub_title_label.text = "FAの補償（%d年オフ）" % GameState.year
+		_comp_view.open()
 	elif is_contract:
 		_sub_title_label.text = "契約更改（%d年オフ）" % GameState.year
 		_contract_view.open()
@@ -521,5 +543,5 @@ func _close_sub_screen() -> void:
 		_buttons[key].grab_button_focus()
 	elif key == "trade":
 		_buttons["scout"].grab_button_focus()
-	elif key in ["fa", "contract", "release", "draft", "awards"]:
+	elif key in ["fa", "comp", "contract", "release", "draft", "awards"]:
 		_buttons["advance"].grab_button_focus()

@@ -172,6 +172,48 @@ func _select_all(page: Node, label: String) -> void:
 	page.clear_selection()
 
 
+## FAの補償（作業18）：FAを締め切って補償の画面を開き、一覧と、各補償の選手の一覧（プロテクト・プロテクト外）を調べる
+func _check_comp(when: String) -> void:
+	# 自球団の両方の側（プロテクト・プロテクト外から選ぶ）の画面が出るよう、他球団と自球団の年俸上位の選手を1人ずつ
+	# FA宣言させ、他球団の選手には自球団だけが提示する（tests/fa_comp_check.gd と同じ）
+	var f: RefCounted = _gs.fa()
+	var league: RefCounted = _gs.league
+	for team: String in [_other_team(), _team]:
+		var ids: Array = league.players_of(team)
+		ids.sort_custom(func(a: String, b: String) -> bool: return league.salary_of(a) > league.salary_of(b))
+		for id: String in ids.slice(1, 4):
+			if id in f.declared or root.get_node("GameData").player(id).get("is_pitcher") == null:
+				continue
+			f.declare(league, id)
+			if team == _team:
+				if f.cpu_bids[id].is_empty():
+					f.cpu_bids[id] = [{"team": _other_team(), "amount": f.info[id]["asking"], "years": 2}]
+			else:
+				f.cpu_bids[id] = []
+				_gs.fa_offer(id, f.bid_range(id)[0], 2)
+			break
+	_gs.fa_resolve()
+	var comp: RefCounted = _gs.comp()
+	if comp == null:
+		return
+	print("  FAの補償 %d件（自球団が決める %d件）" % [comp.cases.size(), comp.pending().size()])
+	await _open("comp")
+	var view: Node = _hub.get("_comp_view")
+	await _check_screen("%s：FAの補償 一覧" % when)
+	for i in comp.cases.size():
+		view.select_case(i)
+		await _check_screen("%s：FAの補償 %s" % [when, comp.cases[i]["name"]], 0.0)
+	_gs.comp_resolve()
+	_hub.call("_close_sub_screen")
+
+
+func _other_team() -> String:
+	for t: String in root.get_node("GameData").teams():
+		if t != _team:
+			return t
+	return ""
+
+
 ## トレード交渉（作業8）：両側に名前の長い選手を3人ずつ入れ、金銭を最大にして全タブを開く
 func _check_trade(when: String) -> void:
 	await _open("trade")
@@ -279,6 +321,7 @@ func _check_offseason(y: int) -> void:
 		await _check_records(when)
 	if _gs.fa_open():
 		await _check_phase_view("fa", "_fa_view", when)
+		await _check_comp(when)
 	elif _gs.contract_open():
 		await _check_phase_view("contract", "_contract_view", when)
 	elif _gs.release_open():
