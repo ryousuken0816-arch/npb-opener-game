@@ -4,7 +4,7 @@ extends SceneTree
 ## 右端・下端（左端・上端も）が画面（1280x720）の内側か調べる。はみ出したものを列挙して NG にする。
 ## - 毎年の開幕・7月：ハブ、日程表、采配の一覧と全サブ画面（1軍登録は全選手を1人ずつ選ぶ）、新戦力、システム、選手詳細の4タブ
 ## - 毎年のオフの各段階：ハブ、采配（オフは「見るだけ」の文言が出る）、FA・契約更改・戦力外の画面（全タブ・選手を選ぶ）、
-##   ドラフト（開幕の演出・候補を選んで入札・抽選・指名一覧）、新戦力
+##   ドラフト（開幕の演出・候補を選んで入札・抽選（3Dの演出の途中と結果の場面）・指名一覧）、新戦力
 ## - 切り替えの演出の途中で開く・閉じるをくり返したあと（作業11の不具合の原因。最初と毎年の開幕・7月）
 ## スクロールの中（clip_contents の子）は親が画面内なら見えないので調べない。画面のルートの包み
 ## （UiTheme.fit_scroll）の中は、その枠からはみ出したもの（見えずに欠ける）と、スクロールバーが出た＝中身が枠に
@@ -28,6 +28,8 @@ var _first_year := 2008
 var _out := ""
 var _failures := 0
 var _checked := 0
+## 抽選の3D演出を調べた回数（作業20。オフのドラフトで入札が競合したとき）
+var _lottery_3d_seen := 0
 var _gs: Node
 var _hub: Node
 
@@ -266,6 +268,13 @@ func _check_draft(when: String) -> void:
 		await _check_screen("%s：ドラフト 候補を選ぶ" % when, 0.0)
 		view.press_action()
 		await _check_screen("%s：ドラフト 入札" % when)
+		# 抽選の3D演出（作業20）：途中と、飛ばしたあとの結果の場面
+		var lot3d: Node = view.lottery_3d()
+		if lot3d != null:
+			_lottery_3d_seen += 1
+			await _check_screen("%s：ドラフト 抽選の3D演出" % when)
+			view.back()
+			await _check_screen("%s：ドラフト 抽選の3D演出の結果" % when)
 		view.finish_overlays()
 		await _check_screen("%s：ドラフト 入札のあと" % when)
 	while view.back():
