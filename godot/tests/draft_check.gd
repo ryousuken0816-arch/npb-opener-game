@@ -283,7 +283,7 @@ func _check_2024_ui() -> void:
 					break
 			view.call("press_action")
 		elif d.stage == _first:
-			d.run_first_wave()
+			break  # 自球団の1位が決まったあとは画面が外れ1位を自動で締める（止まったら下の確認で NG。作業12）
 	view.call("finish_overlays")
 	_check(d.stage == _waiver and not d.first_pick_of(USER).is_empty(),
 		"全球団の1位が決まりウェーバーへ（自球団の1位：%s）" % d.by_id.get(d.first_pick_of(USER), {}).get("name", "?"))

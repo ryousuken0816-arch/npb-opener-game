@@ -133,6 +133,8 @@ func open() -> void:
 	if d != null and d.picks.is_empty() and d.wave == 1 and _shown_opening_year != d.year:
 		_shown_opening_year = d.year
 		_show_opening(d)
+	elif not _overlay.visible:
+		_continue_first()  # 外れ1位の途中でセーブ・画面を閉じたとき
 
 
 ## 戻る：演出中は飛ばす、選択中なら取り消す（true）。何もなければ false（ハブへ戻る）
@@ -1059,6 +1061,16 @@ func _after_change(d: Draft) -> void:
 	refresh()
 
 
+## 自球団の1位が決まっていて、CPU球団にだけ外れが残っているときは、次の入札（外れ1位）を自動で締める。
+## 締めたら true（演出が出る）。これが無いと入札のボタンがすべて押せず「おまかせ」でしか進めなかった（作業12）
+func _continue_first() -> bool:
+	var d := GameState.draft()
+	if d == null or d.stage != Draft.Stage.FIRST or d.first_pick_of(GameState.team).is_empty():
+		return false
+	_run_wave(d)
+	return true
+
+
 ## 1位の入札を締める：抽選の演出 → 結果の一覧
 func _run_wave(d: Draft) -> void:
 	var results := d.run_first_wave()
@@ -1141,6 +1153,8 @@ func _show_opening(d: Draft) -> void:
 func _next_overlay() -> void:
 	if _overlay_queue.is_empty():
 		_overlay.visible = false
+		if _continue_first():
+			return
 		refresh()
 		focus_first()
 		return
