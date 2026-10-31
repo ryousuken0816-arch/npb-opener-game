@@ -834,6 +834,8 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(info)
+	if c.get("mlb_intent", false):
+		_summary_box.add_child(_mlb_box(d, c))  # 説得の約束を選ぶ欄が隠れないよう上のほうに
 	var ranks := HBoxContainer.new()
 	ranks.add_theme_constant_override("separation", 6)
 	ranks.add_child(UiTheme.small_label("当時の評価", 16, UiTheme.TEXT, 800))
@@ -847,8 +849,6 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	intro.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(intro)
-	if c.get("mlb_intent", false):
-		_summary_box.add_child(_mlb_box(d, c))
 	var state := ""
 	if not str(c["picked_by"]).is_empty():
 		state = "済：%s %s" % [GameData.short_name(c["picked_by"]), c["pick_label"]]
@@ -1095,6 +1095,8 @@ func _render_bottom(d: Draft) -> void:
 		_status_label.text = _message
 	elif d == null:
 		_status_label.text = ""
+	elif d.stage == Draft.Stage.DONE and not d.pending_talks().is_empty():
+		_status_label.text = "メジャー志望の%sの説得が残っています。約束を選んで「説得する」（しないまま進むと約束なしで交渉）。" 			% d.by_id[d.pending_talks()[0]]["name"]
 	elif d.resolved:
 		var mine := d.picks_of(GameState.team)
 		var names: Array[String] = []

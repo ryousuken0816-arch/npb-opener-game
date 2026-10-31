@@ -262,6 +262,19 @@ def blend_into(base: dict, scouted: dict, w: float) -> None:
         base["batting"]["trajectory"] = scouted["batting"].get("trajectory", base["batting"].get("trajectory"))
 
 
+def fill_leagues(ratings: dict) -> int:
+    """リーグが空の選手（史実の無い年は成績が無く compute_ratings が球団のリーグを決められない）を、
+    基準年の能力値ファイルの「球団 → リーグ」で埋める。埋めた人数"""
+    leagues = {p["team"]: p["league"] for p in load(RATINGS / f"{TEMPLATE_YEAR}_pre.json")["players"]
+               if p.get("team") and p.get("league")}
+    n = 0
+    for p in ratings["players"]:
+        if p.get("league") is None and p.get("team") in leagues:
+            p["league"] = leagues[p["team"]]
+            n += 1
+    return n
+
+
 def amateur_id(draft_year: int, name: str) -> str:
     return f"ama{draft_year}:{norm_name(name)}"
 
@@ -295,8 +308,9 @@ def cmd_rookies(args) -> None:
             entry = apply_profile(scouted, a, amateur_id(y, d["name"]), d["page_title"], text, y)
             ratings["players"].append(entry)
             added += 1
+    filled = fill_leagues(ratings)
     dump(path, ratings)
-    print(f"[amateur] {y}年秋の新人 -> {path.name}: 追加 {added}・補正 {adjusted}")
+    print(f"[amateur] {y}年秋の新人 -> {path.name}: 追加 {added}・補正 {adjusted}（リーグを埋めた {filled}人）")
 
 
 def cmd_carry(args) -> None:

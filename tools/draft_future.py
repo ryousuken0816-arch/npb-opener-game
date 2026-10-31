@@ -21,7 +21,9 @@ import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIRST_YEAR = 2008
-LAST_DRAFT_YEAR = 2025
+LAST_DRAFT_YEAR = 2026
+# 史実の能力値がある最後の年（2027年以降の <年>_post.json は引き継ぎの写しなので使わない。作業17）
+LAST_HISTORY_YEAR = 2026
 PLAYING_WEIGHT = 0.6
 
 # godot/sim/salary.gd と同じ値
@@ -77,7 +79,7 @@ def load_json(path):
 def main():
     post = {}
     y = FIRST_YEAR
-    while os.path.exists(os.path.join(ROOT, "generated", "ratings", f"{y}_post.json")):
+    while y <= LAST_HISTORY_YEAR and os.path.exists(os.path.join(ROOT, "generated", "ratings", f"{y}_post.json")):
         post[y] = load_json(os.path.join(ROOT, "generated", "ratings", f"{y}_post.json"))["players"]
         y += 1
     data_through = max(post)
