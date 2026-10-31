@@ -23,6 +23,7 @@ var _mode := "save"
 var _pending := ""
 var _mode_row: HBoxContainer
 var _mode_buttons := {}
+var _fullscreen_button: Button
 var _slot_buttons := {}
 var _status_label: Label
 var _confirm_panel: PanelContainer
@@ -53,6 +54,22 @@ func setup(p: UiTheme.Palette, only_load := false) -> void:
 		_mode_row.add_child(b)
 		_mode_buttons[key] = b
 	_mode_row.add_child(UiTheme.small_label("RB ▶", 18, UiTheme.TEXT, 800))
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_mode_row.add_child(spacer)
+	_fullscreen_button = Button.new()
+	_fullscreen_button.toggle_mode = true
+	_fullscreen_button.custom_minimum_size = Vector2(230, 44)
+	_fullscreen_button.add_theme_font_size_override("font_size", 20)
+	_fullscreen_button.add_theme_font_override("font", UiTheme.font(800))
+	_fullscreen_button.tooltip_text = "フルスクリーン⇔ウィンドウ（F11・Alt+Enter でも切り替わる）。次の起動でも同じになる"
+	UiTheme.style_toggle(_fullscreen_button, UiTheme.TEXT_SUB)
+	_fullscreen_button.toggled.connect(func(on: bool) -> void:
+		if on != UiInput.fullscreen:
+			UiInput.set_fullscreen(on))
+	_mode_row.add_child(_fullscreen_button)
+	UiInput.fullscreen_changed.connect(_sync_fullscreen_button)
+	_sync_fullscreen_button(UiInput.fullscreen)
 	_mode_row.visible = not only_load
 	add_child(_mode_row)
 	for slot in SaveGame.all_slots():
@@ -94,6 +111,14 @@ func setup(p: UiTheme.Palette, only_load := false) -> void:
 	_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status_label.visible = only_load
 	add_child(_status_label)
+
+
+## システムの設定「フルスクリーン」の表示を UiInput の状態に合わせる（F11 での切り替えにも追従）
+func _sync_fullscreen_button(on: bool) -> void:
+	if _fullscreen_button == null:
+		return
+	_fullscreen_button.set_pressed_no_signal(on)
+	_fullscreen_button.text = "フルスクリーン：%s" % ("オン" if on else "オフ")
 
 
 func _small_button(text: String, color: Color) -> Button:

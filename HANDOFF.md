@@ -354,7 +354,12 @@
    - 画面 `godot/scenes/hub/comp_view.gd`（`CompView`）：自球団が決める補償が残っていると可変ボタンが「FAの補償」になり、この画面を開く。獲得した側はプロテクト28人（おまかせ・入れ外し・確定）、旧球団の側はプロテクト外から1人か金銭（2027年からは指名権か金銭）
    - 確認：`godot/tests/fa_comp_check.gd`（新、ヘッドレス約1分半）。2008〜2012年のオフで補償27件（人的15件）、自球団の両方の側を画面で操作、翌年の開幕で人的補償の選手が新しい球団にいる、2026年の35歳以上・2027年の指名権と金銭、指名権が移ったドラフト。
      layout_fit_check に補償の画面を追加。スクショ1回（プロテクトの画面）。全テストをヘッドレスで流してOK（他の担当の作業を取り込んだあとにもう一度全部流した）
-4.35 ~~ドラフトの指名発表を1球団ずつ（中継風の画面と読み上げ）~~ → 完了（2026-11-01）。docs/AUTORUN.md の作業28（担当E）
+4.35 ~~フルスクリーン~~ → 完了（2026-11-01）。docs/AUTORUN.md の作業30
+   - 仕組み：`godot/scripts/user_settings.gd`（`UserSettings`、`user://settings.cfg` の ConfigFile。今は [display] fullscreen だけ）。`UiInput`（オートロード）が起動時に読んで反映し、`_input` で **F11・Alt+Enter**（押した瞬間だけ）を拾って `toggle_fullscreen()`（保存して次の起動でも同じ。`fullscreen_changed` シグナル）。ヘッドレスでは実際のウィンドウは変えない
+   - 画面：ハブの「システム」のセーブ／ロードの行の右端に「フルスクリーン：オン／オフ」のボタン（F11 で切り替えても表示が追従）
+   - `project.godot`：`window/stretch/aspect` を expand → **keep**（横長のモニターは左右、4:3・16:10 は上下に黒い帯。基準は 1280x720 のまま）、背景の既定色を黒に
+   - 確認：`godot/tests/fullscreen_check.gd`（新、ヘッドレス）：設定の保存・復元（ほかの項目を消さない）、F11・Alt+Enter・（リピート・離す・Enter だけ・Alt+ほかのキーでは切り替わらない）、システムのボタンの追従、aspect=keep。システム画面のスクショ1回（ボタンが枠に収まる）
+4.36 ~~ドラフトの指名発表を1球団ずつ（中継風の画面と読み上げ）~~ → 完了（2026-11-01）。docs/AUTORUN.md の作業28（担当E）
    - 札 `godot/scenes/draft/pick_announce.gd`（`PickAnnounce`）・読み上げ `godot/scripts/draft_voice.gd`（`DraftVoice`）・設定 `godot/scripts/game_settings.gd`（`GameSettings`、`user://settings.cfg`）。使い方・声の差し込み方は godot/README.md「ドラフトの読み上げ」
    - `DraftView`：1位の入札を締めると、入札した全球団の札を2巡目の指名順に1つずつ（外れ1位は「外れ1位（N回目の入札）」）→ 抽選（3D）→ 結果の一覧。2位以降は CPU球団・自球団の指名ごとに札を出し、出ている間は CPU の指名を進めない（`_process` は演出中は止まる）。
      時間（`ANNOUNCE_*`）：ふつうで名前まで0.9秒（読み上げありは2.2秒）・経歴まで+0.5・出しておく+1.4、自球団×1.5、他球団×0.85、早送り×0.3（読み上げなし）、読み上げは終わるまで待つ（上限6秒）。`instant`（テスト用）のときは発表しない
