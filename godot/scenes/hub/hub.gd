@@ -13,7 +13,7 @@ const MENUS := [
 	["tactics", "采配", "tactics", Color("f57c00"),
 		"1・2軍の入れ替え、オーダーや起用法の設定、所属選手の確認をします。"],
 	["scout", "新戦力", "scout", Color("00a396"),
-		"外国人選手の獲得（外国人市場）と、移籍・引退などの出来事を見ます。（トレード交渉・スカウティングは未実装）"],
+		"トレード交渉（シーズン中は7月31日まで）、外国人選手の獲得（外国人市場）、移籍・引退などの出来事を見ます。（スカウティングは未実装）"],
 	["records", "記録室", "records", Color("e0a400"),
 		"個人成績（セイバー指標）・通算成績、チームのデプス・守備位置ランク、チーム成績の推移、表彰の歴代、ドラフト・達成記録を見ます。"],
 	["system", "システム", "system", Color("7e57c2"),
@@ -41,6 +41,7 @@ var _open_key := ""
 var _guide := PadGuide.new()
 var _scout_view := ScoutView.new()
 var _fa_view := FaView.new()
+var _trade_view := TradeView.new()
 var _contract_view := ContractView.new()
 var _release_view := ReleaseView.new()
 var _draft_view := DraftView.new()
@@ -90,6 +91,14 @@ func _ready() -> void:
 	_fa_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_fa_view.visible = false
 	_placeholder_label.get_parent().add_child(_fa_view)
+	_trade_view.setup(_palette)
+	_trade_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_trade_view.visible = false
+	_placeholder_label.get_parent().add_child(_trade_view)
+	_scout_view.trade_requested.connect(func() -> void: _open_sub_screen("trade"))
+	_trade_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "trade":
+			_description_label.text = text)
 	_contract_view.setup(_palette)
 	_contract_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_contract_view.visible = false
@@ -168,6 +177,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_scout_view.switch_tab(delta)
 			"fa":
 				_fa_view.switch_tab(delta)
+			"trade":
+				_trade_view.switch_tab(delta)
 			"contract":
 				_contract_view.switch_tab(delta)
 			"release":
@@ -285,7 +296,7 @@ func _refresh() -> void:
 	_team_name_label.text = GameState.team
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
-	if _open_key not in ["tactics", "fa", "contract", "release", "draft", "system", "awards", "records"]:
+	if _open_key not in ["tactics", "fa", "trade", "contract", "release", "draft", "system", "awards", "records"]:
 		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_tactics_view.refresh()
@@ -295,6 +306,8 @@ func _refresh() -> void:
 		_scout_view.refresh()
 	elif _open_key == "fa":
 		_fa_view.refresh()
+	elif _open_key == "trade":
+		_trade_view.refresh()
 	elif _open_key == "contract":
 		_contract_view.refresh()
 	elif _open_key == "release":
@@ -398,6 +411,7 @@ func _open_sub_screen(key: String) -> void:
 	var is_schedule := key == "schedule"
 	var is_scout := key == "scout"
 	var is_fa := key == "fa"
+	var is_trade := key == "trade"
 	var is_contract := key == "contract"
 	var is_release := key == "release"
 	var is_draft := key == "draft"
@@ -412,11 +426,12 @@ func _open_sub_screen(key: String) -> void:
 	_schedule_view.visible = is_schedule
 	_scout_view.visible = is_scout
 	_fa_view.visible = is_fa
+	_trade_view.visible = is_trade
 	_contract_view.visible = is_contract
 	_release_view.visible = is_release
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_contract and not is_release and not is_draft and not is_system and not is_awards and not is_records
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_trade and not is_contract and not is_release and not is_draft and not is_system and not is_awards and not is_records
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
-	_set_wide(is_tactics or is_fa or is_contract or is_release or is_draft or is_awards or is_records)
+	_set_wide(is_tactics or is_fa or is_trade or is_contract or is_release or is_draft or is_awards or is_records)
 	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
@@ -430,6 +445,9 @@ func _open_sub_screen(key: String) -> void:
 	elif is_fa:
 		_sub_title_label.text = "FA・ポスティング（%d年オフ）" % GameState.year
 		_fa_view.open()
+	elif is_trade:
+		_sub_title_label.text = "新戦力：トレード交渉"
+		_trade_view.open()
 	elif is_contract:
 		_sub_title_label.text = "契約更改（%d年オフ）" % GameState.year
 		_contract_view.open()
@@ -501,5 +519,7 @@ func _close_sub_screen() -> void:
 	_description_label.text = _description(_focused_key)
 	if _buttons.has(key):
 		_buttons[key].grab_button_focus()
+	elif key == "trade":
+		_buttons["scout"].grab_button_focus()
 	elif key in ["fa", "contract", "release", "draft", "awards"]:
 		_buttons["advance"].grab_button_focus()
