@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/draft/lottery_3d.gd" id="1_lottery"]
+
+[node name="Lottery3D" type="Control"]
+custom_minimum_size = Vector2(840, 372)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 840.0
+offset_bottom = 372.0
+script = ExtResource("1_lottery")

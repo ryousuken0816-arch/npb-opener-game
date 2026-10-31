@@ -7,7 +7,7 @@ extends VBoxContainer
 ## 絞り込み・候補の人数。左に候補の一覧（済マーク・名前札・守備位置・経歴・出身・年齢・各能力・当時の評価・将来性）、
 ## 右に選んだ候補の要約と「入札する／指名する」。一覧の列の見出しを押すとその列で並び替え（もう一度押すと逆順）。
 ## 仕組みは Draft（GameState.draft()）。
-## 進行：開幕の演出 → 1位入札（全球団同時。重複は抽選の演出）→ 外れたら再入札 → 2位以降はウェーバー
+## 進行：開幕の演出 → 1位入札（全球団同時。重複は抽選の演出。3Dの Lottery3D、早送り中は2D）→ 外れたら再入札 → 2位以降はウェーバー
 ## （CPU球団の指名は自動で進み、「早送り」「自球団の番まで飛ばす」もできる。自球団の番で止まる）→ 育成 → 結果まとめ。
 ## 操作：札をⒶ／クリックで選び、もう一度Ⓐ／クリック（右クリック）で選手詳細。十字キーで右の「入札する」や上の見出しへ。
 ## LB/RB（Q/E）でタブ、Ⓑは選択の取り消し→ハブ（ドラフトは途中から再開できる）。
@@ -45,10 +45,13 @@ const SUMMARY_WIDTH := RIGHT_WIDTH - 40
 ## CPU球団の指名を自動で進める間隔（秒）。早送り中は FAST
 const CPU_STEP_SEC := 0.45
 const CPU_STEP_FAST_SEC := 0.06
-## 抽選の演出（秒）：光が回る時間と、決まってから次へ進むまで
+## 抽選の演出（秒）：光が回る時間と、決まってから次へ進むまで（2Dの演出。早送り中に使う）
 const LOTTERY_SPIN_SEC := 1.6
 const LOTTERY_HOLD_SEC := 1.0
 const OPENING_SEC := 1.8
+## 抽選の3D演出（作業20）。早送り中でなければこちら。他球団どうしの抽選は少し速く流す
+const LOTTERY_3D_SCENE := preload("res://scenes/draft/lottery_3d.tscn")
+const LOTTERY_3D_OTHERS_SPEED := 1.5
 const DONE_COLOR := Color("8a9199")
 const MINE_COLOR := Color("ff6d00")
 const BID_COLOR := Color("e53935")
@@ -255,6 +258,18 @@ func finish_overlays() -> void:
 
 func overlay_visible() -> bool:
 	return _overlay.visible
+
+
+## 抽選を3Dの演出で見せるか（早送り中は2Dの演出）
+func use_3d_lottery() -> bool:
+	return not _fast
+
+
+## いま出ている抽選の3D演出（無ければ null。テスト用）
+func lottery_3d() -> Node:
+	var item: Dictionary = _overlay.get_meta("item", {}) if _overlay.visible else {}
+	var node: Node = item.get("lottery3d")
+	return node if node != null and is_instance_valid(node) else null
 
 
 ## 右の「入札する／指名する」を押す（テスト用）
@@ -1310,16 +1325,20 @@ func _render_opening(d: Draft) -> void:
 func _render_lottery(lot: Dictionary) -> void:
 	var d := GameState.draft()
 	var c: Dictionary = d.by_id[lot["id"]]
+	var use_3d := use_3d_lottery()
 	var title := Label.new()
 	title.text = "1位 抽選（%d球団競合）" % lot["teams"].size()
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.heading(title, 30, Color("b3261e"), Color.WHITE, 8)
+	UiTheme.heading(title, 26 if use_3d else 30, Color("b3261e"), Color.WHITE, 8)
 	_overlay_box.add_child(title)
 	var who := Label.new()
 	who.text = "%s（%s・%s）" % [c["name"], c["pos"], c["school"]]
 	who.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.heading(who, 34, UiTheme.TEXT, Color.WHITE, 8)
+	UiTheme.heading(who, 28 if use_3d else 34, UiTheme.TEXT, Color.WHITE, 8)
 	_overlay_box.add_child(who)
+	if use_3d:
+		_render_lottery_3d(lot)
+		return
 	# 封筒は1行に LOTTERY_COLUMNS 個まで（9球団以上の競合で画面からはみ出していた。layout_fit_check）
 	var center := CenterContainer.new()
 	_overlay_box.add_child(center)
@@ -1369,6 +1388,30 @@ func _render_lottery(lot: Dictionary) -> void:
 	tw.tween_callback(func() -> void: _reveal_lottery(item)).set_delay(0.25)
 
 
+## 3Dの演出（Lottery3D）：監督が順にくじを引いて開け、当たりの球団が喜ぶ。当たりは lot["winner"] をそのまま渡す。
+## 終われば結果の文言を出す。Ⓐ（「結果を見る」）・Ⓑ（back）・演出のクリックで飛ばせる
+func _render_lottery_3d(lot: Dictionary) -> void:
+	var item: Dictionary = _overlay.get_meta("item")
+	var view := LOTTERY_3D_SCENE.instantiate() as Lottery3D
+	view.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_overlay_box.add_child(view)
+	var result := Label.new()
+	result.name = "LotteryResult"
+	result.text = "抽選中…"
+	result.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.heading(result, 28, Color("1e63c8"), Color.WHITE, 8)
+	_overlay_box.add_child(result)
+	_overlay_next.text = "結果を見る"
+	item["lottery3d"] = view
+	item["result"] = result
+	view.revealed.connect(func(_winner: String) -> void: _reveal_lottery(item))
+	view.clicked.connect(_skip_overlay)
+	var mine: bool = GameState.team in lot["teams"]
+	view.play(lot, {"user_team": GameState.team, "speed": 1.0 if mine else LOTTERY_3D_OTHERS_SPEED})
+	if instant:
+		_reveal_lottery(item)
+
+
 func _highlight(boxes: Array[PanelContainer], index: int) -> void:
 	for i in boxes.size():
 		var b := boxes[i]
@@ -1386,6 +1429,9 @@ func _reveal_lottery(item: Dictionary) -> void:
 	var tw: Tween = item.get("tween")
 	if tw != null and tw.is_valid():
 		tw.kill()
+	var view: Lottery3D = item.get("lottery3d")
+	if view != null and is_instance_valid(view):
+		view.skip()
 	var lot: Dictionary = item["lot"]
 	var boxes: Array = item.get("boxes", [])
 	for b: PanelContainer in boxes:

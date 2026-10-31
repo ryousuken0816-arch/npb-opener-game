@@ -4,7 +4,7 @@ extends SceneTree
 ## 右端・下端（左端・上端も）が画面（1280x720）の内側か調べる。はみ出したものを列挙して NG にする。
 ## - 毎年の開幕・7月：ハブ、日程表、采配の一覧と全サブ画面（1軍登録は全選手を1人ずつ選ぶ）、新戦力、トレード交渉（両側3人＋金銭・全タブ）、システム、選手詳細の4タブ
 ## - 毎年のオフの各段階：ハブ、采配（オフは「見るだけ」の文言が出る）、FA・契約更改・戦力外の画面（全タブ・選手を選ぶ）、
-##   ドラフト（開幕の演出・候補を選んで入札・抽選・指名一覧）、新戦力、トレード交渉
+##   ドラフト（開幕の演出・候補を選んで入札・抽選（3Dの演出の途中と結果の場面）・指名一覧）、新戦力、トレード交渉
 ## - 記録室の全タブ（打撃・投手は今季／通算・規定の切り替え、デプスは全球団・全並び順）：毎年の開幕・7月・オフの表彰の段階
 ## - 表彰の画面の全タブ（作業9）：毎年のオフの表彰の段階
 ## - 切り替えの演出の途中で開く・閉じるをくり返したあと（作業11の不具合の原因。最初と毎年の開幕・7月）
@@ -30,6 +30,8 @@ var _first_year := 2008
 var _out := ""
 var _failures := 0
 var _checked := 0
+## 抽選の3D演出を調べた回数（作業20。オフのドラフトで入札が競合したとき）
+var _lottery_3d_seen := 0
 var _gs: Node
 var _hub: Node
 
@@ -88,7 +90,10 @@ func _run() -> void:
 			_gs.advance()
 		if y >= _last_year:
 			break
-	print("\n調べた画面：%d" % _checked)
+	print("\n調べた画面：%d（うち抽選の3D演出が出た入札 %d回）" % [_checked, _lottery_3d_seen])
+	if _lottery_3d_seen == 0:
+		_failures += 1
+		print("NG 抽選の3D演出を一度も調べていない（入札が一度も競合しなかった）")
 	print("\n== 結果: %s ==" % ("ALL OK" if _failures == 0 else "FAILED（%d件）" % _failures))
 	quit(1 if _failures > 0 else 0)
 
@@ -106,6 +111,13 @@ func _check_season(y: int, when: String) -> void:
 				_hub.get("_" + ("schedule" if key == "schedule" else "scout") + "_view").switch_tab(1)
 				await _check_screen("%s：%s タブ%d" % [when, key, i + 1])
 		_hub.call("_close_sub_screen")
+	# 新聞・速報（作業25）：3つのタブ
+	await _open("news")
+	await _check_screen("%s：新聞" % when)
+	for i in 2:
+		_hub.get("_news_view").switch_tab(1)
+		await _check_screen("%s：新聞 タブ%d" % [when, i + 1])
+	_hub.call("_close_sub_screen")
 	await _check_tactics(when, TACTICS_PAGES, _gs.month >= 7)
 	await _check_trade(when)
 	await _check_records(when)
@@ -399,15 +411,40 @@ func _check_draft(when: String) -> void:
 	view.set_sort("hyouka", true)
 	var ids: Array = view.list_ids()
 	if not ids.is_empty():
-		view.select_candidate(ids[0])
+		var target := _most_bid(ids)
+		if view.selected_id() != target:  # 選び中の候補をもう一度押すと選手詳細が開く
+			view.select_candidate(target)
 		await _check_screen("%s：ドラフト 候補を選ぶ" % when, 0.0)
 		view.press_action()
 		await _check_screen("%s：ドラフト 入札" % when)
+		# 抽選の3D演出（作業20）：途中と、飛ばしたあとの結果の場面
+		var lot3d: Node = view.lottery_3d()
+		if lot3d != null:
+			_lottery_3d_seen += 1
+			await _check_screen("%s：ドラフト 抽選の3D演出" % when)
+			view.back()
+			await _check_screen("%s：ドラフト 抽選の3D演出の結果" % when)
 		view.finish_overlays()
 		await _check_screen("%s：ドラフト 入札のあと" % when)
 	while view.back():
 		pass
 	_hub.call("_close_sub_screen")
+
+
+## 1位の入札の段階なら CPU球団の入札が最も多い候補（競合して抽選の3D演出が出るように）。ほかは一覧の先頭
+func _most_bid(ids: Array) -> String:
+	var d: RefCounted = _gs.draft()
+	if d == null or d.stage != load("res://sim/draft.gd").Stage["FIRST"] or not d.first_pick_of(_team).is_empty():
+		return ids[0]
+	var count := {}
+	var bids: Dictionary = d.cpu_first_bids()
+	for t: String in bids:
+		count[bids[t]] = int(count.get(bids[t], 0)) + 1
+	var best: String = ids[0]
+	for id: String in ids:
+		if int(count.get(id, 0)) > int(count.get(best, 0)):
+			best = id
+	return best
 
 
 # --- 調べる -------------------------------------------------------------------------------
