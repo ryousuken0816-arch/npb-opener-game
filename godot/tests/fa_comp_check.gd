@@ -157,7 +157,9 @@ func _check_year(y: int, totals: Dictionary, gained: Array[Dictionary]) -> void:
 	for c: Dictionary in comp.cases:
 		if c["result"] == "player":
 			names.append("%s→%s" % [_name(c["player"]), _gd.short_name(c["from"])])
-			if league.team_of.get(c["player"], "") != c["from"] and not league.retired.has(c["player"]):
+			# 2012年に横浜は DeNA に変わる（LeagueRoster.TEAM_SUCCESSOR）
+			var now_from: String = league.TEAM_SUCCESSOR.get(c["from"], c["from"])
+			if league.team_of.get(c["player"], "") not in [c["from"], now_from] and not league.retired.has(c["player"]):
 				moved_ok = false
 	for g: Dictionary in gained:
 		if g["year"] == y and not league.retired.has(g["id"]):
