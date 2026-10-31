@@ -159,7 +159,13 @@ func _check_year(y: int, totals: Dictionary, gained: Array[Dictionary]) -> void:
 			names.append("%s→%s" % [_name(c["player"]), _gd.short_name(c["from"])])
 			# 2012年に横浜は DeNA に変わる（LeagueRoster.TEAM_SUCCESSOR）
 			var now_from: String = league.TEAM_SUCCESSOR.get(c["from"], c["from"])
-			if league.team_of.get(c["player"], "") not in [c["from"], now_from] and not league.retired.has(c["player"]):
+			var pid: String = c["player"]
+			if pid.begins_with("tmp:") and not league.team_of.has(pid):
+				# 仮IDの選手（1軍出場の無い新人）は、能力値ファイルに出てくると本当の選手IDに付け替わる
+				for other: String in league.team_of:
+					if league.names.get(other, "") == league.names.get(pid, "-") and other != pid:
+						pid = other
+			if league.team_of.get(pid, "") not in [c["from"], now_from] and not league.retired.has(pid):
 				moved_ok = false
 	for g: Dictionary in gained:
 		if g["year"] == y and not league.retired.has(g["id"]):
