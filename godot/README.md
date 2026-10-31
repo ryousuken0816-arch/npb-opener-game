@@ -20,6 +20,7 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
 | `sim/game_sim.gd` (`GameSim`) | 1試合のシミュレーション（打席単位、docs/SPEC.md の8段階）。係数は冒頭の定数 |
 | `sim/sim_team.gd` (`SimTeam`) | 球団の編成：1軍登録（試合に出るのは1軍だけ）、スタメン・打順（DHあり/なし）と控え、先発6人ローテ・中継ぎ（先頭2人がセットアッパー）・抑え、采配方針（`tactics`）。投手の登板間隔。開幕時に自動編成（CPU球団はそのまま）、自球団は采配画面から書き換える |
 | `sim/roster_rules.gd` (`RosterRules`) | 1軍登録の史実のルール：登録人数の上限（2008〜18年28人・2019年〜29人・2020〜21年31人）、外国人枠（4人・投手野手とも3人まで、2020〜21年は5人）、抹消後10日間の再登録不可、外国人の判定（ドラフト歴なし＋経歴あり、在籍8年以上は日本人扱い） |
+| `scripts/user_settings.gd` (`UserSettings`) | ユーザーの設定（セーブとは別）。`user://settings.cfg`。`get_value`／`set_value`。フルスクリーン（`UiInput.set_fullscreen`・F11・Alt+Enter）が使う。`path` をテストで差し替える |
 | `scripts/save_game.gd` (`SaveGame`) | セーブ／ロード：`save(枠)`・`load_slot(枠)`・`info(枠)`・`has_any()`・`autosave()`。下記「セーブ／ロード」。`sim/save_util.gd` (`SaveUtil`) は整数の戻し・乱数の状態（オートロードを参照しないので Season・SimTeam からも使う） |
 | `scenes/hub/save_view.gd` (`SaveView`) | セーブ／ロードの画面（ハブの「システム」、タイトルの「続きから」ではロードだけ）：セーブ／ロードの切り替え（LB/RB）、スロット1〜3とオートセーブの札（概要と保存日時）、上書き・ロードの確認（はい／いいえ） |
 | `tests/save_check.gd` | セーブ／ロードの確認（ヘッドレス、約50秒）。シーズン途中（6月15日）・オフの途中（FA・契約更改・ドラフトの途中）でセーブ→別の状態からロード→全状態が一致・そのまま進められる、オートセーブ、タイトルの「続きから」とハブのシステム画面のキーボード操作。ウィンドウ付きで出力先を渡すとスクショ（save_view） |
