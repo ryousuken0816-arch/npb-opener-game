@@ -122,9 +122,9 @@ func _check_limits(t: SimTeam) -> void:
 	print("\n== 登録人数の上限 ==")
 	var today: int = _gs.day
 	var limit := RosterRules.roster_limit(t.year)
-	# 上限まで2軍の日本人野手を上げる
+	# 上限まで2軍の日本人野手（育成は1軍に上げられないので除く）を上げる
 	var farm := t.players_where(false, false).filter(func(p: SimPlayer) -> bool:
-		return not p.is_foreign)
+		return not p.is_foreign and not p.is_ikusei)
 	var added: Array[SimPlayer] = []
 	while t.active_count() < limit and not farm.is_empty():
 		var p: SimPlayer = farm.pop_front()
@@ -238,7 +238,7 @@ func _check_tactics() -> void:
 func _best_farm(t: SimTeam, pitchers: bool) -> SimPlayer:
 	var best: SimPlayer = null
 	for p in t.players_where(false, pitchers):
-		if p.is_foreign or (pitchers and not p.has_pitching):
+		if p.is_foreign or p.is_ikusei or (pitchers and not p.has_pitching):
 			continue
 		var v := p.overall if pitchers else p.batting_value()
 		if best == null or v > (best.overall if pitchers else best.batting_value()):

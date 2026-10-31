@@ -1,7 +1,9 @@
 class_name ScoutView
 extends TabContainer
-## 「新戦力」画面（ハブ）。今は外国人市場と、年越しの出来事の一覧だけ（トレード交渉・スカウティングは未実装）。
+## 「新戦力」画面（ハブ）。トレード交渉の入口と、外国人市場と、年越しの出来事の一覧（スカウティングは未実装）。
 ##
+## - トレード：交渉できるかどうか（シーズン中は7月31日まで）と「トレード交渉へ」。押すと trade_requested
+##   （ハブがトレード交渉の画面 TradeView を広げて開く）
 ## - 外国人市場：史実で来日した新外国人の候補（GameState.league.market）。オフ（FA・トレード・ポスティング〜
 ##   春季キャンプ）に「獲得する」で自球団に入る（年俸は提示額）。CPU球団もオフのフェーズごとに獲得していく。
 ##   「戦力外・引退」の段階からは、戦力外になった選手（来季の成績がある選手）も並ぶ（史実の球団の列に「戦力外（元の球団）」）。
@@ -13,10 +15,15 @@ const MARKET_COLUMNS := [["名前", 0], ["投野", 64], ["守備位置", 96], ["
 	["提示額", 130], ["史実の球団", 120]]
 const LOG_KINDS := ["mlb_leave", "mlb_return", "trade", "retire", "rookie", "join", "foreign_sign",
 	"foreign_unsigned", "rename", "fa_declare", "fa_move", "fa_stay", "mlb_keep", "mlb_keep_failed", "release",
-	"release_sign", "release_unsigned", "release_trim"]
+	"release_sign", "release_unsigned", "release_trim", "ikusei_promote", "ikusei_renew"]
 const LOG_LIMIT := 400
 
+signal trade_requested
+
 var _palette: UiTheme.Palette
+var _trade_box: VBoxContainer
+var _trade_label: Label
+var _trade_button: Button
 var _market_tree: Tree
 var _status: Label
 var _sign_button: Button
@@ -26,10 +33,26 @@ var _shown_key := ""
 
 func setup(p: UiTheme.Palette) -> void:
 	_palette = p
+	_trade_box = VBoxContainer.new()
+	_trade_box.add_theme_constant_override("separation", 14)
+	add_child(_trade_box)
+	set_tab_title(0, "トレード")
+	_trade_label = UiTheme.small_label("", 18, UiTheme.TEXT, 700)
+	_trade_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_trade_box.add_child(_trade_label)
+	_trade_button = Button.new()
+	_trade_button.text = "トレード交渉へ"
+	_trade_button.custom_minimum_size = Vector2(280, 56)
+	_trade_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_trade_button.add_theme_font_size_override("font_size", 24)
+	UiTheme.style_button(_trade_button, Color("e8413c"))
+	_trade_button.pressed.connect(func() -> void: trade_requested.emit())
+	_trade_box.add_child(_trade_button)
+
 	var market := VBoxContainer.new()
 	market.add_theme_constant_override("separation", 8)
 	add_child(market)
-	set_tab_title(0, "外国人市場")
+	set_tab_title(1, "外国人市場")
 	_status = UiTheme.small_label("", 16, UiTheme.TEXT, 700)
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	market.add_child(_status)
@@ -47,20 +70,24 @@ func setup(p: UiTheme.Palette) -> void:
 
 	_log_tree = _tree([["年", 70], ["日付", 130], ["出来事", 0]])
 	add_child(_log_tree)
-	set_tab_title(1, "出来事")
+	set_tab_title(2, "出来事")
 
 
 func refresh() -> void:
 	var league := GameState.league
-	var key := "%d|%d|%d" % [GameState.year, GameState.phase, GameState.roster_version]
+	var key := "%d|%d|%d|%d" % [GameState.year, GameState.phase, GameState.roster_version, GameState.day]
 	if key == _shown_key or league == null:
 		return
 	_shown_key = key
+	_render_trade()
 	_render_market(league)
 	_render_log(league)
 
 
 func focus_first() -> void:
+	if get_current_tab_control() == _trade_box:
+		_trade_button.grab_focus()
+		return
 	var tree := get_current_tab_control() as Tree
 	if tree == null:
 		tree = _market_tree
@@ -73,6 +100,18 @@ func focus_first() -> void:
 func switch_tab(delta: int) -> void:
 	current_tab = posmod(current_tab + delta, get_tab_count())
 	focus_first()
+
+
+func _render_trade() -> void:
+	var block := GameState.trade_block_reason()
+	var lines: Array[String] = ["自球団の選手（最大%d人）＋金銭と、他球団の選手（最大%d人）を交換します。" % [
+		Trade.MAX_PLAYERS, Trade.MAX_PLAYERS],
+		"シーズン中は7月31日まで、オフは「FA・トレード・ポスティング」の段階から交渉できます。",
+		"相手は能力・年齢・年俸・守備位置の需要で判断します（成功率は★で表示）。断られたら、その球団とは同じ日にはもう交渉できません。"]
+	lines.append("")
+	lines.append("%s：%s" % [GameState.date_text(), "交渉できます" if block.is_empty() else block])
+	_trade_label.text = "\n".join(lines)
+	_trade_button.text = "トレード交渉へ" if block.is_empty() else "トレード交渉（見るだけ）"
 
 
 func _render_market(league: LeagueRoster) -> void:

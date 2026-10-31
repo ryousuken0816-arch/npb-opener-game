@@ -356,6 +356,12 @@ class Calculator:
                 self.fld[key].append((r["year"], r["level"], r))
             elif r["level"] == 2:
                 (self.farm_bat if r["kind"] == "b" else self.farm_pit)[key].append((r["year"], r))
+        # 対象年のシーズンの守備位置別の出場試合（1軍・2軍の合計）。前年までに成績が無い新加入選手の
+        # 守備位置の判定にだけ使う（能力値の算出には使わない）
+        self.cur_fld = defaultdict(lambda: defaultdict(int))
+        for r in self.d.teamstats:
+            if r["year"] == y and r["kind"] == "f" and r["pos"] in POS_ORDER:
+                self.cur_fld[r["player_id"] or self._tmp_id(r)][r["pos"]] += r["試合"] or 0
         self.league_of = {}
         for r in self.d.teamstats:
             if r["year"] == y and r["level"] == 1:
@@ -670,6 +676,25 @@ class Calculator:
         return out
 
     # ---- 出力
+    def current_pos(self, key) -> str | None:
+        """対象年の1軍・2軍で最も多く守った守備位置（同数なら POS_ORDER の先）。無ければ None。"""
+        games = self.cur_fld.get(key)
+        if not games:
+            return None
+        return max(games, key=lambda pos: (games[pos], -POS_ORDER.index(pos)))
+
+    @staticmethod
+    def career_pos(p: dict | None) -> str | None:
+        """選手ページの全年の成績（対象年より後も含む）から、守備位置の手がかりが他に無い選手の投手/野手を判定する。
+        投球アウト数が打席数以上なら投手、打席があれば野手（指名打者）、どちらも無ければ None。"""
+        if not p:
+            return None
+        outs = sum(r.get("outs") or 0 for r in p["pitching"])
+        pa = sum(r.get("打席") or 0 for r in p["batting"])
+        if outs and outs >= pa:
+            return "投手"
+        return "指名打者" if pa else None
+
     def player_entry(self, pid, key, name, team, team_id):
         p = self.d.players.get(pid) if pid else None
         bat, bat_detail, bat_sample, trajectory = self.batting(pid, key, name)
@@ -687,9 +712,10 @@ class Calculator:
             primary = "投手"
         bio = (p or {}).get("bio", {})
         if primary is None:
-            # 守備成績がない（DH専任・出場なし）: 登録ポジション → ドラフト時ポジション → 打撃成績があれば DH
+            # 守備成績がない（DH専任・出場なし・新加入）: 登録ポジション → ドラフト時ポジション →
+            # 対象年の守備位置（新外国人・由規など前年までに成績が無い選手。投手なら投手になる）→ 打撃成績があれば DH
             primary = bio.get("ポジション") or self.draft_pos.get(norm_name(name)) \
-                or ("指名打者" if bat_sample["pa_1"] else None)
+                or self.current_pos(key) or self.career_pos(p) or ("指名打者" if bat_sample["pa_1"] else None)
             is_pitcher = primary == "投手"
         if is_pitcher and pit is None:
             # 1軍・2軍とも登板実績が一切ない投手（新人・新外国人）: ドラフト情報による初期の能力値を入れる

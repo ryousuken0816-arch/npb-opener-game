@@ -1,6 +1,6 @@
 extends SceneTree
 ## セーブ／ロードの確認（docs/AUTORUN.md 作業6）。ヘッドレス可。ウィンドウ付きで出力先を渡すとセーブ画面のスクショを保存。
-## セーブは user://test_saves/ に書き、最後に消す（ユーザーのセーブ user://saves/ には触らない）。
+## セーブは user://test_saves_<プロセス番号>/ に書き、最後に消す（ユーザーのセーブ user://saves/ には触らない）。
 ## 1) シーズン途中：2008年（阪神）を6月15日まで進め、1軍の入れ替えと方針を変えてスロット1にセーブ → そのまま5日進めた結果を控え →
 ##    別の年・球団で新しく始めてからロード → 日付・順位・勝敗・個人成績・所属・年俸・1軍登録・全状態が一致 →
 ##    5日進めて、セーブ直後に進めたときと日付・試合数が一致
@@ -62,7 +62,7 @@ func _check_season() -> void:
 	var p_out: Object = mine.relievers[-1]
 	var p_in: Object = null
 	for p: Object in mine.players_where(false, true):
-		if p.has_pitching and mine.reregister_day(p) < 0:
+		if p.has_pitching and not p.is_ikusei and mine.reregister_day(p) < 0:
 			p_in = p
 			break
 	var swap_error: String = mine.swap_registration(p_out, p_in, _gs.day) if p_in != null else "2軍の投手なし"
