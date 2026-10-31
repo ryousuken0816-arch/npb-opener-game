@@ -31,6 +31,7 @@ var bats: String  ## "右" / "左" / "両"
 var throws: String
 var primary_pos := ""  ## 能力値データの primary_pos（"投手" "捕手" "外野手" など。不明は空）
 var is_foreign := false  ## 外国人枠の対象（RosterRules.is_foreign）
+var is_ikusei := false  ## 育成選手（支配下登録するまで1軍に登録できない。GameState.mark_ikusei が付ける）
 
 # 打撃（z 値）
 var meet := 0.0

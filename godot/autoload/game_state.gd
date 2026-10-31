@@ -57,6 +57,11 @@ const DEFAULT_SEASON_END := "10-31"
 const ACTIVE_DRAFT_START_YEAR := 2022
 ## 早送りで1日進める間隔（秒）。将来はシステム設定の「早送り速度」で変える
 const FAST_FORWARD_INTERVAL := 0.18
+## 育成選手を支配下に登録できる最後の日（月-日。史実のルール）
+const IKUSEI_DEADLINE := "07-31"
+## CPU球団が育成から支配下に上げる時期（この月に替わったとき）と1回の人数
+const CPU_IKUSEI_MONTHS := [5, 6, 7]
+const CPU_IKUSEI_PER_MONTH := 1
 
 var year: int = START_YEAR
 ## 今日（まだ試合をしていない日）の通し日数（Season.day_number）。シーズン中のみ意味を持つ
@@ -218,6 +223,8 @@ func sim_team_of(team_name: String) -> SimTeam:
 			return null
 		_offseason_teams[team_name] = SimTeam.new(team_name, GameData.league_of(team_name), members, year,
 				GameData.load_debut_years(year))
+		if league != null:
+			_offseason_teams[team_name].set_ikusei(league.ikusei_of(team_name))
 	return _offseason_teams[team_name]
 
 
@@ -470,6 +477,64 @@ func set_tactic(key: String, level: int) -> void:
 		mine.set_tactic(key, tactics[key])
 
 
+# --- 育成選手の支配下登録（docs/AUTORUN.md 作業19） ----------------------------------------------
+
+## 支配下に登録できない理由（春季キャンプ〜7月31日だけ登録できる）。登録できるなら空
+func ikusei_promote_block() -> String:
+	if league == null:
+		return "支配下登録はできません"
+	if phase == Phase.CAMP:
+		return ""
+	if phase == Phase.SEASON:
+		if day <= Season.day_number("%d-%s" % [year, IKUSEI_DEADLINE]):
+			return ""
+		return "支配下登録は7月31日までです（来季の春季キャンプから再びできます）"
+	return "支配下登録は春季キャンプから7月31日までです"
+
+
+## 自球団の育成選手を支配下に登録する。だめなら理由
+func promote_ikusei(id: String) -> String:
+	var block := ikusei_promote_block()
+	if not block.is_empty():
+		return block
+	if league.team_of.get(id, "") != team:
+		return "自球団の選手ではありません"
+	var date := Season.date_of_day(day) if phase == Phase.SEASON else "%d-02-01" % year
+	var error := league.promote_ikusei(id, date)
+	if error.is_empty():
+		var mine := my_team()
+		if mine != null and mine.by_id.has(id):
+			mine.by_id[id].is_ikusei = false
+		changed.emit()
+	return error
+
+
+## 選手が今の時点で育成か（選手詳細・一覧の表示用）
+func is_ikusei(id: String) -> bool:
+	return league != null and league.ikusei_now(id)
+
+
+## 今季の各球団（SimTeam）に育成選手の印を付ける。rebuild なら1軍にいる育成選手を外して組み直す（開幕時）
+func _mark_ikusei(rebuild: bool) -> void:
+	if season == null or league == null:
+		return
+	for t: String in season.teams:
+		season.teams[t].set_ikusei(league.ikusei_of(t), rebuild)
+
+
+## CPU球団が育成選手を支配下に上げる（5〜7月の月替わり。LeagueRoster.cpu_promotion_candidates）
+func _cpu_promote_ikusei() -> void:
+	if season == null or league == null:
+		return
+	var date := Season.date_of_day(day)
+	for t: String in season.teams:
+		if t == team:
+			continue
+		for id: String in league.cpu_promotion_candidates(t, CPU_IKUSEI_PER_MONTH):
+			if league.promote_ikusei(id, date).is_empty() and season.teams[t].by_id.has(id):
+				season.teams[t].by_id[id].is_ikusei = false
+
+
 ## 采配画面で編成を変えられるか（シーズン中のみ。オフは前年の編成を見るだけ）
 func can_edit_roster() -> bool:
 	return phase == Phase.SEASON and my_team() != null
@@ -492,6 +557,8 @@ func _advance_one_day() -> void:
 		_enter(next_phase())
 		return
 	if month != old_month:
+		if month in CPU_IKUSEI_MONTHS:
+			_cpu_promote_ikusei()
 		# 月替わりのイベント（故障・トレード、育成コマンド）はここに挟む（未実装）
 		month_started.emit(month)
 		_autosave_pending = true
@@ -760,6 +827,7 @@ func _start_season() -> void:
 		var roster := {"players": GameData.rostered_players()} if league != null else GameData.ratings
 		season = Season.new(year, roster, schedule, randi() + 1,
 				GameData.load_debut_years(year))
+		_mark_ikusei(true)
 		var mine: SimTeam = season.teams.get(team)
 		if mine != null:
 			for key: String in tactics:
@@ -983,6 +1051,7 @@ func load_state(d: Dictionary) -> void:
 	if d.get("season") is Dictionary:
 		var sd: Dictionary = d["season"]
 		season = Season.from_save(sd, GameData.load_debut_years(int(sd["year"])), GameData.player)
+		_mark_ikusei(false)
 	wins = int(d.get("wins", 0))
 	losses = int(d.get("losses", 0))
 	draws = int(d.get("draws", 0))
