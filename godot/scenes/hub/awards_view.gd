@@ -10,7 +10,8 @@ signal message_changed(text: String)
 
 const TABS := [["main", "主要な賞"], ["best_nine", "ベストナイン"], ["gold_glove", "ゴールデングラブ"],
 	["bat_titles", "打撃タイトル"], ["pit_titles", "投手タイトル"]]
-const ROW_HEIGHT := 36
+## 行の高さ。パ・リーグのベストナイン（10人）が1280x720 のサブ画面にスクロールなしで収まる高さ
+const ROW_HEIGHT := 32
 const MINE_COLOR := Color("ffd54f")
 const LEAGUE_COLORS := {"C": Color("1e88e5"), "P": Color("43a047")}
 
@@ -51,12 +52,22 @@ func setup(p: UiTheme.Palette) -> void:
 	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	UiTheme.heading(_banner, 20, p.ink, Color.WHITE, 6)
 	row.add_child(_banner)
+	# 賞の行は縦のスクロールの中へ（記録室の「表彰の歴代」に入れたときは高さが足りないことがある。作業11と同じ考え）
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
+	add_child(scroll)
+	var body := VBoxContainer.new()
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_theme_constant_override("separation", 8)
+	scroll.add_child(body)
 	_columns = HBoxContainer.new()
 	_columns.add_theme_constant_override("separation", 16)
-	add_child(_columns)
+	body.add_child(_columns)
 	_bottom = VBoxContainer.new()
 	_bottom.add_theme_constant_override("separation", 4)
-	add_child(_bottom)
+	body.add_child(_bottom)
 
 
 # --- 外から ------------------------------------------------------------------------------
