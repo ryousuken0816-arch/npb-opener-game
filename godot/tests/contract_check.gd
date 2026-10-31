@@ -67,6 +67,7 @@ func _check_years() -> void:
 			_gs.advance()
 		_check_fa_budget(y)
 		_gs.fa_resolve()
+		_gs.comp_resolve()  # 自球団が関わるFAの補償はおまかせ（作業18）
 		_check(_gs.button_text() == "契約更改へ", "%d年オフ：FAを締めると次は契約更改" % y)
 		var before := {}
 		for id: String in league.team_of:

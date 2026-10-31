@@ -187,6 +187,7 @@ func advance() -> void:
 		return
 	if phase == Phase.FA_TRADE:
 		fa_resolve()
+		comp_resolve()
 	if phase == Phase.CONTRACT:
 		contract_resolve()
 	if phase == Phase.RELEASE:
@@ -443,6 +444,62 @@ func fa_resolve() -> void:
 	if f == null or f.resolved:
 		return
 	f.resolve(league)
+	# FA移籍の補償（作業18）：CPU球団どうしはここで決まり、人的補償の選手も移る
+	league.compensation = FaCompensation.new()
+	league.compensation.open(league, f)
+	_sync_roster()
+	changed.emit()
+
+
+## このオフのFAの補償（FAを締め切ったあとの FA・トレード・ポスティングの段階のみ。それ以外は null）
+func comp() -> FaCompensation:
+	if phase != Phase.FA_TRADE or league == null:
+		return null
+	return league.compensation
+
+
+## 自球団が決める補償が残っている（プロテクト・人的補償の選手か金銭か）
+func comp_open() -> bool:
+	var c := comp()
+	return c != null and not c.resolved and not c.pending().is_empty()
+
+
+## 自球団のプロテクトを決める（index は comp().cases の番号）。だめなら理由の文
+func comp_protect(index: int, ids: Array) -> String:
+	var c := comp()
+	if c == null or index < 0 or index >= c.cases.size():
+		return "補償はありません"
+	return c.set_protect(league, c.cases[index], ids)
+
+
+## 自球団のプロテクトを確定する（旧球団が人的補償の選手か金銭かを選ぶ）
+func comp_confirm(index: int) -> void:
+	var c := comp()
+	if c == null or index < 0 or index >= c.cases.size():
+		return
+	c.confirm_protect(league, c.cases[index])
+	_sync_roster()
+	changed.emit()
+
+
+## 自球団が旧球団のとき：人的補償の選手（kind=player）・金銭（money）・指名権（pick）を選ぶ。だめなら理由の文
+func comp_choose(index: int, kind: String, id: String = "") -> String:
+	var c := comp()
+	if c == null or index < 0 or index >= c.cases.size():
+		return "補償はありません"
+	var error := c.choose(league, c.cases[index], kind, id)
+	if error.is_empty():
+		_sync_roster()
+		changed.emit()
+	return error
+
+
+## 残りの補償をおまかせで決める（可変ボタンで次の段階へ進むときにも自動で行う）
+func comp_resolve() -> void:
+	var c := comp()
+	if c == null or c.resolved:
+		return
+	c.resolve_all(league)
 	_sync_roster()
 	changed.emit()
 
@@ -787,6 +844,8 @@ func button_text() -> String:
 		return "表彰式"
 	if fa_open():
 		return "FA・移籍交渉"
+	if comp_open():
+		return "FAの補償"
 	if contract_open():
 		return "契約更改"
 	if release_open():

@@ -38,6 +38,8 @@ const NAME_WIDTH := 150
 const MARK_WIDTH := 56
 const ROW_HEIGHT := 36
 const RIGHT_WIDTH := 330
+## 抽選の演出の封筒を1行に並べる数（それより多い競合は2行にする）
+const LOTTERY_COLUMNS := 6
 ## 右の要約の中身の幅（要約のスクロールバーの分を空ける）
 const SUMMARY_WIDTH := RIGHT_WIDTH - 40
 ## CPU球団の指名を自動で進める間隔（秒）。早送り中は FAST
@@ -1411,10 +1413,14 @@ func _render_lottery(lot: Dictionary) -> void:
 	if use_3d:
 		_render_lottery_3d(lot)
 		return
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 14)
-	_overlay_box.add_child(row)
+	# 封筒は1行に LOTTERY_COLUMNS 個まで（9球団以上の競合で画面からはみ出していた。layout_fit_check）
+	var center := CenterContainer.new()
+	_overlay_box.add_child(center)
+	var row := GridContainer.new()
+	row.columns = mini(lot["teams"].size(), LOTTERY_COLUMNS)
+	row.add_theme_constant_override("h_separation", 14)
+	row.add_theme_constant_override("v_separation", 10)
+	center.add_child(row)
 	var boxes: Array[PanelContainer] = []
 	for t: String in lot["teams"]:
 		var env := PanelContainer.new()
