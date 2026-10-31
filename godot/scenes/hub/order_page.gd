@@ -63,8 +63,7 @@ func setup(p: UiTheme.Palette) -> void:
 	var center := VBoxContainer.new()
 	center.add_theme_constant_override("separation", 6)
 	add_child(center)
-	_message_label = UiTheme.small_label("", 15, UiTheme.TEXT_SUB, 700)
-	_message_label.clip_text = true
+	_message_label = UiTheme.fit_label(UiTheme.small_label("", 15, UiTheme.TEXT_SUB, 700))
 	_message_label.custom_minimum_size = Vector2(460, 0)
 	center.add_child(_message_label)
 	var lineup := UiTheme.titled_panel(p, "スターティングオーダー")

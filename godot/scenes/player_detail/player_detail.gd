@@ -129,9 +129,13 @@ func _ready() -> void:
 	add_child(_frame)
 	_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE,
 		MARGIN)
+	# 中身が枠より大きくなっても、枠を画面の外へ広げずにスクロールさせる（ハブのサブ画面と同じ）
+	var fit := ScrollContainer.new()
+	_frame.add_child(fit)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 8)
-	_frame.add_child(box)
+	UiTheme.fit_scroll(fit, box)
+	fit.add_child(box)
 	box.add_child(_build_top_bar())
 	_header = HBoxContainer.new()
 	_header.add_theme_constant_override("separation", 12)

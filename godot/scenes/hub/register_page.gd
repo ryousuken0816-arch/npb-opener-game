@@ -60,9 +60,7 @@ func setup(p: UiTheme.Palette, is_pitchers: bool) -> void:
 	_count_label = Label.new()
 	UiTheme.heading(_count_label, 19, p.ink, Color.WHITE, 5, false)
 	top.add_child(_count_label)
-	_message_label = UiTheme.small_label("", 16, UiTheme.TEXT_SUB, 700)
-	_message_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_message_label.clip_text = true
+	_message_label = UiTheme.fit_label(UiTheme.small_label("", 16, UiTheme.TEXT_SUB, 700))
 	top.add_child(_message_label)
 
 	var body := HBoxContainer.new()

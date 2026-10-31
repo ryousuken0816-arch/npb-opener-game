@@ -5,10 +5,12 @@ extends SceneTree
 ## - 毎年の開幕・7月：ハブ、日程表、采配の一覧と全サブ画面（1軍登録は全選手を1人ずつ選ぶ）、新戦力、システム、選手詳細の4タブ
 ## - 毎年のオフの各段階：ハブ、采配（オフは「見るだけ」の文言が出る）、FA・契約更改・戦力外の画面（全タブ・選手を選ぶ）、
 ##   ドラフト（開幕の演出・候補を選んで入札・抽選・指名一覧）、新戦力
-## スクロールの中（clip_contents の子）は親が画面内なら見えないので調べない。
+## - 切り替えの演出の途中で開く・閉じるをくり返したあと（作業11の不具合の原因。最初と毎年の開幕・7月）
+## スクロールの中（clip_contents の子）は親が画面内なら見えないので調べない。画面のルートの包み
+## （UiTheme.fit_scroll）にスクロールバーが出た＝中身が枠に収まっていない、も NG にする。
 ##
-##   godot --headless --path godot -s res://tests/layout_fit_check.gd -- [自球団] [最後の年] [出力先]
-##   （出力先はウィンドウ付きのときだけ。はみ出した画面のスクショを保存）
+##   godot --headless --path godot -s res://tests/layout_fit_check.gd -- [自球団] [最後の年] [開始年] [出力先]
+##   （既定はソフトバンク・2012・2008。出力先はウィンドウ付きのときだけ。はみ出した画面のスクショを保存）
 
 const SCREEN := Vector2(1280, 720)
 ## 端の許容（ピクセル）。フォーカスしたボタンの拡大（1.045倍）などの小さな揺れは許す
@@ -21,6 +23,7 @@ const TACTICS_PAGES := ["", "pitchers", "fielders", "practice", "order", "strate
 
 var _team := "福岡ソフトバンクホークス"
 var _last_year := 2012
+var _first_year := 2008
 var _out := ""
 var _failures := 0
 var _checked := 0
@@ -29,12 +32,16 @@ var _hub: Node
 
 
 func _initialize() -> void:
+	# ヘッドレスのウィンドウは既定で 1280x1280 になるので、ユーザーの環境（1280x720）に合わせる
+	root.size = Vector2i(SCREEN)
 	var args := OS.get_cmdline_user_args()
 	if args.size() > 0 and not args[0].is_empty():
 		_team = args[0]
 	if args.size() > 1:
 		_last_year = int(args[1])
-	_out = args[2] if args.size() > 2 else ""
+	if args.size() > 2:
+		_first_year = int(args[2])
+	_out = args[3] if args.size() > 3 else ""
 	if not _out.is_empty():
 		DirAccess.make_dir_recursive_absolute(_out)
 	_run.call_deferred()
@@ -42,8 +49,16 @@ func _initialize() -> void:
 
 func _run() -> void:
 	_gs = root.get_node("GameState")
-	print("== 画面のはみ出し（%s、2008〜%d年オフ、画面 %s） ==" % [_team, _last_year, str(root.get_visible_rect().size)])
-	_gs.new_game(_team)
+	# ヘッドレスのウィンドウは 1280x1280 になり、aspect=expand だと縦に広がるので、比率を保って 1280x720 にする
+	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
+	await _frames(2)
+	print("== 画面のはみ出し（%s、%d〜%d年オフ、画面 %s） ==" % [_team, _first_year, _last_year,
+		str(root.get_visible_rect().size)])
+	if not root.get_node("GameData").TEAM_COLORS.has(_team):
+		print("NG 球団名が違う：", _team)
+		quit(1)
+		return
+	_gs.new_game(_team, _first_year)
 	change_scene_to_file(HUB_SCENE)
 	await _frames(6)
 	_hub = current_scene
@@ -79,19 +94,21 @@ func _check_season(y: int, when: String) -> void:
 				_hub.get("_" + ("schedule" if key == "schedule" else "scout") + "_view").switch_tab(1)
 				await _check_screen("%s：%s タブ%d" % [when, key, i + 1])
 		_hub.call("_close_sub_screen")
-	await _check_tactics(when)
+	await _check_tactics(when, TACTICS_PAGES, _gs.month >= 7)
 	await _check_detail(when)
+	await _check_quick_switch(when)
 	await _settle()
 	_check(y == _gs.year, "%s：年が変わっていない" % when)
 
 
-func _check_tactics(when: String) -> void:
+## select_all：1軍登録で全選手を1人ずつ選ぶ（時間がかかるので年に2回だけ）
+func _check_tactics(when: String, pages: Array, select_all: bool) -> void:
 	await _open("tactics")
 	var tactics: Node = _hub.get("_tactics_view")
-	for page: String in TACTICS_PAGES:
+	for page: String in pages:
 		tactics.call("_show_page", page, true)
 		await _check_screen("%s：采配 %s" % [when, page if not page.is_empty() else "一覧"])
-		if page in ["pitchers", "fielders"]:
+		if page in ["pitchers", "fielders"] and select_all:
 			await _select_all(tactics.get("_register_" + page), "%s：采配 %s" % [when, page])
 		elif page == "list":
 			var roster: Node = tactics.get("_roster")
@@ -99,6 +116,29 @@ func _check_tactics(when: String) -> void:
 				roster.switch_tab(1)
 				await _check_screen("%s：采配 選手一覧 タブ%d" % [when, i + 2], 0.0)
 	tactics.call("_show_page", "")
+	_hub.call("_close_sub_screen")
+
+
+## 画面の切り替えの演出（0.16秒）の途中で開く・閉じるをくり返す（Ⓐ・Ⓑの連打）。
+## 作業11の不具合：演出が途中で止まった位置がサブ画面の右端の余白に残り、くり返すたびに右へはみ出していった
+func _check_quick_switch(when: String) -> void:
+	for i in 6:
+		for key: String in ["schedule", "tactics", "scout"]:
+			_hub.call("_open_sub_screen", key)
+			await _frames(1 + i % 3)
+			_hub.call("_close_sub_screen")
+			await _frames(1)
+	_hub.call("_open_sub_screen", "tactics")
+	await _frames(2)
+	_hub.call("_open_sub_screen", "tactics")
+	await _settle()
+	var tactics: Node = _hub.get("_tactics_view")
+	tactics.call("_show_page", "pitchers", true)
+	await _check_screen("%s：開く・閉じるの連打のあと 采配 pitchers" % when)
+	tactics.call("_show_page", "")
+	_hub.call("_close_sub_screen")
+	await _open("schedule")
+	await _check_screen("%s：開く・閉じるの連打のあと 日程表" % when)
 	_hub.call("_close_sub_screen")
 
 
@@ -150,15 +190,8 @@ func _check_offseason(y: int) -> void:
 	var when := "%d年オフ %s" % [y, _gs.phase_name()]
 	print("\n-- %s --" % when)
 	await _check_screen("%s：ハブ" % when)
-	await _open("tactics")
-	var tactics: Node = _hub.get("_tactics_view")
-	for page: String in ["", "pitchers", "fielders", "order"]:
-		tactics.call("_show_page", page, true)
-		await _check_screen("%s：采配 %s" % [when, page if not page.is_empty() else "一覧"])
-		if page == "pitchers":
-			await _select_all(tactics.get("_register_pitchers"), "%s：采配 pitchers" % when)
-	tactics.call("_show_page", "")
-	_hub.call("_close_sub_screen")
+	# オフの采配は「見るだけ」の文言が出る（作業11の報告の画面）。全選手を選ぶのは最初の段階だけ
+	await _check_tactics(when, ["", "pitchers", "fielders", "order"], _gs.phase == _gs.Phase.AWARDS)
 	await _open("scout")
 	await _check_screen("%s：新戦力" % when)
 	_hub.call("_close_sub_screen")
@@ -261,6 +294,13 @@ func _walk(node: Node, result: Array[String]) -> void:
 			result.append("%s %s（最小 %s）%s" % [_name(c), _rect_text(r), str(c.get_combined_minimum_size()),
 				_widest(c)])
 			return
+		# 画面のルートの包み（UiTheme.fit_scroll）：はみ出しは防げるが、スクロールバーが出たら枠に収まっていない
+		if c is ScrollContainer and c.has_meta("fit_guard"):
+			var sc := c as ScrollContainer
+			if sc.get_h_scroll_bar().visible or sc.get_v_scroll_bar().visible:
+				result.append("%s 中身が枠 %s に収まらずスクロールになった（中身の最小 %s）%s" % [_name(c),
+					_rect_text(r), str(sc.get_child(0).get_combined_minimum_size()), _widest(c)])
+				return
 		if c.clip_contents:
 			return  # スクロールの中など：親の枠で切り取られる
 	for child in node.get_children():
