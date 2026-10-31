@@ -34,8 +34,10 @@ func _build() -> void:
 	var contract_year: int = history[-1]["year"] if not history.is_empty() else GameState.year
 	if league.market.has(_id):
 		var info: Dictionary = league.market_info[_id]
-		body.add_child(_detail.value_row("提示額", Salary.text(info["asking"]), "",
-				"外国人市場の候補（史実は%s）" % GameData.short_name(info["hist_team"])))
+		var note := "外国人市場の候補（史実は%s）" % GameData.short_name(info["hist_team"])
+		if info.get("fictional", false):
+			note = "外国人市場の候補（架空の選手）"
+		body.add_child(_detail.value_row("提示額", Salary.text(info["asking"]), "", note))
 	elif league.team_of.has(_id):
 		body.add_child(_detail.value_row("年俸", Salary.text(amount), "", "%d年" % contract_year))
 		if history.size() >= 2:

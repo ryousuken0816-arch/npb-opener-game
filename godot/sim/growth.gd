@@ -15,6 +15,8 @@ extends RefCounted
 ## そのあとは実在の選手と同じ衰え方（ピークの年齢の差だけ年齢をずらす）をする。項目は godot/README.md「成長・衰え・引退」。
 
 const COEFF_FILE := "growth.json"
+## この年の開幕から成長させる（2027年の開幕は 2027_pre.json＝2026年までの成績。2027年のシーズン後から毎オフ成長）
+const FIRST_YEAR := 2028
 
 ## リーグ全体の平均・ばらつきを target に寄せる割合（1年あたり）と、1年で動かす上限
 const NORMALIZE_RATE := 0.5
@@ -75,10 +77,17 @@ func is_ready() -> bool:
 	return coeff.has("batting") and coeff.has("pitching")
 
 
-## その年の4月1日時点の満年齢（誕生日が無ければ -1）
+## アマ選手（tools/amateur_ratings.py。誕生日が無い）の入団した年の4月1日時点の年齢（区分ごとの目安）
+const AMATEUR_ENTRY_AGE := {"高校": 18, "大学": 22, "社会人": 24, "独立": 23}
+
+
+## その年の4月1日時点の満年齢（誕生日が無ければ、アマ選手はドラフトの年と区分からの目安、ほかは -1）
 static func age_at(p: Dictionary, year: int) -> int:
 	var birth: Variant = p.get("birth")
 	if not (birth is String) or birth.length() < 10:
+		var am: Variant = p.get("amateur")
+		if am is Dictionary and am.get("draft_year") != null:
+			return year - int(am["draft_year"]) - 1 + int(AMATEUR_ENTRY_AGE.get(str(am.get("category", "")), 22))
 		return -1
 	var parts: PackedStringArray = birth.split("-")
 	if parts.size() < 3 or not parts[0].is_valid_int():
@@ -221,6 +230,14 @@ static func _no_fielding(p: Dictionary) -> bool:
 	return not (f is Dictionary) or f.is_empty()
 
 
+## 守備の記録が無い野手なら、守備位置・守備力を付ける（入ったばかりの新人用。付けたら true）
+func assign_fielding_if_missing(p: Dictionary, rng: RandomNumberGenerator) -> bool:
+	if _side(p) != "B" or not _no_fielding(p) or not is_ready():
+		return false
+	_assign_rookie_fielding(p, coeff["batting"], rng)
+	return not _no_fielding(p)
+
+
 ## 守備の記録が無い新人の野手（primary_pos が「内野手」など）に、史実の新人の2年目の守備位置・守備力の例
 ## （rookie_fielding。primary_pos ごと）から1つ選んで付ける（ゲームは2軍の試合を行わず、守備位置が付かないため）
 func _assign_rookie_fielding(p: Dictionary, block: Dictionary, rng: RandomNumberGenerator) -> void:
@@ -253,8 +270,9 @@ func _assign_rookie_fielding(p: Dictionary, block: Dictionary, rng: RandomNumber
 
 ## 出場の多い側の係数を使う割合（0〜1）。入団して最初の成長だけ、前年までの出場量（2軍は半分）で混ぜる
 static func _regular_weight(p: Dictionary, side: String, block: Dictionary) -> float:
-	# 架空の外国人（ForeignPlayers）は新人の側の係数（国内の新人から作った）を使わない
-	if p.has("growth_year") or p.get("import") is Dictionary:
+	# 架空の外国人（ForeignPlayers）・有識者の評価から能力を決めたアマ選手（tools/amateur_ratings.py の amateur）は
+	# 新人の側の係数（史実のドラフト順位からの事前値が1年目に下がる動き）を使わない
+	if p.has("growth_year") or p.get("import") is Dictionary or p.get("amateur") is Dictionary:
 		return 1.0
 	var s: Variant = p["pitching" if side == "P" else "batting"].get("sample")
 	if not (s is Dictionary):
@@ -334,7 +352,7 @@ func _quantile(block: Dictionary, u: float) -> float:
 	return float(qs[-1])
 
 
-func _update_sample(p: Dictionary, side: String, season: Dictionary) -> void:
+static func _update_sample(p: Dictionary, side: String, season: Dictionary) -> void:
 	var keys := ["outs_1", "outs_2"] if side == "P" else ["pa_1", "pa_2"]
 	if not (season.has(keys[0]) or season.has(keys[1])):
 		return

@@ -139,10 +139,12 @@ func _render_market(league: LeagueRoster) -> void:
 		item.set_text(0, league.names.get(id, id))
 		item.set_text(1, "投手" if info["pitcher"] else "野手")
 		item.set_text(2, str(p.get("primary_pos")) if p.get("primary_pos") != null else "-")
-		item.set_text(3, _ability_text(p, info["pitcher"]))
+		item.set_text(3, _ability_text(p, info["pitcher"], info.get("scout", {})))
 		item.set_text(4, Salary.text(info["asking"]))
 		item.set_text_alignment(4, HORIZONTAL_ALIGNMENT_RIGHT)
 		var origin := GameData.short_name(info["hist_team"])
+		if info.get("fictional", false):
+			origin = "架空（%s）" % str(p.get("import", {}).get("country", ""))
 		if info.has("released"):
 			origin = "戦力外（%s）" % GameData.short_name(info["released"])
 		item.set_text(5, origin)
@@ -151,8 +153,9 @@ func _render_market(league: LeagueRoster) -> void:
 	_sign_button.visible = GameState.phase not in [GameState.Phase.SEASON, GameState.Phase.AWARDS]
 
 
-## 主な能力のランク（投手は総合・スタミナ・奪三振・制球、野手はミート・パワー・走力）
-func _ability_text(p: Dictionary, pitcher: bool) -> String:
+## 主な能力のランク（投手は総合・スタミナ・奪三振・制球、野手はミート・パワー・走力）。
+## scout（項目 → 見立ての値）があればそれを出す（架空の外国人は本当の能力に誤差を足した見立て。LeagueRoster._add_candidate）
+func _ability_text(p: Dictionary, pitcher: bool, scout: Dictionary = {}) -> String:
 	var parts: Array[String] = []
 	var ratings: Variant = (p.get("pitching") if pitcher else p.get("batting"))
 	if not ratings is Dictionary or not ratings.get("ratings") is Dictionary:
@@ -160,6 +163,9 @@ func _ability_text(p: Dictionary, pitcher: bool) -> String:
 	var keys := [["overall", "総"], ["stamina", "ス"], ["k9", "三"], ["bb9", "制"]] if pitcher \
 		else [["meet", "ミ"], ["power", "パ"], ["speed", "走"]]
 	for k: Array in keys:
+		if scout.has(k[0]):
+			parts.append("%s%s" % [k[1], Growth.rank_of(float(scout[k[0]]))])
+			continue
 		var r: Variant = ratings["ratings"].get(k[0])
 		parts.append("%s%s" % [k[1], r["rank"] if r is Dictionary else "-"])
 	return " ".join(parts)

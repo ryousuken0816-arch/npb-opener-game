@@ -20,7 +20,8 @@ Godot の `Growth`（godot/sim/growth.gd）が史実の無い年（2028年〜）
 - 投手の役割（先発・救援）は来季に先発になる確率のロジスティック回帰（今の役割ごと。年齢・スタミナ・総合・出場の少なさ）で
   移り変わり、スタミナは移り変わりの種類（先発>先発 など）ごとの回帰で動かす（スタミナは役割で2つの山に分かれるため）
 - 投手の総合だけは、役割ごとに K/9・BB/9・HR/9 の値からの回帰＋選手ごとのずれ（翌年に縮む）で出す（derived）
-- リーグ全体の平均・ばらつき（target。開幕時点の全選手）：毎年これに少し寄せて、何十年進めても分布が変わらないようにする
+- リーグ全体の目標（target。開幕時点の全選手）：平均・ばらつき（mean・sd。スタミナは役割ごとも）に毎年少し寄せて、
+  何十年進めても分布が変わらないようにする。項目ごとの上位 TOP_N 人の平均（top_mean）は参考（Godot では使っていない）
 - 引退：来季のファイルにいない確率のロジスティック回帰（年齢・実力・出場・外国人・投手）
 標準ライブラリのみ。
 """
@@ -35,8 +36,10 @@ RATINGS = ROOT / "generated" / "ratings"
 OUT = ROOT / "generated" / "growth.json"
 
 FIRST_FROM = 2008
-LAST_FROM = 2025  # 2025_pre → 2026_pre（2026_pre は2025年までの成績）。2026年の最終成績で 2027_pre ができたら 2026 に
+LAST_FROM = 2026  # 2026_pre → 2027_pre（2027_pre は2026年の最終成績まで。2027_post 以降は写しなので使わない）
 RETIRE_LAST_FROM = 2025  # 引退は「来季の名簿にいるか」だけなので 2025→2026 まで使える
+# 参考：項目ごとの上位 TOP_N 人の平均（target.top_mean。Godot では使っていない。上位に寄せる案は growth_check が悪くなった）
+TOP_N = 200
 TARGET_YEARS = range(2017, 2027)  # リーグ全体の平均・ばらつきの基準（直近10年の開幕時点＝<年>_pre。成長を当てる時点と同じ顔ぶれ）
 
 CENTER = 63.0  # 能力値の正規化の中心（tools/README.md「スケール」）
@@ -483,7 +486,14 @@ def main() -> None:
                     m = sum(vals) / len(vals)
                     means.append(m)
                     sds.append(math.sqrt(sum((v - m) ** 2 for v in vals) / len(vals)))
-            target[key] = {"mean": round(sum(means) / len(means), 2), "sd": round(sum(sds) / len(sds), 2)}
+            tops = []
+            for y in TARGET_YEARS:
+                vals = sorted((v for p in pre_files[y].values() if side_of(p) == side
+                               for v in [value_of(p, side, key)] if v is not None), reverse=True)
+                if len(vals) >= TOP_N:
+                    tops.append(sum(vals[:TOP_N]) / TOP_N)
+            target[key] = {"mean": round(sum(means) / len(means), 2), "sd": round(sum(sds) / len(sds), 2),
+                           "top_n": TOP_N, "top_mean": round(sum(tops) / len(tops), 2) if tops else None}
         if side == "P":
             shares = []
             for y in TARGET_YEARS:

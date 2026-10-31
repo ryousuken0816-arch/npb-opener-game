@@ -370,6 +370,7 @@ func prepare_next_year(season_year: int, next: Dictionary, next_post: Dictionary
 	var returns: Array[String] = []
 	var newcomers: Array[String] = []
 	var draftees: Array[String] = []
+	var fictional := 0
 	market.clear()
 	market_info.clear()
 	cpu_demand.clear()
@@ -384,10 +385,14 @@ func prepare_next_year(season_year: int, next: Dictionary, next_post: Dictionary
 			returns.append(id)
 		elif RosterRules.is_foreign(p, next_year, debut.get(id)):
 			_add_candidate(p, next_year, post.get(id, {}))
+			if ForeignPlayers.is_fictional_foreign(p):
+				fictional += 1
 		elif _is_draftee(p, season_year):
 			draftees.append(id)
 		else:
 			newcomers.append(id)
+	if fictional > 0:
+		_fictional_demand(next, retire, next_year, debut, fictional)
 	_plan = {"year": next_year, "entries": entries, "renames": renames, "retire": retire,
 		"returns": returns, "newcomers": newcomers, "draftees": draftees, "debut": debut, "post": post,
 		"draft_quota": _draft_quota(season_year)}
@@ -445,6 +450,22 @@ func _add_candidate(p: Dictionary, next_year: int, post: Dictionary) -> void:
 	names[id] = p["name"]
 	market_info[id] = {"hist_team": hist, "pitcher": pitcher, "value": a[0] + 0.5 * a[1] + noise,
 		"asking": Salary.foreign_asking(basis, noise, next_year)}
+	if ForeignPlayers.is_fictional_foreign(p):
+		# 架空の外国人（史実の無い年）：史実の球団が無いので、CPU球団の欲しい人数は _fictional_demand でまとめて決める
+		var imp: Dictionary = p["import"]
+		market_info[id]["fictional"] = true
+		# 一覧に出す見立て：本当の能力に誤差（評価の誤差と同じ大きさ）を足した値
+		var scout := {}
+		var block: Variant = p.get("pitching") if pitcher else p.get("batting")
+		if block is Dictionary and block.get("ratings") is Dictionary:
+			for key: String in block["ratings"]:
+				var r: Variant = block["ratings"][key]
+				if r is Dictionary and r.get("value") != null:
+					scout[key] = clampi(roundi(float(r["value"]) + _rng.randfn(0.0, MARKET_NOISE * SimPlayer.SCALE_SD)), 1, 100)
+		market_info[id]["scout"] = scout
+		_log("", "foreign_candidate", id, p["name"], "", "", "%s（%s、%s・前所属 %s）が外国人市場に" % [
+			p["name"], "投手" if pitcher else "野手", imp.get("country", ""), str(p.get("career", "")).get_slice(" - ", 0)])
+		return
 	var team := _current_name(hist)
 	if team != user_team:
 		if not cpu_demand.has(team):
@@ -452,6 +473,43 @@ func _add_candidate(p: Dictionary, next_year: int, post: Dictionary) -> void:
 		cpu_demand[team]["p" if pitcher else "b"] += 1
 	_log("", "foreign_candidate", id, p["name"], "", "", "%s（%s）が外国人市場に（史実は%s）" % [
 		p["name"], "投手" if pitcher else "野手", GameData.short_name(team)])
+
+
+## 架空の外国人（史実の無い年）を CPU球団が獲る人数：来季も残る外国人が目安（next.foreign_target。史実の1球団の平均）に
+## 足りない分。投手・野手は史実の新外国人の投手の割合（next.foreign_pitcher_share）で分ける
+func _fictional_demand(next: Dictionary, retire: Array[String], next_year: int, debut: Dictionary, available: int) -> void:
+	var target := float(next.get("foreign_target", 7.0))
+	var share := float(next.get("foreign_pitcher_share", 0.55))
+	var leaving := {}
+	for id in retire:
+		leaving[id] = true
+	var staying := {}
+	for id: String in team_of:
+		if leaving.has(id):
+			continue
+		var p := GameData.player(id)
+		if p.is_empty() or not RosterRules.is_foreign(p, next_year, debut.get(id)):
+			continue
+		var team: String = team_of[id]
+		if not staying.has(team):
+			staying[team] = {"p": 0, "b": 0}
+		staying[team]["p" if p.get("is_pitcher", false) else "b"] += 1
+	var total := 0
+	for team: String in GameData.teams():
+		if team == user_team:
+			continue
+		var st: Dictionary = staying.get(team, {"p": 0, "b": 0})
+		var need := maxi(0, roundi(target) - int(st["p"]) - int(st["b"]))
+		if need == 0:
+			continue
+		var want_p := clampi(roundi(target * share) - int(st["p"]), 0, need)
+		var d: Dictionary = cpu_demand.get(team, {"p": 0, "b": 0})
+		d["p"] += want_p
+		d["b"] += need - want_p
+		cpu_demand[team] = d
+		total += need
+	if total > available:
+		push_warning("架空の外国人の候補（%d人）より CPU球団の欲しい人数（%d人）が多い" % [available, total])
 
 
 ## 仮ID（tmp:球団コード:名前）の選手が来季のファイルで本来のIDになっていれば {旧ID: 新ID}
@@ -699,6 +757,10 @@ func sign_foreign(id: String, team: String) -> String:
 		return ""
 	joined[id] = _plan.get("year", year + 1)
 	_set_salary(id, info["asking"], joined[id])
+	if info.get("fictional", false):
+		_log("", "foreign_sign", id, name, "", team, "%s：%s が獲得（%s）" % [
+			name, GameData.short_name(team), Salary.text(info["asking"])])
+		return ""
 	_log("", "foreign_sign", id, name, "", team, "%s：%s が獲得（%s、史実は%s）" % [
 		name, GameData.short_name(team), Salary.text(info["asking"]),
 		GameData.short_name(_current_name(info["hist_team"]))])

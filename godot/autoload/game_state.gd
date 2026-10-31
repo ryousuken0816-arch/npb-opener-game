@@ -133,6 +133,9 @@ var _offseason_teams := {}
 var _autosave_pending := false
 ## skip_to_phase などの自動処理の途中（セーブしない）
 var _busy := false
+## 史実の無い年の来季に加える選手を返す（来季の年, LeagueRoster）→ 選手データの配列。hist_team（team）のある選手は
+## その球団の新加入、空の選手はドラフト候補として扱われる。ドラフトの無い年のテストや作業22の候補づくりに使う（無ければ何もしない）
+var future_newcomers: Callable = Callable()
 
 
 func new_game(team_name: String, start_year: int = START_YEAR) -> void:
@@ -150,6 +153,8 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	news = News.new()
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	phase = Phase.SEASON
+	GameData.synthetic.clear()
+	GameData.debut_extra = {}
 	GameData.load_ratings(year, "pre")
 	league = LeagueRoster.new()
 	league.start(year, GameData.ratings, _opening_date(), team, randi() + 1)
@@ -946,6 +951,23 @@ func record_text() -> String:
 	return "%d勝 %d敗 %d分" % [wins, losses, draws]
 
 
+## 史実の能力値ファイルが無い年（Growth.FIRST_YEAR〜）は、来季の開幕時点の能力値をここで作る（FutureYear：
+## 引退・成長・ドラフト候補・架空の外国人）。以後は来季のファイルと同じに扱われ、セーブにも残る（docs/AUTORUN.md 作業27・31）
+func _prepare_future_year() -> void:
+	var next_year := year + 1
+	if next_year < Growth.FIRST_YEAR or GameData.synthetic.has(next_year):
+		return
+	var base := GameData.peek_ratings(next_year, "pre")
+	GameData.debut_extra = league.joined.duplicate()
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var extra: Array = future_newcomers.call(next_year, league) if future_newcomers.is_valid() else []
+	GameData.synthetic[next_year] = FutureYear.new().build(year, league, season, base, rng, extra)
+	for y: int in GameData.synthetic.keys():
+		if y < year:
+			GameData.synthetic.erase(y)
+
+
 ## フェーズに入ったときの処理。年越しの史実の出来事（LeagueRoster）はここで起こす：
 ## FA・トレード・ポスティング＝メジャー移籍・年内のトレード・来季の準備（復帰・外国人市場）、契約更改＝年俸、
 ## 戦力外・引退＝引退と戦力外（Releases。CPU球団はここで決め、自球団は画面で選ぶ）、ドラフト＝ドラフト以外の新加入
@@ -966,6 +988,7 @@ func _enter(new_phase: Phase) -> void:
 		Phase.FA_TRADE:
 			var leaving := league.depart_mlb(year)
 			_apply_trades("%d-12-31" % year)
+			_prepare_future_year()
 			var next := GameData.peek_ratings(year + 1, "pre")
 			if not next.is_empty():
 				GameData.set_supplement(next)
@@ -1384,7 +1407,17 @@ func to_save() -> Dictionary:
 		"news": news.to_save() if news != null else null,
 		"league": league.to_save() if league != null else null,
 		"season": season.to_save() if season != null else null,
+		"synthetic": _synthetic_save(),
 	}
+
+
+## 成長で作った能力値（今年と来季の分。GameData.synthetic）
+func _synthetic_save() -> Dictionary:
+	var out := {}
+	for y: int in GameData.synthetic:
+		if y >= year:
+			out[str(y)] = GameData.synthetic[y]
+	return out
 
 
 ## to_save() の中身で再開する（d は SaveUtil.ints() で整数を戻したもの）。能力値ファイルはその年・段階のものを
@@ -1411,6 +1444,11 @@ func load_state(d: Dictionary) -> void:
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	for key: String in d.get("tactics", {}):
 		tactics[key] = int(d["tactics"][key])
+	GameData.synthetic.clear()
+	var syn: Variant = d.get("synthetic")
+	if syn is Dictionary:
+		for key: String in syn:
+			GameData.synthetic[int(key)] = syn[key]
 	GameData.load_ratings(year, "pre" if phase in [Phase.SEASON, Phase.CAMP, Phase.POSTSEASON] else "post")
 	GameData.set_kept_players({})
 	GameData.set_extra_players({})
@@ -1420,6 +1458,7 @@ func load_state(d: Dictionary) -> void:
 	GameData.set_supplement(next)
 	league = LeagueRoster.new()
 	league.from_save(d["league"])
+	GameData.debut_extra = league.joined.duplicate()
 	league.restore_plan()
 	_sync_roster()
 	season = null

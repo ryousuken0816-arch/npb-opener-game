@@ -339,6 +339,21 @@ wav_dir="user://voice"  ; 絶対パスでもよい（例 "C:/Users/<名前>/Docu
 `Growth` で毎オフに能力を動かす。係数は `generated/growth.json`（`tools/growth_coefficients.py` が 2008〜2026年の開幕時点の
 能力値の「1年での変化」から作る。中身は tools/README.md「growth_coefficients.py」）。単体の確認は `tests/growth_check.gd`。
 
+**年越しへのつなぎ込み**（`sim/future_year.gd` の `FutureYear`、`GameState._prepare_future_year`）：来季が `Growth.FIRST_YEAR`（2028）以降なら、
+オフの「FA・トレード・ポスティング」に入ったところで来季の開幕時点の能力値を1回だけ作り、`GameData.synthetic[来季]` に置く。
+`GameData` はその年の `pre`・`post` の両方としてファイルより優先して使う（`find_ratings_path` は `synthetic:<年>`）ので、
+LeagueRoster の来季の準備（来季にいない選手＝引退、球団なしの選手＝ドラフト候補・外国人市場）がそのまま動く。中身：
+- 今の所属の選手：`should_retire`（今季のゲーム内の打席・アウト数で出場量を更新して判定。複数年契約の途中・メジャーから引き留めた選手は引退しない）、
+  残った選手は `grow_league`（今季の打席・アウト数で出場量 `sample` も更新）。`team`・`hist_team` は今の所属
+- 来季のファイルがあれば、その球団なしの選手（`tools/amateur_ratings.py carry` の 2028_pre の2027年の候補）を加える
+- `GameState.future_newcomers`（Callable。来季の年, LeagueRoster → 選手の配列）が返す選手を加える（hist_team のある選手はその球団の新加入、空はドラフト候補。作業22・テスト用）
+- 架空の外国人（下記「架空の外国人選手」）。CPU球団の欲しい人数は `LeagueRoster._fictional_demand`（来季も残る外国人が1球団7人に足りない分）
+- 加えた選手は成長させない（fresh）。`foreign_target`・`foreign_pitcher_share`・`growth_note`（引退・外国人・候補の人数）も入る
+- セーブ：`GameState.to_save()` の `synthetic`（今年と来季の分）。ロードで `GameData.synthetic` に戻してから能力値を読む
+- 日程・名簿の無い年（`GameData.SCHEDULE_COPY_FROM` の2026年より後）：日程はいちばん近い前の年の日程を同じ曜日のまま写す（`copy_schedule`）、
+  1軍初出場の年はいちばん近い前の年の名簿＋ゲーム内で入った年（`GameData.debut_extra`＝`LeagueRoster.joined`）
+- 確認は `tests/future_year_check.gd`（2027年開始で数年。ドラフトの候補が無い年は `future_newcomers` で史実の新人をひな形に補充）
+
 - `Growth.new()`（係数を読む）→ `grow_league(選手の配列, 来季の年, rng, fresh, seasons)`：全員を来季の開幕時点の能力にした新しい配列を返す（入力は変えない）。
   `fresh`（選手ID → true）は今オフに入ったばかりの選手（新人など）で、成長させず平均の計算にだけ入れる。
   `seasons`（選手ID → `{pa_1, pa_2, outs_1, outs_2, bonus}`）は今季のゲーム内の成績で、出場量（`sample`）の更新と好成績の後押し（`bonus`：項目 → 点数、最大±3）に使う
@@ -351,7 +366,8 @@ wav_dir="user://voice"  ; 絶対パスでもよい（例 "C:/Users/<名前>/Docu
   - 守備の記録が無い新人の野手（`fielding` が空、`primary_pos` が「内野手」など）は、最初の成長で史実の新人の2年目の守備位置・守備力の例から1つ選んで付ける
   - 特殊能力（`abilities`）・成績の内訳（`detail`）は変えない。成長させた選手には `growth_year`（その能力の年）が付く
 - リーグ全体：成長のあと、項目ごとの平均・ばらつき（スタミナは役割ごと）と先発の割合を、史実の直近10年の開幕時点（`target`）へ半分ずつ寄せる。
-  2027年から10年・20年進めても平均・上位の人数・先発の人数・試合の成績（打率・防御率）がほぼ変わらないことを確認済み
+  目安は史実のファイルの全選手（育成を含め1,000〜1,200人）なので、ゲームの選手がそれより少ないと所属選手の平均は少しずつ下がる（年越しの確認で10年でミート −3 ほど）
+  2027年から10年進めても平均・上位の人数・先発の人数・試合の成績（打率・防御率）がほぼ変わらないことを確認済み（growth_check・future_year_check）
 - 引退：`retire_probability(選手, 来季の年, 外国人か, 出場量)`（`should_retire` は乱数で判定）。史実（2008〜2026年）の「来季の名簿にいない」割合の
   ロジスティック回帰（年齢・実力 `Salary.ability`・出場量・外国人・投手、外国人は実力・出場との掛け算も）。国内の選手は 18〜23歳 1%・28〜30歳 11%・34〜36歳 25%・40歳〜 35%、
   外国人は 42%（1年目の実力の下位4分の1は 62%、上位4分の1は 18%）。
@@ -379,7 +395,8 @@ wav_dir="user://voice"  ; 絶対パスでもよい（例 "C:/Users/<名前>/Docu
 
 ## 架空の外国人選手（`ForeignPlayers`、docs/AUTORUN.md 作業31）
 
-史実の無い年は、毎年の外国人市場に架空の外国人選手を出す（外国人市場へのつなぎ込みは作業17のあと）。単体の確認は `tests/foreign_check.gd`。
+史実の無い年は、毎年の外国人市場に架空の外国人選手を出す（`FutureYear` が来季の能力値に球団なしで入れ、`LeagueRoster.prepare_next_year` が市場の候補にする）。
+市場の一覧（新戦力）には本当の能力ではなく誤差を足した見立て（`market_info.scout`）のランクを出し、史実の球団の列は「架空（国）」。単体の確認は `tests/foreign_check.gd`。
 
 - `ForeignPlayers.new()` → `generate_year(その年, rng)`：その年に来る候補の配列（能力値ファイルの選手と同じ形、`team` は空）。人数は史実の直近10年（2016〜2025年）のどれか1年の人数（28〜43人、投手が6割）
 - 1人ずつ、史実の新外国人（2009〜2025年の599人）のひな形を1人選び、1年目の能力（その年のシーズン後の能力値）に小さなゆらぎ（能力値±3・球速±1km/h）を足す。

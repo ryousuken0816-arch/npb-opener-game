@@ -13,6 +13,8 @@ const SCHEDULE_DIR := "res://data/schedule"
 const REPO_DATA_DIR := "../data"
 
 const LEAGUE_NAMES := {"C": "セ・リーグ", "P": "パ・リーグ"}
+## この年より後で日程・名簿のファイルが無い年は、前の年のものを写す（load_schedule・load_debut_years）
+const SCHEDULE_COPY_FROM := 2026
 
 ## 表示順（ここにない球団名は末尾に名前順で並ぶ）
 const TEAM_ORDER := [
@@ -89,6 +91,11 @@ const DENA_FROM_YEAR := 2012
 ## 各選手の team / league は、ゲーム内の所属（GameState.league）を apply_roster() で書き込んだもの。
 ## 史実（能力値ファイル）の球団は hist_team に残す。所属していない選手（外国人市場の候補など）は team が空
 var ratings: Dictionary = {}
+## 史実の能力値ファイルが無い年（Growth.FIRST_YEAR〜）に、オフに成長させて作った来季の能力値（年 → ファイルと同じ形）。
+## その年の pre・post の両方として使い、ファイルより優先する。GameState がセーブに残す（docs/AUTORUN.md 作業27）
+var synthetic: Dictionary = {}
+## 名簿（data/<年>/rosters.json）の無い年の1軍初出場の年に足す 選手ID → 年（ゲーム内で入った選手。LeagueRoster.joined）
+var debut_extra: Dictionary = {}
 var _players_by_team: Dictionary = {}
 var _players_by_id: Dictionary = {}
 ## 来季の能力値ファイルの選手（オフに加わった新人・復帰選手・外国人市場の候補を、年が変わる前から引けるように）
@@ -111,12 +118,12 @@ var _roster_cache := {}
 ## <年>_<phase>.json を読み込む。見つからなければ false を返し、現在のデータを保持する。
 func load_ratings(year: int, phase: String) -> bool:
 	var path := find_ratings_path(year, phase)
-	if not path.is_empty() and path == _loaded_file:
+	if not path.is_empty() and path == _loaded_file and (not synthetic.has(year) or is_same(ratings, synthetic[year])):
 		return true
 	if path.is_empty():
 		push_warning("能力値ファイルがありません: %d_%s.json" % [year, phase])
 		return false
-	var parsed := _parse_ratings(path)
+	var parsed: Dictionary = synthetic[year] if synthetic.has(year) else _parse_ratings(path)
 	if parsed.is_empty():
 		return false
 	ratings = parsed
@@ -134,6 +141,12 @@ func peek_ratings(year: int, phase: String) -> Dictionary:
 		return {}
 	if path == _loaded_file:
 		return ratings
+	if synthetic.has(year):
+		var syn: Dictionary = synthetic[year]
+		for p: Dictionary in syn.get("players", []):
+			if not p.has("hist_team"):
+				p["hist_team"] = p["team"]
+		return syn
 	if not _parsed_cache.has(path):
 		var parsed := _parse_ratings(path)
 		if parsed.is_empty():
@@ -322,6 +335,8 @@ static func _first_digits(text: String) -> String:
 
 
 func find_ratings_path(year: int, phase: String) -> String:
+	if synthetic.has(year):
+		return "synthetic:%d" % year
 	var file_name := "%d_%s.json" % [year, phase]
 	# res:// の外（リポジトリの generated/）はエディタ実行時のみ参照できる
 	var generated_dir := ProjectSettings.globalize_path("res://").path_join(GENERATED_DIR)
@@ -343,8 +358,36 @@ func read_generated(file_name: String) -> Variant:
 	return JSON.parse_string(FileAccess.get_file_as_string(path))
 
 
-## data/<年>/schedule.json の中身（試合の配列）。無ければ空配列
+## data/<年>/schedule.json の中身（試合の配列）。無ければ空配列。
+## 史実の無い年（SCHEDULE_COPY_FROM より後）でファイルが無ければ、いちばん近い前の年の日程を同じ曜日のまま
+## 何年か後へずらして写す（作業17の2027年と同じ考え方。作業27で10年ほど進めるため）
 func load_schedule(year: int) -> Array:
+	var own := _schedule_file(year)
+	if not own.is_empty() or year <= SCHEDULE_COPY_FROM:
+		return own
+	for src in range(year - 1, SCHEDULE_COPY_FROM - 1, -1):
+		var base := _schedule_file(src)
+		if not base.is_empty():
+			return copy_schedule(base, year - src)
+	return []
+
+
+## 日程を years 年後へ写す（日付を7日の倍数だけずらし、曜日を保つ。ずらす日数は years 年にいちばん近い週数）
+static func copy_schedule(base: Array, years: int) -> Array:
+	var shift := roundi(365.2425 * years / 7.0) * 7 * 86400
+	var out: Array = []
+	for g: Dictionary in base:
+		var c := g.duplicate()
+		var t := Time.get_unix_time_from_datetime_string(str(g["date"]) + "T00:00:00") + shift
+		c["date"] = Time.get_date_string_from_unix_time(t)
+		c["status"] = "played"
+		for key in ["home_score", "away_score"]:
+			c.erase(key)
+		out.append(c)
+	return out
+
+
+func _schedule_file(year: int) -> Array:
 	var repo_path := ProjectSettings.globalize_path("res://").path_join(REPO_DATA_DIR)
 	var candidates := [
 		SCHEDULE_DIR.path_join("%d.json" % year),
@@ -360,9 +403,21 @@ func load_schedule(year: int) -> Array:
 	return []
 
 
-## data/<年>/rosters.json から 選手ID → 1軍初出場の年（debut_year）。外国人枠の「日本人扱い」の判定に使う
+## data/<年>/rosters.json から 選手ID → 1軍初出場の年（debut_year）。外国人枠の「日本人扱い」の判定に使う。
+## 名簿の無い年は、いちばん近い前の年の名簿に debut_extra（ゲーム内で入った選手）を足したもの
 func load_debut_years(year: int) -> Dictionary:
-	return _roster_field(year, "debut_year")
+	var own := _roster_field(year, "debut_year")
+	if not own.is_empty() or year <= SCHEDULE_COPY_FROM:
+		return own
+	var result := {}
+	for src in range(year - 1, SCHEDULE_COPY_FROM - 1, -1):
+		result = _roster_field(src, "debut_year").duplicate()
+		if not result.is_empty():
+			break
+	for id: String in debut_extra:
+		if not result.has(id):
+			result[id] = debut_extra[id]
+	return result
 
 
 ## data/<年>/rosters.json から 選手ID → 背番号（文字列）。背番号は 2026年の名簿にしか無い（無ければ空）

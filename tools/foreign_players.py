@@ -28,8 +28,8 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "generated" / "foreign.json"
 
 FIRST_YEAR = 2009  # 2008年は前年のファイルが無く、新外国人を見分けられない
-LAST_YEAR = 2025   # 2026年はシーズン途中の成績
-COUNT_YEARS = range(2016, 2026)  # 毎年の人数の基準（直近10年。年々増えているので）
+LAST_YEAR = 2026   # 2027年以降は史実が無い（2027_post は写し）
+COUNT_YEARS = range(2017, 2027)  # 毎年の人数の基準（直近10年。年々増えているので）
 PER_TEAM_YEARS = range(2017, 2027)  # 球団ごとの外国人の人数の基準（開幕時点）
 
 LATIN_SPLIT = {"ドミニカ": 0.5, "ベネズエラ": 0.25, "メキシコ": 0.08, "プエルトリコ": 0.08, "パナマ": 0.05, "コロンビア": 0.04}

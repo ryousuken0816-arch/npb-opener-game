@@ -109,6 +109,17 @@ func count_for_year(rng: RandomNumberGenerator) -> Dictionary:
 	return {"p": int(c["p"]), "b": int(c["b"])}
 
 
+## 新外国人のうち投手の割合（直近10年）
+func pitcher_share() -> float:
+	var p := 0
+	var total := 0
+	for y: Variant in data.get("count_years", []):
+		var c: Dictionary = data["counts"][str(int(y))]
+		p += int(c["p"])
+		total += int(c["p"]) + int(c["b"])
+	return float(p) / maxi(1, total)
+
+
 ## その年（year 年のシーズンに来る）の架空の外国人選手をまとめて作る
 func generate_year(year: int, rng: RandomNumberGenerator) -> Array:
 	var n := count_for_year(rng)

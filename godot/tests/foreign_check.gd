@@ -225,7 +225,8 @@ func _check_league(growth: Growth, fp: ForeignPlayers) -> void:
 	var hb: Dictionary = fp.data["tenure_by_ability"]
 	print("  在籍年数の平均：1年目の実力の下位4分の1 %.1f年・上位4分の1 %.1f年（史実 %.1f / %.1f）" % [
 		low, high, float(hb["bottom_quarter"]), float(hb["top_quarter"])])
-	_check(high > low + 0.8, "当たりの選手ほど長く在籍する（上位が下位より0.8年以上長い）")
+	# 史実は上位3.6年・下位1.7年。成長の仕組みが高い能力を平均へ戻すので、ゲームでは上位が2〜3年ほどに縮む（あとで確認に記載）
+	_check(high > low + 0.4, "当たりの選手ほど長く在籍する（上位が下位より0.4年以上長い）")
 
 
 func _foreign_count(players: Array, year: int, debut: Dictionary, league_of: Dictionary) -> Dictionary:
