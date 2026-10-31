@@ -162,8 +162,10 @@ func _check_year(y: int, totals: Dictionary, gained: Array[Dictionary]) -> void:
 			var pid: String = c["player"]
 			if pid.begins_with("tmp:") and not league.team_of.has(pid):
 				# 仮IDの選手（1軍出場の無い新人）は、能力値ファイルに出てくると本当の選手IDに付け替わる
+				var lr: GDScript = load("res://sim/league_roster.gd")
+				var key: String = lr.norm_name(str(league.names.get(pid, "-")))
 				for other: String in league.team_of:
-					if league.names.get(other, "") == league.names.get(pid, "-") and other != pid:
+					if other != pid and lr.norm_name(str(league.names.get(other, ""))) == key:
 						pid = other
 			if league.team_of.get(pid, "") not in [c["from"], now_from] and not league.retired.has(pid):
 				moved_ok = false
