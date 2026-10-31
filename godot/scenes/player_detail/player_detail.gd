@@ -637,6 +637,7 @@ func _summary_page() -> Control:
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	right.add_theme_constant_override("separation", 10)
 	row.add_child(right)
+	right.add_child(_outlook_row())
 	var special := card("特殊能力")
 	right.add_child(special["panel"])
 	special["body"].add_child(_ability_tiles())
@@ -647,6 +648,24 @@ func _summary_page() -> Control:
 		_pitcher_aptitude(aptitude["body"])
 	else:
 		_fielder_aptitude(aptitude["body"])
+	return row
+
+
+## 現在の能力と将来性のランク（記録室のデプスと同じ見立て。Depth）
+func _outlook_row() -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	var tool := GameState.depth_tool()
+	var now := Depth.now_score(_data)
+	var future := tool.future_score(player_id, GameState.year, now)
+	row.add_child(pill("現在の能力", 120, 17))
+	row.add_child(UiTheme.rank_label({"rank": Depth.rank_of(now), "value": 0}, 26))
+	row.add_child(pill("将来性", 90, 17))
+	row.add_child(UiTheme.rank_label({"rank": Depth.rank_of(future), "value": 0}, 26))
+	var note := note_label("（実力と出場量。将来性は史実の今後の活躍＋見立てのぶれ）")
+	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	note.clip_text = true
+	row.add_child(note)
 	return row
 
 

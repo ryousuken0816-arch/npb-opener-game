@@ -240,8 +240,21 @@ func _play(g: Dictionary) -> void:
 	for side in 2:
 		for line: Dictionary in result["batting"][side]:
 			_add_line(batting, line, ["pos", "order"])
-		for line: Dictionary in result["pitching"][side]:
+			# 先発出場の守備位置ごとの試合数（表彰・記録室の守備位置に使う）
+			var pos: String = line.get("pos", "")
+			if pos in SimTeam.LINEUP_POSITIONS or pos == "投手":
+				var pg: Dictionary = batting[line["id"]].get_or_add("pos_g", {})
+				pg[pos] = int(pg.get(pos, 0)) + 1
+		var lines: Array = result["pitching"][side]
+		for line: Dictionary in lines:
 			_add_line(pitching, line, [])
+		# 完投・完封（1人で投げ切った試合）
+		if lines.size() == 1:
+			var pid: String = lines[0]["id"]
+			var allowed: int = away_score if side == 1 else hs
+			pitching[pid]["cg"] = int(pitching[pid].get("cg", 0)) + 1
+			if allowed == 0:
+				pitching[pid]["sho"] = int(pitching[pid].get("sho", 0)) + 1
 
 
 ## パ・リーグ主催の試合（交流戦を含む）は DH 制
