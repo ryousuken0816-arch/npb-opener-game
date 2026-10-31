@@ -393,6 +393,12 @@ func player_page(year: int, id: String) -> Dictionary:
 	return _pages.get(id, {})
 
 
+## その年の選手ページ全部（選手ID → player_page と同じ中身）。player_page と同じ1年分の持ち方を使う
+func all_player_pages(year: int) -> Dictionary:
+	player_page(year, "")
+	return _pages
+
+
 func _read_repo_json(relative: String) -> Variant:
 	var repo_path := ProjectSettings.globalize_path("res://").path_join(REPO_DATA_DIR)
 	var path := repo_path.path_join(relative).simplify_path()

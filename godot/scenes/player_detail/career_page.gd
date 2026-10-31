@@ -3,6 +3,9 @@ extends HBoxContainer
 ## 選手詳細の「経歴」タブ：プロフィール（生年月日・ドラフト年と順位・1軍初出場・出身校〜経歴）と所属球団の推移。
 ## 所属球団の推移は史実の年度別成績（選手ページ）の「所属球団」から作る（1軍に出場した年のみ）＋今季の球団。
 
+## 受賞歴の札を出す最大の数（新しい順）
+const AWARDS_SHOWN := 8
+
 var player_id := ""
 
 var _detail: PlayerDetail
@@ -50,6 +53,8 @@ func _build() -> void:
 		grid.add_child(value)
 	profile["body"].add_child(UiTheme.small_label("出身校〜経歴", 16, _palette.ink, 800))
 	profile["body"].add_child(_career_chain())
+	profile["body"].add_child(UiTheme.small_label("受賞歴（ゲーム内の表彰）", 16, _palette.ink, 800))
+	profile["body"].add_child(_awards_flow())
 
 	var teams := UiTheme.titled_panel(_palette, "所属球団の推移")
 	teams["panel"].size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -121,6 +126,23 @@ func _career_chain() -> Control:
 		flow.add_child(_chip(steps[i], Color("eef2f6"), UiTheme.TEXT))
 		flow.add_child(UiTheme.small_label("→", 18, UiTheme.TEXT_SUB, 800))
 	flow.add_child(_chip(GameData.short_name(_team_name), _palette.main, _palette.on_main))
+	return flow
+
+
+## ゲーム内の受賞歴（GameState.player_awards）を「2008 MVP」の札で。無ければ「なし」
+func _awards_flow() -> Control:
+	var flow := HFlowContainer.new()
+	flow.add_theme_constant_override("h_separation", 6)
+	flow.add_theme_constant_override("v_separation", 6)
+	var awards := GameState.player_awards(player_id)
+	if awards.is_empty():
+		flow.add_child(UiTheme.small_label("なし", 16, UiTheme.TEXT_SUB, 700))
+	# 多いと枠からはみ出すので新しいほうから AWARDS_SHOWN 件（全部は記録室で）
+	var shown := awards.slice(maxi(awards.size() - AWARDS_SHOWN, 0))
+	if shown.size() < awards.size():
+		flow.add_child(_chip("ほか%d件" % (awards.size() - shown.size()), Color("eef2f6"), UiTheme.TEXT_SUB))
+	for a: Dictionary in shown:
+		flow.add_child(_chip("%d %s" % [int(a["year"]), a["name"]], Color("ffd54f"), UiTheme.TEXT))
 	return flow
 
 
