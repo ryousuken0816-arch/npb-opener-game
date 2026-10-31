@@ -2,7 +2,7 @@ extends SceneTree
 ## ドラフトのCPUバランスの確認（ヘッドレス、約4分）。docs/AUTORUN.md 作業7。
 ## 2012・2016・2019・2024年の開始から「すぐドラフトへ」進み、自球団もおまかせで最後まで指名して次を数える：
 ## - お宝：史実で4位以下・育成の指名なのに、史実の活躍（ノイズなしの将来性）が B 以上の候補。
-##   その一部（3分の1以上、2024年は史実の成績がまだ少ないので数えない）が中位（ゲームの3位）以下まで残る
+##   その一部（各年の合計の3分の1以上。2024年は史実の成績がまだ少ないので数えない）が中位（ゲームの3位）以下まで残る
 ## - 大物：史実で1巡目に2球団以上が競合した候補。全員がゲームの2位までに指名され（上位で消える）、6割以上が1位
 ## - 目玉：各CPU球団が1〜2人の目玉を持ち、目玉の多くは1〜2位で指名される
 ##
@@ -15,6 +15,9 @@ const STAR_FIRST_SHARE := 0.6
 
 var _years: Array[int] = [2012, 2016, 2019, 2024]
 var _failures := 0
+## お宝の数（2023年より前の年の合計）と、そのうちゲームの3位以下まで残った数
+var _gems_total := 0
+var _gems_survived := 0
 var _gs: Node
 var _ds: GDScript
 
@@ -33,6 +36,10 @@ func _run() -> void:
 	_ds = load("res://sim/draft.gd")
 	for y in _years:
 		_check_year(y)
+	# 1年に数人しかいないので年ごとでは乱数でぶれる（2012年は2人で 0〜2人）。合わせて判定する
+	if _gems_total > 0:
+		_check(_gems_survived >= ceili(_gems_total * GEM_SURVIVE_SHARE),
+			"お宝（各年の合計）の3分の1以上が3位以下まで残る（%d / %d）" % [_gems_survived, _gems_total])
 	print("\n== 結果: %s ==" % ("ALL OK" if _failures == 0 else "FAILED（%d件）" % _failures))
 	quit(1 if _failures > 0 else 0)
 
@@ -61,9 +68,9 @@ func _check_year(y: int) -> void:
 			if r >= 3:
 				survived += 1
 	print("  お宝 %d人、ゲームの3位以下まで残った %d人：%s" % [gems.size(), survived, "、".join(gems.slice(0, 12))])
-	if y < 2023 and not gems.is_empty():
-		_check(survived >= ceili(gems.size() * GEM_SURVIVE_SHARE),
-			"%d年：お宝の3分の1以上が3位以下まで残る（%d / %d）" % [y, survived, gems.size()])
+	if y < 2023:
+		_gems_total += gems.size()
+		_gems_survived += survived
 	# 大物
 	var stars: Array[String] = []
 	var first := 0
