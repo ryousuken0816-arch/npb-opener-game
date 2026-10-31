@@ -31,10 +31,10 @@ const MINE_TINT := Color(1.0, 0.84, 0.31, 0.55)
 ## 守備位置ランクの表の列の幅（球団名・各位置）。10列＋スクロールバーが広げたサブ画面（1280x720 で幅約1180）に収まる幅
 const POS_RANK_TEAM_WIDTH := 120
 const POS_RANK_CELL_WIDTH := 100
-## チーム成績の推移の球団の列の幅。年が増えて縦のスクロールバーが出ても12球団が横に収まる幅
-const TEAMS_CELL_WIDTH := 86
 ## 日本一の球団の文字色（チーム成績の推移）
 const CHAMPION_COLOR := Color("b8860b")
+## チーム成績の推移の各球団の列の幅（年＋12球団。縦のスクロールバーが出ても広げたサブ画面に収まる幅）
+const TEAM_CELL_WIDTH := 84
 const DEPTH_SORTS := [["now", "現在の能力順"], ["future", "将来性順"], ["age", "年齢順"]]
 
 var _palette: UiTheme.Palette
@@ -604,7 +604,7 @@ func _build_teams() -> void:
 	for lg: String in ["C", "P"]:
 		for team: String in GameData.teams(lg):
 			columns.append(team)
-			header.add_child(_cell(GameData.short_name(team), TEAMS_CELL_WIDTH, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_CENTER))
+			header.add_child(_cell(GameData.short_name(team), TEAM_CELL_WIDTH, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_CENTER))
 	_body.add_child(header)
 	if years.is_empty():
 		_body.add_child(UiTheme.small_label("まだ記録がありません", 16, UiTheme.TEXT, 700))
@@ -624,7 +624,7 @@ func _build_teams() -> void:
 				color = Color("d84315") if rank == 1 else UiTheme.TEXT
 				if _champion_of(y) == key:
 					color = CHAMPION_COLOR
-			var cell := _cell(text, TEAMS_CELL_WIDTH, color, HORIZONTAL_ALIGNMENT_CENTER)
+			var cell := _cell(text, TEAM_CELL_WIDTH, color, HORIZONTAL_ALIGNMENT_CENTER)
 			if team == GameState.team:
 				cell.add_theme_color_override("font_outline_color", MINE_TINT)
 				cell.add_theme_constant_override("outline_size", 6)
@@ -765,6 +765,18 @@ func _build_history() -> void:
 		row.add_child(_cell(GameData.short_name(f["team"]), 80, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_LEFT))
 		row.add_child(_cell("%s" % GameData.short_name(str(f["text"]).trim_suffix("戦")) + "戦", 160, UiTheme.TEXT,
 			HORIZONTAL_ALIGNMENT_LEFT))
+	_section("通算記録の節目（ニュースの速報から）", _palette.ink)
+	var marks: Array = []
+	if GameState.news != null:
+		for a: Dictionary in GameState.news.of_kind("milestone", _year):
+			if a["flash"]:
+				marks.append(a)
+	if marks.is_empty():
+		_body.add_child(UiTheme.small_label("なし", 16, UiTheme.TEXT_SUB, 700))
+	for a: Dictionary in marks:
+		var mark_row := _row_panel(MINE_TINT if a["mine"] else Color(1, 1, 1, 0.5))
+		mark_row.add_child(_cell(News.date_label(a["date"]), 90, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_LEFT))
+		mark_row.add_child(_cell(a["headline"], 760, Color("d84315"), HORIZONTAL_ALIGNMENT_LEFT))
 	_section("ドラフト（%d年秋・ゲーム内の指名）" % _year, _palette.ink)
 	var by_team := {}
 	if league != null:

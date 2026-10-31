@@ -302,6 +302,8 @@ func _cpu_bids(league: LeagueRoster, id: String) -> Array[Dictionary]:
 			continue
 		var rate := _rng.randf_range(0.85, 1.15) * (0.9 + 0.3 * need)
 		var amount := clampi(Salary.round_amount(base * rate), r[0], r[1])
+		# 相場の上限（Salary.MAX）を超える入札はしない（今の年俸がすでに超えている選手はその額まで）
+		amount = mini(amount, maxi(int(Salary.MAX), int(info[id]["salary"])))
 		# 予算上限を超える入札はしない（元の球団はその選手の今の年俸の分を差し引いて考える）
 		var payroll := league.next_payroll(team) - (league.salary_of(id) if team == from else 0)
 		if payroll + amount > ContractRenewal.budget(team):
