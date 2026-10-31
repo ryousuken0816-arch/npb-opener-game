@@ -384,6 +384,13 @@
    - 作業26：`godot/sim/mlb_persuasion.gd`（`MlbPersuasion`）。候補一覧に「米志望」、ドラフト会議のあと自球団が指名したメジャー志望の選手を選んで約束（なし／3〜6年後のポスティング）と★を見て「説得する」（`Draft.persuade`、1人1回）。説得が残っている間は入団の処理（`apply_draft`）を待つ。失敗は入団せず `draft_unsigned` に入れて以後 NPB に出さない（出来事 `mlb_draftee`）、成功で約束があれば `LeagueRoster.posting_promise` の年のオフに `depart_mlb` でメジャーへ。CPU球団は史実で強行指名した球団以外はふだん避ける（`CPU_AVOID`、たまに `CPU_DARE_RATE`）
    - 確認：全テスト29本をヘッドレスで（NG 2件は docs/AUTORUN.md「あとで確認」）。`godot/tests/history_2026_check.gd`（新。2026年の143試合・史実の候補と競合・2027年の写しの日程と日付の追従・2027年のアマ選手のドラフト→2028年に所属、2027年開始）、`godot/tests/mlb_draftee_check.gd`（新。成功率・織田の失敗／成功とポスティング・佐々木麟太郎）、スクショ `godot/tests/draft_2026_capture.gd`
    - 作業22（2028年以降の架空の候補）・32（転生選手）は `Draft.amateur_rows` と `amateur_ratings.py` の形に合わせて作るとよい。2028年以降の `data/<年>/`・ratings は今は無い（2028年の春季キャンプまでは進める）
+4.39 ~~成長・衰え・引退（史実の無い年）、架空の外国人選手~~ → 完了（2026-11-01、担当G）。docs/AUTORUN.md の作業27・31
+   - 係数：`tools/growth_coefficients.py` → `generated/growth.json`（2008〜2026年の開幕時点の能力値の1年の変化・引退）、`tools/foreign_players.py` → `generated/foreign.json`（2009〜2026年の新外国人648人のひな形）。`generated/ratings/` を作り直したら両方流し直す（tools/README.md）
+   - Godot：`sim/growth.gd`（`Growth`）・`sim/foreign_players.gd`（`ForeignPlayers`）・`sim/future_year.gd`（`FutureYear`）。2027年のオフから、FA・トレード・ポスティングに入ったところで来季の開幕時点の能力値を作り `GameData.synthetic` に置く（来季のファイルより優先。pre・post 両方）。引退は来季にいない選手として LeagueRoster がそのまま処理、架空の外国人は外国人市場へ（CPU球団は外国人が1球団7人に足りない分を獲る）。セーブに残る（`synthetic`）
+   - 史実の無い年の日程・名簿（2026年より後でファイルが無い年）は前の年の日程を同じ曜日で写す（`GameData.copy_schedule`）。これで2028年以降もシーズンが行われる
+   - **作業22（担当D）へ**：架空の選手に持たせる項目は godot/README.md「架空の選手（作業22で使う項目）」（`growth: {type, peak_age, peak}`）。2029年以降の候補は、`<年>_pre.json` を carry の形で置く（球団なしの選手が候補になる）か、`GameState.future_newcomers`（Callable）で返せば来季の能力値に入る。誕生日の無いアマ選手の年齢は `amateur.draft_year`・`category` から目安（`Growth.age_at`）。アマ選手（`amateur` 付き）は新人の側の係数を使わず、入ったときに守備位置の無い野手には守備位置が付く
+   - 確認：`tests/growth_check.gd`（Growth だけで10年。平均・上位の人数・先発の人数・年齢の曲線・引退・試合の成績）、`tests/foreign_check.gd`（作る選手の分布、10年で1球団7人・1年で退団52%）、`tests/future_year_check.gd`（2027年開始でゲームの年越しを10年。ドラフトの無い年は補充の新人を入れる。打率 .263〜.273・防御率 3.8〜4.1 で一定、引退8〜14%、外国人6.3〜7.3人/球団、セーブ／ロード、日付の追従）。スクショ `tests/growth_capture.gd`（2028年と2030年の選手詳細を並べた1枚）
+
 5. 次の候補（どれから進めるかユーザーと相談）
    - ~~FA・ポスティングの画面~~ → 完了（4.14）。~~契約更改・予算上限~~ → 完了（4.15）。~~戦力外・引退~~ → 完了（4.16）。~~ドラフト画面~~ → 完了（4.19）。残り：トレード交渉（予算の残りを使える）… 新しい画面なので Opus 向き
    - ~~記録室~~ → 完了（4.25）。~~表彰~~ → 完了（4.24）
