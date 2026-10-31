@@ -665,6 +665,10 @@ func _refresh_news_card() -> void:
 
 ## 優勝・日本一の演出（自球団のリーグ優勝と、日本一はどの球団でも）を重ねる。閉じたら元のフォーカスへ
 func _on_celebrate(kind: String, team_name: String, title: String) -> void:
+	# 前の演出が残っていれば閉じる（リーグ優勝と日本一が続けて来たときに重ならないように）
+	for c in get_children():
+		if c is Celebration:
+			c.close()
 	var owner_focus := get_viewport().gui_get_focus_owner()
 	var fx := Celebration.new()
 	var text := title

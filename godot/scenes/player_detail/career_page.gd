@@ -5,6 +5,8 @@ extends HBoxContainer
 
 ## 受賞歴の札を出す最大の数（新しい順）
 const AWARDS_SHOWN := 8
+## 関係するニュースを出す数（新しい順）
+const NEWS_SHOWN := 3
 
 var player_id := ""
 
@@ -80,6 +82,24 @@ func _build() -> void:
 	for period: Dictionary in _team_periods():
 		list.add_child(_period_row(period))
 	teams["body"].add_child(UiTheme.small_label("前年までは1軍に出場した年から。2軍だけの年は含みません。", 13))
+	_news_section(teams["body"])
+
+
+## 史実との違い（史実の所属）と、この選手の最近のニュース（GameState.news、作業24・25）
+func _news_section(body: VBoxContainer) -> void:
+	var lines: Array[String] = []
+	var hist := str(_data.get("hist_team", ""))
+	if not hist.is_empty() and not _team_name.is_empty() \
+			and GameData.short_name(hist) != GameData.short_name(_team_name):
+		lines.append("史実の所属：%s（ゲームでは%s）" % [GameData.short_name(hist), GameData.short_name(_team_name)])
+	var items: Array = GameState.news.for_player(player_id, NEWS_SHOWN) if GameState.news != null else []
+	for a: Dictionary in items:
+		lines.append("%d年%s　%s" % [int(a["year"]), News.date_label(a["date"]), a["headline"]])
+	if lines.is_empty():
+		return
+	body.add_child(UiTheme.small_label("ニュース・史実との違い", 16, _palette.ink, 800))
+	for text in lines:
+		body.add_child(UiTheme.fit_label(UiTheme.small_label(text, 15, UiTheme.TEXT, 700)))
 
 
 func _birth_text() -> String:

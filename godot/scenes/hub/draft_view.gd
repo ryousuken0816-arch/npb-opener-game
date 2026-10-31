@@ -1382,8 +1382,9 @@ func _render_lottery(lot: Dictionary) -> void:
 	tw.tween_callback(func() -> void: _reveal_lottery(item)).set_delay(0.25)
 
 
-## 3Dの演出（Lottery3D）：監督が順にくじを引いて開け、当たりの球団が喜ぶ。当たりは lot["winner"] をそのまま渡す。
-## 終われば結果の文言を出す。Ⓐ（「結果を見る」）・Ⓑ（back）・演出のクリックで飛ばせる
+
+## 3Dの演出（Lottery3D）：宴会場で各球団の代表者が順にくじを引き、同時に開けて、当たりが喜ぶ（作業20・29）。
+## 当たりは lot["winner"] をそのまま渡す。当選の瞬間に結果の文言を出す。Ⓐ（「結果を見る」）・Ⓑ（back）・演出のクリックで飛ばせる
 func _render_lottery_3d(lot: Dictionary) -> void:
 	var item: Dictionary = _overlay.get_meta("item")
 	var view := LOTTERY_3D_SCENE.instantiate() as Lottery3D
@@ -1401,7 +1402,9 @@ func _render_lottery_3d(lot: Dictionary) -> void:
 	view.revealed.connect(func(_winner: String) -> void: _reveal_lottery(item))
 	view.clicked.connect(_skip_overlay)
 	var mine: bool = GameState.team in lot["teams"]
-	view.play(lot, {"user_team": GameState.team, "speed": 1.0 if mine else LOTTERY_3D_OTHERS_SPEED})
+	var d := GameState.draft()
+	view.play(lot, {"user_team": GameState.team, "speed": 1.0 if mine else LOTTERY_3D_OTHERS_SPEED,
+		"year": d.year, "all_teams": d.teams})
 	if instant:
 		_reveal_lottery(item)
 

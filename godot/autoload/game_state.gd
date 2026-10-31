@@ -107,6 +107,9 @@ var pennant_race := {}
 ## 新聞・速報（年をまたいで残る。セーブにも入る）
 var news: News = null
 var _desk: NewsDesk = null
+var _history: HistoryCompare = null
+## 春季キャンプで「史実との比較」に使う、いま終わったオフのドラフト
+var _last_draft: Draft = null
 
 ## 表彰の履歴（年の文字列 → Awards.compute() の結果）。シーズン終了・表彰の段階に入ったときに足す
 var awards_history := {}
@@ -898,6 +901,7 @@ func _enter(new_phase: Phase) -> void:
 			_archive_season()
 			awards_pending = awards_history.has(str(year))
 			desk().awards_article(year, open_off_issue(), "%d-11-01" % year)
+			history().titles_decided(year, open_off_issue(), "%d-11-01" % year)
 		Phase.FA_TRADE:
 			var leaving := league.depart_mlb(year)
 			_apply_trades("%d-12-31" % year)
@@ -924,6 +928,8 @@ func _enter(new_phase: Phase) -> void:
 			league.cpu_market_round()
 			league.cpu_release_round()
 		Phase.CAMP:
+			_last_draft = league.draft
+			history().draft_decided(_last_draft, open_off_issue(), "%d-11-20" % year)
 			year += 1
 			GameData.load_ratings(year, "pre")
 			league.begin_year(year, GameData.ratings)
@@ -934,6 +940,10 @@ func _enter(new_phase: Phase) -> void:
 		Phase.SEASON:
 			_start_season()
 	_sync_roster()
+	if new_phase == Phase.CAMP:
+		# 年の終わり：新しい年の所属（史実の球団 hist_team と比べる）を当ててから「史実との比較」の号
+		_publish(history().year_summary(year - 1, _last_draft))
+		_last_draft = null
 	_autosave_pending = true
 	changed.emit()
 
@@ -1029,7 +1039,9 @@ func _advance_postseason_day() -> void:
 			desk().series_decided(s, date)
 	day += 1
 	if postseason.is_finished():
-		_publish(desk().postseason_issue(postseason, date))
+		var js_key := desk().postseason_issue(postseason, date)
+		history().postseason_decided(postseason, js_key, date)
+		_publish(js_key)
 		postseason_history[str(year)] = postseason.summary()
 		stop_fast_forward()
 		_celebrate("champion", postseason.champion, "日本一")
@@ -1058,6 +1070,7 @@ func _check_pennant_race() -> void:
 			st["clinched"] = Season.date_of_day(day)
 			st["team"] = race["leader"]
 			desk().pennant_clinched(lg, race["leader"], st["clinched"])
+			history().pennant_decided(lg, race["leader"], st["clinched"])
 			if race["leader"] == team:
 				stop_fast_forward()
 				_celebrate("pennant", team, "%s優勝" % GameData.LEAGUE_NAMES.get(lg, ""))
@@ -1074,6 +1087,13 @@ func pennant_status(lg: String) -> Dictionary:
 
 
 # --- ニュース（作業25） ---------------------------------------------------------------------
+
+## 史実との比較（作業24）
+func history() -> HistoryCompare:
+	if _history == null:
+		_history = HistoryCompare.new(self)
+	return _history
+
 
 ## ニュースの記者（NewsDesk）
 func desk() -> NewsDesk:
@@ -1326,6 +1346,7 @@ func load_state(d: Dictionary) -> void:
 	postseason = Postseason.from_save(d["postseason"]) if d.get("postseason") is Dictionary else null
 	news = News.from_save(d["news"]) if d.get("news") is Dictionary else News.new()
 	_desk = null
+	_history = null
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	for key: String in d.get("tactics", {}):
 		tactics[key] = int(d["tactics"][key])
