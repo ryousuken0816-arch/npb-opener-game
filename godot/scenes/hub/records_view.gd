@@ -31,6 +31,8 @@ const MINE_TINT := Color(1.0, 0.84, 0.31, 0.55)
 ## 守備位置ランクの表の列の幅（球団名・各位置）。10列＋スクロールバーが広げたサブ画面（1280x720 で幅約1180）に収まる幅
 const POS_RANK_TEAM_WIDTH := 120
 const POS_RANK_CELL_WIDTH := 100
+## チーム成績の推移の球団の列の幅。年が増えて縦のスクロールバーが出ても12球団が横に収まる幅
+const TEAMS_CELL_WIDTH := 86
 ## 日本一の球団の文字色（チーム成績の推移）
 const CHAMPION_COLOR := Color("b8860b")
 const DEPTH_SORTS := [["now", "現在の能力順"], ["future", "将来性順"], ["age", "年齢順"]]
@@ -602,7 +604,7 @@ func _build_teams() -> void:
 	for lg: String in ["C", "P"]:
 		for team: String in GameData.teams(lg):
 			columns.append(team)
-			header.add_child(_cell(GameData.short_name(team), 88, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_CENTER))
+			header.add_child(_cell(GameData.short_name(team), TEAMS_CELL_WIDTH, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_CENTER))
 	_body.add_child(header)
 	if years.is_empty():
 		_body.add_child(UiTheme.small_label("まだ記録がありません", 16, UiTheme.TEXT, 700))
@@ -622,7 +624,7 @@ func _build_teams() -> void:
 				color = Color("d84315") if rank == 1 else UiTheme.TEXT
 				if _champion_of(y) == key:
 					color = CHAMPION_COLOR
-			var cell := _cell(text, 88, color, HORIZONTAL_ALIGNMENT_CENTER)
+			var cell := _cell(text, TEAMS_CELL_WIDTH, color, HORIZONTAL_ALIGNMENT_CENTER)
 			if team == GameState.team:
 				cell.add_theme_color_override("font_outline_color", MINE_TINT)
 				cell.add_theme_constant_override("outline_size", 6)
