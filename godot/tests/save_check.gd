@@ -1,6 +1,6 @@
 extends SceneTree
 ## セーブ／ロードの確認（docs/AUTORUN.md 作業6）。ヘッドレス可。ウィンドウ付きで出力先を渡すとセーブ画面のスクショを保存。
-## セーブは user://test_saves/ に書き、最後に消す（ユーザーのセーブ user://saves/ には触らない）。
+## セーブは user://test_saves_<プロセス番号>/ に書き、最後に消す（ユーザーのセーブ user://saves/ には触らない）。
 ## 1) シーズン途中：2008年（阪神）を6月15日まで進め、1軍の入れ替えと方針を変えてスロット1にセーブ → そのまま5日進めた結果を控え →
 ##    別の年・球団で新しく始めてからロード → 日付・順位・勝敗・個人成績・所属・年俸・1軍登録・全状態が一致 →
 ##    5日進めて、セーブ直後に進めたときと日付・試合数が一致
@@ -33,7 +33,9 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_sg = load("res://scripts/save_game.gd")
 	_season_gd = load("res://sim/season.gd")
-	_sg.set("dir", "user://test_saves")
+	# 同じPCで別の作業のテストが同時に動くと user://test_saves の枠を消し合うので、実行ごとに別のフォルダにする
+	var dir := "user://test_saves_%d" % OS.get_process_id()
+	_sg.set("dir", dir)
 	_sg.set("autosave_enabled", false)
 	for slot: String in _sg.call("all_slots"):
 		_sg.call("delete", slot)
@@ -43,6 +45,7 @@ func _run() -> void:
 	await _check_ui()
 	for slot: String in _sg.call("all_slots"):
 		_sg.call("delete", slot)
+	DirAccess.remove_absolute(dir)
 	print("\n== 結果: %s ==" % ("ALL OK" if _failures == 0 else "FAILED（%d件）" % _failures))
 	quit(1 if _failures > 0 else 0)
 
