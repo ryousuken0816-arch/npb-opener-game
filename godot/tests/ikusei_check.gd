@@ -36,7 +36,8 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_season_gd = load("res://sim/season.gd")
 	_sg = load("res://scripts/save_game.gd")
-	_sg.set("dir", "user://test_saves")
+	# 他のテスト（save_check）と同時に流しても枠がぶつからないよう専用のフォルダ
+	_sg.set("dir", "user://test_saves_ikusei")
 	_sg.set("autosave_enabled", false)
 	_gs.new_game(_team, 2008)
 	print("\n-- 1) 2008年の開幕 --")
