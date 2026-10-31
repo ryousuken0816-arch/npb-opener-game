@@ -13,6 +13,8 @@ extends Node
 signal changed
 ## 月が替わった（月替わりのイベントを挟むタイミング）
 signal month_started(new_month: int)
+## 優勝・日本一の演出を出す（kind: "pennant"＝リーグ優勝 / "champion"＝日本一）。自動処理の途中は出さない
+signal celebrate(kind: String, team_name: String, title: String)
 
 enum Phase {
 	SEASON,        ## レギュラーシーズン（日単位で進行）
@@ -23,6 +25,9 @@ enum Phase {
 	RELEASE,       ## 戦力外・引退
 	DRAFT,         ## ドラフト
 	CAMP,          ## 春季キャンプ（翌年）
+	## クライマックスシリーズ・日本シリーズ（公式戦と表彰の間。日単位で進行）。
+	## セーブに段階の番号が入るので、途中に挟まず最後に足す（並びは next_phase() で決める）
+	POSTSEASON,
 }
 
 const PHASE_NAMES := {
@@ -34,11 +39,14 @@ const PHASE_NAMES := {
 	Phase.RELEASE: "戦力外・引退",
 	Phase.DRAFT: "ドラフト",
 	Phase.CAMP: "春季キャンプ",
+	Phase.POSTSEASON: "ポストシーズン",
 }
 
 ## 可変ボタンの文言（そのフェーズへ進むとき）
 const PHASE_BUTTON := {
 	Phase.SEASON: "開幕へ",
+	Phase.POSTSEASON: "CS・日本シリーズへ",
+	Phase.AWARDS: "表彰へ",
 	Phase.ACTIVE_DRAFT: "現役ドラフトへ",
 	Phase.FA_TRADE: "FA/トレードへ",
 	Phase.CONTRACT: "契約更改へ",
@@ -86,6 +94,13 @@ var league: LeagueRoster = null
 ## 自球団の采配方針（SimTeam.tactics と同じ形。年をまたいでも引き継ぐ）
 var tactics := {"bunt": 0, "steal": 0, "relief": 0}
 
+## その年のポストシーズン（CS・日本シリーズ。ポストシーズンの段階に入ったときに作り、翌年の開幕まで残す）
+var postseason: Postseason = null
+## ポストシーズンの歴代（年の文字列 → Postseason.summary()）。日本一が決まったときに足す
+var postseason_history := {}
+## 今季の優勝争い（リーグ → {magic: 点灯した最初の値, clinched: 優勝決定の日}）。演出・ニュースを1回だけ出す
+var pennant_race := {}
+
 ## 表彰の履歴（年の文字列 → Awards.compute() の結果）。シーズン終了・表彰の段階に入ったときに足す
 var awards_history := {}
 ## ゲーム内の過去のシーズンの成績（年の文字列 → {batting, pitching, players, records, leagues}）。
@@ -119,6 +134,8 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	awards_pending = false
 	awards_history = {}
 	stats_history = {}
+	postseason = null
+	postseason_history = {}
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	phase = Phase.SEASON
 	GameData.load_ratings(year, "pre")
@@ -140,7 +157,7 @@ func _process(delta: float) -> void:
 		return
 	_fast_forward_time = 0.0
 	_advance_one_day()
-	if phase != Phase.SEASON or day > fast_forward_target:
+	if not is_daily_phase() or day > fast_forward_target or postseason_done():
 		fast_forward_target = -1
 	changed.emit()
 
@@ -150,8 +167,11 @@ func _process(delta: float) -> void:
 func advance() -> void:
 	stop_fast_forward()
 	if phase == Phase.SEASON:
-		advance_through(_month_end_day(day))
+		advance_through(_month_end_day(day), true)
 		changed.emit()
+		return
+	if phase == Phase.POSTSEASON and not postseason_done():
+		postseason_play_round()
 		return
 	if phase == Phase.FA_TRADE:
 		fa_resolve()
@@ -184,17 +204,55 @@ func skip_to_phase(target: Phase) -> bool:
 	return phase == target
 
 
-## target_day（通し日数）の試合が終わるまで一気に進める（最終日を越えるとシーズン終了へ）
-func advance_through(target_day: int) -> void:
+## target_day（通し日数）の試合が終わるまで一気に進める。最終日を越えるとポストシーズンへ入り、
+## stop_at_postseason でなければ CS・日本シリーズもすべて行ってシーズン終了・表彰まで進む
+## （テスト・「すぐドラフトへ」用。ハブの「試合へ」はポストシーズンの入口で止まる）
+func advance_through(target_day: int, stop_at_postseason := false) -> void:
 	while phase == Phase.SEASON and day <= target_day:
 		_advance_one_day()
+	if phase == Phase.POSTSEASON and not stop_at_postseason:
+		postseason_play_all()
+		_enter(Phase.AWARDS)
+
+
+## シーズン中・ポストシーズン中（日単位で進む段階）
+func is_daily_phase() -> bool:
+	return phase == Phase.SEASON or phase == Phase.POSTSEASON
+
+
+## ポストシーズンの段階で、日本一が決まった
+func postseason_done() -> bool:
+	return phase == Phase.POSTSEASON and (postseason == null or postseason.is_finished())
+
+
+## ポストシーズンの今の回（ファースト・ファイナル・日本シリーズ）を最後まで行う。
+## 自球団が勝ち残っていなければ日本一が決まるまで行う
+func postseason_play_round() -> void:
+	if postseason == null:
+		return
+	stop_fast_forward()
+	var target := postseason.round_last_day(postseason.current_round())
+	if not postseason.team_alive(team):
+		target = postseason.last_day()
+	while not postseason_done() and day <= target:
+		_advance_one_day()
+	changed.emit()
+
+
+## 日本一が決まるまで一気に行う
+func postseason_play_all() -> void:
+	stop_fast_forward()
+	while phase == Phase.POSTSEASON and not postseason_done():
+		_advance_one_day()
+	changed.emit()
 
 
 ## target_day の試合が終わるまで1日ずつ早送りする（日程表から）。今日より前の日なら何もしない
 func start_fast_forward(target_day: int) -> void:
-	if phase != Phase.SEASON or target_day < day:
+	if not is_daily_phase() or target_day < day or postseason_done():
 		return
-	fast_forward_target = mini(target_day, season_last_day())
+	var last := postseason.last_day() if phase == Phase.POSTSEASON else season_last_day()
+	fast_forward_target = mini(target_day, last)
 	# 最初の1日はすぐに進める
 	_fast_forward_time = FAST_FORWARD_INTERVAL
 	changed.emit()
@@ -215,7 +273,7 @@ func my_team() -> SimTeam:
 
 ## 球団の編成（my_team() と同じ。オフは所属が変わるたびに作り直す）
 func sim_team_of(team_name: String) -> SimTeam:
-	if phase == Phase.SEASON:
+	if is_daily_phase():
 		return season.teams.get(team_name) if season != null else null
 	if not _offseason_teams.has(team_name):
 		var members := GameData.players_of(team_name)
@@ -239,6 +297,8 @@ func trade_block_reason() -> String:
 				return "この年の日程データが無いので交渉できません"
 			if Season.date_of_day(day).substr(5) > Trade.DEADLINE:
 				return "8月1日からシーズン終了までは交渉できません（移籍期限は7月31日）"
+		Phase.POSTSEASON:
+			return "8月1日からシーズン終了までは交渉できません（移籍期限は7月31日）"
 		Phase.AWARDS, Phase.ACTIVE_DRAFT:
 			return "オフのトレード交渉は「FA・トレード・ポスティング」の段階から行えます"
 	if contract_open():
@@ -538,7 +598,7 @@ func user_room() -> int:
 
 ## 外国人市場が開いているか（FA・トレード・ポスティング〜春季キャンプ）
 func market_open() -> bool:
-	if phase == Phase.SEASON or phase == Phase.AWARDS or league == null:
+	if phase in [Phase.SEASON, Phase.POSTSEASON, Phase.AWARDS] or league == null:
 		return false
 	return not league.market.is_empty()
 
@@ -611,7 +671,7 @@ func _cpu_promote_ikusei() -> void:
 
 ## 采配画面で編成を変えられるか（シーズン中のみ。オフは前年の編成を見るだけ）
 func can_edit_roster() -> bool:
-	return phase == Phase.SEASON and my_team() != null
+	return is_daily_phase() and my_team() != null
 
 
 func is_fast_forwarding() -> bool:
@@ -620,9 +680,13 @@ func is_fast_forwarding() -> bool:
 
 ## 今日の試合を行い、翌日へ進む。月が替われば month_started、最終日を終えればシーズン終了へ
 func _advance_one_day() -> void:
+	if phase == Phase.POSTSEASON:
+		_advance_postseason_day()
+		return
 	if season != null:
 		season.sim_until_day(day + 1)
 		_sync_record()
+		_check_pennant_race()
 	# 今日までの史実のトレード（CPU球団どうし）
 	_apply_trades(Season.date_of_day(day))
 	var old_month := month
@@ -686,6 +750,8 @@ func games_left_in_month() -> int:
 func next_phase() -> Phase:
 	match phase:
 		Phase.SEASON:
+			return Phase.POSTSEASON if season != null and not season.games.is_empty() else Phase.AWARDS
+		Phase.POSTSEASON:
 			return Phase.AWARDS
 		Phase.AWARDS:
 			return Phase.ACTIVE_DRAFT if year >= ACTIVE_DRAFT_START_YEAR else Phase.FA_TRADE
@@ -696,7 +762,7 @@ func next_phase() -> Phase:
 
 
 func button_text() -> String:
-	if phase == Phase.SEASON:
+	if phase == Phase.SEASON or phase == Phase.POSTSEASON and not postseason_done():
 		return "試合へ"
 	if phase == Phase.AWARDS and awards_pending:
 		return "表彰式"
@@ -718,7 +784,7 @@ func phase_name() -> String:
 ## ヘッダー表示用の日付（例: "2008年 5月3日" / "2008年 オフ"）
 func date_text() -> String:
 	match phase:
-		Phase.SEASON:
+		Phase.SEASON, Phase.POSTSEASON:
 			return "%d年 %d月%d日" % [year, month, _day_of_month()]
 		Phase.CAMP:
 			return "%d年 2月" % year
@@ -734,7 +800,7 @@ func year_text() -> String:
 ## ハブ画面の日付表示: 月日（オフは「オフ」）
 func month_text() -> String:
 	match phase:
-		Phase.SEASON:
+		Phase.SEASON, Phase.POSTSEASON:
 			return "%d月%d日" % [month, _day_of_month()]
 		Phase.CAMP:
 			return "2月"
@@ -748,6 +814,8 @@ func _day_of_month() -> int:
 
 ## ハブ画面上部のイベント名
 func event_text() -> String:
+	if phase == Phase.POSTSEASON and postseason != null:
+		return postseason.stage_name(day)
 	if phase != Phase.SEASON:
 		return phase_name()
 	if day == _season_first_day():
@@ -808,6 +876,8 @@ func record_text() -> String:
 func _enter(new_phase: Phase) -> void:
 	phase = new_phase
 	match new_phase:
+		Phase.POSTSEASON:
+			_start_postseason()
 		Phase.AWARDS:
 			# シーズン後の能力値に更新（当年までの成績で再計算したもの）
 			GameData.load_ratings(year, "post")
@@ -890,6 +960,8 @@ func _opening_date() -> String:
 ## 開幕前日までの史実のトレードを起こし、外国人市場を閉じてから、今の所属で各球団を編成する
 func _start_season() -> void:
 	season = null
+	postseason = null
+	pennant_race = {}
 	if league != null:
 		var opening := Season.day_number(_opening_date())
 		_apply_trades(Season.date_of_day(opening - 1))
@@ -909,6 +981,74 @@ func _start_season() -> void:
 				mine.set_tactic(key, tactics[key])
 	day = _season_first_day()
 	_sync_record()
+
+
+# --- ポストシーズン・優勝争い ---------------------------------------------------------------
+
+## 公式戦の最終順位でポストシーズンの組み合わせと日程を作り、初戦の日へ
+func _start_postseason() -> void:
+	var order := {}
+	for lg: String in ["C", "P"]:
+		var names: Array = []
+		for row: Dictionary in standings(lg):
+			names.append(row["team"])
+		order[lg] = names
+	postseason = Postseason.new()
+	postseason.setup(season, year, order, randi() + 1)
+	day = postseason.first_day()
+
+
+## ポストシーズンの今日の試合を行い、翌日へ。日本一が決まったら歴代に残して演出を出す（表彰へは可変ボタンで進む）
+func _advance_postseason_day() -> void:
+	if postseason == null or postseason.is_finished():
+		return
+	postseason.play_day(day, season.teams)
+	day += 1
+	if postseason.is_finished():
+		postseason_history[str(year)] = postseason.summary()
+		stop_fast_forward()
+		_celebrate("champion", postseason.champion, "日本一")
+
+
+## 今季の優勝争い：マジックの点灯と優勝の決定を1回ずつ記録し、自球団の優勝なら演出を出す
+func _check_pennant_race() -> void:
+	if season == null or season.next_index < season.games.size() / 2:
+		return
+	for lg: String in ["C", "P"]:
+		var st: Dictionary = pennant_race.get_or_add(lg, {})
+		if st.has("clinched"):
+			continue
+		var names: Array = []
+		for row: Dictionary in standings(lg):
+			names.append(row["team"])
+		var race := Postseason.pennant_race(season, names, season.record_of)
+		if race.is_empty():
+			continue
+		if int(race["magic"]) > 0 and not st.has("magic"):
+			st["magic"] = race["magic"]
+			st["magic_team"] = race["leader"]
+			st["magic_date"] = Season.date_of_day(day)
+		if race["clinched"]:
+			st["clinched"] = Season.date_of_day(day)
+			st["team"] = race["leader"]
+			if race["leader"] == team:
+				stop_fast_forward()
+				_celebrate("pennant", team, "%s優勝" % GameData.LEAGUE_NAMES.get(lg, ""))
+
+
+## 今のマジック（リーグ → {leader, magic, clinched}）。公式戦の後半だけ（それ以外は空）
+func pennant_status(lg: String) -> Dictionary:
+	if phase != Phase.SEASON or season == null or season.next_index < season.games.size() / 2:
+		return {}
+	var names: Array = []
+	for row: Dictionary in standings(lg):
+		names.append(row["team"])
+	return Postseason.pennant_race(season, names, season.record_of)
+
+
+func _celebrate(kind: String, team_name: String, title: String) -> void:
+	if not _busy and not team_name.is_empty():
+		celebrate.emit(kind, team_name, title)
 
 
 func _sync_record() -> void:
@@ -1088,6 +1228,8 @@ func to_save() -> Dictionary:
 		"wins": wins, "losses": losses, "draws": draws,
 		"first_year": first_year, "awards_history": awards_history, "stats_history": stats_history,
 		"awards_pending": awards_pending,
+		"postseason": postseason.to_save() if postseason != null else null,
+		"postseason_history": postseason_history, "pennant_race": pennant_race,
 		"league": league.to_save() if league != null else null,
 		"season": season.to_save() if season != null else null,
 	}
@@ -1108,10 +1250,13 @@ func load_state(d: Dictionary) -> void:
 	awards_pending = bool(d.get("awards_pending", false))
 	awards_history = d.get("awards_history", {})
 	stats_history = d.get("stats_history", {})
+	postseason_history = d.get("postseason_history", {})
+	pennant_race = d.get("pennant_race", {})
+	postseason = Postseason.from_save(d["postseason"]) if d.get("postseason") is Dictionary else null
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	for key: String in d.get("tactics", {}):
 		tactics[key] = int(d["tactics"][key])
-	GameData.load_ratings(year, "pre" if phase in [Phase.SEASON, Phase.CAMP] else "post")
+	GameData.load_ratings(year, "pre" if phase in [Phase.SEASON, Phase.CAMP, Phase.POSTSEASON] else "post")
 	GameData.set_kept_players({})
 	GameData.set_extra_players({})
 	var next := {}
