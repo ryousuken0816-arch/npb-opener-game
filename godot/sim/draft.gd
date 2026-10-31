@@ -127,9 +127,15 @@ var user_room := -1
 var resolved := false
 ## 将来性の元データの最終年（generated/draft_future.json の data_through）
 var data_through := 0
+## メジャー志望の選手の説得（作業26、MlbPersuasion）：候補ID → {team, promise, chance, ok}
+var talks := {}
+## テスト用：0以上なら説得の乱数の代わりに使う
+var force_roll := -1.0
 
 var _rng := RandomNumberGenerator.new()
 var _team_noise := {}
+## 球団 → {候補ID: true}：メジャー志望の候補を避けない（たまの強行指名・史実で強行指名した球団）
+var _team_dare := {}
 var _need := {}  ## 球団 → {守備位置: 今の人数}
 
 
@@ -145,6 +151,7 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 	var rows := draft_rows(year)
 	var first := _first_round_info(year)
 	var future := _load_future()
+	var mlb := MlbPersuasion.intents(year)
 	var scout_grades := {}
 	if not rows.is_empty() and not bool(rows[0].get("amateur", false)):
 		for a in amateur_rows(year):
@@ -183,6 +190,10 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 			c["grade"] = str(scout_grades[key])
 			c["hyouka"] = lerpf(c["hyouka"], grade_value(c["grade"]), SCOUT_HYOUKA_WEIGHT)
 		c["hyouka_rank"] = rank_of(c["hyouka"], HYOUKA_RANKS)
+		c["mlb_intent"] = mlb.has(key)
+		if c["mlb_intent"]:
+			c["mlb_overseas"] = bool(mlb[key].get("overseas", false))
+			c["mlb_note"] = str(mlb[key].get("note", ""))
 		c["future"] = _future_value(future.get(key, {}), c["hyouka"])
 		c["future_seen"] = c["future"] + _rng.randfn(0.0, DIFFICULTY_NOISE[DIFFICULTY])
 		c["future_rank"] = rank_of(c["future_seen"], FUTURE_RANKS)
@@ -211,8 +222,15 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 	_fill_first_years()
 	for t in teams:
 		_team_noise[t] = {}
+		_team_dare[t] = {}
 		for c in candidates:
 			_team_noise[t][c["id"]] = _rng.randfn(0.0, TEAM_NOISE)
+	for c in candidates:
+		if not c["mlb_intent"]:
+			continue
+		for t in teams:
+			if t == c["hist_team"] or _rng.randf() < MlbPersuasion.CPU_DARE_RATE:
+				_team_dare[t][c["id"]] = true
 
 
 ## 仮の選手（能力値ファイルにいない候補）[{id, player}]。GameData に足して画面・試合で引けるようにする
@@ -647,6 +665,8 @@ func evaluate(team: String, c: Dictionary, first: bool) -> float:
 		v += FIRST_FUTURE_WEIGHT * float(c["future_seen"]) + FIRST_HYOUKA_WEIGHT * hyouka_z
 	else:
 		v += float(c["future_seen"]) + LATER_HYOUKA_WEIGHT * hyouka_z
+	if c.get("mlb_intent", false) and (team == user_team or not _team_dare.get(team, {}).has(c["id"])):
+		v -= MlbPersuasion.CPU_AVOID  # メジャー志望はふだん避ける（自球団のおまかせも）
 	return v + _need_bonus(team, c["pos"])
 
 
@@ -823,6 +843,65 @@ func _load_future() -> Dictionary:
 	return parsed.get("years", {}).get(str(year), {})
 
 
+# --- メジャー志望の説得（作業26） ---------------------------------------------------------
+
+## 指名の記録（その候補の）。無ければ空
+func pick_of(id: String) -> Dictionary:
+	for rec in picks:
+		if rec["id"] == id:
+			return rec
+	return {}
+
+
+## 自球団が指名したメジャー志望の選手で、まだ説得していない（できる）か
+func can_persuade(id: String) -> bool:
+	var rec := pick_of(id)
+	return stage == Stage.DONE and not resolved and not rec.is_empty() and rec["team"] == user_team 		and bool(by_id[id].get("mlb_intent", false)) and not talks.has(id)
+
+
+## 自球団が指名して、まだ説得していないメジャー志望の選手（ドラフト会議が終わっても、これが残っていれば入団の
+## 処理を待つ。可変ボタンで次へ進むと約束なしの扱いで決まる）
+func pending_talks() -> Array[String]:
+	var result: Array[String] = []
+	for rec in picks:
+		if can_persuade(rec["id"]):
+			result.append(rec["id"])
+	return result
+
+
+## 自球団の説得（1人1回）。promise：ポスティングを認める年数（0＝約束なし）。{ok, chance, text}
+func persuade(id: String, promise: int) -> Dictionary:
+	if not can_persuade(id):
+		return {"ok": false, "chance": 0.0, "text": "説得できる選手ではありません"}
+	var t := _talk(id, user_team, promise)
+	var name: String = by_id[id]["name"]
+	if t["ok"]:
+		var cond := "（%d年後のポスティングを約束）" % promise if promise > 0 else ""
+		return {"ok": true, "chance": t["chance"], "text": "%sの説得に成功！入団します%s" % [name, cond]}
+	return {"ok": false, "chance": t["chance"], "text": "%sの説得は失敗しました。メジャーへ挑戦します。" % name}
+
+
+## まだ決まっていない交渉をすべて決める（ドラフト会議の結果で入団させる前に LeagueRoster.apply_draft から）。
+## 自球団で説得しなかった選手は約束なし、CPU球団は CPU_PROMISE_RATE の確率で約束を付ける
+func resolve_talks() -> void:
+	for rec in picks:
+		var id: String = rec["id"]
+		if talks.has(id) or not bool(by_id[id].get("mlb_intent", false)):
+			continue
+		var promise := 0
+		if rec["team"] != user_team and _rng.randf() < MlbPersuasion.CPU_PROMISE_RATE:
+			promise = MlbPersuasion.CPU_PROMISE_YEARS
+		_talk(id, rec["team"], promise)
+
+
+func _talk(id: String, team: String, promise: int) -> Dictionary:
+	var chance := MlbPersuasion.chance(pick_of(id), promise)
+	var roll := force_roll if force_roll >= 0.0 else _rng.randf()
+	var t := {"team": team, "promise": promise, "chance": chance, "ok": roll < chance}
+	talks[id] = t
+	return t
+
+
 # --- 静的 ----------------------------------------------------------------------------
 
 ## その年のドラフト会議の指名一覧（drafts.json の当年秋の分。本指名が先、球団・順位順）。史実の無い年は
@@ -920,7 +999,7 @@ func to_save() -> Dictionary:
 		"last_wave": last_wave, "order": order, "round": round, "turn_team": _turn_team,
 		"done_reg": done_reg, "done_ikusei": done_ikusei, "user_auto": user_auto, "user_room": user_room,
 		"resolved": resolved, "data_through": data_through, "rng": SaveUtil.rng_state(_rng),
-		"team_noise": _team_noise, "need": _need,
+		"team_noise": _team_noise, "need": _need, "talks": talks, "team_dare": _team_dare,
 	}
 
 
@@ -951,4 +1030,6 @@ static func from_save(d: Dictionary) -> Draft:
 	SaveUtil.set_rng_state(dr._rng, d.get("rng", ""))
 	dr._team_noise = d.get("team_noise", {})
 	dr._need = d.get("need", {})
+	dr.talks = d.get("talks", {})
+	dr._team_dare = d.get("team_dare", {})
 	return dr

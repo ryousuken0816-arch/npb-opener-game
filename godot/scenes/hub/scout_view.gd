@@ -13,7 +13,7 @@ const MARKET_COLUMNS := [["名前", 0], ["投野", 64], ["守備位置", 96], ["
 	["提示額", 130], ["史実の球団", 120]]
 const LOG_KINDS := ["mlb_leave", "mlb_return", "trade", "retire", "rookie", "join", "foreign_sign",
 	"foreign_unsigned", "rename", "fa_declare", "fa_move", "fa_stay", "mlb_keep", "mlb_keep_failed", "release",
-	"release_sign", "release_unsigned", "release_trim"]
+	"release_sign", "release_unsigned", "release_trim", "mlb_draftee"]
 const LOG_LIMIT := 400
 
 var _palette: UiTheme.Palette

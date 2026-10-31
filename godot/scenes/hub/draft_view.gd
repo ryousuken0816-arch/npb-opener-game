@@ -48,6 +48,7 @@ const OPENING_SEC := 1.8
 const DONE_COLOR := Color("8a9199")
 const MINE_COLOR := Color("ff6d00")
 const BID_COLOR := Color("e53935")
+const MLB_COLOR := Color("0d47a1")
 
 var _palette: UiTheme.Palette
 var _tab := "info"
@@ -91,6 +92,9 @@ var _overlay_next: Button
 var _overlay_queue: Array = []
 var _ids: Array[String] = []
 var _tags := {}
+## メジャー志望の選手の説得で約束する年数（0＝約束なし。作業26）
+var _promise := 0
+var _promise_option: OptionButton
 var _recent: Array[String] = []
 
 
@@ -570,6 +574,11 @@ func _mark_label(d: Draft, c: Dictionary) -> Control:
 		label.text = "入札"
 		label.add_theme_color_override("font_color", Color.WHITE)
 		label.add_theme_stylebox_override("normal", UiTheme.gloss(BID_COLOR, 6, 1, 1))
+	elif c.get("mlb_intent", false):
+		label.text = "米志望"
+		label.tooltip_text = "メジャー志望を表明（指名したら説得の交渉。成功率は低め）"
+		label.mouse_filter = Control.MOUSE_FILTER_PASS
+		label.add_theme_color_override("font_color", MLB_COLOR)
 	return label
 
 
@@ -815,6 +824,8 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	intro.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
 	_summary_box.add_child(intro)
+	if c.get("mlb_intent", false):
+		_summary_box.add_child(_mlb_box(d, c))
 	var state := ""
 	if not str(c["picked_by"]).is_empty():
 		state = "済：%s %s" % [GameData.short_name(c["picked_by"]), c["pick_label"]]
@@ -830,6 +841,43 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	state_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	state_label.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
 	_summary_box.add_child(state_label)
+
+
+## メジャー志望の欄：交渉期限・説得の条件（約束の年数）・結果
+func _mlb_box(d: Draft, c: Dictionary) -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 2)
+	var id: String = c["id"]
+	var text := "メジャー志望（交渉期限：%s）" % MlbPersuasion.deadline_text(d.year, c.get("mlb_overseas", false))
+	var talk: Dictionary = d.talks.get(id, {})
+	if not talk.is_empty():
+		var cond := "・%d年後のポスティングを約束" % int(talk["promise"]) if int(talk["promise"]) > 0 else ""
+		text += "
+説得：%s（成功率 %d%%%s）" % ["成功・入団" if talk["ok"] else "失敗・メジャーへ",
+			roundi(float(talk["chance"]) * 100.0), cond]
+	var label := UiTheme.small_label(text, 14, MLB_COLOR, 800)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	label.tooltip_text = str(c.get("mlb_note", ""))
+	label.mouse_filter = Control.MOUSE_FILTER_PASS
+	box.add_child(label)
+	if d.can_persuade(id):
+		var line := HBoxContainer.new()
+		line.add_theme_constant_override("separation", 6)
+		line.add_child(UiTheme.small_label("約束", 14, UiTheme.TEXT, 800))
+		_promise_option = OptionButton.new()
+		_promise_option.add_item("約束なし", 0)
+		for y: int in MlbPersuasion.PROMISE_YEARS:
+			_promise_option.add_item("%d年後にポスティングを認める" % y, y)
+		_promise_option.select(maxi(0, _promise_option.get_item_index(_promise)))
+		_promise_option.add_theme_font_size_override("font_size", 14)
+		_promise_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_promise_option.item_selected.connect(func(index: int) -> void:
+			_promise = _promise_option.get_item_id(index)
+			_render_actions(d, c))
+		line.add_child(_promise_option)
+		box.add_child(line)
+	return box
 
 
 func _ability_grid(c: Dictionary) -> Control:
@@ -901,6 +949,10 @@ func _render_actions(d: Draft, c: Dictionary) -> void:
 				can_pick = user_turn and not c.is_empty() and str(c["picked_by"]).is_empty()
 			_:
 				text = "ドラフトは終了しました"
+				if not c.is_empty() and d.can_persuade(c["id"]):
+					var chance := MlbPersuasion.chance(d.pick_of(c["id"]), _promise)
+					text = "説得する　%s" % MlbPersuasion.star_text(chance)
+					can_pick = true
 	_action_button.text = text
 	_action_button.disabled = not can_pick
 	_auto_pick_button.disabled = not user_turn
@@ -1060,6 +1112,13 @@ func _on_action_pressed() -> void:
 			return
 		_run_wave(d)
 		return
+	if d.stage == Draft.Stage.DONE:
+		if d.can_persuade(_selected):
+			var result := d.persuade(_selected, _promise)
+			_message = "%s（成功率 %d%%）" % [result["text"], roundi(float(result["chance"]) * 100.0)]
+			GameState.draft_sync()
+			refresh()
+		return
 	var c: Dictionary = d.by_id[_selected]
 	var error := d.user_pick(_selected)
 	if not error.is_empty():
@@ -1143,6 +1202,11 @@ func _after_change(d: Draft) -> void:
 		GameState.draft_sync()
 		_message = "ドラフト会議が終わりました。"
 		_selected = ""
+		var talks := d.pending_talks()
+		if not talks.is_empty():
+			# メジャー志望の選手を指名していれば、その選手を選んで説得へ
+			_selected = talks[0]
+			_message += "メジャー志望の%sを説得してください（約束を選んで「説得する」）。" % d.by_id[talks[0]]["name"]
 		_show_tab("picks")
 		return
 	if not _selected.is_empty() and not str(d.by_id.get(_selected, {}).get("picked_by", "")).is_empty() \

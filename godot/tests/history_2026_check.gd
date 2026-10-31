@@ -17,6 +17,8 @@ const USER := "北海道日本ハムファイターズ"
 var _failures := 0
 var _gs: Node
 var _gd: Node
+var _ds: GDScript
+var _mp: GDScript
 
 
 func _initialize() -> void:
@@ -26,6 +28,8 @@ func _initialize() -> void:
 func _run() -> void:
 	_gs = root.get_node("GameState")
 	_gd = root.get_node("GameData")
+	_ds = load("res://sim/draft.gd")
+	_mp = load("res://sim/mlb_persuasion.gd")
 	_check_2026_season()
 	_check_2026_draft_and_2027()
 	_check_2027_start()
@@ -50,7 +54,7 @@ func _check_2026_draft_and_2027() -> void:
 	print("== 2026年開始・すぐドラフトへ ==")
 	_gs.new_game(USER, 2026)
 	var ok: bool = _gs.skip_to_phase(_gs.Phase.DRAFT)
-	var d: Draft = _gs.draft()
+	var d: RefCounted = _gs.draft()
 	_check(ok and d != null and d.year == 2026, "2026年オフのドラフトに飛べる")
 	if d == null:
 		return
@@ -74,7 +78,7 @@ func _check_2026_draft_and_2027() -> void:
 	_check(multi.size() == lottery, "1位の競合が史実どおり（%s／史実 %d人）" % [", ".join(multi), lottery])
 	var intro := 0
 	for c: Dictionary in d.candidates:
-		if str(c["intro"]) != Draft.intro_text(c):
+		if str(c["intro"]) != _ds.intro_text(c):
 			intro += 1
 	_check(intro > 60, "紹介文に集めた選手情報が使われる（出身校と守備位置だけでない %d人）" % intro)
 	_gs.advance()
@@ -93,8 +97,8 @@ func _check_2026_draft_and_2027() -> void:
 	_check(_all_143(season), "2027年：12球団すべて143試合（2026年の写し。%s）" % _games_text(season))
 	var same_weekday := true
 	for g: Dictionary in _gd.call("load_schedule", 2027):
-		var a := Time.get_datetime_dict_from_datetime_string(str(g["date"]), false)
-		var b := Time.get_datetime_dict_from_datetime_string(str(g["copied_from"]), false)
+		var a := Time.get_datetime_dict_from_unix_time(Time.get_unix_time_from_datetime_string(str(g["date"])))
+		var b := Time.get_datetime_dict_from_unix_time(Time.get_unix_time_from_datetime_string(str(g["copied_from"])))
 		if a["weekday"] != b["weekday"]:
 			same_weekday = false
 			break
@@ -118,7 +122,7 @@ func _check_2026_draft_and_2027() -> void:
 	_check(present == d.picks_of(USER).size() and present > 0, "2028年：自球団が指名したアマ選手 %d人が所属" % present)
 
 
-func _check_amateur_draft(d: Draft) -> void:
+func _check_amateur_draft(d: RefCounted) -> void:
 	var amateur := 0
 	var future := 0
 	var synthetic := 0
@@ -139,7 +143,7 @@ func _check_amateur_draft(d: Draft) -> void:
 	_check(best.get("hyouka_rank", "") == "S", "報道の目玉は当時の評価 S（%s %s）" % [best.get("name", ""),
 		best.get("hyouka_rank", "")])
 	for t: String in d.teams:
-		_check(int(d.quota[t]["reg"]) == Draft.AMATEUR_QUOTA["reg"], "%s：指名人数は定数どおり" % _gd.short_name(t))
+		_check(int(d.quota[t]["reg"]) == _ds.AMATEUR_QUOTA["reg"], "%s：指名人数は定数どおり" % _gd.short_name(t))
 		break
 
 
@@ -150,7 +154,7 @@ func _check_2027_start() -> void:
 	_gs.new_game(USER, 2027)
 	_check(_gs.season != null and _gs.date_text().begins_with("2027年 3月26日"), "2027年から始められる（%s）" % _gs.date_text())
 	var ok: bool = _gs.skip_to_phase(_gs.Phase.DRAFT)
-	var d: Draft = _gs.draft()
+	var d: RefCounted = _gs.draft()
 	_check(ok and d != null and d.year == 2027, "2027年開始：すぐドラフトへ")
 	if d != null:
 		var amateur := 0
@@ -211,7 +215,7 @@ func _expected_lottery() -> int:
 	return n
 
 
-func _check_quota(d: Draft, label: String) -> void:
+func _check_quota(d: RefCounted, label: String) -> void:
 	var bad: Array[String] = []
 	for t: String in d.teams:
 		if t == d.user_team:

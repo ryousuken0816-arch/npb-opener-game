@@ -393,7 +393,8 @@ func draft_sync() -> void:
 	var d := draft()
 	if d == null:
 		return
-	if d.stage == Draft.Stage.DONE and not d.resolved:
+	# 自球団が指名したメジャー志望の選手の説得が残っていれば、入団の処理は説得のあと（作業26）
+	if d.stage == Draft.Stage.DONE and not d.resolved and d.pending_talks().is_empty():
 		league.apply_draft()
 		_sync_roster()
 	changed.emit()
