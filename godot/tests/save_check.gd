@@ -116,7 +116,7 @@ func _snapshot() -> Dictionary:
 			return pa > pb if pa != pb else a < b)
 		var bat := {}
 		for id: String in ids.slice(0, 4):
-			bat[id] = season.batting[id].duplicate(true)
+			bat[id] = season.batting[id].duplicate(true)  # pos_g（入れ子）も写す
 		s["打撃成績（4人）"] = bat
 		ids = season.pitching.keys()
 		ids.sort_custom(func(a: String, b: String) -> bool:

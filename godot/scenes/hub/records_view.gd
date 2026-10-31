@@ -28,6 +28,9 @@ const ROW_HEIGHT := 30
 const RANKING_WIDTH := 1150.0
 const PROSPECT_COLOR := Color("2e7d32")
 const MINE_TINT := Color(1.0, 0.84, 0.31, 0.55)
+## 守備位置ランクの表の列の幅（球団名・各位置）。10列＋スクロールバーが広げたサブ画面（1280x720 で幅約1180）に収まる幅
+const POS_RANK_TEAM_WIDTH := 120
+const POS_RANK_CELL_WIDTH := 100
 ## 日本一の球団の文字色（チーム成績の推移）
 const CHAMPION_COLOR := Color("b8860b")
 const DEPTH_SORTS := [["now", "現在の能力順"], ["future", "将来性順"], ["age", "年齢順"]]
@@ -555,9 +558,9 @@ func _depth_card(e: Dictionary) -> Control:
 func _build_pos_rank() -> void:
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 4)
-	header.add_child(_cell("球団", 130, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_CENTER))
+	header.add_child(_cell("球団", POS_RANK_TEAM_WIDTH, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_CENTER))
 	for pos: String in Depth.POSITIONS:
-		header.add_child(_cell(pos, 112, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_CENTER))
+		header.add_child(_cell(pos, POS_RANK_CELL_WIDTH, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_CENTER))
 	_body.add_child(header)
 	for lg: String in ["C", "P"]:
 		_section(GameData.LEAGUE_NAMES.get(lg, lg), Color("1e88e5") if lg == "C" else Color("43a047"))
@@ -566,7 +569,7 @@ func _build_pos_rank() -> void:
 			var row := _row_panel(MINE_TINT if team == GameState.team else Color(1, 1, 1, 0.5))
 			var b := Button.new()
 			b.text = GameData.short_name(team)
-			b.custom_minimum_size = Vector2(130, 30)
+			b.custom_minimum_size = Vector2(POS_RANK_TEAM_WIDTH, 30)
 			b.clip_text = true
 			b.add_theme_font_size_override("font_size", 15)
 			var colors := GameData.team_colors(team)
@@ -576,7 +579,7 @@ func _build_pos_rank() -> void:
 			row.add_child(b)
 			for pos: String in Depth.POSITIONS:
 				var cell := HBoxContainer.new()
-				cell.custom_minimum_size = Vector2(112, 0)
+				cell.custom_minimum_size = Vector2(POS_RANK_CELL_WIDTH, 0)
 				cell.alignment = BoxContainer.ALIGNMENT_CENTER
 				cell.add_child(_rank(ranks[pos]["now_rank"], 20))
 				cell.add_child(UiTheme.small_label("→", 12, UiTheme.TEXT_SUB, 800))

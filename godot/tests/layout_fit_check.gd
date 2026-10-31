@@ -2,9 +2,11 @@ extends SceneTree
 ## 画面のはみ出しの確認（ヘッドレス可、約3分）。docs/AUTORUN.md 作業11。
 ## 2008年から始めて最後の年のオフまで進めながら、ハブを開いたままで次の画面を開き、表示中の全 Control の
 ## 右端・下端（左端・上端も）が画面（1280x720）の内側か調べる。はみ出したものを列挙して NG にする。
-## - 毎年の開幕・7月：ハブ、日程表、采配の一覧と全サブ画面（1軍登録は全選手を1人ずつ選ぶ）、新戦力、システム、選手詳細の4タブ
+## - 毎年の開幕・7月：ハブ、日程表、采配の一覧と全サブ画面（1軍登録は全選手を1人ずつ選ぶ）、新戦力、トレード交渉（両側3人＋金銭・全タブ）、システム、選手詳細の4タブ
 ## - 毎年のオフの各段階：ハブ、采配（オフは「見るだけ」の文言が出る）、FA・契約更改・戦力外の画面（全タブ・選手を選ぶ）、
-##   ドラフト（開幕の演出・候補を選んで入札・抽選・指名一覧）、新戦力
+##   ドラフト（開幕の演出・候補を選んで入札・抽選・指名一覧）、新戦力、トレード交渉
+## - 記録室の全タブ（打撃・投手は今季／通算・規定の切り替え、デプスは全球団・全並び順）：毎年の開幕・7月・オフの表彰の段階
+## - 表彰の画面の全タブ（作業9）：毎年のオフの表彰の段階
 ## - 切り替えの演出の途中で開く・閉じるをくり返したあと（作業11の不具合の原因。最初と毎年の開幕・7月）
 ## スクロールの中（clip_contents の子）は親が画面内なら見えないので調べない。画面のルートの包み
 ## （UiTheme.fit_scroll）の中は、その枠からはみ出したもの（見えずに欠ける）と、スクロールバーが出た＝中身が枠に
@@ -105,6 +107,8 @@ func _check_season(y: int, when: String) -> void:
 				await _check_screen("%s：%s タブ%d" % [when, key, i + 1])
 		_hub.call("_close_sub_screen")
 	await _check_tactics(when, TACTICS_PAGES, _gs.month >= 7)
+	await _check_trade(when)
+	await _check_records(when)
 	await _check_detail(when)
 	await _check_quick_switch(when)
 	await _settle()
@@ -174,6 +178,26 @@ func _select_all(page: Node, label: String) -> void:
 	page.clear_selection()
 
 
+## トレード交渉（作業8）：両側に名前の長い選手を3人ずつ入れ、金銭を最大にして全タブを開く
+func _check_trade(when: String) -> void:
+	await _open("trade")
+	var view: Node = _hub.get("_trade_view")
+	await _check_screen("%s：トレード" % when)
+	view.call("clear_deal")
+	for i in 4:
+		var ids: Array = view.call("list_ids")
+		ids.sort_custom(func(a: String, b: String) -> bool:
+			return str(_gs.league.names.get(a, "")).length() > str(_gs.league.names.get(b, "")).length())
+		if i % 2 == 0:
+			for id: String in ids.slice(0, 3):
+				view.call("select_player", id)
+		view.call("set_money", 50000)
+		await _check_screen("%s：トレード タブ%d（条件を入れた）" % [when, i + 1], 0.0)
+		view.call("switch_tab", 1)
+	view.call("clear_deal")
+	_hub.call("_close_sub_screen")
+
+
 ## 選手詳細：自球団の先頭の選手と名前の長い選手の4タブ
 func _check_detail(when: String) -> void:
 	var ids: Array = load(DETAIL_SCRIPT).team_order(_gs.team)
@@ -194,6 +218,54 @@ func _check_detail(when: String) -> void:
 		await _frames(2)
 
 
+## 記録室（作業10）：全タブ。打撃・投手は今季／通算と規定の有無、デプスは12球団と3つの並び順
+func _check_records(when: String) -> void:
+	await _open("records")
+	var view: Node = _hub.get("_records_view")
+	for t: Array in view.TABS:
+		view.set_tab(t[0])
+		await _check_screen("%s：記録室 %s" % [when, t[1]], 0.0)
+		if t[0] in ["bat", "pit"]:
+			for mode: Array in [[false, false], [true, true], [true, false]]:
+				view.set("_career", mode[0])
+				view.set("_qualified", mode[1])
+				view.refresh()
+				await _check_screen("%s：記録室 %s（%s・%s）" % [when, t[1], "通算" if mode[0] else "今季",
+					"規定以上" if mode[1] else "全員"], 0.0)
+			view.set("_career", false)
+			view.set("_qualified", true)
+		elif t[0] == "depth":
+			for team: String in root.get_node("GameData").teams():
+				view.set_team(team)
+				for sort: String in ["now", "future", "age"]:
+					view.set("_depth_sort", sort)
+					view.refresh()
+					await _frames(2)
+					var over := _overflows()
+					_checked += 1
+					if not over.is_empty():
+						_report("%s：記録室 デプス（%s・%s）" % [when, team, sort], over)
+			view.set("_depth_sort", "now")
+			view.set_team(_gs.team)
+		elif t[0] == "awards":
+			# 表彰の画面を記録室の中に入れたもの（高さが表彰の段階より狭い）
+			var inner: Node = view.get("_awards_view")
+			for a: Array in inner.TABS:
+				inner.set_tab(a[0])
+				await _check_screen("%s：記録室 表彰の歴代 %s" % [when, a[1]], 0.0)
+	_hub.call("_close_sub_screen")
+
+
+## 表彰（作業9）：全タブ
+func _check_awards(when: String) -> void:
+	await _open("awards")
+	var view: Node = _hub.get("_awards_view")
+	for t: Array in view.TABS:
+		view.set_tab(t[0])
+		await _check_screen("%s：表彰 %s" % [when, t[1]], 0.0)
+	_hub.call("_close_sub_screen")
+
+
 # --- オフ ---------------------------------------------------------------------------------
 
 func _check_offseason(y: int) -> void:
@@ -207,6 +279,10 @@ func _check_offseason(y: int) -> void:
 	await _open("scout")
 	await _check_screen("%s：新戦力" % when)
 	_hub.call("_close_sub_screen")
+	await _check_trade(when)
+	if _gs.phase == _gs.Phase.AWARDS:
+		await _check_awards(when)
+		await _check_records(when)
 	if _gs.fa_open():
 		await _check_phase_view("fa", "_fa_view", when)
 	elif _gs.contract_open():
@@ -266,6 +342,18 @@ func _check_draft(when: String) -> void:
 	for i in 3:
 		view.switch_tab(1)
 		await _check_screen("%s：ドラフト タブ%d" % [when, i + 2], 0.0)
+	# 要約がいちばん長くなる候補（1年目の能力があり、野手は能力の項目が多い）を野手能力のタブで選ぶ（作業13）
+	while view.get("_tab") != "bat":
+		view.switch_tab(1)
+	view.set_sort("first", true)
+	var tall: Array = view.list_ids()
+	for id: String in tall:
+		if not view.call("_first_grid", _gs.draft().by_id[id]).get_child_count() < 2 \
+				and not _gs.draft().by_id[id]["pitcher"]:
+			view.select_candidate(id)
+			break
+	await _check_screen("%s：ドラフト 1年目の能力がある野手を選ぶ" % when, 0.0)
+	view.set_sort("hyouka", true)
 	var ids: Array = view.list_ids()
 	if not ids.is_empty():
 		view.select_candidate(ids[0])
