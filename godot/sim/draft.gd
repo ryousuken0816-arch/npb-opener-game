@@ -28,10 +28,18 @@ const DIFFICULTY_NOISE := {"easy": 0.2, "normal": 0.35, "hard": 0.6}
 const DIFFICULTY := "normal"
 ## CPU球団ごとの見立ての違い（同じ候補でも球団によって評価が少しずつ違う）
 const TEAM_NOISE := 0.3
-## CPU球団の評価：1位入札は当時の評価を重く、2位以降は将来性を重く
+## CPU球団の評価：1位入札（当時の評価を重く）
 const FIRST_FUTURE_WEIGHT := 0.6
 const FIRST_HYOUKA_WEIGHT := 0.9
-const LATER_HYOUKA_WEIGHT := 0.35
+## 2位以降：当時の評価と将来性（ノイズ入り）をそれぞれ候補全体の z にして、この割合で混ぜる（作業7）。
+## 難易度ごと：やさしい＝当時の評価寄り（史実で下位指名のお宝が下位まで残る）、むずかしい＝将来性寄り
+const CPU_HYOUKA_SHARE := {"easy": 0.8, "normal": 0.7, "hard": 0.55}
+## 目玉：各CPU球団が上位で強く狙う候補（1〜TARGET_COUNT_MAX 人）。その球団の見立て（将来性＋見立ての違い）の
+## 上位から選び、1位入札と TARGET_ROUNDS 位までの指名で評価に TARGET_BONUS を足す。
+## 本当の大物は多くの球団の目玉になって上位で消え、中くらいのお宝は目玉にならず下位まで残る
+const TARGET_COUNT_MAX := 2
+const TARGET_BONUS := 1.5
+const TARGET_ROUNDS := 2
 ## 1位入札：先に入札した球団1つごとに評価から引く値（競合を嫌う）と、入札ごとの迷い
 const COMPETE_PENALTY := 0.4
 const FIRST_BID_NOISE := 0.15
@@ -120,6 +128,10 @@ var data_through := 0
 var _rng := RandomNumberGenerator.new()
 var _team_noise := {}
 var _need := {}  ## 球団 → {守備位置: 今の人数}
+## CPU球団 → [目玉の候補ID]（setup で決める。セーブに入る）
+var cpu_targets := {}
+## 当時の評価・将来性（ノイズ入り）の候補全体の平均と標準偏差（2位以降の評価の z。setup・ロードで計算）
+var _scale := {}
 
 
 ## 候補を作る。league: 所属（守備位置の不足の計算に使う）、entries: 来季の開幕時点の能力値ファイルの選手
@@ -185,6 +197,38 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 		_team_noise[t] = {}
 		for c in candidates:
 			_team_noise[t][c["id"]] = _rng.randfn(0.0, TEAM_NOISE)
+	_compute_scale()
+	_choose_targets()
+
+
+## 2位以降の評価に使う、当時の評価・将来性（ノイズ入り）の平均と標準偏差
+func _compute_scale() -> void:
+	for key: String in ["hyouka", "future_seen"]:
+		var sum := 0.0
+		var sq := 0.0
+		for c in candidates:
+			sum += float(c[key])
+			sq += float(c[key]) * float(c[key])
+		var n := maxf(float(candidates.size()), 1.0)
+		var mean := sum / n
+		_scale[key] = [mean, maxf(sqrt(maxf(sq / n - mean * mean, 0.0)), 0.01)]
+
+
+## CPU球団ごとの目玉（1〜TARGET_COUNT_MAX 人）：本指名級の候補から、その球団の見立ての将来性が高い順
+func _choose_targets() -> void:
+	cpu_targets = {}
+	for t in teams:
+		if t == user_team:
+			continue
+		var view: Array = []
+		for c in candidates:
+			if not c["hist_ikusei"]:
+				view.append([c["id"], float(c["future_seen"]) + float(_team_noise[t].get(c["id"], 0.0))])
+		view.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0] if a[1] == b[1] else a[1] > b[1])
+		var ids: Array = []
+		for i in mini(_rng.randi_range(1, TARGET_COUNT_MAX), view.size()):
+			ids.append(view[i][0])
+		cpu_targets[t] = ids
 
 
 ## 仮の選手（能力値ファイルにいない候補）[{id, player}]。GameData に足して画面・試合で引けるようにする
@@ -611,15 +655,25 @@ func _best_for(team: String, first: bool, ikusei: bool) -> String:
 	return best
 
 
-## CPU球団の評価：将来性（ノイズ入り）＋球団ごとの見立ての違い＋当時の評価＋守備位置の不足
+## CPU球団の評価：球団ごとの見立ての違い＋当時の評価と将来性（ノイズ入り）＋守備位置の不足＋目玉の上乗せ
 func evaluate(team: String, c: Dictionary, first: bool) -> float:
-	var hyouka_z := (float(c["hyouka"]) - 1.5) / 1.2
 	var v: float = float(_team_noise.get(team, {}).get(c["id"], 0.0))
 	if first:
+		var hyouka_z := (float(c["hyouka"]) - 1.5) / 1.2
 		v += FIRST_FUTURE_WEIGHT * float(c["future_seen"]) + FIRST_HYOUKA_WEIGHT * hyouka_z
 	else:
-		v += float(c["future_seen"]) + LATER_HYOUKA_WEIGHT * hyouka_z
+		if _scale.is_empty():
+			_compute_scale()
+		var share: float = CPU_HYOUKA_SHARE[DIFFICULTY]
+		v += share * _z(c, "hyouka") + (1.0 - share) * _z(c, "future_seen")
+	if (first or round <= TARGET_ROUNDS) and c["id"] in cpu_targets.get(team, []):
+		v += TARGET_BONUS
 	return v + _need_bonus(team, c["pos"])
+
+
+func _z(c: Dictionary, key: String) -> float:
+	var s: Array = _scale[key]
+	return (float(c[key]) - float(s[0])) / float(s[1])
 
 
 func _need_bonus(team: String, group: String) -> float:
@@ -866,7 +920,7 @@ func to_save() -> Dictionary:
 		"last_wave": last_wave, "order": order, "round": round, "turn_team": _turn_team,
 		"done_reg": done_reg, "done_ikusei": done_ikusei, "user_auto": user_auto, "user_room": user_room,
 		"resolved": resolved, "data_through": data_through, "rng": SaveUtil.rng_state(_rng),
-		"team_noise": _team_noise, "need": _need,
+		"team_noise": _team_noise, "need": _need, "cpu_targets": cpu_targets,
 	}
 
 
@@ -897,4 +951,6 @@ static func from_save(d: Dictionary) -> Draft:
 	SaveUtil.set_rng_state(dr._rng, d.get("rng", ""))
 	dr._team_noise = d.get("team_noise", {})
 	dr._need = d.get("need", {})
+	dr.cpu_targets = d.get("cpu_targets", {})
+	dr._compute_scale()
 	return dr
