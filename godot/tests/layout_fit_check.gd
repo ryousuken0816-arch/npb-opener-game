@@ -7,7 +7,8 @@ extends SceneTree
 ##   ドラフト（開幕の演出・候補を選んで入札・抽選・指名一覧）、新戦力
 ## - 切り替えの演出の途中で開く・閉じるをくり返したあと（作業11の不具合の原因。最初と毎年の開幕・7月）
 ## スクロールの中（clip_contents の子）は親が画面内なら見えないので調べない。画面のルートの包み
-## （UiTheme.fit_scroll）にスクロールバーが出た＝中身が枠に収まっていない、も NG にする。
+## （UiTheme.fit_scroll）の中は、その枠からはみ出したもの（見えずに欠ける）と、スクロールバーが出た＝中身が枠に
+## 収まっていない、も NG にする。
 ##
 ##   godot --headless --path godot -s res://tests/layout_fit_check.gd -- [自球団] [最後の年] [開始年] [出力先]
 ##   （既定はソフトバンク・2012・2008。出力先はウィンドウ付きのときだけ。はみ出した画面のスクショを保存）
@@ -34,6 +35,9 @@ var _hub: Node
 func _initialize() -> void:
 	# ヘッドレスのウィンドウは既定で 1280x1280 になるので、ユーザーの環境（1280x720）に合わせる
 	root.size = Vector2i(SCREEN)
+	if DisplayServer.get_name() != "headless":
+		# ウィンドウ付き（スクショ）のときもフォーカスを奪わない（CLAUDE.md）
+		DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_NO_FOCUS, true)
 	var args := OS.get_cmdline_user_args()
 	if args.size() > 0 and not args[0].is_empty():
 		_team = args[0]
@@ -192,6 +196,8 @@ func _check_offseason(y: int) -> void:
 	await _check_screen("%s：ハブ" % when)
 	# オフの采配は「見るだけ」の文言が出る（作業11の報告の画面）。全選手を選ぶのは最初の段階だけ
 	await _check_tactics(when, ["", "pitchers", "fielders", "order"], _gs.phase == _gs.Phase.AWARDS)
+	if y == _last_year and _gs.phase == _gs.Phase.AWARDS:
+		await _shot_register()
 	await _open("scout")
 	await _check_screen("%s：新戦力" % when)
 	_hub.call("_close_sub_screen")
@@ -203,6 +209,27 @@ func _check_offseason(y: int) -> void:
 		await _check_phase_view("release", "_release_view", when)
 	elif _gs.draft_open():
 		await _check_draft(when)
+
+
+## スクショ（ウィンドウ付きで出力先を渡したときだけ）：作業11の報告と同じ、オフの采配 → 投手1軍登録で先発の2番手を選んだ画面
+func _shot_register() -> void:
+	if _out.is_empty() or DisplayServer.get_name() == "headless":
+		return
+	await _open("tactics")
+	var tactics: Node = _hub.get("_tactics_view")
+	tactics.call("_show_page", "pitchers", true)
+	var team: Variant = _gs.my_team()
+	var page: Node = tactics.get("_register_pitchers")
+	page.set("_selected", team.rotation[1] if team.rotation.size() > 1 else team.rotation[0])
+	page.refresh()
+	await _settle()
+	await create_timer(0.3).timeout
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(_out.path_join("layout_fixed_%d_off.png" % _last_year))
+	print("  スクショ: layout_fixed_%d_off.png" % _last_year)
+	page.clear_selection()
+	tactics.call("_show_page", "")
+	_hub.call("_close_sub_screen")
 
 
 ## FA・契約更改・戦力外：全タブを開き、各タブの先頭の選手を選ぶ
@@ -276,23 +303,27 @@ func _report(label: String, over: Array[String]) -> void:
 ## 表示中の Control で画面からはみ出すもの（はみ出した枝の一番上だけ。中身の最小幅の内訳を添える）
 func _overflows() -> Array[String]:
 	var result: Array[String] = []
-	_walk(root, result)
+	_walk(root, result, Rect2(Vector2.ZERO, SCREEN))
 	return result
 
 
-func _walk(node: Node, result: Array[String]) -> void:
+## clip：いま見えている範囲（画面、または画面のルートの包みの枠）。その外へ出たものを数える
+func _walk(node: Node, result: Array[String], clip: Rect2) -> void:
 	if node is Window and node != root:
 		return  # ツールチップ・ポップアップは別のウィンドウ
 	if node is CanvasItem and not (node as CanvasItem).visible:
 		return
 	if node is CanvasLayer and not (node as CanvasLayer).visible:
 		return
+	if node is CanvasLayer:
+		clip = Rect2(Vector2.ZERO, SCREEN)
 	if node is Control:
 		var c := node as Control
 		var r := c.get_global_rect()
-		if r.size.x > 0.0 and r.size.y > 0.0 and _outside(r):
-			result.append("%s %s（最小 %s）%s" % [_name(c), _rect_text(r), str(c.get_combined_minimum_size()),
-				_widest(c)])
+		if r.size.x > 0.0 and r.size.y > 0.0 and _outside(r, clip):
+			var where := "画面" if clip.size == SCREEN else "枠 %s" % _rect_text(clip)
+			result.append("%s %s が%sの外（最小 %s）%s" % [_name(c), _rect_text(r), where,
+				str(c.get_combined_minimum_size()), _widest(c)])
 			return
 		# 画面のルートの包み（UiTheme.fit_scroll）：はみ出しは防げるが、スクロールバーが出たら枠に収まっていない
 		if c is ScrollContainer and c.has_meta("fit_guard"):
@@ -301,15 +332,17 @@ func _walk(node: Node, result: Array[String]) -> void:
 				result.append("%s 中身が枠 %s に収まらずスクロールになった（中身の最小 %s）%s" % [_name(c),
 					_rect_text(r), str(sc.get_child(0).get_combined_minimum_size()), _widest(c)])
 				return
-		if c.clip_contents:
+			# 中身はこの枠で切り取られる。枠からはみ出した部分は見えない（右の要約が欠けるなど）ので、ここから先は枠と比べる
+			clip = clip.intersection(r)
+		elif c.clip_contents:
 			return  # スクロールの中など：親の枠で切り取られる
 	for child in node.get_children():
-		_walk(child, result)
+		_walk(child, result, clip)
 
 
-func _outside(r: Rect2) -> bool:
-	return r.position.x < -TOLERANCE or r.position.y < -TOLERANCE \
-		or r.end.x > SCREEN.x + TOLERANCE or r.end.y > SCREEN.y + TOLERANCE
+func _outside(r: Rect2, clip: Rect2) -> bool:
+	return r.position.x < clip.position.x - TOLERANCE or r.position.y < clip.position.y - TOLERANCE \
+		or r.end.x > clip.end.x + TOLERANCE or r.end.y > clip.end.y + TOLERANCE
 
 
 ## 最小幅がいちばん大きい子をたどる（どこで広がったかの手がかり）

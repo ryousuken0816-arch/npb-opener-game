@@ -13,6 +13,8 @@ extends VBoxContainer
 signal roster_changed
 
 const TAG_SIZE := Vector2(138, 34)
+## 右の要約の中身の幅。1軍（2列）＋2軍＋要約が采配の広げた画面（1280x720 で幅986）に収まる大きさ
+const SUMMARY_WIDTH := 240
 const FLAG_WIDTH := 26
 const VALUE_WIDTH := 22
 const ROLE_SECTIONS := [
@@ -309,13 +311,13 @@ func _render_summary() -> void:
 				+ "札の色は守備位置：投手＝赤、捕手＝水色、内野手＝黄、外野手＝緑（右側の色は他に守れる位置）。\n"
 				+ "薄い札は登録抹消から10日たっていない選手です。", 15)
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		hint.custom_minimum_size = Vector2(250, 0)
+		hint.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 		_summary_box.add_child(hint)
 		return
 	var p := _selected
 	var data := GameData.player(p.id)
 	var tag := NameTag.new()
-	tag.custom_minimum_size = Vector2(250, 40)
+	tag.custom_minimum_size = Vector2(SUMMARY_WIDTH, 40)
 	tag.font_size = 22
 	tag.setup_player(data, p.name)
 	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -326,8 +328,8 @@ func _render_summary() -> void:
 		line += "　外国人"
 	if data.get("birth") != null:
 		line += "　%d歳" % _age(str(data["birth"]))
-	_summary_box.add_child(UiTheme.small_label(line, 16, UiTheme.TEXT, 700))
-	_summary_box.add_child(UiTheme.small_label(_status_text(p), 15, _palette.ink, 700))
+	_summary_box.add_child(_summary_line(line, 16, UiTheme.TEXT, 700))
+	_summary_box.add_child(_summary_line(_status_text(p), 15, _palette.ink, 700))
 	if p.is_pitcher:
 		_pitcher_summary(p, data)
 	else:
@@ -362,7 +364,7 @@ func _pitcher_summary(p: SimPlayer, data: Dictionary) -> void:
 	if velocity is Dictionary and velocity.get("kmh") != null:
 		kmh = "%d km/h" % int(velocity["kmh"])
 	var role: Variant = pitching.get("role")
-	_summary_box.add_child(UiTheme.small_label("適性 %s　球速 %s" % [role if role != null else "-", kmh],
+	_summary_box.add_child(_summary_line("適性 %s　球速 %s" % [role if role != null else "-", kmh],
 			16, UiTheme.TEXT, 700))
 	var ratings: Dictionary = pitching["ratings"] if pitching.get("ratings") is Dictionary else {}
 	_summary_box.add_child(_rank_grid(ratings, [
@@ -370,7 +372,7 @@ func _pitcher_summary(p: SimPlayer, data: Dictionary) -> void:
 	]))
 	var s: Dictionary = GameState.season.pitching.get(p.id, {}) if GameState.season != null else {}
 	var era := "%.2f" % Season.era(s) if s.get("outs", 0) > 0 else "-"
-	_summary_box.add_child(UiTheme.small_label("今季　%d登板 %d勝%d敗%dS　防御率 %s" % [
+	_summary_box.add_child(_summary_line("今季　%d登板 %d勝%d敗%dS　防御率 %s" % [
 		s.get("g", 0), s.get("w", 0), s.get("l", 0), s.get("sv", 0), era], 15, UiTheme.TEXT, 700))
 
 
@@ -383,7 +385,7 @@ func _fielder_summary(p: SimPlayer, data: Dictionary) -> void:
 		for pos: String in fielding:
 			if int(fielding[pos].get("games", 0)) > 0 or pos == data.get("primary_pos"):
 				positions.append(POS_SHORT.get(pos, pos))
-	_summary_box.add_child(UiTheme.small_label("守備 %s　弾道 %s" % [
+	_summary_box.add_child(_summary_line("守備 %s　弾道 %s" % [
 		"・".join(positions) if not positions.is_empty() else "-",
 		str(int(batting["trajectory"])) if batting.get("trajectory") != null else "-"],
 		16, UiTheme.TEXT, 700))
@@ -393,8 +395,16 @@ func _fielder_summary(p: SimPlayer, data: Dictionary) -> void:
 	]))
 	var b: Dictionary = GameState.season.batting.get(p.id, {}) if GameState.season != null else {}
 	var avg := ("%.3f" % Season.batting_avg(b)).trim_prefix("0") if b.get("ab", 0) > 0 else "-"
-	_summary_box.add_child(UiTheme.small_label("今季　%d試合 打率%s %d本 %d打点" % [
+	_summary_box.add_child(_summary_line("今季　%d試合 打率%s %d本 %d打点" % [
 		b.get("g", 0), avg, b.get("hr", 0), b.get("rbi", 0)], 15, UiTheme.TEXT, 700))
+
+
+## 要約の1行（UiTheme.small_label と同じ引数）。右の枠の幅で折り返す（今季成績・状態の長い文言で枠が広がり、
+## 1軍・2軍の欄を押し出して画面からはみ出していた。作業11）
+func _summary_line(text: String, font_size: int, color: Color, weight: int) -> Label:
+	var label := UiTheme.small_label(text, font_size, color, weight)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	return label
 
 
 ## 能力のランクを2列で並べる
@@ -404,7 +414,7 @@ func _rank_grid(ratings: Dictionary, columns: Array) -> GridContainer:
 	grid.add_theme_constant_override("h_separation", 8)
 	for col: Array in columns:
 		var name_label := UiTheme.small_label(col[1], 16, UiTheme.TEXT, 700)
-		name_label.custom_minimum_size = Vector2(76, 0)
+		name_label.custom_minimum_size = Vector2(68, 0)
 		grid.add_child(name_label)
 		var rank := UiTheme.rank_label(ratings.get(col[0]), 22)
 		rank.custom_minimum_size = Vector2(40, 0)
