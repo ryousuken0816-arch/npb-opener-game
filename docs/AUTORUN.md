@@ -398,3 +398,4 @@ docs/references/README.md の「draft_list_pawapuro.webp」とその下の追加
 - [指名発表28] 声の切り替え（os／voicevox／wav）と URL・話者・WAV のフォルダは settings.cfg を書き換える形で、画面からは選べない（システムの設定画面ができたら足す）
 - [指名発表28] project.godot に audio/general/text_to_speech=true を足した。ユーザーが開いているエディタでプロジェクト設定を保存し直すと消える恐れ（消えたら読み上げが無音）
 - [指名発表28] 実際の声（Windows の日本語の音声）はテストでは鳴らしていない（テストは無音）。ユーザーの PC で一度聞いて、間合い（ANNOUNCE_NAME_VOICE_SEC など）を確かめてほしい
+- [指名発表28] 最後の全テスト（23本）で、draft_check の「2025年のシーズンで指名選手が試合に出た」だけ1回NG（作業20・29のときと同じ乱数しだいの確認）。ほかは全てOK
