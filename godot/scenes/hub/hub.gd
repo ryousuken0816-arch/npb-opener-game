@@ -48,6 +48,7 @@ var _draft_view := DraftView.new()
 var _save_view := SaveView.new()
 var _awards_view := AwardsView.new()
 var _records_view := RecordsView.new()
+var _postseason_view := PostseasonView.new()
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -129,6 +130,15 @@ func _ready() -> void:
 	_records_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "records":
 			_description_label.text = text)
+	_postseason_view.setup(_palette)
+	_postseason_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_postseason_view.visible = false
+	_placeholder_label.get_parent().add_child(_postseason_view)
+	_postseason_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "postseason":
+			_description_label.text = text)
+	_postseason_view.advance_requested.connect(func() -> void: _on_menu_chosen("advance"))
+	GameState.celebrate.connect(_on_celebrate)
 	_save_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "system":
 			_description_label.text = text)
@@ -296,7 +306,8 @@ func _refresh() -> void:
 	_team_name_label.text = GameState.team
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
-	if _open_key not in ["tactics", "fa", "trade", "contract", "release", "draft", "system", "awards", "records"]:
+	if _open_key not in ["tactics", "fa", "trade", "contract", "release", "draft", "system", "awards", "records",
+			"postseason"]:
 		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_tactics_view.refresh()
@@ -318,6 +329,8 @@ func _refresh() -> void:
 		_save_view.refresh()
 	elif _open_key == "awards":
 		_awards_view.refresh()
+	elif _open_key == "postseason":
+		_postseason_view.refresh()
 
 
 func _summary_text() -> String:
@@ -341,6 +354,10 @@ func _description(key: String) -> String:
 				return "%s。（%d年の日程データがないため試合は行いません）" % [goal, GameState.year]
 			return "%d月の残り%d試合（全球団）をまとめて行い、%s。日程表からは1日ずつ進められます。" % [
 				GameState.month, GameState.games_left_in_month(), goal]
+		if GameState.phase == GameState.Phase.POSTSEASON:
+			if GameState.postseason_done():
+				return "日本一が決まりました。シーズン終了・表彰へ進みます。"
+			return "クライマックスシリーズ・日本シリーズの組み合わせと結果を開きます。1試合ずつ・段階ごとに進められます。"
 		if GameState.phase == GameState.Phase.AWARDS and GameState.awards_pending:
 			return "%d年のシーズン表彰（MVP・新人王・ベストナイン・ゴールデングラブ・タイトル・沢村賞）を発表します。" % GameState.year
 		if GameState.fa_open():
@@ -364,7 +381,14 @@ func _on_menu_focused(key: String) -> void:
 
 
 func _on_menu_chosen(key: String) -> void:
+	if key == "schedule" and GameState.phase == GameState.Phase.POSTSEASON:
+		_open_sub_screen("postseason")
+		return
 	if key == "advance":
+		# ポストシーズンは日本一が決まるまで、可変ボタンでポストシーズンの画面を開く
+		if GameState.phase == GameState.Phase.POSTSEASON and not GameState.postseason_done():
+			_open_sub_screen("postseason")
+			return
 		# シーズン終了・表彰の段階は、まず表彰の画面を開く（2回目からは次の段階へ）
 		if GameState.phase == GameState.Phase.AWARDS and GameState.awards_pending:
 			GameState.awards_pending = false
@@ -384,7 +408,9 @@ func _on_menu_chosen(key: String) -> void:
 			_open_sub_screen("draft")
 			return
 		GameState.advance()
-		if GameState.phase == GameState.Phase.AWARDS and GameState.awards_pending:
+		if GameState.phase == GameState.Phase.POSTSEASON:
+			_open_sub_screen("postseason")
+		elif GameState.phase == GameState.Phase.AWARDS and GameState.awards_pending:
 			GameState.awards_pending = false
 			_open_sub_screen("awards")
 		elif GameState.fa_open():
@@ -418,6 +444,8 @@ func _open_sub_screen(key: String) -> void:
 	var is_system := key == "system"
 	var is_awards := key == "awards"
 	var is_records := key == "records"
+	var is_postseason := key == "postseason"
+	_postseason_view.visible = is_postseason
 	_awards_view.visible = is_awards
 	_records_view.visible = is_records
 	_save_view.visible = is_system
@@ -429,9 +457,9 @@ func _open_sub_screen(key: String) -> void:
 	_trade_view.visible = is_trade
 	_contract_view.visible = is_contract
 	_release_view.visible = is_release
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_trade and not is_contract and not is_release and not is_draft and not is_system and not is_awards and not is_records
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_trade and not is_contract and not is_release and not is_draft and not is_system and not is_awards and not is_records 		and not is_postseason
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
-	_set_wide(is_tactics or is_fa or is_trade or is_contract or is_release or is_draft or is_awards or is_records)
+	_set_wide(is_tactics or is_fa or is_trade or is_contract or is_release or is_draft or is_awards or is_records or is_postseason)
 	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
@@ -466,6 +494,9 @@ func _open_sub_screen(key: String) -> void:
 	elif is_records:
 		_sub_title_label.text = "記録室"
 		_records_view.open()
+	elif is_postseason:
+		_sub_title_label.text = "クライマックスシリーズ・日本シリーズ（%d年）" % GameState.year
+		_postseason_view.open()
 	else:
 		_placeholder_label.text = PLACEHOLDERS.get(key, "") + "\n\n（未実装）"
 		%BackButton.grab_focus()
@@ -473,7 +504,7 @@ func _open_sub_screen(key: String) -> void:
 
 ## 采配のサブ画面を開いているときは、戻るで采配メニューの一覧へ戻る。日程表の早送り中は中止だけ
 func _on_back() -> void:
-	if _open_key == "schedule" and GameState.is_fast_forwarding():
+	if _open_key in ["schedule", "postseason"] and GameState.is_fast_forwarding():
 		GameState.stop_fast_forward()
 		return
 	if _open_key == "tactics" and _tactics_view.back():
@@ -521,5 +552,19 @@ func _close_sub_screen() -> void:
 		_buttons[key].grab_button_focus()
 	elif key == "trade":
 		_buttons["scout"].grab_button_focus()
-	elif key in ["fa", "contract", "release", "draft", "awards"]:
+	elif key in ["fa", "contract", "release", "draft", "awards", "postseason"]:
 		_buttons["advance"].grab_button_focus()
+
+
+## 優勝・日本一の演出（自球団のリーグ優勝と、日本一はどの球団でも）を重ねる。閉じたら元のフォーカスへ
+func _on_celebrate(kind: String, team_name: String, title: String) -> void:
+	var owner_focus := get_viewport().gui_get_focus_owner()
+	var fx := Celebration.new()
+	var text := title
+	if kind == "champion" and team_name != GameState.team:
+		text = "%d年 日本一" % GameState.year
+	fx.setup(team_name, text)
+	fx.closed.connect(func() -> void:
+		if is_instance_valid(owner_focus) and owner_focus.is_visible_in_tree():
+			owner_focus.grab_focus())
+	add_child(fx)

@@ -309,7 +309,7 @@ func _render_summary() -> void:
 		var hint := UiTheme.small_label(
 				"札をクリックすると選手の能力と今季の成績を表示します。\n\n"
 				+ "札の色は守備位置：投手＝赤、捕手＝水色、内野手＝黄、外野手＝緑（右側の色は他に守れる位置）。\n"
-				+ "薄い札は登録抹消から10日たっていない選手です。", 15)
+				+ "薄い札は登録抹消から10日たっていない選手です。札の右の「育」は育成選手（支配下に登録すると1軍に上げられます）。", 15)
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		hint.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 		_summary_box.add_child(hint)
@@ -345,7 +345,9 @@ func _render_summary() -> void:
 	UiTheme.style_button(detail, Color("1e88e5"), Color.WHITE)
 	detail.pressed.connect(_open_detail.bind(p))
 	_summary_box.add_child(detail)
-	if GameState.can_edit_roster():
+	if p.is_ikusei and not _team.is_active(p):
+		_ikusei_button()
+	elif GameState.can_edit_roster():
 		var button := Button.new()
 		button.focus_mode = Control.FOCUS_NONE
 		if _team.is_active(p):
@@ -355,6 +357,21 @@ func _render_summary() -> void:
 			button.text = "▲ 1軍へ上げる"
 			button.pressed.connect(_promote_selected)
 		_summary_box.add_child(button)
+
+
+## 育成選手を選んだとき：「支配下に登録する」（春季キャンプ〜7月31日。期間外は押せず理由を出す。作業19）。
+## コントローラーでも押せるようフォーカスを受ける
+func _ikusei_button() -> void:
+	var block := GameState.ikusei_promote_block()
+	var button := Button.new()
+	button.text = "支配下に登録する"
+	button.disabled = not block.is_empty()
+	button.tooltip_text = block if not block.is_empty() 			else "育成選手を支配下（%d人まで）に登録します。登録すると1軍に上げられます" % LeagueRoster.ROSTER_LIMIT
+	UiTheme.style_button(button, Color("2e7d32"), Color.WHITE)
+	button.pressed.connect(_promote_ikusei_selected)
+	_summary_box.add_child(button)
+	if not block.is_empty():
+		_summary_box.add_child(_summary_line(block, 14, UiTheme.TEXT_SUB, 700))
 
 
 func _pitcher_summary(p: SimPlayer, data: Dictionary) -> void:
@@ -439,6 +456,8 @@ func _status_text(p: SimPlayer) -> String:
 					parts.append("%s %d番%s" % ["DHあり" if use_dh else "DHなし", i + 1,
 						POS_SHORT.get(order[i][1], "")])
 		return "1軍・" + (" / ".join(parts) if not parts.is_empty() else "控え")
+	if p.is_ikusei:
+		return "育成（支配下に登録すると1軍に上げられます）"
 	if _is_waiting(p):
 		return "2軍（%sから再登録できます）" % Season.day_label(_team.reregister_day(p))
 	return "2軍"
@@ -464,9 +483,9 @@ func _overall_rating(p: SimPlayer) -> Variant:
 	return null
 
 
-## 札の右の印：外=外国人、★=スタメン（DHあり・なしのどちらか）
+## 札の右の印：外=外国人、育=育成、★=スタメン（DHあり・なしのどちらか）
 func _flags(p: SimPlayer) -> String:
-	var flags := "外" if p.is_foreign else ""
+	var flags := ("外" if p.is_foreign else "") + ("育" if p.is_ikusei else "")
 	if not p.is_pitcher and _team.is_active(p):
 		for use_dh in [true, false]:
 			for entry: Array in _team.lineup(use_dh):
@@ -548,6 +567,17 @@ func _promote_selected() -> void:
 	var err := _team.promote(p, GameState.day)
 	if err.is_empty():
 		_done("%sを1軍に登録しました" % p.name)
+	else:
+		_fail(err)
+
+
+func _promote_ikusei_selected() -> void:
+	if _selected == null:
+		return
+	var p := _selected
+	var err := GameState.promote_ikusei(p.id)
+	if err.is_empty():
+		_done("%sを支配下に登録しました（支配下 %d人）" % [p.name, GameState.league.registered_count(GameState.team)])
 	else:
 		_fail(err)
 

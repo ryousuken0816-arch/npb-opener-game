@@ -33,7 +33,7 @@ func _run() -> void:
 	# 投手：2軍で最も総合力の高い投手を選び、先発ローテ1番手と入れ替える
 	view.call("_show_page", "pitchers")
 	var pitchers: Node = view.get("_register_pitchers")
-	var farm_p := team.players_where(false, true)
+	var farm_p := team.players_where(false, true).filter(func(p: SimPlayer) -> bool: return not p.is_ikusei)
 	farm_p.sort_custom(func(a: SimPlayer, b: SimPlayer) -> bool: return a.overall > b.overall)
 	var new_sp: SimPlayer = farm_p[0]
 	pitchers.call("_on_player_pressed", new_sp)
@@ -51,7 +51,7 @@ func _run() -> void:
 	# 野手：2軍で最も打力の高い野手を選び、DHありの4番と入れ替える
 	view.call("_show_page", "fielders")
 	var fielders: Node = view.get("_register_fielders")
-	var farm_f := team.players_where(false, false)
+	var farm_f := team.players_where(false, false).filter(func(p: SimPlayer) -> bool: return not p.is_ikusei)
 	farm_f.sort_custom(func(a: SimPlayer, b: SimPlayer) -> bool:
 		return a.batting_value() > b.batting_value())
 	var new_bat: SimPlayer = farm_f[0]
