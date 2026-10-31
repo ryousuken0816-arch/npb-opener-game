@@ -106,6 +106,13 @@ func _check_season(y: int, when: String) -> void:
 				_hub.get("_" + ("schedule" if key == "schedule" else "scout") + "_view").switch_tab(1)
 				await _check_screen("%s：%s タブ%d" % [when, key, i + 1])
 		_hub.call("_close_sub_screen")
+	# 新聞・速報（作業25）：3つのタブ
+	await _open("news")
+	await _check_screen("%s：新聞" % when)
+	for i in 2:
+		_hub.get("_news_view").switch_tab(1)
+		await _check_screen("%s：新聞 タブ%d" % [when, i + 1])
+	_hub.call("_close_sub_screen")
 	await _check_tactics(when, TACTICS_PAGES, _gs.month >= 7)
 	await _check_trade(when)
 	await _check_records(when)
