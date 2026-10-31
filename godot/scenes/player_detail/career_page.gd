@@ -34,11 +34,20 @@ func _build() -> void:
 	var profile := UiTheme.titled_panel(_palette, "プロフィール")
 	profile["panel"].custom_minimum_size = Vector2(620, 0)
 	add_child(profile["panel"])
+	# 受賞歴が増えると縦に伸びるので、プロフィールの中身は縦のスクロールの中へ（選手詳細の枠からはみ出さない。作業11）
+	var pscroll := ScrollContainer.new()
+	pscroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	pscroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	profile["body"].add_child(pscroll)
+	var body := VBoxContainer.new()
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_theme_constant_override("separation", profile["body"].get_theme_constant("separation"))
+	pscroll.add_child(body)
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 12)
 	grid.add_theme_constant_override("v_separation", 8)
-	profile["body"].add_child(grid)
+	body.add_child(grid)
 	var draft := _draft_parts()
 	for pair: Array in [
 		["生年月日", _birth_text()],
@@ -53,10 +62,10 @@ func _build() -> void:
 		value.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		value.custom_minimum_size = Vector2(440, 0)
 		grid.add_child(value)
-	profile["body"].add_child(UiTheme.small_label("出身校〜経歴", 16, _palette.ink, 800))
-	profile["body"].add_child(_career_chain())
-	profile["body"].add_child(UiTheme.small_label("受賞歴（ゲーム内の表彰）", 16, _palette.ink, 800))
-	profile["body"].add_child(_awards_flow())
+	body.add_child(UiTheme.small_label("出身校〜経歴", 16, _palette.ink, 800))
+	body.add_child(_career_chain())
+	body.add_child(UiTheme.small_label("受賞歴（ゲーム内の表彰）", 16, _palette.ink, 800))
+	body.add_child(_awards_flow())
 
 	var teams := UiTheme.titled_panel(_palette, "所属球団の推移")
 	teams["panel"].size_flags_horizontal = Control.SIZE_EXPAND_FILL
