@@ -1,3 +1,4 @@
 npb_collector/cache/
 npb_collector/__pycache__/
 *.log
+npb_collector/out*/
