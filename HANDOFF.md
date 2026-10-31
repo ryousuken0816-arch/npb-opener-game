@@ -382,7 +382,7 @@
    - 能力値：`tools/amateur_ratings.py`（tools/README.md「アマ選手の初期能力」）。`rookies --draft-year 2026` で2026年秋の新人（仮ID `ama2026:<名前>`）を `2027_pre` に足し、`carry --year 2027` で `2027_post`（引き継ぎ）と `2028_pre`（＋2027年の候補、球団なし）を作る。作り直す順：compute_ratings（2026 pre/post、2027 pre）→ rookies → carry → draft_future。2027年は成績が無く球団のリーグが決まらないので `fill_leagues` で2026年の対応から埋める
    - 球団の無い選手（2028_pre の候補）は `GameData._index_players` で球団の一覧に入れない
    - 作業26：`godot/sim/mlb_persuasion.gd`（`MlbPersuasion`）。候補一覧に「米志望」、ドラフト会議のあと自球団が指名したメジャー志望の選手を選んで約束（なし／3〜6年後のポスティング）と★を見て「説得する」（`Draft.persuade`、1人1回）。説得が残っている間は入団の処理（`apply_draft`）を待つ。失敗は入団せず `draft_unsigned` に入れて以後 NPB に出さない（出来事 `mlb_draftee`）、成功で約束があれば `LeagueRoster.posting_promise` の年のオフに `depart_mlb` でメジャーへ。CPU球団は史実で強行指名した球団以外はふだん避ける（`CPU_AVOID`、たまに `CPU_DARE_RATE`）
-   - 確認：`godot/tests/history_2026_check.gd`（新。2026年の143試合・史実の候補と競合・2027年の写しの日程と日付の追従・2027年のアマ選手のドラフト→2028年に所属、2027年開始）、`godot/tests/mlb_draftee_check.gd`（新。成功率・織田の失敗／成功とポスティング・佐々木麟太郎）、スクショ `godot/tests/draft_2026_capture.gd`
+   - 確認：全テスト29本をヘッドレスで（NG 2件は docs/AUTORUN.md「あとで確認」）。`godot/tests/history_2026_check.gd`（新。2026年の143試合・史実の候補と競合・2027年の写しの日程と日付の追従・2027年のアマ選手のドラフト→2028年に所属、2027年開始）、`godot/tests/mlb_draftee_check.gd`（新。成功率・織田の失敗／成功とポスティング・佐々木麟太郎）、スクショ `godot/tests/draft_2026_capture.gd`
    - 作業22（2028年以降の架空の候補）・32（転生選手）は `Draft.amateur_rows` と `amateur_ratings.py` の形に合わせて作るとよい。2028年以降の `data/<年>/`・ratings は今は無い（2028年の春季キャンプまでは進める）
 5. 次の候補（どれから進めるかユーザーと相談）
    - ~~FA・ポスティングの画面~~ → 完了（4.14）。~~契約更改・予算上限~~ → 完了（4.15）。~~戦力外・引退~~ → 完了（4.16）。~~ドラフト画面~~ → 完了（4.19）。残り：トレード交渉（予算の残りを使える）… 新しい画面なので Opus 向き
