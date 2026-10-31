@@ -3,7 +3,8 @@ extends SceneTree
 ## 1) 演出のシーン（scenes/draft/lottery_3d.tscn）だけ：5球団の抽選を最後まで流すと、くじを引く → 開ける → 結果の場面へ進み、
 ##    「交渉権確定」の紙を持つのが渡した当たりの球団。会場の丸テーブルに関係者がいて、カメラが
 ##    全景 → くじを引く手元 → 並んだ列 → 手元の寄り → 当選の瞬間 → 拍手 と切り替わる。途中で skip() すると結果の場面へ飛ぶ
-## 2) 2024年開始（巨人）：ドラフトの画面で宗山塁（5球団競合）に入札 → 抽選が3Dの演出で出る（宗山・金丸の両方）。
+## 2) 2024年開始（巨人）：ドラフトの画面で宗山塁（5球団競合）に入札 → 抽選が3Dの演出で出る（宗山と、ほかの抽選も。
+##    ほかにどの候補が競合するかは CPU の入札しだい。史実は金丸 4球団）。
 ##    結果は、入札の直前の Draft を写したもの（to_save → from_save）で同じ入札をしたときの抽選と一致（演出が結果を変えない）。
 ##    宗山の抽選は最後まで流してカメラの切り替えを確かめ、3Dで当たりの紙を持つ球団＝抽選の当たり。
 ##    Ⓐ（「結果を見る」に決定）・演出のクリックで飛ばせる。早送り中は2Dの演出
@@ -127,8 +128,9 @@ func _check_2024() -> void:
 	var pair := await _bid(d, view, mune)
 	var expected: Dictionary = pair[0]
 	var actual: Dictionary = pair[1]
-	_check(actual.has(kane["id"]), "金丸も競合して抽選（%d球団）" % \
-		(actual[kane["id"]]["teams"].size() if actual.has(kane["id"]) else 0))
+	# ほかの抽選（史実は金丸4球団。作業7の CPU の入札の調整のあとは、別の候補になることもある）
+	_check(actual.size() >= 2, "宗山のほかにも抽選がある（%d件、金丸は%s）" % [actual.size(),
+		"%d球団" % actual[kane["id"]]["teams"].size() if actual.has(kane["id"]) else "単独か入札なし"])
 	# 1つ目（自球団の入った宗山）：3Dの演出を最後まで流す（全景・手元の寄り・当選の瞬間をスクショ）
 	var seen := {}
 	var lot3d: Node = view.call("lottery_3d")
@@ -175,7 +177,8 @@ func _check_2024() -> void:
 		_check(lot3d.call("is_revealed") and lot3d.call("shown_winner") == lot3.get("winner", "?"),
 			"クリックで飛ばす → 結果の場面で当たりは%s（%s）" % [_gd.short_name(lot3d.call("shown_winner")), _cand_name(d, lot3)])
 		seen[lot3.get("id", "")] = true
-	_check(seen.has(mune["id"]) and seen.has(kane["id"]), "宗山・金丸の両方の抽選を3Dで見た")
+	_check(seen.has(mune["id"]) and seen.size() >= mini(actual.size(), 3),
+		"宗山とほかの抽選を3Dで見た（%d件／%d件）" % [seen.size(), actual.size()])
 	# クリックで飛ばす（3つ目が無いときも確かめる）：写した Draft の宗山の抽選を、画面の外で再生してクリック
 	if lot3d == null:
 		var scene: PackedScene = load(SCENE)
