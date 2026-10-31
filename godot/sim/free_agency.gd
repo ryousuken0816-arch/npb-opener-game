@@ -250,6 +250,12 @@ func resolve(league: LeagueRoster) -> void:
 	if resolved:
 		return
 	resolved = true
+	# 補償のランク（旧球団の日本人選手の年俸順位。移籍で年俸が変わる前に決める。FaCompensation）
+	var debut := GameData.load_debut_years(year)
+	var ranks := {}
+	for id in declared:
+		if league.team_of.has(id):
+			ranks[id] = FaCompensation.rank_of(league, id, info[id]["from"], year, debut)
 	for id in declared:
 		if not league.team_of.has(id):
 			continue
@@ -269,7 +275,8 @@ func resolve(league: LeagueRoster) -> void:
 			best = {"team": from, "amount": league.salary_of(id), "years": 1}
 		league.sign_fa(id, from, best["team"], best["amount"], best["years"], year + 1, bids.size())
 		results.append({"id": id, "from": from, "to": best["team"], "amount": best["amount"],
-			"years": best["years"], "bidders": bids.size(), "user_bid": user_bids.has(id)})
+			"years": best["years"], "bidders": bids.size(), "user_bid": user_bids.has(id),
+			"rank": ranks.get(id, "C")})
 
 
 func _score(id: String, team: String, amount: int, years: int) -> float:
@@ -302,6 +309,8 @@ func _cpu_bids(league: LeagueRoster, id: String) -> Array[Dictionary]:
 			continue
 		var rate := _rng.randf_range(0.85, 1.15) * (0.9 + 0.3 * need)
 		var amount := clampi(Salary.round_amount(base * rate), r[0], r[1])
+		# 相場の上限（Salary.MAX）を超える入札はしない（今の年俸がすでに超えている選手はその額まで）
+		amount = mini(amount, maxi(int(Salary.MAX), int(info[id]["salary"])))
 		# 予算上限を超える入札はしない（元の球団はその選手の今の年俸の分を差し引いて考える）
 		var payroll := league.next_payroll(team) - (league.salary_of(id) if team == from else 0)
 		if payroll + amount > ContractRenewal.budget(team):

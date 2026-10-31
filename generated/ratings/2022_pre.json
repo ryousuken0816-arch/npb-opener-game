@@ -378,8 +378,8 @@
    "weight": 97,
    "draft": "",
    "career": "カリフォルニア大リバーサイド校 - レイズ - ダイヤモンドバックス - エンゼルス - レッドソックス - マリナーズ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -447,7 +447,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 148,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -1760,7 +1820,7 @@
    "draft": "",
    "career": "ジャクソンビル大 - 米マイナー",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "外野手",
    "batting": {
     "ratings": {
      "meet": {
@@ -4331,8 +4391,8 @@
    "weight": 100,
    "draft": "",
    "career": "ニュークアバレー高 - ナショナルズ - タイガース - ブレーブス - エンゼルス - タイガース",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -4400,7 +4460,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 152,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -5214,8 +5334,8 @@
    "weight": 102,
    "draft": "",
    "career": "イースタンミシガン大 - エンゼルス - ブルージェイズ - ツインズ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -5283,7 +5403,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 150,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -15890,7 +16070,7 @@
    "draft": "",
    "career": "マヌエルファハルド体育大 - キューバ・グランマ",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -17917,8 +18097,8 @@
    "weight": 100,
    "draft": "",
    "career": "コレヒオサンタナ高 - 米マイナー",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -17986,7 +18166,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 150,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -22536,7 +22776,7 @@
    "draft": "",
    "career": "エイデスポーツ専門学校 - キューバ・グアンタナモ",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "外野手",
    "batting": {
     "ratings": {
      "meet": {
@@ -25405,8 +25645,8 @@
    "weight": 95,
    "draft": "",
    "career": "カンバーランド大 - ブルワーズ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -25474,7 +25714,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 149,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -28209,8 +28509,8 @@
    "weight": 92,
    "draft": "",
    "career": "サウスイースタンルイジアナ大 - マーリンズ - エンゼルス - パイレーツ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -28278,7 +28578,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 157,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -34509,8 +34869,8 @@
    "weight": 93,
    "draft": "",
    "career": "ガレナ高 - フィリーズ - ホワイトソックス - レンジャーズ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -34578,7 +34938,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 153,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -39338,8 +39758,8 @@
    "weight": 104,
    "draft": "",
    "career": "ハーバードウエストレイク高 - ツインズ - パイレーツ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -39407,7 +39827,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 158,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -42682,7 +43162,7 @@
    "draft": "",
    "career": "ウエストバージニア大 - ロイヤルズ",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -47279,7 +47759,7 @@
    "draft": "",
    "career": "ラトガーズ大 - パドレス - レッズ - ダイヤモンドバックス - パドレス",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "外野手",
    "batting": {
     "ratings": {
      "meet": {
@@ -48233,8 +48713,8 @@
    "weight": 105,
    "draft": "",
    "career": "オビエド高 - ナショナルズ - ヤンキース - インディアンス - ブルージェイズ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -48302,7 +48782,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 154,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -49626,8 +50166,8 @@
    "weight": 88,
    "draft": "",
    "career": "マイアミ大 - ジャイアンツ - 韓国・LG",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -49695,7 +50235,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 152,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -57739,8 +58339,8 @@
    "weight": 95,
    "draft": "",
    "career": "ウエストチェスター高 - メッツ - カブス",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -57808,7 +58408,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 154,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -58404,8 +59064,8 @@
    "weight": 86,
    "draft": "",
    "career": "サザンカリフォルニア大 - ヤンキース - オリオールズ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -58473,7 +59133,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 156,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -60854,8 +61574,8 @@
    "weight": 93,
    "draft": "",
    "career": "ボリバリアーノドロレス高",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -60923,7 +61643,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 150,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -68272,8 +69052,8 @@
    "weight": 112,
    "draft": "",
    "career": "ドミンゴベンケスビオホ高 - パドレス - マーリンズ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -68341,7 +69121,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 163,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -75580,7 +76420,7 @@
    "draft": "",
    "career": "コレヒオプロフェソルペゲロ高 - カブス - アスレチックス - レッズ",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -81914,7 +82754,7 @@
    "draft": "",
    "career": "リブレエスコラリダッド高 - アスレチックス - レンジャーズ - オリオールズ - タイガース",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -83832,8 +84672,8 @@
    "weight": 116,
    "draft": "",
    "career": "カリフォルニア州工大ポモナ校 - パイレーツ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -83901,7 +84741,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 156,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -84854,8 +85754,8 @@
    "weight": 93,
    "draft": "",
    "career": "マスターズ大 - ジャイアンツ - カブス",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -84923,7 +85823,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 149,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -89510,7 +90470,7 @@
    "draft": "",
    "career": "UEコレヒオサンフランシスコハビエル高 - フィリーズ - パドレス - ブルージェイズ - レッズ - オリオールズ - フィリーズ",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "三塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -104412,7 +105372,7 @@
    "draft": "",
    "career": "リセオホセアンドレスカスティーヨ高 - カージナルス - ドジャース - オリオールズ - ヤンキース - ブルージェイズ",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -105141,8 +106101,8 @@
    "weight": 99,
    "draft": "",
    "career": "ジャーマンタウンフレンズ高 - ブレーブス - マリナーズ - レンジャーズ - レッズ - ブレーブス",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -105210,7 +106170,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 155,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -106247,7 +107267,7 @@
    "draft": "",
    "career": "バージニア大 - ジャイアンツ",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -108908,8 +109928,8 @@
    "weight": 106,
    "draft": "",
    "career": "ミシシッピ大 - ブルージェイズ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -108977,7 +109997,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 159,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -111795,7 +112875,7 @@
    "draft": "",
    "career": "グレイソン大 - ヤンキース",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -117444,7 +118524,7 @@
    "draft": "",
    "career": "サウスブロワード高 - マリナーズ",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -121475,8 +122555,8 @@
    "weight": 97,
    "draft": "",
    "career": "セントラルミシガン大 - ツインズ - レイズ",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -121544,7 +122624,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 152,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -121847,7 +122987,7 @@
    "draft": "",
    "career": "ラトガーズ大 - レッズ - レイズ - パドレス",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "外野手",
    "batting": {
     "ratings": {
      "meet": {
@@ -124226,7 +125366,7 @@
    "draft": "",
    "career": "テキサスクリスチャン大 - 米マイナー",
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -124722,8 +125862,8 @@
    "weight": 102,
    "draft": "",
    "career": "オクラホマ大 - パドレス - ロイヤルズ - ブルワーズ - ジャイアンツ - アスレチックス",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -124791,7 +125931,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 158,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -132642,8 +133842,8 @@
    "weight": null,
    "draft": null,
    "career": null,
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -132711,7 +133911,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 149,
+     "source": "provisional"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -135299,7 +136559,7 @@
    "draft": null,
    "career": null,
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -139420,8 +140680,8 @@
    "weight": null,
    "draft": null,
    "career": null,
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -139489,7 +140749,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 149,
+     "source": "provisional"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -139758,8 +141078,8 @@
    "weight": null,
    "draft": null,
    "career": null,
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -139827,7 +141147,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 149,
+     "source": "provisional"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -140495,7 +141875,7 @@
    "draft": null,
    "career": null,
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "外野手",
    "batting": {
     "ratings": {
      "meet": {
@@ -140699,8 +142079,8 @@
    "weight": null,
    "draft": null,
    "career": null,
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -140768,7 +142148,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.6578,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 7.7646,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.6264,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.9189,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 2.9463,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 149,
+     "source": "provisional"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -141338,7 +142778,7 @@
    "draft": null,
    "career": null,
    "is_pitcher": false,
-   "primary_pos": null,
+   "primary_pos": "遊撃手",
    "batting": {
     "ratings": {
      "meet": {

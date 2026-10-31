@@ -110,5 +110,89 @@
   "bids": 2,
   "wave": 2,
   "winner": "広島"
+ },
+ {
+  "draft_year": 2026,
+  "name": "角田楓斗",
+  "bids": 1,
+  "wave": 1,
+  "winner": "オリックス"
+ },
+ {
+  "draft_year": 2026,
+  "name": "山里宝",
+  "bids": 1,
+  "wave": 1,
+  "winner": "広島"
+ },
+ {
+  "draft_year": 2026,
+  "name": "宮原廉",
+  "bids": 2,
+  "wave": 2,
+  "winner": "中日"
+ },
+ {
+  "draft_year": 2026,
+  "name": "星野世那",
+  "bids": 1,
+  "wave": 1,
+  "winner": "DeNA"
+ },
+ {
+  "draft_year": 2026,
+  "name": "渡部海",
+  "bids": 2,
+  "wave": 1,
+  "winner": "楽天"
+ },
+ {
+  "draft_year": 2026,
+  "name": "菰田陽生",
+  "bids": 1,
+  "wave": 1,
+  "winner": "日本ハム"
+ },
+ {
+  "draft_year": 2026,
+  "name": "織田翔希",
+  "bids": 1,
+  "wave": 1,
+  "winner": "巨人"
+ },
+ {
+  "draft_year": 2026,
+  "name": "鈴木泰成",
+  "bids": 2,
+  "wave": 1,
+  "winner": "ソフトバンク"
+ },
+ {
+  "draft_year": 2026,
+  "name": "川尻啓人",
+  "bids": 1,
+  "wave": 1,
+  "winner": "西武"
+ },
+ {
+  "draft_year": 2026,
+  "name": "米沢友翔",
+  "bids": 1,
+  "wave": 3,
+  "winner": "ロッテ"
+ },
+ {
+  "draft_year": 2026,
+  "name": "藤澤涼介",
+  "bids": 1,
+  "wave": 1,
+  "winner": "ヤクルト"
+ },
+ {
+  "draft_year": 2026,
+  "name": "榊原七斗",
+  "bids": 1,
+  "wave": 1,
+  "winner": "阪神"
  }
 ]

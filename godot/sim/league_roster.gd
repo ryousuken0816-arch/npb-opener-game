@@ -62,6 +62,8 @@ var joined := {}               ## 選手ID → NPB に入った年（在籍年�
 var names := {}                ## 選手ID → 名前（引退・メジャーの選手も。一度でも所属した選手）
 var retired := {}              ## 選手ID → 引退した年（その年のシーズン後）
 var in_mlb := {}               ## 選手ID → mlb_moves の1件（今メジャーにいる選手）
+## 選手ID → ポスティングを認めると約束した年（その年のシーズン後にメジャーへ。メジャー志望の新人の説得、作業26）
+var posting_promise := {}
 var market: Array[String] = [] ## 外国人市場の候補（未契約）
 var market_info := {}          ## 選手ID → {hist_team, asking, pitcher}
 var cpu_demand := {}           ## CPU球団 → {"p": 投手の残り人数, "b": 野手の残り人数}
@@ -95,6 +97,10 @@ var log: Array[Dictionary] = []
 
 ## 自球団のトレード交渉を断った球団 → 断った日（シーズン中は日付、オフは「年-段階」。同じ日にはもう交渉できない）
 var trade_refused := {}
+## このオフのFA移籍の補償（FAを締め切ったときに作る。FaCompensation）
+var compensation: FaCompensation = null
+## FAの補償で移った指名権 [{year（ドラフトの年）, round, from（獲得球団＝指名権を失う）, to（旧球団）, id（FAの選手）}]
+var draft_pick_comp: Array = []
 var _trades: Array[Dictionary] = []  ## trade_id ごと、日付順 {id, date, moves: [{pid, name, from, to}]}
 var _trade_index := 0
 var _moves_by_id := {}
@@ -260,6 +266,17 @@ func depart_mlb(season_year: int) -> Array[Dictionary]:
 		_log("", "mlb_leave", id, names.get(id, m["name"]), from, "",
 				"%s：%s → メジャー（%s）" % [names.get(id, m["name"]), GameData.short_name(from), route])
 		leaving.append({"id": id, "from": from, "route": route})
+	for id: String in posting_promise.keys():
+		if int(posting_promise[id]) != season_year or not team_of.has(id):
+			continue
+		var from: String = team_of[id]
+		team_of.erase(id)
+		posting_promise.erase(id)
+		in_mlb[id] = {"player_id": id, "name": names.get(id, id), "left_after": season_year, "route": "posting",
+			"npb_team_before": from, "returned": null, "promised": true}
+		_log("", "mlb_leave", id, names.get(id, id), from, "",
+				"%s：%s → メジャー（ポスティング。入団時の約束）" % [names.get(id, id), GameData.short_name(from)])
+		leaving.append({"id": id, "from": from, "route": "ポスティング"})
 	return leaving
 
 
@@ -396,7 +413,13 @@ func _was_unsigned(p: Dictionary) -> bool:
 ## 史実のドラフトで各球団が指名した人数（今の所属の球団名 → {reg, ikusei}）。来季の新人の見込みに使う
 func _draft_quota(draft_year: int) -> Dictionary:
 	var result := {}
-	for d in Draft.draft_rows(draft_year):
+	var rows := Draft.draft_rows(draft_year)
+	if not rows.is_empty() and bool(rows[0].get("amateur", false)):
+		# 史実の無い年（アマ選手の候補）：どの球団も同じ人数
+		for team: String in GameData.teams():
+			result[team] = Draft.AMATEUR_QUOTA.duplicate()
+		return result
+	for d in rows:
 		var team := _current_name(Draft.hist_team_of(d, draft_year))
 		if team.is_empty():
 			continue
@@ -571,6 +594,11 @@ func open_draft(season_year: int, waiver_order: Array[String], teams: Array[Stri
 	for id: String in _plan.get("draftees", []):
 		pool[id] = entries[id]
 	draft.setup(season_year, user_team, teams, pool, team_of, waiver_order, _rng.randi())
+	var moves: Array = []
+	for m: Dictionary in draft_pick_comp:
+		if int(m["year"]) == season_year:
+			moves.append(m)
+	draft.set_pick_moves(moves)
 	var counts := {}
 	for id: String in team_of:
 		var team: String = team_of[id]
@@ -604,6 +632,7 @@ func draft_room(team: String) -> int:
 func apply_draft() -> void:
 	if draft == null or draft.resolved:
 		return
+	draft.resolve_talks()
 	draft.resolved = true
 	_plan["draft_done"] = true
 	var next_year: int = _plan.get("year", year + 1)
@@ -612,6 +641,16 @@ func apply_draft() -> void:
 		var id: String = rec["id"]
 		var c: Dictionary = draft.by_id[id]
 		var team: String = rec["team"]
+		var talk: Dictionary = draft.talks.get(id, {})
+		if not talk.is_empty() and not talk["ok"]:
+			# メジャー志望の説得に失敗：入団せず渡米（ゲームの NPB には出てこない）
+			draft_unsigned[norm_name(c["name"])] = draft.year
+			names[id] = c["name"]
+			_log("", "mlb_draftee", id, c["name"], team, "", "%s：%sの説得に応じず、メジャーへ挑戦（ドラフト%s）" % [
+				c["name"], GameData.short_name(team), rec["label"]])
+			continue
+		if int(talk.get("promise", 0)) > 0:
+			posting_promise[id] = draft.year + int(talk["promise"])
 		team_of[id] = team
 		names[id] = c["name"]
 		retired.erase(id)
@@ -1286,11 +1325,12 @@ func to_save() -> Dictionary:
 	return {
 		"year": year, "user_team": user_team, "team_of": team_of, "salary": salary,
 		"salary_history": salary_history, "joined": joined, "names": names, "retired": retired,
-		"in_mlb": in_mlb, "market": market, "market_info": market_info, "cpu_demand": cpu_demand,
+		"in_mlb": in_mlb, "posting_promise": posting_promise, "market": market, "market_info": market_info, "cpu_demand": cpu_demand,
 		"contract_until": contract_until, "fa_year": fa_year, "kept_mlb": kept_mlb, "released": released,
 		"drafted": drafted, "promoted": promoted, "draft_synth": draft_synth, "draft_unsigned": draft_unsigned,
 		"limit_active": limit_active, "log": log, "trade_index": _trade_index, "plan": plan,
-		"trade_refused": trade_refused,
+		"trade_refused": trade_refused, "draft_pick_comp": draft_pick_comp,
+		"compensation": compensation.to_save() if compensation != null else null,
 		"rng": SaveUtil.rng_state(_rng),
 		"fa": fa.to_save() if fa != null else null,
 		"contracts": contracts.to_save() if contracts != null else null,
@@ -1310,6 +1350,7 @@ func from_save(d: Dictionary) -> void:
 	names = d.get("names", {})
 	retired = d.get("retired", {})
 	in_mlb = d.get("in_mlb", {})
+	posting_promise = d.get("posting_promise", {})
 	market.assign(d.get("market", []))
 	market_info = d.get("market_info", {})
 	cpu_demand = d.get("cpu_demand", {})
@@ -1325,6 +1366,8 @@ func from_save(d: Dictionary) -> void:
 	log.assign(d.get("log", []))
 	_trade_index = int(d.get("trade_index", 0))
 	trade_refused = d.get("trade_refused", {})
+	draft_pick_comp = d.get("draft_pick_comp", [])
+	compensation = FaCompensation.from_save(d["compensation"]) if d.get("compensation") is Dictionary else null
 	_plan = d.get("plan", {})
 	SaveUtil.set_rng_state(_rng, d.get("rng", ""))
 	fa = FreeAgency.from_save(d["fa"], self) if d.get("fa") is Dictionary else null

@@ -1,0 +1,5542 @@
+{
+ "draft_year": 2027,
+ "collected": "2026-11-01",
+ "note": "2027年秋のドラフト候補（2026年度に高校2年・大学3年、社会人・独立リーグ）。実在の選手は公開されている野球の情報だけをウェブ検索で集めた（出典は各選手の sources・scout.comments）。fictional: true は人数の穴埋めの架空の選手（実在の学校名・会社名を使うが、人物は架空）",
+ "players": [
+  {
+   "name": "川本 晴大",
+   "school": "大阪桐蔭高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": 192,
+   "weight": 95,
+   "max_kmh": 154,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年春 センバツ優勝（24回36奪三振、初戦14奪三振完封）",
+    "2026年秋 近畿大会 龍谷大平安戦 8回2安打無失点・自己最速154km"
+   ],
+   "evaluation": "世代の先頭に立つ大型左腕で、来秋のドラフト1位候補の筆頭とされ米球界も注視",
+   "eval_rank": "S",
+   "projected": "1位候補",
+   "intro": "大阪桐蔭高の大型左腕、最速154km",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.hb-nippon.com/articles/18360",
+    "https://www.hb-nippon.com/articles/18397",
+    "https://www.hb-nippon.com/articles/16645",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "長身からの角度ある直球",
+     "球速の伸び",
+     "奪三振能力"
+    ],
+    "weaknesses": [
+     "制球のばらつき",
+     "左肩の故障歴（2026年夏）"
+    ],
+    "grade": "S",
+    "type": "大型本格派左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "来年の高校生でドラ1候補の筆頭。制球に波はあるが米球界のスカウトも見ている",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "秋にさらにスケールアップした絶対的エースで、NPBに加えMLBのスカウトも注目",
+      "url": "https://www.hb-nippon.com/articles/18360"
+     },
+     {
+      "by": "ベースボールチャンネル（記事）",
+      "summary": "センバツ優勝の立役者で、故障明けの秋に154kmを記録した世代の目玉",
+      "url": "https://www.baseballchannel.jp/npb/297996/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "小林 鉄三郎",
+   "school": "横浜高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": 185,
+   "weight": 83,
+   "max_kmh": 150,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 甲子園 4試合15回15奪三振",
+    "2026年9月 U-18日本代表（2年生で選出）",
+    "2026年秋 関東大会準々決勝 樹徳戦 7回2失点完投"
+   ],
+   "evaluation": "制球と切れのあるスライダーを備えた長身左腕で、横浜の新エースとして来秋の上位指名が有力視される",
+   "eval_rank": "A",
+   "projected": "1位候補",
+   "intro": "横浜高のエース左腕、最速150km",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://www.hb-nippon.com/articles/16645",
+    "https://www.hb-nippon.com/articles/18602",
+    "https://www.baseballchannel.jp/etc/285315/",
+    "https://www.hb-nippon.com/articles/16528",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "制球力",
+     "スライダーの切れ",
+     "常時140km台後半の直球"
+    ],
+    "weaknesses": [
+     "甲子園では本来の投球ができなかった"
+    ],
+    "grade": "A",
+    "type": "本格派左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "制球が良くスライダーが鋭い左腕。甲子園で苦しんだ経験が伸びにつながると期待",
+      "url": "https://www.hb-nippon.com/articles/16645"
+     },
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "U-18代表を経た新チームのエースで、直球は常時140km台後半",
+      "url": "https://www.hb-nippon.com/articles/18602"
+     },
+     {
+      "by": "ベースボールチャンネル（記事）",
+      "summary": "最速150kmの左腕で、川上と並ぶ横浜の逸材",
+      "url": "https://www.baseballchannel.jp/npb/297996/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "森 健成",
+   "school": "北海高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 170,
+   "weight": 73,
+   "max_kmh": 155,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年夏 甲子園で1年生先発",
+    "2026年秋 北海道大会準々決勝で大会新記録の19奪三振完投",
+    "2026年 U-18日本代表候補合宿に選出"
+   ],
+   "evaluation": "小柄ながら155kmを投げる北海道屈指の速球派右腕で、プロ注目の存在",
+   "eval_rank": "A",
+   "projected": "1位候補",
+   "intro": "北海高の速球派右腕、最速155km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=2",
+    "https://www.hb-nippon.com/articles/18330",
+    "https://www.hokkaido-np.co.jp/article/1388084/",
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "球速",
+     "切れのあるスライダー",
+     "奪三振能力"
+    ],
+    "weaknesses": [
+     "体格が小さい"
+    ],
+    "grade": "A",
+    "type": "速球派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "今夏155kmを記録。140km台後半の直球と切れるスライダーを持つ",
+      "url": "https://www.hb-nippon.com/articles/16645?page=2"
+     },
+     {
+      "by": "北海道新聞（記事）",
+      "summary": "秋の全道大会で19奪三振の大会記録を作ったプロ注目右腕",
+      "url": "https://www.hokkaido-np.co.jp/article/1388084/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "林 将輝",
+   "school": "大阪学院大高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発・二刀流",
+   "throws": "右",
+   "bats": "右",
+   "height": 173,
+   "weight": 71,
+   "max_kmh": 154,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "中学時代 U-15日本代表（W杯優勝）",
+    "1年時から「スーパー1年生」として注目"
+   ],
+   "evaluation": "投打とも高水準の万能型で、スカウトが今宮健太になぞらえる二刀流右腕",
+   "eval_rank": "A",
+   "projected": "1位候補",
+   "intro": "大阪学院大高の二刀流右腕、最速154km",
+   "sources": [
+    "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2026/10/22/160/",
+    "https://number.bunshun.jp/articles/-/872089",
+    "https://www.hb-nippon.com/articles/16645?page=2",
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "直球の強さ",
+     "鋭いスライダーとカーブ",
+     "野手としての走攻守"
+    ],
+    "weaknesses": [
+     "体格が小さい"
+    ],
+    "grade": "A",
+    "type": "万能型の二刀流右腕",
+    "comments": [
+     {
+      "by": "web Sportiva（菊地高弘）",
+      "summary": "投げても打っても一級品で、プロのスカウトは今宮健太に似ていると評価",
+      "url": "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2026/10/22/160/"
+     },
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "153kmの直球と鋭い変化球を持ち、来年のU-18代表候補になりうる万能型",
+      "url": "https://www.hb-nippon.com/articles/16645?page=2"
+     },
+     {
+      "by": "Number Web（柳川悠二）",
+      "summary": "小柄だが全国の強豪校が誘った逸材で、新チームのエース",
+      "url": "https://number.bunshun.jp/articles/-/872089"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "髙橋 友朔",
+   "school": "関東第一高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 181,
+   "weight": 87,
+   "max_kmh": 150,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 東東京大会準決勝 7回無安打無失点（参考記録）",
+    "2026年夏 甲子園で147km"
+   ],
+   "evaluation": "威力のある速球とスケールの大きさで世代トップクラスと評される右腕",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "関東第一高の本格派右腕、最速150km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=2",
+    "https://sirabetaikoto.com/natsu2026_draft1_2",
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "直球の威力",
+     "スケールの大きさ"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "本格派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "威力ある速球とスケールが持ち味で世代トップクラス。高卒プロへの意欲も強い",
+      "url": "https://www.hb-nippon.com/articles/16645?page=2"
+     },
+     {
+      "by": "しらべたいこと（まとめ）",
+      "summary": "夏の都大会で7回無安打を記録し、早くから2027年候補と目される",
+      "url": "https://sirabetaikoto.com/natsu2026_draft1_2"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "石垣 聡志",
+   "school": "健大高崎高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 182,
+   "weight": 80,
+   "max_kmh": 148,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 甲子園準優勝チームのエース",
+    "2026年秋 関東大会準々決勝 霞ケ浦戦 完封"
+   ],
+   "evaluation": "剛速球型ではないが投球の完成度は同学年で群を抜くと評される実戦派右腕",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "健大高崎高のエース右腕、完成度が光る",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=2",
+    "https://news.livedoor.com/article/detail/31685148/",
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://sirabetaikoto.com/natsu2026_draft1_2",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "投球の完成度",
+     "多彩な変化球（カット・スライダー・カーブ）",
+     "制球力"
+    ],
+    "weaknesses": [
+     "球速は突出していない"
+    ],
+    "grade": "B",
+    "type": "完成度の高い先発右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "140km台中盤の直球と変化球を使い分け、完成度は現2年生で群を抜く",
+      "url": "https://www.hb-nippon.com/articles/16645?page=2"
+     },
+     {
+      "by": "web Sportiva（記事）",
+      "summary": "健大高崎に現れた2年生エースとして、群馬3連覇の中心と紹介",
+      "url": "https://news.livedoor.com/article/detail/31685148/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "古谷 悠翔",
+   "school": "高知高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 176,
+   "weight": 80,
+   "max_kmh": 151,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 高知大会初戦で自己最速151km"
+   ],
+   "evaluation": "常時140km台後半を投げる高知の本格派で、中四国の高校生で最注目の一人",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "高知高の本格派右腕、最速151km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=2",
+    "https://www.hb-nippon.com/articles/15456",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "球速の安定",
+     "安定した下半身とフォーム",
+     "内外角の投げ分け"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "本格派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "常時140km台後半の直球を持つ高知の本格派で、森木大智に続く高卒プロ候補",
+      "url": "https://www.hb-nippon.com/articles/16645?page=2"
+     },
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "高知大会でNPBスカウトから称賛が相次ぎ、2027年の中四国で最注目株に浮上",
+      "url": "https://www.hb-nippon.com/articles/15456"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "岩見 輝晟",
+   "school": "九州国際大付高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": 188,
+   "weight": 78,
+   "max_kmh": 148,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "甲子園出場経験あり"
+   ],
+   "evaluation": "鋭いスライダーで三振を奪う長身左腕で、九州では指折りの存在とされる",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "九州国際大付高の長身左腕",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645",
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "奪三振能力",
+     "鋭いスライダー",
+     "長身"
+    ],
+    "weaknesses": [
+     "球速はまだ発展途上"
+    ],
+    "grade": "B",
+    "type": "長身左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "140km台前半の速球と鋭いスライダーで三振を奪う九州屈指の左腕",
+      "url": "https://www.hb-nippon.com/articles/16645"
+     },
+     {
+      "by": "ベースボールチャンネル（記事）",
+      "summary": "2027年ドラフト候補の投手として名前を挙げられている",
+      "url": "https://www.baseballchannel.jp/npb/297996/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "菅原 駿",
+   "school": "花巻東高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 184,
+   "weight": 82,
+   "max_kmh": 147,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 甲子園で147km"
+   ],
+   "evaluation": "東北を代表する右腕として注目される花巻東の長身投手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "花巻東高の長身右腕、最速147km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=2",
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "長身",
+     "直球"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "本格派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "今夏の甲子園で147kmを記録し、東北を代表する右腕と注目",
+      "url": "https://www.hb-nippon.com/articles/16645?page=2"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "谷口 哲聖",
+   "school": "報徳学園高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 178,
+   "weight": 73,
+   "max_kmh": 148,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年秋 兵庫県大会決勝 5安打完封"
+   ],
+   "evaluation": "148kmの直球と多彩な変化球を持ち、高卒プロも見込まれる右腕",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "報徳学園高の右腕、最速148km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18360",
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=2"
+   ],
+   "scout": {
+    "strengths": [
+     "多彩な変化球",
+     "直球"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "総合力型右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "最速148kmと多彩な変化球を持ち、高卒でのプロ入りも視野に入る",
+      "url": "https://www.hb-nippon.com/articles/18360"
+     },
+     {
+      "by": "ベースボールチャンネル（記事）",
+      "summary": "2027年ドラフト候補の投手として名前を挙げられている",
+      "url": "https://www.baseballchannel.jp/npb/297996/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "長坂 慶大",
+   "school": "豊川高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 178,
+   "weight": 78,
+   "max_kmh": 152,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 愛知大会4回戦で152kmを2度計測",
+    "2026年6月 招待試合で横浜を6回1失点"
+   ],
+   "evaluation": "中学まで外野手だった伸び盛りのスリークオーター右腕で、高卒プロを公言",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "豊川高の速球派右腕、最速152km",
+   "sources": [
+    "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2026/08/03/1522027/",
+    "https://www.hb-nippon.com/articles/16645?page=4",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "球速",
+     "伸びしろ"
+    ],
+    "weaknesses": [
+     "投手歴が浅い"
+    ],
+    "grade": "B",
+    "type": "速球派右腕",
+    "comments": [
+     {
+      "by": "web Sportiva（菊地高弘）",
+      "summary": "投手歴が浅いながら152kmを計測した2027年候補として紹介",
+      "url": "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2026/08/03/1522027/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "畠山 真大",
+   "school": "専大松戸高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 182,
+   "weight": 65,
+   "max_kmh": 148,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "スライダーとフォークで打者を圧倒する右腕で、制球が安定すれば高卒プロも近いとされる",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "専大松戸高の右腕、最速148km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=2",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=1"
+   ],
+   "scout": {
+    "strengths": [
+     "スライダー",
+     "フォーク"
+    ],
+    "weaknesses": [
+     "制球"
+    ],
+    "grade": "C",
+    "type": "本格派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "130km台前半のスライダーとフォークが武器。制球の安定が課題",
+      "url": "https://www.hb-nippon.com/articles/16645?page=2"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "福井 那留",
+   "school": "横浜高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発・救援",
+   "throws": "右",
+   "bats": "左",
+   "height": 173,
+   "weight": 69,
+   "max_kmh": 152,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年秋 関東大会初戦 西武台戦 5回1失点9奪三振"
+   ],
+   "evaluation": "152kmを投げる横浜の速球派右腕で、小林とともに投手陣の柱を担う",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "横浜高の速球派右腕、最速152km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18602",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=1"
+   ],
+   "scout": {
+    "strengths": [
+     "球速",
+     "奪三振能力"
+    ],
+    "weaknesses": [
+     "体格が小さい"
+    ],
+    "grade": "C",
+    "type": "速球派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "最速152kmの右腕で、関東大会初戦で9奪三振の好投",
+      "url": "https://www.hb-nippon.com/articles/18602"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "間宮 俊翔",
+   "school": "東京学館高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": 146,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 千葉大会で1失点完投"
+   ],
+   "evaluation": "早くからNPB球団が視察する本格派左腕で、故障明けから本格稼働",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "東京学館高の本格派左腕、最速146km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645"
+   ],
+   "scout": {
+    "strengths": [
+     "本格派の直球"
+    ],
+    "weaknesses": [
+     "故障歴"
+    ],
+    "grade": "C",
+    "type": "本格派左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "最速146kmの本格派で、早くからNPB球団が視察している",
+      "url": "https://www.hb-nippon.com/articles/16645"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "口田 愛翔",
+   "school": "愛工大名電高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": null,
+   "weight": null,
+   "max_kmh": 144,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "140km台中盤の速球を投げ、愛知を代表する左腕になると期待される",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "愛工大名電高の本格派左腕",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=2"
+   ],
+   "scout": {
+    "strengths": [
+     "直球"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "本格派左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "140km台中盤の速球を持ち、愛知県を代表する左腕になりそう",
+      "url": "https://www.hb-nippon.com/articles/16645"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "佐々木 蓮也",
+   "school": "浦和学院高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "直球は140km台",
+   "highlights": [],
+   "evaluation": "スライダーとチェンジアップを操る制球型の左腕で、球威の向上が課題",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "浦和学院高の制球型左腕",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645"
+   ],
+   "scout": {
+    "strengths": [
+     "制球力",
+     "スライダー",
+     "チェンジアップ"
+    ],
+    "weaknesses": [
+     "球威",
+     "繊細さが落ちている"
+    ],
+    "grade": "C",
+    "type": "技巧派左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "制球が持ち味だが昨秋より繊細さを欠き、球威を上げつつ本来の投球を取り戻したい",
+      "url": "https://www.hb-nippon.com/articles/16645"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "深見 陵太",
+   "school": "西武台高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": 190,
+   "weight": 78,
+   "max_kmh": 142,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "リーチの長い190cm左腕で、制球と変化球も高水準と評される",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "西武台高の190cm左腕",
+   "sources": [
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2026/08/29/_190192/",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=1"
+   ],
+   "scout": {
+    "strengths": [
+     "長身とリーチ",
+     "癖のないフォーム",
+     "スライダー"
+    ],
+    "weaknesses": [
+     "球速はまだ140km前後"
+    ],
+    "grade": "C",
+    "type": "長身左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "リーチが長く直球に力があり、制球・変化球も高水準",
+      "url": "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd"
+     },
+     {
+      "by": "web Sportiva（安倍昌彦）",
+      "summary": "フォームに癖がない長身左腕で、スライダーの曲がりも良い",
+      "url": "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2026/08/29/_190192/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "林 誠也",
+   "school": "小諸義塾高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": 180,
+   "weight": 77,
+   "max_kmh": 146,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "長野で評判の高いサウスポー",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "小諸義塾高の左腕、最速146km",
+   "sources": [
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=1"
+   ],
+   "scout": {
+    "strengths": [
+     "直球"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "本格派左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "最速144km（夏時点）の評判の高い左腕",
+      "url": "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "山本 蒼翔",
+   "school": "浜松開誠館高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": null,
+   "height": 190,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "190cmの大型右腕として注目される素材型",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "浜松開誠館高の190cm右腕",
+   "sources": [
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://www.hb-nippon.com/articles/16645?page=4"
+   ],
+   "scout": {
+    "strengths": [
+     "長身"
+    ],
+    "weaknesses": [],
+    "grade": "D",
+    "type": "大型素材型右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "190cmの大型右腕として2年生の注目選手に挙げられる",
+      "url": "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "湯本 琢心",
+   "school": "慶應義塾高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "二刀流",
+   "throws": "右",
+   "bats": "左",
+   "height": 179,
+   "weight": 83,
+   "max_kmh": 146,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年春 神奈川県大会4強",
+    "高校通算10本塁打超"
+   ],
+   "evaluation": "完成度の高い打撃で本塁打を重ねる二刀流で、早くから高卒プロ志望を表明",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "慶應義塾高の二刀流、最速146km",
+   "sources": [
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://www.hb-nippon.com/articles/16645?page=3",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=1"
+   ],
+   "scout": {
+    "strengths": [
+     "打撃フォームの完成度",
+     "長打力",
+     "投手としての直球"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "強打の二刀流",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "完成度の高い打撃フォームから本塁打を量産。野手としての評価が高い",
+      "url": "https://www.hb-nippon.com/articles/16645?page=3"
+     },
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "投げて146km、打って通算10本超。高卒プロ志望を表明した名門の二刀流",
+      "url": "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "仲吉 泰清",
+   "school": "明石商高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "直球は140km台前半",
+   "highlights": [],
+   "evaluation": "140km台前半の直球を両サイドに投げ分ける実戦派右腕",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "明石商高の実戦派右腕",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18360",
+    "https://www.hb-nippon.com/articles/16645?page=4"
+   ],
+   "scout": {
+    "strengths": [
+     "両サイドへの投げ分け"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "実戦派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "140km台前半の直球を両サイドに投げ分ける実戦派",
+      "url": "https://www.hb-nippon.com/articles/18360"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "山田 暁翔",
+   "school": "彦根総合高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発・野手兼任",
+   "throws": "右",
+   "bats": "右",
+   "height": 168,
+   "weight": 64,
+   "max_kmh": 145,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "最速145kmで打撃センスも高く、監督が野球センスは歴代一と評する右腕",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "彦根総合高のセンス光る右腕",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18360",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=2"
+   ],
+   "scout": {
+    "strengths": [
+     "野球センス",
+     "打撃"
+    ],
+    "weaknesses": [
+     "体格が小さい"
+    ],
+    "grade": "C",
+    "type": "センス型右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "最速145kmに打撃も高く、監督は野球センスなら歴代一と評価",
+      "url": "https://www.hb-nippon.com/articles/18360"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "川島 連十",
+   "school": "二松学舎大付高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": 176,
+   "weight": 79,
+   "max_kmh": 140,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "東京の強豪で主戦を担う左腕として注目候補に挙がる",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "二松学舎大付高の左腕",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=4",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=1"
+   ],
+   "scout": {
+    "strengths": [
+     "左腕"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "来年の高校生ドラフト候補リストの投手に名を連ねる",
+      "url": "https://www.hb-nippon.com/articles/16645?page=4"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "逢坂 悠誠",
+   "school": "智弁学園高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": "捕手（新チームで内野から転向）",
+   "throws": "右",
+   "bats": "左",
+   "height": 177,
+   "weight": 85,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年春 センバツ決勝で4番・同点ソロ本塁打（準優勝）"
+   ],
+   "evaluation": "飛距離と対応力を兼ね備えた強打者で、捕手転向が実れば上位候補とされる",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "智弁学園高の強打の捕手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18360",
+    "https://www.hb-nippon.com/articles/16782",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "長打力",
+     "対応力"
+    ],
+    "weaknesses": [
+     "捕手としての経験が浅い"
+    ],
+    "grade": "B",
+    "type": "強打の捕手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "捕手に転向した超高校級スラッガーで、飛距離と対応力が高い",
+      "url": "https://www.hb-nippon.com/articles/18360"
+     },
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "司令塔の能力も示せば来年のドラフト上位候補として注目を集める",
+      "url": "https://www.hb-nippon.com/articles/16782"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "平野 光星",
+   "school": "静岡高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": "捕手",
+   "throws": "右",
+   "bats": "右",
+   "height": 183,
+   "weight": 90,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 静岡大会で主砲として活躍"
+   ],
+   "evaluation": "主砲を担う大型捕手で、来年の主役候補に挙げられる",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "静岡高の大型捕手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=4",
+    "https://www.excite.co.jp/news/article/SportsHochi_20260721_OHT1T51107/",
+    "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2026/08/29/_190192/",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "打撃（主砲）",
+     "体格"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "大型の強打捕手",
+    "comments": [
+     {
+      "by": "スポーツ報知（記事）",
+      "summary": "延長戦を制した試合で2安打1打点、監督が主砲と称える",
+      "url": "https://www.excite.co.jp/news/article/SportsHochi_20260721_OHT1T51107/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "大塚 弥",
+   "school": "明石商高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": "捕手",
+   "throws": "右",
+   "bats": "右",
+   "height": 182,
+   "weight": 90,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "強い打球と確かな捕球技術を持つ強打の捕手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "明石商高の強打の捕手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18360",
+    "https://www.hb-nippon.com/articles/16645?page=4",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=2"
+   ],
+   "scout": {
+    "strengths": [
+     "打球の強さ",
+     "捕球技術"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "強打の捕手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "182cm90kgの体から強い打球を放ち、捕球技術も高い",
+      "url": "https://www.hb-nippon.com/articles/18360"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "土井 健太郎",
+   "school": "和歌山東高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": "捕手",
+   "throws": "右",
+   "bats": null,
+   "height": 181,
+   "weight": 97,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "高校通算34本塁打",
+   "highlights": [
+    "高校通算34本塁打",
+    "2026年秋 和歌山県大会決勝で逆転3ラン"
+   ],
+   "evaluation": "通算34本塁打を誇る長距離砲の捕手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "和歌山東高の長距離砲捕手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18360",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=2"
+   ],
+   "scout": {
+    "strengths": [
+     "長打力"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "長距離砲の捕手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "181cm97kgで通算34本塁打、県大会決勝で逆転3ラン",
+      "url": "https://www.hb-nippon.com/articles/18360"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "相馬 幸大",
+   "school": "中央学院高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": "捕手",
+   "throws": "右",
+   "bats": "右",
+   "height": 175,
+   "weight": 85,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年秋 関東大会出場"
+   ],
+   "evaluation": "千葉県内トップクラスのパワーを持つ強打の捕手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "中央学院高の強打の捕手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/14369?page=2",
+    "https://www.hb-nippon.com/articles/16645?page=4",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=1"
+   ],
+   "scout": {
+    "strengths": [
+     "パワー"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "強打の捕手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "県内トップクラスのパワーを持つ強打の捕手",
+      "url": "https://www.hb-nippon.com/articles/14369?page=2"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "川上 慧",
+   "school": "横浜高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手・三塁手",
+   "throws": "右",
+   "bats": "左",
+   "height": 180,
+   "weight": 80,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年9月 U-18アジア選手権 唯一の2年生野手、15打数6安打5打点で三塁手ベストナイン",
+    "中学時代 U-15日本代表",
+    "新チームの主将"
+   ],
+   "evaluation": "守備力と強肩、広角に打ち分ける技術を備え、高卒プロを狙える規模の内野手",
+   "eval_rank": "A",
+   "projected": "1位候補",
+   "intro": "横浜高の主将、U-18の三塁手",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://www.hb-nippon.com/articles/16645?page=3",
+    "https://www.daily.co.jp/baseball/2026/10/19/0020943937.shtml",
+    "https://www.baseballchannel.jp/etc/285315/",
+    "https://www.hb-nippon.com/articles/16528",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "守備力",
+     "強肩",
+     "広角打法"
+    ],
+    "weaknesses": [],
+    "grade": "A",
+    "type": "守備型の万能内野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "高い守備力と強肩、広角に打つ技術を持ち、高卒プロを意識できる規模",
+      "url": "https://www.hb-nippon.com/articles/16645?page=3"
+     },
+     {
+      "by": "阪神スカウト（デイリースポーツ）",
+      "summary": "いい選手で、打撃で目立つタイプと評価。日米7球団が視察",
+      "url": "https://www.daily.co.jp/baseball/2026/10/19/0020943937.shtml"
+     },
+     {
+      "by": "ベースボールチャンネル（記事）",
+      "summary": "U-18で2年生ながらベストナイン、新チームでは遊撃もこなす逸材",
+      "url": "https://www.baseballchannel.jp/npb/297996/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "神崎 翔斗",
+   "school": "健大高崎高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手",
+   "throws": "右",
+   "bats": "右",
+   "height": 177,
+   "weight": 77,
+   "max_kmh": 148,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 群馬大会決勝で逆転2ラン、甲子園準優勝"
+   ],
+   "evaluation": "高校生離れした守備力と強肩の遊撃手で、低めの変化球の見極めが課題",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "健大高崎高の守備職人の遊撃手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=3",
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://sirabetaikoto.com/natsu2026_draft1_2",
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=1"
+   ],
+   "scout": {
+    "strengths": [
+     "守備力",
+     "フットワーク",
+     "強肩",
+     "勝負強さ"
+    ],
+    "weaknesses": [
+     "低めの変化球への対応"
+    ],
+    "grade": "B",
+    "type": "守備型遊撃手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "軽快なフットワークと強肩。課題は低めの変化球の見極め",
+      "url": "https://www.hb-nippon.com/articles/16645?page=3"
+     },
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "高校生離れした守備力を持つ遊撃手",
+      "url": "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "吉田 秀成",
+   "school": "九州国際大付高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手・二塁手",
+   "throws": "右",
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年秋 明治神宮大会優勝",
+    "1年夏から正遊撃手"
+   ],
+   "evaluation": "守備力と野球IQ、ミート技術の高い二遊間",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "九州国際大付高の巧打の遊撃手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=3",
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd"
+   ],
+   "scout": {
+    "strengths": [
+     "守備力",
+     "野球IQ",
+     "ミート力"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "巧守巧打の遊撃手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "守備力、野球IQ、ミート技術が高い二遊間",
+      "url": "https://www.hb-nippon.com/articles/16645?page=3"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "川口 琥太郎",
+   "school": "明豊高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手",
+   "throws": "右",
+   "bats": "左",
+   "height": 178,
+   "weight": 80,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年夏 甲子園 12打数7安打"
+   ],
+   "evaluation": "豪快なスイングで強烈な打球を放つ左の強打者",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "明豊高の強打の遊撃手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=3",
+    "https://news.yahoo.co.jp/articles/3b57c98d8347ecccc5e5aba87ca922d69a1940cd",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "スイングの強さ",
+     "打球の強さ"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "強打の遊撃手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "豪快なスイングから強烈な打球を放つ強打者",
+      "url": "https://www.hb-nippon.com/articles/16645?page=3"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "後藤 健",
+   "school": "白樺学園高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "内野手（投手兼任）",
+   "throws": "右",
+   "bats": "両",
+   "height": 177,
+   "weight": 78,
+   "max_kmh": 148,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 甲子園出場"
+   ],
+   "evaluation": "シャープなスイングと強肩を生かした一級品の守備を持つ内野手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "白樺学園高の強肩内野手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=3",
+    "https://sirabetaikoto.com/natsu2026_draft1_2",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "守備",
+     "強肩",
+     "シャープなスイング"
+    ],
+    "weaknesses": [
+     "甲子園では不振"
+    ],
+    "grade": "C",
+    "type": "強肩の内野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "シャープなスイングと強肩の守備は一級品。甲子園では不振",
+      "url": "https://www.hb-nippon.com/articles/16645?page=3"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "児玉 哩臥",
+   "school": "小林西高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手（投手兼任）",
+   "throws": "右",
+   "bats": "右",
+   "height": 178,
+   "weight": 88,
+   "max_kmh": 148,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "木製バットでも強い打球を飛ばす強肩の遊撃手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "小林西高の強肩遊撃手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=3",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1&Page=2"
+   ],
+   "scout": {
+    "strengths": [
+     "強肩",
+     "打球の強さ"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "強肩強打の遊撃手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "木製バットで強打し、投手でも140km台中盤の強肩",
+      "url": "https://www.hb-nippon.com/articles/16645?page=3"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "中村 勇斗",
+   "school": "大阪桐蔭高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "三塁手",
+   "throws": null,
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年春 センバツ優勝メンバー（7打数2安打）"
+   ],
+   "evaluation": "中学時代から大型スラッガーとして注目され、名門で三塁を守る",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "大阪桐蔭高の大型三塁手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/15098",
+    "https://www.hb-nippon.com/articles/16645?page=4"
+   ],
+   "scout": {
+    "strengths": [
+     "長打力"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "大型スラッガー",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "中学時代から大型スラッガーとして注目され、1年秋からベンチ入り",
+      "url": "https://www.hb-nippon.com/articles/15098"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "目代 龍之介",
+   "school": "帝京高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "外野手（投手兼任）",
+   "throws": "右",
+   "bats": "右",
+   "height": 187,
+   "weight": 96,
+   "max_kmh": 150,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "投手として最速150km",
+   "highlights": [
+    "高校通算25本塁打",
+    "2026年秋 東京都大会 9打数6安打1本塁打4打点"
+   ],
+   "evaluation": "逆方向にも打てる長打力と走力・守備を備えた大型外野手で、野手の筆頭格",
+   "eval_rank": "A",
+   "projected": "1位候補",
+   "intro": "帝京高の大型スラッガー",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://www.hb-nippon.com/articles/16645?page=3",
+    "https://www.daily.co.jp/baseball/2026/07/24/0020626178.shtml",
+    "https://player.draft-kaigi.jp/PlayerList.php?PlayerDraftYear=2027&TeamClassId=1"
+   ],
+   "scout": {
+    "strengths": [
+     "長打力（逆方向にも本塁打）",
+     "強肩",
+     "走力",
+     "身体能力"
+    ],
+    "weaknesses": [],
+    "grade": "A",
+    "type": "大型の長距離砲外野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "広角に長打を打てて守備・走力も高い。練習中からスカウトが注視",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "新基準バットでも本塁打を重ね、高校生野手の1番手",
+      "url": "https://www.hb-nippon.com/articles/16645?page=3"
+     },
+     {
+      "by": "ベースボールチャンネル（記事）",
+      "summary": "逆方向にも本塁打を打てる長打力が評価される",
+      "url": "https://www.baseballchannel.jp/npb/297996/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "松本 智司",
+   "school": "山村学園高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "外野手",
+   "throws": "左",
+   "bats": "左",
+   "height": 190,
+   "weight": 95,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "高校通算10本塁打超"
+   ],
+   "evaluation": "190cmの大型で打撃に脆さがなく、飛距離は同校歴代一と監督が評する",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "山村学園高の190cm大型外野手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/16645?page=3",
+    "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2026/08/29/_190192/"
+   ],
+   "scout": {
+    "strengths": [
+     "飛距離",
+     "大型の体格"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "大型の長距離砲外野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "監督が飛距離は歴代一と絶賛。高卒プロを視野に育成中",
+      "url": "https://www.hb-nippon.com/articles/16645?page=3"
+     },
+     {
+      "by": "web Sportiva（安倍昌彦）",
+      "summary": "大型ながら打撃に脆さがなく、ランニング本塁打も放った",
+      "url": "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2026/08/29/_190192/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "長友 悠成",
+   "school": "智弁和歌山高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "中堅手",
+   "throws": "右",
+   "bats": "左",
+   "height": 171,
+   "weight": 71,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": 5.9,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 甲子園優勝メンバー（1番・中堅）",
+    "2026年秋 近畿大会でランニング本塁打"
+   ],
+   "evaluation": "50m5秒9の脚力を持つ1番中堅手で、全国制覇を経験",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "智弁和歌山高の俊足の中堅手",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297996/",
+    "https://www.baseballchannel.jp/etc/285197/"
+   ],
+   "scout": {
+    "strengths": [
+     "走力",
+     "出塁・つなぎ"
+    ],
+    "weaknesses": [
+     "体格が小さい"
+    ],
+    "grade": "C",
+    "type": "俊足のリードオフマン",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル（記事）",
+      "summary": "2027年ドラフト候補の野手として名前を挙げられている",
+      "url": "https://www.baseballchannel.jp/npb/297996/"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "太田 蓮",
+   "school": "智弁学園高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "外野手（投手兼任）",
+   "throws": null,
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "走攻守がそろい、投手としても140km台を投げる外野手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "智弁学園高の走攻守そろう外野手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18360",
+    "https://www.hb-nippon.com/articles/16645?page=4"
+   ],
+   "scout": {
+    "strengths": [
+     "走攻守のバランス",
+     "肩"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "総合力型外野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "走攻守がそろい、投手では140km台の直球を投げる",
+      "url": "https://www.hb-nippon.com/articles/18360"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "安食 琥太郎",
+   "school": "横浜高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "外野手",
+   "throws": null,
+   "bats": "左",
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年夏 神奈川大会準々決勝で走者一掃の三塁打",
+    "2026年春 関東大会で4番"
+   ],
+   "evaluation": "勝負強い長打力を持つ横浜の左打ちの主力",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "横浜高の勝負強い左打者",
+   "sources": [
+    "https://sirabetaikoto.com/natsu2026_draft1_2",
+    "https://www.hb-nippon.com/articles/18602"
+   ],
+   "scout": {
+    "strengths": [
+     "長打力",
+     "勝負強さ",
+     "バットコントロール"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "中距離打者",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（記事）",
+      "summary": "前チームからの主力の左打者で、粘り強い打席とバットコントロールが武器",
+      "url": "https://www.hb-nippon.com/articles/18602"
+     }
+    ]
+   },
+   "fictional": false,
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "百合澤 飛",
+   "school": "関西大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": null,
+   "height": 190,
+   "weight": 97,
+   "max_kmh": 153,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "高校時代の最速143kmから大学で約10km上昇",
+   "highlights": [
+    "2026年 全日本大学選手権 優勝（計13回18奪三振）",
+    "2026年 秋季リーグ 9試合 5勝0敗 防御率1.78"
+   ],
+   "evaluation": "190cmの大型左腕で、直球の強さとスケールから複数球団の1位競合も見込まれる",
+   "eval_rank": "S",
+   "projected": "1位候補",
+   "intro": "関西大の大型左腕、最速153km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.hb-nippon.com/articles/13909",
+    "https://www.hb-nippon.com/articles/13842",
+    "https://www.baseballchannel.jp/npb/297998/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "直球の強さ",
+     "体格・スケール",
+     "連投できる体の強さ"
+    ],
+    "weaknesses": [],
+    "grade": "S",
+    "type": "大型本格派左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "競合1位候補に格付け。元阪急・山口高志氏の助言でフォームを改良し、スケールは今年のロッテ1位・米沢以上",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "高校野球ドットコム（大学選手権の記事）",
+      "summary": "直球の強さ・精度・スケールから、2027年の1位候補に挙がる可能性は十分ある",
+      "url": "https://www.hb-nippon.com/articles/13909"
+     },
+     {
+      "by": "関西大・小田洋一監督（高校野球ドットコム）",
+      "summary": "体が強く、連投の翌日でも良い球が来ていたと評価",
+      "url": "https://www.hb-nippon.com/articles/13842"
+     },
+     {
+      "by": "ベースボールチャンネル",
+      "summary": "最速153kmの直球が持ち味の大型左腕として2027年候補の筆頭格に挙げる",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "大城 海翔",
+   "school": "仙台大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": 170,
+   "weight": 75,
+   "max_kmh": 149,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年6月の代表選考合宿で平均145.6km",
+   "highlights": [
+    "2026年 春季リーグ 35回1/3 52奪三振 防御率0.51",
+    "2026年 大学日本代表（WCBC優勝）"
+   ],
+   "evaluation": "小柄ながら伸びのある直球で空振りを奪う左腕で、金丸夢斗タイプとして1位競合級の評価",
+   "eval_rank": "S",
+   "projected": "1位候補",
+   "intro": "仙台大の左腕、最速149km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.hb-nippon.com/articles/14043",
+    "https://www.hb-nippon.com/articles/2177",
+    "https://www.baseballchannel.jp/etc/286462/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "直球の伸び",
+     "タイミングを取りにくいフォーム",
+     "奪三振力"
+    ],
+    "weaknesses": [],
+    "grade": "S",
+    "type": "球の伸びで押す小柄な左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "競合1位候補。ゆったりした動きから腕が急に出てきて、攻略の難しさは川本・百合澤以上。金丸夢斗（中日）を思わせる",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "高校野球ドットコム（大学日本代表選出の記事）",
+      "summary": "投球スタイルが金丸夢斗とよく似ており、来年の1位候補に挙がりそう",
+      "url": "https://www.hb-nippon.com/articles/14043"
+     },
+     {
+      "by": "高校野球ドットコム（1年時の代表候補合宿）",
+      "summary": "予備動作が少なく打者が振り遅れる直球で、合宿の左腕で最も良い内容だった",
+      "url": "https://www.hb-nippon.com/articles/2177"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "古堅 鈴之輔",
+   "school": "富士大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "左",
+   "bats": "左",
+   "height": 178,
+   "weight": 70,
+   "max_kmh": 151,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年6月の代表選考合宿で平均145.2km",
+   "highlights": [
+    "2026年 大学日本代表に選出（WCBC）",
+    "2026年 代表選考合宿 2回無失点 2奪三振"
+   ],
+   "evaluation": "大学で球速を約10km伸ばした速球派左腕で、鋭いカーブも持つ1位候補",
+   "eval_rank": "A",
+   "projected": "1位候補",
+   "intro": "富士大の速球派左腕、最速151km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.hb-nippon.com/articles/14015?page=2",
+    "https://www.hb-nippon.com/articles/13872",
+    "https://www.kyureki.com/univ/3/2852/2026/",
+    "https://ryukyushimpo.jp/tag/大学野球"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "直球の球速",
+     "鋭く曲がるカーブ",
+     "成長力"
+    ],
+    "weaknesses": [],
+    "grade": "A",
+    "type": "速球派左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "1位候補。大学入学後に球速を約10km上げ、鋭いカーブが武器",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "高校野球ドットコム（代表選考合宿の記録）",
+      "summary": "選考合宿で最速151km・平均145km台を計測し、2回無失点に抑えた",
+      "url": "https://www.hb-nippon.com/articles/14015?page=2"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "細野 龍之介",
+   "school": "富士大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 174,
+   "weight": 76,
+   "max_kmh": 155,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年 全日本大学選手権 ベンチ入り",
+    "2026年 秋季リーグ 9月26日 4回無安打5奪三振"
+   ],
+   "evaluation": "最速155kmの速球派右腕で、将来性の高さから1位候補に挙げられる",
+   "eval_rank": "A",
+   "projected": "1位候補",
+   "intro": "富士大の速球派右腕、最速155km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.kyureki.com/univ/3/2852/2026/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "球速",
+     "将来性"
+    ],
+    "weaknesses": [],
+    "grade": "A",
+    "type": "速球派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "1位候補。最速155kmを誇り、将来性は抜群",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "黒木 陽琉",
+   "school": "亜細亜大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "左",
+   "bats": "右",
+   "height": 184,
+   "weight": 90,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "高校時代の最速146km",
+   "highlights": [
+    "2023年 夏の甲子園 4強（神村学園）",
+    "2026年 東都春季リーグ ベンチ入り"
+   ],
+   "evaluation": "高校時代から140km台後半を投げた大型左腕で、来季の活躍次第で1位候補に躍進しうる",
+   "eval_rank": "A",
+   "projected": "1位候補",
+   "intro": "亜細亜大の大型左腕",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.kyureki.com/univ/12/2945/",
+    "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2023/08/05/10_2/?page=10"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "直球の球速",
+     "鋭いスライダー",
+     "体格"
+    ],
+    "weaknesses": [],
+    "grade": "A",
+    "type": "大型左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "1位候補の枠に入る大型左腕。大学でじっくり素質を伸ばし、鋭いスライダーで勝負する。来季次第で1位候補へ躍進",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "Sportiva・菊地高弘（高校3年夏の記事）",
+      "summary": "夏に急成長した左腕で、縦に落ちるスライダーで空振りを奪えていた",
+      "url": "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2023/08/05/10_2/?page=10"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "中山 優月",
+   "school": "大阪商業大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "投手・内野手の二刀流",
+   "throws": "右",
+   "bats": "左",
+   "height": 176,
+   "weight": 76,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "高校時代のU-18代表で145km前後の速球",
+   "highlights": [
+    "2026年 春季リーグ 4勝0敗 防御率0.70（投手ベストナイン）",
+    "2025年 秋季リーグ 打率.417 2本塁打（外野手ベストナイン）",
+    "2026年 大学日本代表（内野手登録）"
+   ],
+   "evaluation": "投打二刀流で、投手として春に防御率0.70を残し上位候補に挙がる",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "大商大の二刀流、投手兼内野手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.hb-nippon.com/articles/13766",
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.baseballchannel.jp/etc/286462/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "切れのあるスライダー",
+     "打撃力",
+     "投打の万能性"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "投打二刀流",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "投手として上位候補に格付け",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "高校野球ドットコム（大学選手権の記事）",
+      "summary": "二刀流として順調に成長している。速球と切れ味のあるスライダーが武器",
+      "url": "https://www.hb-nippon.com/articles/13766"
+     },
+     {
+      "by": "ベースボールチャンネル",
+      "summary": "投手でベストナイン、夏は内野手で大学代表と、投打両方で実績を残す",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "髙橋 煌稀",
+   "school": "早稲田大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 184,
+   "weight": null,
+   "max_kmh": 153,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年6月の代表選考合宿で平均145.7km",
+   "highlights": [
+    "2026年 春季リーグ 法大戦 9回1失点10奪三振で完投勝利",
+    "2026年 代表選考合宿 2回無失点",
+    "2022年 夏の甲子園 優勝（仙台育英）"
+   ],
+   "evaluation": "甲子園優勝投手で、最速153kmの直球とスプリットを持つ上位候補の右腕",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "早稲田大の右腕、最速153km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.waseda.jp/inst/athletic/news/2026/04/28/57474/",
+    "https://www.hb-nippon.com/articles/14015?page=2",
+    "https://www.kyureki.com/koko/82/1487/2023/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "直球の球速",
+     "スプリット",
+     "完投できるスタミナ"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "本格派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "上位候補に格付け",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "ベースボールチャンネル",
+      "summary": "最速153kmの直球にスプリットなどを操り、リーグ戦で先発を任されるまでになった",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     },
+     {
+      "by": "早稲田スポーツ新聞会",
+      "summary": "法大戦で140球を投げ抜き1失点完投、10奪三振",
+      "url": "https://www.waseda.jp/inst/athletic/news/2026/04/28/57474/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "仁田 陽翔",
+   "school": "立正大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": 175,
+   "weight": 74,
+   "max_kmh": 151,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年6月の代表選考合宿で最速150km・平均145.0km",
+   "highlights": [
+    "2026年 春季リーグ 青学大戦 5安打1失点で公式戦初完投勝利",
+    "2025年 侍ジャパン大学代表候補 強化合宿に選出"
+   ],
+   "evaluation": "東都2部で力をつけた左腕で、巨人幹部が高校時代より一回り成長したと評価",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "立正大の左腕、最速151km",
+   "sources": [
+    "https://www.daily.co.jp/baseball/2026/04/22/0020270812.shtml",
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.hb-nippon.com/players/23272",
+    "https://www.hb-nippon.com/articles/14015?page=2",
+    "https://www.kyureki.com/samurai/343/28061/2025/member/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "球の力",
+     "チェンジアップ"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "本格派左腕",
+    "comments": [
+     {
+      "by": "巨人・水野編成本部長（デイリースポーツ）",
+      "summary": "球に力があり、高校時代と比べて一皮むけた。来年が楽しみ",
+      "url": "https://www.daily.co.jp/baseball/2026/04/22/0020270812.shtml"
+     },
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "上位候補に格付け",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "藤本 士生",
+   "school": "國學院大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "左",
+   "bats": "左",
+   "height": 180,
+   "weight": 86,
+   "max_kmh": 149,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年6月の代表選考合宿で平均144.8km",
+   "highlights": [
+    "2026年 大学日本代表（WCBC優勝）",
+    "2026年 代表選考合宿 2回無失点"
+   ],
+   "evaluation": "大学日本代表入りした左腕で、上位候補に挙げられる",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "國學院大の左腕、大学日本代表",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.baseballchannel.jp/etc/286662/",
+    "https://www.baseballchannel.jp/etc/286462/",
+    "https://www.hb-nippon.com/articles/14015?page=2"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "代表入りの左腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "上位候補に格付け",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "ベースボールチャンネル（大学代表プロフィール）",
+      "summary": "3年生で大学日本代表に入り、WCBC初代王者のメンバーとなった",
+      "url": "https://www.baseballchannel.jp/etc/286662/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "糸井 琉翔",
+   "school": "金沢学院大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": null,
+   "height": 178,
+   "weight": 75,
+   "max_kmh": 155,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年6月の代表選考合宿で最速152km・平均145.9km",
+   "highlights": [
+    "2026年 全日本大学選手権 天理大戦 3回1/3自責点0",
+    "2026年 代表選考合宿 最速152km"
+   ],
+   "evaluation": "遅咲きながら最速155kmまで伸びた速球派右腕で、上位候補に挙がる",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "金沢学院大の右腕、最速155km",
+   "sources": [
+    "https://www.hb-nippon.com/articles/13802",
+    "https://www.hb-nippon.com/articles/14010",
+    "https://www.hb-nippon.com/articles/18587"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "直球の球速・勢い",
+     "伸びしろ"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "速球派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（大学選手権の記事）",
+      "summary": "遅咲きの右腕で、来年のドラフト候補に挙がっている",
+      "url": "https://www.hb-nippon.com/articles/13802"
+     },
+     {
+      "by": "高校野球ドットコム（代表選考合宿の記事）",
+      "summary": "最終日の登板投手で最速の152kmを出し、直球に勢いがあった",
+      "url": "https://www.hb-nippon.com/articles/14010"
+     },
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "上位候補に格付け",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "寺下 颯真",
+   "school": "中京大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "投手・指名打者の二刀流",
+   "throws": "右",
+   "bats": "左",
+   "height": 181,
+   "weight": 97,
+   "max_kmh": 152,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年 全日本大学選手権 背番号1でベンチ入り",
+    "2026年 秋季リーグ 4番・DHで出場"
+   ],
+   "evaluation": "中軸を打ちながら先発もこなす大型の二刀流で、投手として上位候補に挙がる",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "中京大の二刀流右腕",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.kyureki.com/univ/13/2990/2026/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "投打の万能性",
+     "打撃力",
+     "体格"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "大型の二刀流",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "投手として上位候補に格付け",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "球歴.com（中京大の戦力分析）",
+      "summary": "高校時代から二刀流の主力。大学では4・5番のDHで打線の中心を担い、先発登板もある",
+      "url": "https://www.kyureki.com/univ/13/2990/2026/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "東恩納 蒼",
+   "school": "中央大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "左",
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "高校時代の最速147km、甲子園まで47回1/3連続無失点",
+   "highlights": [
+    "2026年 春季リーグ 10試合 3勝",
+    "2023年 U-18ワールドカップ 優勝"
+   ],
+   "evaluation": "高校時代に「ミスターゼロ」と呼ばれた制球型右腕。大学で右ひじの故障による離脱を経験",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "中央大の右腕「ミスターゼロ」",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.baseballchannel.jp/etc/171455/2/",
+    "https://www.hb-nippon.com/players/24428"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "制球力",
+     "投手としての総合力"
+    ],
+    "weaknesses": [
+     "右ひじの故障歴"
+    ],
+    "grade": "C",
+    "type": "制球型右腕",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル（2027年候補）",
+      "summary": "全国の舞台で実績を重ねてきたが、大学では右ひじの故障で離脱を経験した",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     },
+     {
+      "by": "ベースボールチャンネル（高卒時の記事）",
+      "summary": "抜群の制球力を持つ世代屈指の好投手と評された",
+      "url": "https://www.baseballchannel.jp/etc/171455/2/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "湯田 統真",
+   "school": "明治大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": 2005,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "左",
+   "height": 181,
+   "weight": 85,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "高校時代の最速153km、大学で150km超",
+   "highlights": [
+    "2026年 春季リーグ でリーグ戦デビュー",
+    "2022年 夏の甲子園 優勝（仙台育英）"
+   ],
+   "evaluation": "甲子園優勝メンバーの右腕。故障で出遅れたが、直球は150km超まで戻った",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "明治大の右腕、甲子園優勝経験",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/286075/2/",
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.kyureki.com/univ/11/2936/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "直球の球速"
+    ],
+    "weaknesses": [
+     "故障による出遅れ"
+    ],
+    "grade": "C",
+    "type": "本格派右腕",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル（高卒でプロ入りしなかった逸材の記事）",
+      "summary": "左ハムストリングの肉離れでデビューが遅れたが、今春デビューし直球は150km超に。非凡な才能を見せている",
+      "url": "https://www.baseballchannel.jp/etc/286075/2/"
+     },
+     {
+      "by": "ベースボールチャンネル（2027年候補）",
+      "summary": "2027年ドラフトの大学生投手の注目候補一覧に名前を挙げる",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "天野 京介",
+   "school": "名城大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年 侍ジャパン大学代表候補 強化合宿に選出"
+   ],
+   "evaluation": "2年時に大学代表候補の強化合宿に選ばれた右腕",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "名城大の右腕、大学代表候補",
+   "sources": [
+    "https://www.kyureki.com/samurai/343/28061/2025/member/",
+    "https://baseball.omyutech.com/CupHomePageHistory.action?gameId=20263222533"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "右腕",
+    "comments": [
+     {
+      "by": "球歴.com（2025年 大学代表候補の名簿）",
+      "summary": "2年生で侍ジャパン大学代表候補の強化合宿メンバーに入った",
+      "url": "https://www.kyureki.com/samurai/343/28061/2025/member/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "大室 亮満",
+   "school": "明治大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "左",
+   "bats": null,
+   "height": 188,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年 侍ジャパン大学代表候補 強化合宿に選出",
+    "リーグ通算12試合 防御率1.00"
+   ],
+   "evaluation": "長身から角度のある球を投げる左腕で、2年時に大学代表候補に選ばれた",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "明治大の長身左腕、大学代表候補",
+   "sources": [
+    "https://www.kyureki.com/samurai/343/28061/2025/member/",
+    "https://www.kyureki.com/univ/11/2936/",
+    "https://news.ksb.co.jp/article/14871190"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "長身からの角度"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "長身左腕",
+    "comments": [
+     {
+      "by": "球歴.com（2025年 大学代表候補の名簿）",
+      "summary": "2年生で侍ジャパン大学代表候補の強化合宿メンバーに入った",
+      "url": "https://www.kyureki.com/samurai/343/28061/2025/member/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "真鍋 慧",
+   "school": "大阪商業大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "一塁手・外野手",
+   "throws": "右",
+   "bats": "左",
+   "height": 190,
+   "weight": 100,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年春 出塁率.620・長打率.778",
+   "highlights": [
+    "2026年春 関西六大学 打率.472・3本塁打（リーグ最多）・15打点、外野手ベストナイン",
+    "2026年秋 打率.395・2本塁打・11打点、一塁手ベストナイン",
+    "2025年12月 大学日本代表候補強化合宿で特大本塁打",
+    "広陵高時代 高校通算62本塁打"
+   ],
+   "evaluation": "来秋の競合1位候補に挙がる大型左打者。長打力に加え大学で確実性も増した",
+   "eval_rank": "S",
+   "projected": "1位候補",
+   "intro": "大商大の左の大砲、広陵出身",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587?page=2",
+    "https://www.hb-nippon.com/articles/18587",
+    "https://www.hb-nippon.com/articles/13761",
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/articles/10231?page=2",
+    "https://www.daily.co.jp/baseball/2026/05/17/0020366088.shtml",
+    "https://www.tokyo-sports.co.jp/articles/-/281284"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "長打力",
+     "打撃の確実性",
+     "選球眼"
+    ],
+    "weaknesses": [
+     "守備位置の幅",
+     "走塁"
+    ],
+    "grade": "S",
+    "type": "大型の左の強打者",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "大学生野手で唯一の競合1位候補。『ネクスト佐藤輝明』と期待される大器で、リーグ屈指の強打者に成長",
+      "url": "https://www.hb-nippon.com/articles/18587"
+     },
+     {
+      "by": "高校野球ドットコム（記者）",
+      "summary": "力みのない自然体の構えでボールを待てるようになり、理想的な強打者へ進化した",
+      "url": "https://www.hb-nippon.com/articles/13761"
+     },
+     {
+      "by": "ベースボールチャンネル",
+      "summary": "高校時代から知られた長打力に、大学で磨いた確実性が加わったのが評価材料",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     },
+     {
+      "by": "プロ球団スカウト（高校時代・東京スポーツ）",
+      "summary": "長打力は高評価だが、一塁しか守れない点と守備・走塁が課題とされ、高卒時は指名漏れ",
+      "url": "https://www.tokyo-sports.co.jp/articles/-/281284"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "緒方 漣",
+   "school": "國學院大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手",
+   "throws": "右",
+   "bats": "右",
+   "height": 167,
+   "weight": 68,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年春 東都1部 首位打者（打率.432・2本塁打・6打点）",
+    "2026年春 最高殊勲選手・遊撃手ベストナイン、リーグ優勝",
+    "2年時に大学日本代表（2年生で唯一）",
+    "2023年 U-18W杯 MVP・首位打者（横浜高）"
+   ],
+   "evaluation": "遊撃の守備力と打撃の実績を兼ね備え、大学生野手の有力候補の一人とされる",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "國學院大の遊撃手、東都首位打者",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.baseballchannel.jp/npb/297971/",
+    "https://www.hb-nippon.com/articles/13461",
+    "https://www.daily.co.jp/baseball/2026/05/23/0020389669.shtml",
+    "https://www.hb-nippon.com/articles/5524",
+    "https://www.kyureki.com/univ/12/2947/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "遊撃守備",
+     "ミート力",
+     "勝負強さ"
+    ],
+    "weaknesses": [
+     "小柄な体格"
+    ],
+    "grade": "B",
+    "type": "守備型の巧打遊撃手",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル（2027年候補・大学生編）",
+      "summary": "遊撃の守備力に加えて打撃でも結果を残し、リーグ優勝に貢献。大学生野手の有力候補",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     },
+     {
+      "by": "高校野球ドットコム",
+      "summary": "春のリーグで初タイトルの首位打者を獲得し、チームを優勝へ導いた。2年時から代表に入る実績",
+      "url": "https://www.hb-nippon.com/articles/13461"
+     },
+     {
+      "by": "デイリースポーツ",
+      "summary": "優勝した國學院大の中心として最高殊勲選手に選ばれた",
+      "url": "https://www.daily.co.jp/baseball/2026/05/23/0020389669.shtml"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "小林 隼翔",
+   "school": "立教大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手",
+   "throws": "右",
+   "bats": "右",
+   "height": 175,
+   "weight": 84,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年 大学日本代表（WCBC初代王者）",
+    "2025年秋 4本塁打、リーグ通算8本塁打（2年終了時）",
+    "2023年 U-18日本代表主将で世界一（広陵高）"
+   ],
+   "evaluation": "強肩と長打力を備えた遊撃手で上位候補。打撃成績の伸びが最終学年の焦点",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "立教大の強肩遊撃手、代表経験",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587?page=2",
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/articles/10405",
+    "https://www.baseballchannel.jp/etc/286462/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "強肩",
+     "長打力",
+     "体の強さ"
+    ],
+    "weaknesses": [
+     "右方向への強い打球"
+    ],
+    "grade": "B",
+    "type": "強肩強打の遊撃手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "大学生野手の上位候補に挙げられた",
+      "url": "https://www.hb-nippon.com/articles/18587?page=2"
+     },
+     {
+      "by": "高校野球ドットコム（代表候補合宿の取材）",
+      "summary": "安定した動きと強肩の送球が光り、力みのない水平なスイングで外野の頭を越す打球を打つ。課題は右方向への強い打球",
+      "url": "https://www.hb-nippon.com/articles/10405"
+     },
+     {
+      "by": "ベースボールチャンネル",
+      "summary": "高校で代表主将、大学でも国際大会を経験。最終学年で打撃成績をどこまで伸ばせるかに注目",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "林 純司",
+   "school": "慶應義塾大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手",
+   "throws": "右",
+   "bats": "右",
+   "height": 170,
+   "weight": 72,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年春 東京六大学 打率.340・13打点、遊撃手ベストナイン",
+    "2026年 全日本大学選手権 準優勝・敢闘賞（14打数5安打1本塁打4打点）",
+    "2026年 大学日本代表"
+   ],
+   "evaluation": "攻守で実績を重ねて評価を高めている遊撃手。全国大会でも勝負強さを示した",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "慶大の遊撃手、選手権敢闘賞",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/articles/13895",
+    "https://www.keio.ac.jp/ja/news/20260615-university-baseball/",
+    "https://www.baseballchannel.jp/etc/286462/",
+    "https://www.kyureki.com/univ/11/2935/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "攻守のバランス",
+     "勝負強さ"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "攻守に安定した遊撃手",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル（2027年候補・大学生編）",
+      "summary": "攻守で実績を積み重ね、評価を高めている内野手",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     },
+     {
+      "by": "高校野球ドットコム",
+      "summary": "全日本大学選手権で打率.429・1本塁打と活躍し敢闘賞に選ばれた",
+      "url": "https://www.hb-nippon.com/articles/13895"
+     },
+     {
+      "by": "慶應義塾大学（公式発表）",
+      "summary": "選手権を通じて攻守に力強いプレーでチームを鼓舞した",
+      "url": "https://www.keio.ac.jp/ja/news/20260615-university-baseball/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "眞邉 麗生",
+   "school": "駒澤大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "中堅手",
+   "throws": "右",
+   "bats": "右",
+   "height": 177,
+   "weight": 88,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "デッドリフト300kg・スクワット250kg",
+   "highlights": [
+    "2026年 大学日本代表（WCBC初代王者）",
+    "2026年秋 東都2部 延長11回サヨナラ3ラン（2部通算5本塁打）",
+    "東邦高時代は三塁手で甲子園出場"
+   ],
+   "evaluation": "俊足・強肩の中堅手で長打も打てる上位候補。打撃フォームを改造中",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "駒大の中堅手、俊足強肩の代表",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587?page=2",
+    "https://www.hb-nippon.com/articles/18129",
+    "https://www.baseballchannel.jp/etc/286670/",
+    "https://www.baseballchannel.jp/etc/286462/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "俊足",
+     "強肩",
+     "守備範囲",
+     "パワー"
+    ],
+    "weaknesses": [
+     "打撃の確実性"
+    ],
+    "grade": "B",
+    "type": "身体能力の高い外野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "大学生野手の上位候補に挙げられた",
+      "url": "https://www.hb-nippon.com/articles/18587?page=2"
+     },
+     {
+      "by": "高校野球ドットコム（記者）",
+      "summary": "俊足で守備力と強肩を備える。飛距離と対応力を上げるためフォームを改造し、秋は復調して打線の鍵に",
+      "url": "https://www.hb-nippon.com/articles/18129"
+     },
+     {
+      "by": "ベースボールチャンネル（代表選手紹介）",
+      "summary": "攻守で期待される外野手として大学日本代表入り",
+      "url": "https://www.baseballchannel.jp/etc/286670/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "鈴木 湧陽",
+   "school": "中京大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "左",
+   "height": 170,
+   "weight": 66,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": 5.78,
+   "other_numbers": "代表選考合宿の50m走で全体1位",
+   "highlights": [
+    "2026年 大学日本代表（WCBC初代王者）",
+    "2026年 代表選考合宿に追加招集され代表入り"
+   ],
+   "evaluation": "代表合宿で50m全体1位の俊足が光る小柄な内野手。上位候補に挙がる",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "中京大の俊足内野手、50m5秒78",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587?page=2",
+    "https://www.hb-nippon.com/articles/14021",
+    "https://www.baseballchannel.jp/etc/286649/",
+    "https://www.hb-nippon.com/articles/13872"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "俊足",
+     "逆方向への打撃"
+    ],
+    "weaknesses": [
+     "小柄な体格"
+    ],
+    "grade": "B",
+    "type": "俊足巧打の内野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "大学生野手の上位候補に挙げられた",
+      "url": "https://www.hb-nippon.com/articles/18587?page=2"
+     },
+     {
+      "by": "大学日本代表監督（高校野球ドットコム）",
+      "summary": "小柄だが非力ではなく、逆方向へ長打を打てる。国際大会の速球にも対応できると期待",
+      "url": "https://www.hb-nippon.com/articles/14021"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "山内 教輔",
+   "school": "東洋大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "右翼手・中堅手",
+   "throws": "左",
+   "bats": "左",
+   "height": 177,
+   "weight": 83,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年6月 東都入替戦で147km直球を打ちサヨナラ2ラン"
+   ],
+   "evaluation": "大学生野手の上位候補に挙げられた左の外野手。一塁もこなす",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "東洋大の左の外野手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587?page=2",
+    "https://www.daily.co.jp/baseball/2026/06/25/0020515017.shtml",
+    "https://www.kyureki.com/univ/12/2941/2026/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "勝負強さ",
+     "複数ポジション"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "左の実戦派外野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "大学生野手の上位候補に挙げられた",
+      "url": "https://www.hb-nippon.com/articles/18587?page=2"
+     },
+     {
+      "by": "球歴.com（戦力分析）",
+      "summary": "代打・一塁・中堅など複数の役割をこなす実戦派",
+      "url": "https://www.kyureki.com/univ/12/2941/2026/"
+     },
+     {
+      "by": "デイリースポーツ",
+      "summary": "入替戦で直球に振り遅れないよう短く持って中越えのサヨナラ弾を放った",
+      "url": "https://www.daily.co.jp/baseball/2026/06/25/0020515017.shtml"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "石野 蓮授",
+   "school": "國學院大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "左翼手",
+   "throws": "右",
+   "bats": "右",
+   "height": 180,
+   "weight": 84,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年 全日本大学選手権 準決勝で4番",
+    "2026年秋 左翼・4番で出場"
+   ],
+   "evaluation": "國學院大の4番を担う右の外野手で、上位候補に挙げられた",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "國學院大の4番打者、右の外野手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/18587?page=2",
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.kyureki.com/univ/12/2947/",
+    "https://www.hb-nippon.com/players/24170"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "中軸の打撃"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "右の強打の外野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム（2027年候補の格付け）",
+      "summary": "大学生野手の上位候補に挙げられた",
+      "url": "https://www.hb-nippon.com/articles/18587?page=2"
+     },
+     {
+      "by": "ベースボールチャンネル（2027年候補・大学生編）",
+      "summary": "2027年の大学生野手の注目候補の一人に名前が挙がる",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "丸田 湊斗",
+   "school": "慶應義塾大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "中堅手",
+   "throws": "右",
+   "bats": "左",
+   "height": 175,
+   "weight": 75,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年 全日本大学選手権 準優勝、1番で11打数4安打",
+    "2023年夏 甲子園優勝（慶応高）、大会打率.409"
+   ],
+   "evaluation": "俊足の1番打者で、3年で打力も伸ばした。代表候補からは漏れた",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "慶大の俊足リードオフマン",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/articles/13906",
+    "https://www.kyureki.com/univ/11/2935/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "俊足",
+     "打撃力の向上"
+    ],
+    "weaknesses": [
+     "打撃の波"
+    ],
+    "grade": "C",
+    "type": "俊足の1番中堅手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム",
+      "summary": "抜群の俊足に加え、高校時代より強打が増して選手権でチームを引っ張った（前年秋は打率.150と不振）",
+      "url": "https://www.hb-nippon.com/articles/13906"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "中塚 遥翔",
+   "school": "慶應義塾大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "右翼手",
+   "throws": "左",
+   "bats": "左",
+   "height": 180,
+   "weight": 94,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年秋 4番・右翼で先発"
+   ],
+   "evaluation": "慶大の4番を打つ左の大型外野手。2027年候補の一人に名前が挙がる",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "慶大の4番、左の大型外野手",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.kyureki.com/univ/11/2935/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "体格",
+     "中軸の打撃"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "左の大型外野手",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル（2027年候補・大学生編）",
+      "summary": "2027年の大学生野手の候補として名前が挙がる",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "森田 大翔",
+   "school": "帝京大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": 2005,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 180,
+   "weight": 77,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "高校通算34本塁打",
+   "highlights": [
+    "1年春からスタメン起用",
+    "2023年 U-18W杯で主に4番、8打点（履正社高）",
+    "2023年夏 甲子園で2本塁打"
+   ],
+   "evaluation": "高校日本代表で4番を務めた右の強打者。2027年候補の一人に名前が挙がる",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "帝京大の右の強打者、元U-18の4番",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://sp.baseball.findfriends.jp/player/20050063/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "長打力"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "右の強打の内野手",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル（2027年候補・大学生編）",
+      "summary": "2027年の大学生野手の候補として名前が挙がる",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "岡村 シルバー魁人",
+   "school": "上武大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "中堅手",
+   "throws": "左",
+   "bats": "右",
+   "height": 172,
+   "weight": 84,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年秋 1番・中堅で先発"
+   ],
+   "evaluation": "上武大の1番中堅手。2027年候補の一人に名前が挙がる",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "上武大の1番中堅手",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.kyureki.com/univ/7/2891/2026/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "リードオフ型の外野手",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル（2027年候補・大学生編）",
+      "summary": "2027年の大学生野手の候補として名前が挙がる",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "松山 優太",
+   "school": "九州共立大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": "捕手",
+   "throws": "右",
+   "bats": "右",
+   "height": 176,
+   "weight": 78,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年12月 大学日本代表候補強化合宿に2年で選出"
+   ],
+   "evaluation": "2年時に大学日本代表候補に選ばれた九州の捕手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "九州共立大の捕手、代表候補",
+   "sources": [
+    "https://www.hb-nippon.com/articles/10231?page=2"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "捕手",
+    "comments": []
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "川合 錬磨",
+   "school": "金沢学院大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 174,
+   "weight": 80,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年12月 大学日本代表候補強化合宿に2年で選出"
+   ],
+   "evaluation": "2年時に大学日本代表候補に選ばれた北陸の内野手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "金沢学院大の内野手、代表候補",
+   "sources": [
+    "https://www.hb-nippon.com/articles/10231?page=2",
+    "https://www.kyureki.com/univ/15/3035/2026/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "内野手",
+    "comments": []
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "高中 一樹",
+   "school": "東洋大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手",
+   "throws": "右",
+   "bats": "右",
+   "height": 178,
+   "weight": 80,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年12月 大学日本代表候補強化合宿に2年で選出",
+    "2026年秋 5番・遊撃で出場",
+    "聖光学院高で主将"
+   ],
+   "evaluation": "守備の安定感を持ち味とする遊撃手。2年時に大学代表候補入り",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "東洋大の遊撃手、代表候補",
+   "sources": [
+    "https://www.hb-nippon.com/articles/10231?page=2",
+    "https://www.kyureki.com/univ/12/2941/2026/",
+    "https://digitalpr.jp/r/86292"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "遊撃守備"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "守備型の遊撃手",
+    "comments": [
+     {
+      "by": "球歴.com（戦力分析）",
+      "summary": "守備を重視し、遊撃での安定感を追求する選手",
+      "url": "https://www.kyureki.com/univ/12/2941/2026/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "田上 夏衣",
+   "school": "明治大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "左",
+   "height": 174,
+   "weight": 76,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年秋 東京六大学 41打数14安打・2本塁打・7打点",
+    "2025年12月 大学日本代表候補強化合宿に2年で選出（追加）"
+   ],
+   "evaluation": "明大で2年時からレギュラーの強打の2番打者。代表候補に追加招集された",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "明大の強打の2番、左打ち外野手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/10231",
+    "https://www.hb-nippon.com/articles/10231?page=2"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "打撃力"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "強打の2番外野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム",
+      "summary": "2年時にレギュラーとして活躍し、秋は強打の2番打者として結果を残した",
+      "url": "https://www.hb-nippon.com/articles/10231"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "梅澤 蒼空",
+   "school": "桐蔭横浜大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 169,
+   "weight": 81,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年12月 大学日本代表候補強化合宿に2年で選出"
+   ],
+   "evaluation": "2年時に大学日本代表候補に選ばれた首都リーグの内野手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "桐蔭横浜大の内野手、代表候補",
+   "sources": [
+    "https://www.hb-nippon.com/articles/10231?page=2"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "内野手",
+    "comments": []
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "新保 玖和",
+   "school": "仙台大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手",
+   "throws": "右",
+   "bats": "右",
+   "height": 177,
+   "weight": 70,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "1年からレギュラー、仙台大の正遊撃手",
+    "2025年12月 大学日本代表候補強化合宿に選出",
+    "2026年6月 大学日本代表候補選考合宿に選出"
+   ],
+   "evaluation": "1年から正遊撃手を務め、2年続けて大学代表候補に選ばれた",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "仙台大の遊撃手、代表候補",
+   "sources": [
+    "https://www.hb-nippon.com/articles/10231?page=2",
+    "https://www.kyureki.com/samurai/343/29873/2026/member/",
+    "https://www.hb-nippon.com/articles/4002"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "遊撃守備"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "遊撃手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム",
+      "summary": "ルーキーイヤーからレギュラーを獲得し、正遊撃手として存在感を示している",
+      "url": "https://www.hb-nippon.com/articles/4002"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "吉田 祐大",
+   "school": "近畿大学工学部",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "遊撃手",
+   "throws": "右",
+   "bats": "左",
+   "height": 177,
+   "weight": 82,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年12月 大学日本代表候補強化合宿に2年で選出",
+    "2年時から4番・遊撃で出場"
+   ],
+   "evaluation": "4番を打つ左打ちの遊撃手。2年時に大学日本代表候補に選ばれた",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "近大工学部の4番遊撃手",
+   "sources": [
+    "https://www.hb-nippon.com/articles/10231?page=2",
+    "https://baseball.omyutech.com/CupHomePageHistory.action?gameId=20263304052"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "左打ちの遊撃手",
+    "comments": []
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "三好 元気",
+   "school": "立正大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 177,
+   "weight": 80,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年12月 大学日本代表候補強化合宿に選出",
+    "2026年6月 大学日本代表候補選考合宿に選出"
+   ],
+   "evaluation": "2年続けて大学日本代表候補に選ばれた東都の外野手",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "立正大の外野手、代表候補",
+   "sources": [
+    "https://www.hb-nippon.com/articles/10231?page=2",
+    "https://www.kyureki.com/samurai/343/29873/2026/member/",
+    "https://www.kyureki.com/univ/12/2944/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "外野手",
+    "comments": []
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "小澤 周平",
+   "school": "三菱重工East",
+   "category": "社会人",
+   "grade": "入社1年目",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": null,
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "健大高崎高で高校通算52本塁打",
+   "highlights": [
+    "2026年 都市対抗 打率.438・若獅子賞",
+    "早稲田大で主将"
+   ],
+   "evaluation": "大卒1年目から都市対抗で結果を出し、大学で磨いた打撃が社会人でも通用している内野手",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "三菱重工Eastの強打の内野手",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.baseballchannel.jp/npb/297971/",
+    "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2025/04/12/100/?page=2",
+    "https://www.mhi.com/jp/company/sports/baseball/east/news/20260216.html"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "打撃技術",
+     "長打力",
+     "フルスイング"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "強打の内野手",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "社会人1年目から都市対抗で高打率を残し、大学時代の打撃技術を社会人でも発揮している",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     },
+     {
+      "by": "白鳥純一（Sportiva）",
+      "summary": "フルスイングが持ち味の強打の内野手で、早大でバットを最短で出す打撃を身につけ成長が加速した",
+      "url": "https://sportiva.shueisha.co.jp/clm/baseball/hs_other/2025/04/12/100/?page=2"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "高尾 響",
+   "school": "トヨタ自動車",
+   "category": "社会人",
+   "grade": "入社2年目",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": 148,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "最速148kmは広陵高時代の記録",
+   "highlights": [
+    "広陵高で甲子園4度出場・通算5勝",
+    "2026年 都市対抗 JFE西日本戦で3回無失点"
+   ],
+   "evaluation": "高校時代から定評のある制球力を武器に、高卒3年目の2027年に指名解禁を迎える右腕",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "トヨタの制球派右腕",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/articles/3017",
+    "https://www.hb-nippon.com/articles/2800"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "制球力",
+     "ツーシーム",
+     "フォーク",
+     "実戦経験"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "制球力の高い右腕",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "高校時代から磨いてきた制球力が武器で、2027年の解禁組の注目株",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     },
+     {
+      "by": "高校野球ドットコム",
+      "summary": "甲子園4度出場の超高校級右腕で、140キロ中盤の直球と鋭いツーシーム、フォークで打者を抑える",
+      "url": "https://www.hb-nippon.com/articles/3017"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "箱山 遥人",
+   "school": "トヨタ自動車",
+   "category": "社会人",
+   "grade": "入社2年目",
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": "捕手",
+   "throws": "右",
+   "bats": "右",
+   "height": 177,
+   "weight": 84,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "高校時代 二塁送球1.8秒台・高校通算35本塁打",
+   "highlights": [
+    "2024年 春のセンバツ優勝（健大高崎の4番・捕手）"
+   ],
+   "evaluation": "高校時代に世代No.1と呼ばれた強肩強打の捕手で、高卒3年目の2027年に解禁",
+   "eval_rank": "B",
+   "projected": "上位候補",
+   "intro": "トヨタの強肩強打の捕手",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/articles/3017",
+    "https://www.hb-nippon.com/players/24034"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "強肩",
+     "長打力"
+    ],
+    "weaknesses": [],
+    "grade": "B",
+    "type": "強肩強打の捕手",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "強肩と長打力を兼ね備えた捕手として注目される",
+      "url": "https://www.baseballchannel.jp/npb/297998/"
+     },
+     {
+      "by": "高校野球ドットコム",
+      "summary": "二塁送球1.8秒台と高校通算35本塁打を誇る超高校級捕手で、センバツ優勝に大きく貢献した",
+      "url": "https://www.hb-nippon.com/articles/3017"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "田村 剛平",
+   "school": "大阪ガス",
+   "category": "社会人",
+   "grade": "入社1年目",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 181,
+   "weight": 84,
+   "max_kmh": 151,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2026年 社会人公式戦で初完封（日本製紙石巻戦）",
+    "京都産業大で関西六大学のエース格"
+   ],
+   "evaluation": "大学時代から制球力をスカウトに評価されていた右腕で、社会人1年目から先発で結果を出している",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "大阪ガスの制球派右腕、最速151km",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.daily.co.jp/baseball/2025/05/13/0018977153.shtml",
+    "https://sports.yahoo.co.jp/official/detail/2026051400109-spnaviow"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "制球力",
+     "直球の両サイドへの投げ分け",
+     "完投能力"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "制球力のある先発右腕",
+    "comments": [
+     {
+      "by": "阪神スカウト（デイリースポーツ、大学時代）",
+      "summary": "直球を両サイドに投げ分けられ、制球力が高い",
+      "url": "https://www.daily.co.jp/baseball/2025/05/13/0018977153.shtml"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "高須 大雅",
+   "school": "ヤマハ",
+   "category": "社会人",
+   "grade": "入社1年目",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 193,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "常時140km台後半",
+   "highlights": [
+    "静岡高→明治大→ヤマハ"
+   ],
+   "evaluation": "193センチの大型右腕で、入社時から即戦力と2年後のプロ入りが期待されている",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "ヤマハの193cm大型右腕",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/articles/11578"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "長身",
+     "直球の速さ"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "大型の本格派右腕",
+    "comments": [
+     {
+      "by": "高校野球ドットコム",
+      "summary": "常時140キロ台後半の大型右腕で即戦力として期待され、2年後のNPB入りを狙える",
+      "url": "https://www.hb-nippon.com/articles/11578"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "洗平 比呂",
+   "school": "JR東日本",
+   "category": "社会人",
+   "grade": "入社2年目",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "直球は140km台中盤",
+   "highlights": [
+    "2026年 JABAスポニチ大会で公式戦デビュー、5回無失点7奪三振",
+    "八戸学院光星高で甲子園3度出場"
+   ],
+   "evaluation": "高卒2年目で公式戦デビューを果たした左腕で、監督は高校時代より直球が力強くなったと評価",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "JR東日本の高卒左腕",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/articles/11450"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "スライダー",
+     "直球の力強さ"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "高卒の先発左腕",
+    "comments": [
+     {
+      "by": "JR東日本・濵岡武明監督（高校野球ドットコム）",
+      "summary": "高校時代より直球が力強くなり、投手陣の軸の一人として考えたい",
+      "url": "https://www.hb-nippon.com/articles/11450"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "水﨑 康平",
+   "school": "王子",
+   "category": "社会人",
+   "grade": null,
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 175,
+   "weight": 87,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "沖学園高→九州産業大→王子",
+    "大学時代にプロ志望届を提出"
+   ],
+   "evaluation": "2027年の社会人候補一覧に名前が挙がった右腕だが、詳しい評価の報道は見当たらない",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "王子の右腕",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/players/19364",
+    "https://www.kyureki.com/syakai/48/3429/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "右腕",
+    "comments": []
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "島袋 大地",
+   "school": "大阪ガス",
+   "category": "社会人",
+   "grade": "入社1年目",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "具志川商高→日本文理大→大阪ガス"
+   ],
+   "evaluation": "2027年の社会人候補一覧に名前が挙がった内野手だが、詳しい評価の報道は見当たらない",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "大阪ガスの内野手",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.kyureki.com/transfer/syakai/2026/t3475/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "内野手",
+    "comments": []
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "丸木 悠汰",
+   "school": "NTT東日本",
+   "category": "社会人",
+   "grade": "入社1年目",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "2025年 神奈川大学春季1部 最優秀選手",
+    "2025年 神奈川大学秋季1部 ベストナイン（指名打者）",
+    "2026年 JABA大会で本塁打"
+   ],
+   "evaluation": "大学リーグでMVPを獲った右の外野手で、社会人1年目から打撃で存在感を示している",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "NTT東日本の右の強打外野手",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://baseball.omyutech.com/playerTop.action?playerId=1702227"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "打撃"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "右打ちの外野手",
+    "comments": []
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "佐藤 孝昭",
+   "school": "王子",
+   "category": "社会人",
+   "grade": "入社1年目",
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": "中堅手",
+   "throws": null,
+   "bats": null,
+   "height": null,
+   "weight": null,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "県岐阜商高→中部学院大→王子"
+   ],
+   "evaluation": "2027年の社会人候補一覧に名前が挙がった外野手だが、詳しい評価の報道は見当たらない",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "王子の外野手",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.kyureki.com/syakai/48/3429/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "外野手",
+    "comments": []
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "尾瀬 雄大",
+   "school": "トヨタ自動車",
+   "category": "社会人",
+   "grade": "入社1年目",
+   "birth_year": 2003,
+   "pos": "外野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "左",
+   "height": 172,
+   "weight": 80,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "東京六大学リーグ通算99安打",
+   "highlights": [
+    "帝京高→早稲田大→トヨタ自動車",
+    "大学時代からプロに注目された"
+   ],
+   "evaluation": "大学通算99安打の左の巧打者で、トヨタでは1番打者として起用されている",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "トヨタの左の巧打者",
+   "sources": [
+    "https://www.baseballchannel.jp/npb/297998/",
+    "https://www.hb-nippon.com/articles/11345",
+    "https://sp.baseball.findfriends.jp/player/20030148/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "巧打",
+     "安打を重ねる力"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "左の巧打の外野手",
+    "comments": [
+     {
+      "by": "高校野球ドットコム",
+      "summary": "リーグ通算99安打の左の巧打者で、大学時代からプロに注目されていた",
+      "url": "https://www.hb-nippon.com/articles/11345"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "笹原 愛斗",
+   "school": "日本新薬",
+   "category": "社会人",
+   "grade": "入社2年目",
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": "捕手",
+   "throws": "右",
+   "bats": "右",
+   "height": 181,
+   "weight": 88,
+   "max_kmh": null,
+   "long_throw_m": 120,
+   "dash50_s": null,
+   "other_numbers": "九州共立大でリーグ通算5本塁打",
+   "highlights": [
+    "2026年 都市対抗 9打数4安打",
+    "入社2年目で正捕手に定着"
+   ],
+   "evaluation": "強肩と長打力を持つ捕手で、2026年は指名漏れ。正捕手として経験を積み、即戦力捕手を求める球団の候補",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "日本新薬の強肩強打の捕手",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/293327/",
+    "https://www.baseballchannel.jp/npb/296731/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "強肩",
+     "長打力"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "強肩強打の捕手",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "肩の強さと長打力が持ち味。正捕手として経験を重ね、捕手が必要な球団に合う下位候補",
+      "url": "https://www.baseballchannel.jp/etc/293327/"
+     },
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "遠投120mの強肩と長打力を備えた打てる捕手として紹介",
+      "url": "https://www.baseballchannel.jp/npb/296731/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "石橋 昂樹",
+   "school": "大阪ガス",
+   "category": "社会人",
+   "grade": "入社2年目",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "三塁手",
+   "throws": "右",
+   "bats": "右",
+   "height": 185,
+   "weight": 88,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "北九州市立大4年春に三冠王",
+    "2026年 JABA東北大会 19打数8安打1本塁打で優勝に貢献",
+    "2026年から4番に定着"
+   ],
+   "evaluation": "長打力が売りの右の大型内野手。2026年は指名漏れ。打撃の波が課題だが、遊撃経験もあり複数の守備位置をこなせる",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "大阪ガスの右の長距離砲",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/293329/",
+    "https://www.baseballchannel.jp/npb/296731/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "長打力",
+     "守備の幅（遊撃経験）"
+    ],
+    "weaknesses": [
+     "好不調の波"
+    ],
+    "grade": "C",
+    "type": "右の長距離砲",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "長打力に定評があるが調子の波が課題。遊撃経験を生かした起用も可能な下位候補",
+      "url": "https://www.baseballchannel.jp/etc/293329/"
+     },
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "大学で三冠王の強打者で、チームの4番を担う",
+      "url": "https://www.baseballchannel.jp/npb/296731/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "池村 健太郎",
+   "school": "トヨタ自動車",
+   "category": "社会人",
+   "grade": "入社3年目",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "左",
+   "bats": "左",
+   "height": 181,
+   "weight": 82,
+   "max_kmh": 150,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年 都市対抗予選まで40回40奪三振 防御率1.13",
+   "highlights": [
+    "2026年 JABA岡山大会 2完投で自責1",
+    "愛知学院大4年秋 ベストナイン"
+   ],
+   "evaluation": "完成度の高い先発型の左腕。直球の質が上がり、多彩な変化球で長い回を投げられる。2026年は指名漏れ",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "トヨタの先発型左腕、最速150km",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/293299/",
+    "https://www.hb-nippon.com/articles/13615"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "完成度",
+     "多彩な変化球",
+     "長いイニング"
+    ],
+    "weaknesses": [],
+    "grade": "C",
+    "type": "完成度の高い先発左腕",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "フォームがきれいで直球の質が向上。変化球で試合をつくれる先発型の下位候補",
+      "url": "https://www.baseballchannel.jp/etc/293299/"
+     },
+     {
+      "by": "高校野球ドットコム",
+      "summary": "都市対抗予選で最速148kmの直球を軸に安定した投球",
+      "url": "https://www.hb-nippon.com/articles/13615"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "山田 虎太郎",
+   "school": "JR四国",
+   "category": "社会人",
+   "grade": null,
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "二塁手",
+   "throws": "右",
+   "bats": "両",
+   "height": 180,
+   "weight": 70,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "二塁到達4秒未満",
+   "highlights": [
+    "2026年 都市対抗 東海理化戦で3安打"
+   ],
+   "evaluation": "一歩目の速さを攻守走に生かす両打ちの内野手。遊撃・外野もこなすが、試合ごとの波が課題。2026年は指名漏れ",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "JR四国の俊足両打ち内野手",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/297047/",
+    "https://www.baseballchannel.jp/npb/296731/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "俊足",
+     "一歩目の速さ",
+     "複数ポジション"
+    ],
+    "weaknesses": [
+     "好不調の波"
+    ],
+    "grade": "C",
+    "type": "俊足の両打ちユーティリティ",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "攻守走で一歩目が速く、遊撃や外野もこなせる下位候補",
+      "url": "https://www.baseballchannel.jp/etc/297047/"
+     },
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "都市対抗で3安打と全国舞台で結果。試合ごとの波はまだ課題",
+      "url": "https://www.baseballchannel.jp/npb/296731/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "山田 空暉",
+   "school": "愛媛マンダリンパイレーツ",
+   "category": "独立",
+   "grade": "4年目",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "先発",
+   "throws": "右",
+   "bats": "右",
+   "height": 184,
+   "weight": 92,
+   "max_kmh": 152,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年 132回1/3で146奪三振",
+   "highlights": [
+    "2026年 10勝・146奪三振でリーグ最多",
+    "2025年 9勝で独立リーグ日本一に貢献",
+    "2026年ドラフトで指名漏れ"
+   ],
+   "evaluation": "愛工大名電高卒4年目でリーグの顔となった先発右腕。2026年は指名漏れとなった",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "愛媛の先発右腕、最速152km",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/297077/",
+    "https://www.baseballchannel.jp/npb/297034/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "テンポ",
+     "スライダー",
+     "イニング消化力",
+     "奪三振力"
+    ],
+    "weaknesses": [],
+    "grade": "D",
+    "type": "先発型の右腕",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "140キロ中盤の直球とスライダーをテンポよく投げ分ける。想定は育成",
+      "url": "https://www.baseballchannel.jp/etc/297077/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "鎌田 州真",
+   "school": "徳島インディゴソックス",
+   "category": "独立",
+   "grade": "2年目",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "救援",
+   "throws": "右",
+   "bats": "左",
+   "height": 186,
+   "weight": 90,
+   "max_kmh": 155,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年 38回で42奪三振・防御率1.18",
+   "highlights": [
+    "2026年 救援で30試合登板・防御率1.18",
+    "国士舘高では内野手、国士舘大で投手に転向"
+   ],
+   "evaluation": "大学で投手に転向した155キロ右腕で、NPBスカウトから腕の振りのタイミングを評価されている",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "徳島の救援右腕、最速155km",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/297051/",
+    "https://news.mynavi.jp/article/20261022-5172844/",
+    "https://www.hb-nippon.com/articles/2602?page=2"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "直球の速さ",
+     "フォーク",
+     "腕の振り"
+    ],
+    "weaknesses": [],
+    "grade": "D",
+    "type": "速球派の救援右腕",
+    "comments": [
+     {
+      "by": "NPBスカウト（ベースボールチャンネル）",
+      "summary": "打者が嫌がるタイミングで腕が振れる",
+      "url": "https://www.baseballchannel.jp/etc/297051/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "黒木 大地",
+   "school": "徳島インディゴソックス",
+   "category": "独立",
+   "grade": "1年目",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 189,
+   "weight": 90,
+   "max_kmh": 150,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [
+    "帝京高から大学を経ず徳島に入団",
+    "2026年夏からリーグ戦で先発"
+   ],
+   "evaluation": "高卒1年目の大型右腕で、監督が強化選手に挙げるなど素材の良さが期待されている",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "徳島の高卒大型右腕、最速150km",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/297055/",
+    "https://www.hb-nippon.com/articles/11018"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "長身",
+     "潜在能力",
+     "フォーク"
+    ],
+    "weaknesses": [
+     "球速の伸びしろ"
+    ],
+    "grade": "D",
+    "type": "素材型の大型右腕",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "大型右腕で、登板のたびに潜在能力の高さをのぞかせた。想定は育成",
+      "url": "https://www.baseballchannel.jp/etc/297055/"
+     },
+     {
+      "by": "徳島・岡本哲司監督（高校野球ドットコム）",
+      "summary": "入団早々に強化選手に指名し、NPBに送り出せなければ首脳陣の責任と期待を示した",
+      "url": "https://www.hb-nippon.com/articles/11018"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "桂 健斗",
+   "school": "徳島インディゴソックス",
+   "category": "独立",
+   "grade": null,
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": "捕手",
+   "throws": "右",
+   "bats": "右",
+   "height": 178,
+   "weight": 79,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "二塁送球1.8秒台",
+   "highlights": [
+    "坂出高出身"
+   ],
+   "evaluation": "二塁送球1秒8台の強肩が武器の捕手で、リードと打撃は課題",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "徳島の強肩捕手",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/297059/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "強肩"
+    ],
+    "weaknesses": [
+     "インサイドワーク",
+     "打撃"
+    ],
+    "grade": "D",
+    "type": "強肩捕手",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル（スカウティングレポート）",
+      "summary": "肩の強さが際立つ一芸型の捕手で、リードと打撃に伸びしろがある",
+      "url": "https://www.baseballchannel.jp/etc/297059/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "窪田 寛之",
+   "school": "愛媛マンダリンパイレーツ",
+   "category": "独立",
+   "grade": "3年目",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": "救援",
+   "throws": "右",
+   "bats": "右",
+   "height": 180,
+   "weight": 90,
+   "max_kmh": 154,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2026年 41試合14セーブ",
+   "highlights": [
+    "2026年 抑えとして41試合・14セーブ",
+    "大学で遊撃手から投手に転向"
+   ],
+   "evaluation": "直球とフォークが武器の154キロ右腕で、今季は抑えを務めた",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "愛媛の抑え右腕、最速154km",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/297075/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "直球の速さ",
+     "フォーク"
+    ],
+    "weaknesses": [],
+    "grade": "D",
+    "type": "速球派の救援右腕",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "直球とフォークが主な武器の抑え投手。想定は育成",
+      "url": "https://www.baseballchannel.jp/etc/297075/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "池田 凜",
+   "school": "徳島インディゴソックス",
+   "category": "独立",
+   "grade": "2年目",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": "二塁手",
+   "throws": "右",
+   "bats": "左",
+   "height": 175,
+   "weight": 82,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": "2025年 出塁率.491（リーグ歴代最高）",
+   "highlights": [
+    "2年連続で打率3割・50打点・20盗塁以上",
+    "履正社高で2年夏に甲子園優勝（正二塁手）"
+   ],
+   "evaluation": "実戦対応力と出塁能力が高い中距離打者の二塁手で、今季は外野にも挑戦",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "徳島の出塁力の高い二塁手",
+   "sources": [
+    "https://www.baseballchannel.jp/etc/297061/"
+   ],
+   "fictional": false,
+   "scout": {
+    "strengths": [
+     "出塁能力",
+     "実戦対応力",
+     "走塁"
+    ],
+    "weaknesses": [],
+    "grade": "D",
+    "type": "出塁型の中距離打者",
+    "comments": [
+     {
+      "by": "ベースボールチャンネル編集部",
+      "summary": "出塁能力と実戦対応力が高い中距離打者で、夏以降は守備でも好プレーを重ねた",
+      "url": "https://www.baseballchannel.jp/etc/297061/"
+     }
+    ]
+   },
+   "mlb_intent": {
+    "stated": false
+   }
+  },
+  {
+   "name": "小林 拓海",
+   "school": "仙台育英高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 180,
+   "weight": 80,
+   "max_kmh": 150,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "仙台育英高の投手、最速150km",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "吉田 智也",
+   "school": "健大高崎高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 175,
+   "weight": 76,
+   "max_kmh": 144,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "健大高崎高の投手、最速144km",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "D",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "長谷川 悠真",
+   "school": "東海大相模高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 172,
+   "weight": 76,
+   "max_kmh": 150,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "東海大相模高の投手、最速150km",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "D",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "木村 航",
+   "school": "智辯和歌山高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 180,
+   "weight": 79,
+   "max_kmh": 143,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "智辯和歌山高の投手、最速143km",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "池田 拓海",
+   "school": "明徳義塾高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "左",
+   "bats": "右",
+   "height": 184,
+   "weight": 79,
+   "max_kmh": 145,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "明徳義塾高の投手、最速145km",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "D",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "長谷川 陽向",
+   "school": "東洋大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 180,
+   "weight": 83,
+   "max_kmh": 144,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "東洋大の投手、最速144km",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "D",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "藤田 陽向",
+   "school": "中央大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "捕手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 182,
+   "weight": 86,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "中央大の捕手",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "中村 颯太",
+   "school": "東北福祉大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "左",
+   "height": 172,
+   "weight": 70,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "東北福祉大の内野手",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "D",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "長谷川 航",
+   "school": "天理大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 177,
+   "weight": 74,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "天理大の内野手",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "D",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "高橋 陽向",
+   "school": "トヨタ自動車",
+   "category": "社会人",
+   "grade": null,
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "左",
+   "height": 186,
+   "weight": 89,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "トヨタ自動車の内野手",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "中村 大翔",
+   "school": "JR東日本",
+   "category": "社会人",
+   "grade": null,
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "左",
+   "height": 174,
+   "weight": 78,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "JR東日本の外野手",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "D",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "石川 大翔",
+   "school": "徳島インディゴソックス",
+   "category": "独立",
+   "grade": null,
+   "birth_year": null,
+   "pos": "外野手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "右",
+   "height": 170,
+   "weight": 88,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "徳島インディゴソックスの外野手",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "D",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "山口 蒼",
+   "school": "日本体育大学",
+   "category": "大学",
+   "grade": "3年",
+   "birth_year": null,
+   "pos": "投手",
+   "pos_detail": null,
+   "throws": "右",
+   "bats": "左",
+   "height": 182,
+   "weight": 83,
+   "max_kmh": 147,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "C",
+   "projected": "中位〜下位",
+   "intro": "日本体育大の投手、最速147km",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "C",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  },
+  {
+   "name": "松本 智也",
+   "school": "花咲徳栄高",
+   "category": "高校",
+   "grade": "2年",
+   "birth_year": null,
+   "pos": "内野手",
+   "pos_detail": null,
+   "throws": "左",
+   "bats": "右",
+   "height": 185,
+   "weight": 76,
+   "max_kmh": null,
+   "long_throw_m": null,
+   "dash50_s": null,
+   "other_numbers": null,
+   "highlights": [],
+   "evaluation": "架空の選手（実在の候補が足りない分の穴埋め）",
+   "eval_rank": "D",
+   "projected": "育成候補",
+   "intro": "花咲徳栄高の内野手",
+   "scout": {
+    "strengths": [],
+    "weaknesses": [],
+    "grade": "D",
+    "type": null,
+    "comments": []
+   },
+   "sources": [],
+   "mlb_intent": {
+    "stated": false
+   },
+   "fictional": true
+  }
+ ]
+}

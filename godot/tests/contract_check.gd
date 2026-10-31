@@ -33,6 +33,8 @@ var _budget: GDScript
 
 
 func _initialize() -> void:
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_NO_FOCUS, true)
 	var args := OS.get_cmdline_user_args()
 	_out = args[0] if args.size() > 0 else ""
 	if not _out.is_empty():
@@ -65,6 +67,7 @@ func _check_years() -> void:
 			_gs.advance()
 		_check_fa_budget(y)
 		_gs.fa_resolve()
+		_gs.comp_resolve()  # 自球団が関わるFAの補償はおまかせ（作業18）
 		_check(_gs.button_text() == "契約更改へ", "%d年オフ：FAを締めると次は契約更改" % y)
 		var before := {}
 		for id: String in league.team_of:

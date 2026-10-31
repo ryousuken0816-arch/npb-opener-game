@@ -191,3 +191,27 @@ python tools/foreign_players.py   # → generated/foreign.json（Godot の Forei
 - 1年目の実力（`Salary.ability` の z）：投手 平均 −0.18（sd 0.32）、野手 −0.34（sd 0.46）
 - 球団ごとの外国人（`per_team_foreigners`、2017〜2026年の開幕時点）：7.1人
 - 在籍年数（`tenure_share`、2021年までに来た選手）：1年 52%・2年 22%・3年 8%・4年以上 18%。1年目の実力の下位4分の1は平均1.7年、上位4分の1は3.5年
+
+## amateur_ratings.py — アマ選手の初期能力（作業16・17）
+
+プロの成績が無い選手（2026年秋の新人・2027年秋のドラフト候補）の初期能力を、**有識者の評価**（`data/amateur/<年>.json` の
+`scout`：長所・短所・総合の格付け）を主な根拠に作る（ユーザー指示 2026-11-01）。数字（最速・50m走・遠投）は補助。
+
+```
+python tools/compute_ratings.py --year 2027 --phase pre      # 先に名簿の選手（2026年の成績まで）
+python tools/amateur_ratings.py rookies --draft-year 2026    # 2026年秋の新人を 2027_pre に足す（仮ID ama2026:<名前>）
+python tools/amateur_ratings.py carry --year 2027            # 2027_post（2027_pre の引き継ぎ）と 2028_pre（＋2027年の候補）
+python tools/draft_future.py                                 # 将来性の元データ（2026年まで）
+```
+
+1. 下地：`generated/ratings/2026_pre.json` の2025年秋の新人（compute_ratings の新人の初期能力＝区分＋順位）を、
+   投手か・区分（高校／大学／社会人。独立は社会人）・順位の帯（1／2〜3／4〜5／6〜／育成）ごとに平均したもの
+2. 帯：史実の指名（2026年）は実際の順位で選び、格付けとの差1段あたり ±3（`GRADE_STEP`×差/2）。候補（2027年）は格付けで
+   選ぶ（S・A＝1位、B＝2〜3位、C＝4〜5位、D＝育成。S は +3）
+3. 長所・短所の言葉（`PITCH_WORDS`・`BAT_WORDS`）で該当の能力を +6／−5（1能力 ±12 まで）。長打の長所で弾道+1
+4. 投手の球速は 最速−5km（128〜158）。下地の球速との差1kmあたり総合・奪三振を ±0.5（±8まで）。50m走は6.0秒との差0.1秒あたり
+   走力 ±2、遠投は100mとの差1mあたり肩力 ±0.3（±8まで）
+5. 史実の無い年は成績が無いので、選手のリーグを2026年の「球団 → リーグ」で埋める（`fill_leagues`）
+
+出力の選手には `amateur`（intro・grade・type・projected・fictional など）が付き、ドラフト画面の紹介文に使う。
+2028_pre の候補は球団が空（`team: ""`）で、ゲームのドラフトで行き先が決まる。

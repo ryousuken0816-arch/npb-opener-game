@@ -605,8 +605,9 @@ func _render_status(f: FreeAgency) -> void:
 		for r: Dictionary in f.results:
 			if r["to"] != r["from"]:
 				moved += 1
-		_status_label.text = "FA宣言 %d人のうち %d人が移籍しました。可変ボタン「契約更改へ」で次へ進みます。" % [
-			f.declared.size(), moved]
+		_status_label.text = "FA宣言 %d人のうち %d人が移籍しました。%s" % [f.declared.size(), moved,
+			"自球団が決めるFAの補償があります（可変ボタン「FAの補償」）。" if GameState.comp_open()
+			else "補償は出来事（新戦力）に出ます。可変ボタン「契約更改へ」で次へ進みます。"]
 	else:
 		_status_label.text = "FA宣言 %d人・メジャー移籍 %d人。提示が終わったら「締め切って結果を見る」。" % [
 			f.declared.size(), f.mlb.size()]

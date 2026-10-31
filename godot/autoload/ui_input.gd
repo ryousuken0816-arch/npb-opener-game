@@ -10,6 +10,8 @@ extends Node
 ## - 十字キー・左スティックを倒し続けたら、キーボードの長押しと同じく連続でフォーカスを動かす
 ##   （最初の1回は Godot 標準の ui_* の動き。REPEAT_DELAY 秒後から REPEAT_INTERVAL 秒ごとに
 ##   InputEventAction を viewport に送る。Input の押下状態は変えない）
+## - F11・Alt+Enter でフルスクリーン⇔ウィンドウ（どの画面でも）。設定は UserSettings に覚えて次の起動でも同じ。
+##   横長のモニターでは project.godot の stretch aspect=keep で左右に黒い帯が出て 16:9 のまま映る
 
 ## true にすると Ⓐ（下のボタン）が戻る、Ⓑ（右のボタン）が決定になる（Switch の配置）
 const SWAP_CONFIRM_CANCEL := false
@@ -27,8 +29,17 @@ const DPAD_DIRECTION := {
 	JOY_BUTTON_DPAD_LEFT: "ui_left", JOY_BUTTON_DPAD_RIGHT: "ui_right",
 }
 
+## フルスクリーンの設定が変わった（システムの設定の表示が追従する）
+signal fullscreen_changed(on: bool)
+
+const SETTINGS_SECTION := "display"
+const SETTINGS_FULLSCREEN := "fullscreen"
+
 ## 最後の操作がマウスだったか（ツールチップをどちらの仕組みで出すかに使う）
 var using_mouse := true
+
+## 今フルスクリーンにするか（起動時に UserSettings から読む）
+var fullscreen := false
 
 var _tip_layer := CanvasLayer.new()
 var _tip_panel := PanelContainer.new()
@@ -46,6 +57,7 @@ var _repeat_next_msec := 0
 
 func _ready() -> void:
 	_setup_actions()
+	load_display_settings()
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_tip_layer.layer = 100
 	add_child(_tip_layer)
@@ -108,6 +120,10 @@ func _set_joy_button(action: String, button: JoyButton) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if _is_fullscreen_key(event):
+		toggle_fullscreen()
+		get_viewport().set_input_as_handled()
+		return
 	_track_held(event)
 	if event is InputEventMouseMotion or event is InputEventMouseButton:
 		if not using_mouse:
@@ -124,6 +140,48 @@ func _input(event: InputEvent) -> void:
 					if focus_first(get_tree().current_scene):
 						get_viewport().set_input_as_handled()
 					return
+
+
+# --- フルスクリーン ------------------------------------------------------------------------
+
+## F11 か Alt+Enter（押した瞬間だけ。キーリピートでは切り替えない）
+static func _is_fullscreen_key(event: InputEvent) -> bool:
+	if not (event is InputEventKey):
+		return false
+	var k := event as InputEventKey
+	if not k.pressed or k.echo:
+		return false
+	if k.keycode == KEY_F11:
+		return true
+	return k.alt_pressed and (k.keycode == KEY_ENTER or k.keycode == KEY_KP_ENTER)
+
+
+## 保存した設定を読んでウィンドウに反映する（起動時）。設定が無ければウィンドウのまま
+func load_display_settings() -> void:
+	fullscreen = bool(UserSettings.get_value(SETTINGS_SECTION, SETTINGS_FULLSCREEN, false))
+	_apply_window_mode()
+	fullscreen_changed.emit(fullscreen)
+
+
+func toggle_fullscreen() -> void:
+	set_fullscreen(not fullscreen)
+
+
+## フルスクリーンにする／ウィンドウに戻す。設定に保存して次の起動でも同じにする
+func set_fullscreen(on: bool) -> void:
+	fullscreen = on
+	UserSettings.set_value(SETTINGS_SECTION, SETTINGS_FULLSCREEN, on)
+	_apply_window_mode()
+	fullscreen_changed.emit(on)
+
+
+## ヘッドレス（テスト）では実際のウィンドウは変えない
+func _apply_window_mode() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	var mode := DisplayServer.WINDOW_MODE_FULLSCREEN if fullscreen else DisplayServer.WINDOW_MODE_WINDOWED
+	if DisplayServer.window_get_mode() != mode:
+		DisplayServer.window_set_mode(mode)
 
 
 # --- 押しっぱなしの連続移動 -------------------------------------------------------------

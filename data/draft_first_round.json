@@ -3432,5 +3432,158 @@
   "bids": 1,
   "bidders": [],
   "wave": 1
+ },
+ {
+  "draft_year": 2026,
+  "name": "渡部 海",
+  "pos": "捕手",
+  "school": "青山学院大学",
+  "team_code": "e",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "楽天",
+   "中日"
+  ],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "鈴木 泰成",
+  "pos": "投手",
+  "school": "青山学院大学",
+  "team_code": "h",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "ソフトバンク",
+   "ロッテ"
+  ],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "宮原 廉",
+  "pos": "投手",
+  "school": "近畿大学",
+  "team_code": "d",
+  "section": "新人選手選択会議",
+  "bids": 2,
+  "bidders": [
+   "中日",
+   "ロッテ"
+  ],
+  "wave": 2,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "角田 楓斗",
+  "pos": "投手",
+  "school": "富士大学",
+  "team_code": "b",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "山里 宝",
+  "pos": "内野手",
+  "school": "亜細亜大学",
+  "team_code": "c",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "星野 世那",
+  "pos": "投手",
+  "school": "大阪商業大学",
+  "team_code": "db",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "菰田 陽生",
+  "pos": "投手",
+  "school": "山梨学院高",
+  "team_code": "f",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "織田 翔希",
+  "pos": "投手",
+  "school": "横浜高",
+  "team_code": "g",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "川尻 啓人",
+  "pos": "投手",
+  "school": "亜細亜大学",
+  "team_code": "l",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "藤澤 涼介",
+  "pos": "外野手",
+  "school": "東京ガス",
+  "team_code": "s",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "榊原 七斗",
+  "pos": "外野手",
+  "school": "明治大学",
+  "team_code": "t",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 1,
+  "source": "wikipedia"
+ },
+ {
+  "draft_year": 2026,
+  "name": "米沢 友翔",
+  "pos": "投手",
+  "school": "関西大学",
+  "team_code": "m",
+  "section": "新人選手選択会議",
+  "bids": 1,
+  "bidders": [],
+  "wave": 3,
+  "source": "wikipedia"
  }
 ]

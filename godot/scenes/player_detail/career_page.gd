@@ -5,6 +5,8 @@ extends HBoxContainer
 
 ## 受賞歴の札を出す最大の数（新しい順）
 const AWARDS_SHOWN := 8
+## 関係するニュースを出す数（新しい順）
+const NEWS_SHOWN := 3
 
 var player_id := ""
 
@@ -32,11 +34,20 @@ func _build() -> void:
 	var profile := UiTheme.titled_panel(_palette, "プロフィール")
 	profile["panel"].custom_minimum_size = Vector2(620, 0)
 	add_child(profile["panel"])
+	# 受賞歴が増えると縦に伸びるので、プロフィールの中身は縦のスクロールの中へ（選手詳細の枠からはみ出さない。作業11）
+	var pscroll := ScrollContainer.new()
+	pscroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	pscroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	profile["body"].add_child(pscroll)
+	var body := VBoxContainer.new()
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_theme_constant_override("separation", profile["body"].get_theme_constant("separation"))
+	pscroll.add_child(body)
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 12)
 	grid.add_theme_constant_override("v_separation", 8)
-	profile["body"].add_child(grid)
+	body.add_child(grid)
 	var draft := _draft_parts()
 	for pair: Array in [
 		["生年月日", _birth_text()],
@@ -51,10 +62,10 @@ func _build() -> void:
 		value.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		value.custom_minimum_size = Vector2(440, 0)
 		grid.add_child(value)
-	profile["body"].add_child(UiTheme.small_label("出身校〜経歴", 16, _palette.ink, 800))
-	profile["body"].add_child(_career_chain())
-	profile["body"].add_child(UiTheme.small_label("受賞歴（ゲーム内の表彰）", 16, _palette.ink, 800))
-	profile["body"].add_child(_awards_flow())
+	body.add_child(UiTheme.small_label("出身校〜経歴", 16, _palette.ink, 800))
+	body.add_child(_career_chain())
+	body.add_child(UiTheme.small_label("受賞歴（ゲーム内の表彰）", 16, _palette.ink, 800))
+	body.add_child(_awards_flow())
 
 	var teams := UiTheme.titled_panel(_palette, "所属球団の推移")
 	teams["panel"].size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -71,6 +82,24 @@ func _build() -> void:
 	for period: Dictionary in _team_periods():
 		list.add_child(_period_row(period))
 	teams["body"].add_child(UiTheme.small_label("前年までは1軍に出場した年から。2軍だけの年は含みません。", 13))
+	_news_section(teams["body"])
+
+
+## 史実との違い（史実の所属）と、この選手の最近のニュース（GameState.news、作業24・25）
+func _news_section(body: VBoxContainer) -> void:
+	var lines: Array[String] = []
+	var hist := str(_data.get("hist_team", ""))
+	if not hist.is_empty() and not _team_name.is_empty() \
+			and GameData.short_name(hist) != GameData.short_name(_team_name):
+		lines.append("史実の所属：%s（ゲームでは%s）" % [GameData.short_name(hist), GameData.short_name(_team_name)])
+	var items: Array = GameState.news.for_player(player_id, NEWS_SHOWN) if GameState.news != null else []
+	for a: Dictionary in items:
+		lines.append("%d年%s　%s" % [int(a["year"]), News.date_label(a["date"]), a["headline"]])
+	if lines.is_empty():
+		return
+	body.add_child(UiTheme.small_label("ニュース・史実との違い", 16, _palette.ink, 800))
+	for text in lines:
+		body.add_child(UiTheme.fit_label(UiTheme.small_label(text, 15, UiTheme.TEXT, 700)))
 
 
 func _birth_text() -> String:

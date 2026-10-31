@@ -9773,8 +9773,8 @@
    "weight": 85,
    "draft": "",
    "career": "台中市西苑高級中",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -9842,7 +9842,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 57,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 41,
+      "rank": "E"
+     },
+     "k9": {
+      "value": 55,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 58,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 58,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.4891,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 6.6801,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.1964,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.7331,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 3.1911,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 146,
+     "source": "provisional"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {

@@ -261,7 +261,9 @@ func draft_entry(name: String, draft_year: int) -> Dictionary:
 	if not _drafts_cache.has(draft_year):
 		var by_name := {}
 		var parsed: Variant = _read_repo_json("%d/drafts.json" % (draft_year + 1))
-		if not parsed is Array:
+		if not parsed is Array and draft_year > Draft.LAST_HISTORY_YEAR:
+			parsed = Draft.amateur_rows(draft_year)  # 史実の無い年のドラフト候補（data/amateur/<年>.json）
+		elif not parsed is Array:
 			parsed = _read_repo_json("drafts_2001-2007.json")
 		if parsed is Array:
 			for d: Dictionary in parsed:
@@ -474,6 +476,8 @@ func _index_players() -> void:
 			_team_league[p["hist_team"]] = p["league"]
 		p["team"] = p["hist_team"]
 		var team: String = p["team"]
+		if team.is_empty():
+			continue  # 史実の無い年のドラフト候補（tools/amateur_ratings.py。指名されるまで球団なし）
 		if not _players_by_team.has(team):
 			_players_by_team[team] = []
 		_players_by_team[team].append(p)

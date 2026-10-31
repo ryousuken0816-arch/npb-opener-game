@@ -344,7 +344,9 @@ func _check_2024_ui() -> void:
 					out_p = sp
 					break
 		else:
-			var order: Array = roster.lineup(true)
+			# 巨人（セ）は DH なしのスタメンで戦う日がほとんど。DH なしの打順の選手と入れ替えないと、
+			# 新人が DH だけの枠に入って1年間出場しないことがある（以前のNGの原因）
+			var order: Array = roster.lineup(false)
 			for i in range(order.size() - 1, -1, -1):
 				if order[i][0] != null and order[i][1] != "投手":
 					out_p = order[i][0]
@@ -388,7 +390,8 @@ func _check_2025() -> void:
 	for c: Dictionary in d.candidates:
 		if c.get("first", {}).get("partial", false):
 			partial += 1
-	_check(partial == d.candidates.size(), "2025年秋の新人の1年目は「シーズン途中」（%d/%d人）" % [partial, d.candidates.size()])
+	# 2026年は最終成績になった（作業16）ので、2025年秋の新人の1年目はもう「シーズン途中」ではない
+	_check(partial == 0, "2025年秋の新人の1年目は最終成績（シーズン途中 %d/%d人）" % [partial, d.candidates.size()])
 	_gs.advance()
 	_check(d.resolved and _gs.phase == _gs.Phase.CAMP and _gs.year == 2026, "次へ進むとおまかせで終わり2026年の春季キャンプ")
 	_check_quota(d, "2025年")

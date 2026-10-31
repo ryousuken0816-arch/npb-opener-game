@@ -1,0 +1,43 @@
+[
+ {
+  "draft_year": 2025,
+  "name": "佐々木 麟太郎",
+  "school": "スタンフォード大学",
+  "overseas": true,
+  "hist_team": "福岡ソフトバンクホークス",
+  "hist_result": "mlb",
+  "note": "米スタンフォード大に在学のまま2025年ドラフトでソフトバンクが1位指名（DeNAと競合）。2026年7月にMLBドラフトでマーリンズから8巡目指名を受けて契約し、ソフトバンクには入団せず",
+  "sources": [
+   "https://www.daily.co.jp/mlb/2026/07/13/0020583963.shtml",
+   "https://www.daily.co.jp/mlb/2026/07/19/0020608824.shtml",
+   "https://www.mlb.com/ja/news/rintaro-sasaki-signs-with-marlins"
+  ]
+ },
+ {
+  "draft_year": 2026,
+  "name": "織田 翔希",
+  "school": "横浜高",
+  "overseas": false,
+  "hist_team": "読売ジャイアンツ",
+  "hist_result": null,
+  "note": "2026年10月15日に高校からの米球界挑戦を表明。10月22日のドラフトで巨人が単独で1位指名（強行指名）。2026年11月1日時点で交渉の結論は報じられていない",
+  "sources": [
+   "https://www.daily.co.jp/baseball/2026/10/15/0020929892.shtml",
+   "https://www.hb-nippon.com/articles/18338",
+   "https://baseballking.jp/ns/710446/"
+  ]
+ },
+ {
+  "draft_year": 2026,
+  "name": "佐藤 幻瑛",
+  "school": "ペンシルベニア州立大学",
+  "overseas": true,
+  "hist_team": "福岡ソフトバンクホークス",
+  "hist_result": null,
+  "note": "MLB入りを目指して仙台大からペンシルベニア州立大に編入。2026年ドラフトでソフトバンクが9位で指名。交渉は2027年夏のMLBドラフトの結果しだいと報じられている",
+  "sources": [
+   "https://www.baseballchannel.jp/npb/298887/5/",
+   "https://number.bunshun.jp/articles/-/872431"
+  ]
+ }
+]

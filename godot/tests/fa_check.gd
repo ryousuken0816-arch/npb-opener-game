@@ -85,6 +85,10 @@ func _check_offseasons() -> void:
 			_check(_gs.fa_offer(own, r[1], 3).is_empty(), "%d年オフ：自球団の%sを引き留める提示" % [y, league.names[own]])
 		_check(not _gs.fa_offer("00000000", 1000, 1).is_empty(), "宣言していない選手には提示できない")
 		_gs.fa_resolve()
+		# 自球団が関わるFAの補償（作業18、tests/fa_comp_check.gd）はおまかせで決める
+		if _gs.comp_open():
+			_check(_gs.button_text() == "FAの補償", "%d年オフ：自球団が関わる補償があれば可変ボタンは「FAの補償」" % y)
+			_gs.comp_resolve()
 		_check(f.resolved and not _gs.fa_open() and _gs.button_text() == "契約更改へ",
 				"%d年オフ：締め切ると次は契約更改（%s）" % [y, _gs.button_text()])
 		_check(not _gs.fa_offer(target if not target.is_empty() else own, 1000, 1).is_empty(),
@@ -269,6 +273,8 @@ func _check_darvish(success: bool) -> void:
 	if success:
 		await _shot("fa4_result")
 	await _key(KEY_ESCAPE)
+	if _gs.comp_open():
+		_gs.comp_resolve()  # 自球団が関わるFAの補償はおまかせ（作業18）
 	_check(hub.get("_open_key") == "" and _gs.button_text() == "契約更改へ", "締め切ると可変ボタンは「契約更改へ」")
 	# 2012年の開幕へ
 	while _gs.phase != _gs.Phase.SEASON:
