@@ -33,7 +33,9 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_sg = load("res://scripts/save_game.gd")
 	_season_gd = load("res://sim/season.gd")
-	_sg.set("dir", "user://test_saves")
+	# 同じPCで別の作業のテストが同時に動くと user://test_saves の枠を消し合うので、実行ごとに別のフォルダにする
+	var dir := "user://test_saves_%d" % OS.get_process_id()
+	_sg.set("dir", dir)
 	_sg.set("autosave_enabled", false)
 	for slot: String in _sg.call("all_slots"):
 		_sg.call("delete", slot)
@@ -43,6 +45,7 @@ func _run() -> void:
 	await _check_ui()
 	for slot: String in _sg.call("all_slots"):
 		_sg.call("delete", slot)
+	DirAccess.remove_absolute(dir)
 	print("\n== 結果: %s ==" % ("ALL OK" if _failures == 0 else "FAILED（%d件）" % _failures))
 	quit(1 if _failures > 0 else 0)
 

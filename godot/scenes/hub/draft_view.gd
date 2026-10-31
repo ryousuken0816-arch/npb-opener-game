@@ -38,6 +38,8 @@ const NAME_WIDTH := 150
 const MARK_WIDTH := 56
 const ROW_HEIGHT := 36
 const RIGHT_WIDTH := 330
+## 右の要約の文の幅（左右の余白を引く）
+const SUMMARY_WIDTH := RIGHT_WIDTH - 20
 ## CPU球団の指名を自動で進める間隔（秒）。早送り中は FAST
 const CPU_STEP_SEC := 0.45
 const CPU_STEP_FAST_SEC := 0.06
@@ -717,10 +719,12 @@ func _build_right() -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 6)
 	_right_panel.add_child(box)
+	# 要約は縦にスクロール（選んだ候補の1年目の能力などが長くても、画面の枠を押し広げない）。
+	# バーを出すと出入りのたびに幅が変わって枠が揺れるので、バーは出さない（ホイール・フォーカスで動く）
 	_summary_box = VBoxContainer.new()
 	_summary_box.add_theme_constant_override("separation", 4)
-	_summary_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	box.add_child(_summary_box)
+	_summary_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(_vscroll(_summary_box))
 	_action_button = Button.new()
 	_action_button.text = "1位で入札する"
 	_action_button.custom_minimum_size = Vector2(0, 50)
@@ -747,9 +751,19 @@ func _build_right() -> Control:
 	line.add_child(_finish_button)
 	_log_label = UiTheme.small_label("", 14, UiTheme.TEXT_SUB, 700)
 	_log_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_log_label.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	_log_label.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	box.add_child(_log_label)
 	return _right_panel
+
+
+func _vscroll(content: Control) -> ScrollContainer:
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	scroll.follow_focus = true
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.add_child(content)
+	return scroll
 
 
 func _render_summary(d: Draft) -> void:
@@ -760,7 +774,7 @@ func _render_summary(d: Draft) -> void:
 	if c.is_empty():
 		var hint := UiTheme.small_label(_hint_text(d), 16, UiTheme.TEXT, 700)
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		hint.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+		hint.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 		_summary_box.add_child(hint)
 	else:
 		_fill_summary(d, c)
@@ -810,7 +824,7 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	var info := UiTheme.small_label("%s　%s　%s%s\n%s" % [c["name"], c["career"], age, hand, c["school"]], 16,
 		UiTheme.TEXT, 700)
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	info.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	info.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(info)
 	var ranks := HBoxContainer.new()
 	ranks.add_theme_constant_override("separation", 6)
@@ -823,7 +837,7 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	_summary_box.add_child(_first_grid(c))
 	var intro := UiTheme.small_label("「%s」" % c["intro"], 15, Color("1e63c8"), 700)
 	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	intro.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	intro.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(intro)
 	var state := ""
 	if not str(c["picked_by"]).is_empty():
@@ -835,7 +849,7 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 		state += "\n※能力値データが無いため、近い候補の能力を仮に使っています"
 	var state_label := UiTheme.small_label(state, 14, UiTheme.TEXT_SUB, 700)
 	state_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	state_label.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	state_label.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(state_label)
 
 
@@ -868,7 +882,7 @@ func _first_grid(c: Dictionary) -> Control:
 	var first: Dictionary = c.get("first", {})
 	var title := UiTheme.small_label(_first_text(c), 14, Color("8a5cc8"), 800)
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	title.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	box.add_child(title)
 	if int(first.get("overall", -1)) < 0:
 		return box

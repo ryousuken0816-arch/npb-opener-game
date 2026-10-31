@@ -84,7 +84,10 @@ func _run() -> void:
 			_gs.advance()
 		if y >= _last_year:
 			break
-	print("\n調べた画面：%d" % _checked)
+	print("\n調べた画面：%d（うち抽選の3D演出が出た入札 %d回）" % [_checked, _lottery_3d_seen])
+	if _lottery_3d_seen == 0:
+		_failures += 1
+		print("NG 抽選の3D演出を一度も調べていない（入札が一度も競合しなかった）")
 	print("\n== 結果: %s ==" % ("ALL OK" if _failures == 0 else "FAILED（%d件）" % _failures))
 	quit(1 if _failures > 0 else 0)
 
@@ -316,9 +319,12 @@ func _check_draft(when: String) -> void:
 	for i in 3:
 		view.switch_tab(1)
 		await _check_screen("%s：ドラフト タブ%d" % [when, i + 2], 0.0)
+	# 指名一覧のタブでは候補の一覧が空なので、最初のタブ（情報）に戻してから入札する
+	view.switch_tab(1)
+	await _frames(1)
 	var ids: Array = view.list_ids()
 	if not ids.is_empty():
-		view.select_candidate(ids[0])
+		view.select_candidate(_most_bid(ids))
 		await _check_screen("%s：ドラフト 候補を選ぶ" % when, 0.0)
 		view.press_action()
 		await _check_screen("%s：ドラフト 入札" % when)
@@ -334,6 +340,22 @@ func _check_draft(when: String) -> void:
 	while view.back():
 		pass
 	_hub.call("_close_sub_screen")
+
+
+## 1位の入札の段階なら CPU球団の入札が最も多い候補（競合して抽選の3D演出が出るように）。ほかは一覧の先頭
+func _most_bid(ids: Array) -> String:
+	var d: RefCounted = _gs.draft()
+	if d == null or d.stage != load("res://sim/draft.gd").Stage["FIRST"] or not d.first_pick_of(_team).is_empty():
+		return ids[0]
+	var count := {}
+	var bids: Dictionary = d.cpu_first_bids()
+	for t: String in bids:
+		count[bids[t]] = int(count.get(bids[t], 0)) + 1
+	var best: String = ids[0]
+	for id: String in ids:
+		if int(count.get(id, 0)) > int(count.get(best, 0)):
+			best = id
+	return best
 
 
 # --- 調べる -------------------------------------------------------------------------------
