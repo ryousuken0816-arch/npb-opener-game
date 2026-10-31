@@ -95,6 +95,10 @@ var log: Array[Dictionary] = []
 
 ## 自球団のトレード交渉を断った球団 → 断った日（シーズン中は日付、オフは「年-段階」。同じ日にはもう交渉できない）
 var trade_refused := {}
+## このオフのFA移籍の補償（FAを締め切ったときに作る。FaCompensation）
+var compensation: FaCompensation = null
+## FAの補償で移った指名権 [{year（ドラフトの年）, round, from（獲得球団＝指名権を失う）, to（旧球団）, id（FAの選手）}]
+var draft_pick_comp: Array = []
 var _trades: Array[Dictionary] = []  ## trade_id ごと、日付順 {id, date, moves: [{pid, name, from, to}]}
 var _trade_index := 0
 var _moves_by_id := {}
@@ -571,6 +575,11 @@ func open_draft(season_year: int, waiver_order: Array[String], teams: Array[Stri
 	for id: String in _plan.get("draftees", []):
 		pool[id] = entries[id]
 	draft.setup(season_year, user_team, teams, pool, team_of, waiver_order, _rng.randi())
+	var moves: Array = []
+	for m: Dictionary in draft_pick_comp:
+		if int(m["year"]) == season_year:
+			moves.append(m)
+	draft.set_pick_moves(moves)
 	var counts := {}
 	for id: String in team_of:
 		var team: String = team_of[id]
@@ -1290,7 +1299,8 @@ func to_save() -> Dictionary:
 		"contract_until": contract_until, "fa_year": fa_year, "kept_mlb": kept_mlb, "released": released,
 		"drafted": drafted, "promoted": promoted, "draft_synth": draft_synth, "draft_unsigned": draft_unsigned,
 		"limit_active": limit_active, "log": log, "trade_index": _trade_index, "plan": plan,
-		"trade_refused": trade_refused,
+		"trade_refused": trade_refused, "draft_pick_comp": draft_pick_comp,
+		"compensation": compensation.to_save() if compensation != null else null,
 		"rng": SaveUtil.rng_state(_rng),
 		"fa": fa.to_save() if fa != null else null,
 		"contracts": contracts.to_save() if contracts != null else null,
@@ -1325,6 +1335,8 @@ func from_save(d: Dictionary) -> void:
 	log.assign(d.get("log", []))
 	_trade_index = int(d.get("trade_index", 0))
 	trade_refused = d.get("trade_refused", {})
+	draft_pick_comp = d.get("draft_pick_comp", [])
+	compensation = FaCompensation.from_save(d["compensation"]) if d.get("compensation") is Dictionary else null
 	_plan = d.get("plan", {})
 	SaveUtil.set_rng_state(_rng, d.get("rng", ""))
 	fa = FreeAgency.from_save(d["fa"], self) if d.get("fa") is Dictionary else null

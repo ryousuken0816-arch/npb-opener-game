@@ -106,6 +106,10 @@ var order: Array[String] = []
 ## 今の巡（本指名は2〜、育成は1〜）と、いま指名する球団
 var round := 2
 var _turn_team := ""
+## いまの番の、その巡の並び（_base_order）の中の位置（指名権が移ると同じ球団が1つの巡に2回出るので位置で持つ）
+var _turn_index := 0
+## FAの補償で移った指名権 [{round, from, to}]（本指名のその巡で from の番が to の番になる。作業18）
+var pick_moves: Array = []
 ## 指名を終えた球団（本指名・育成）
 var done_reg := {}
 var done_ikusei := {}
@@ -486,7 +490,22 @@ func _base_order(at_round: int) -> Array[String]:
 	var base: Array[String] = order.duplicate()
 	if at_round % 2 == 1:
 		base.reverse()
+	if stage == Stage.WAIVER:
+		for m: Dictionary in pick_moves:
+			var i := base.find(m["from"]) if int(m["round"]) == at_round else -1
+			if i >= 0:
+				base[i] = m["to"]
 	return base
+
+
+## FAの補償で移った指名権を入れる（LeagueRoster.open_draft から）。旧球団（to）の本指名は1人増え、獲得球団は1人減る
+func set_pick_moves(moves: Array) -> void:
+	pick_moves = moves.duplicate(true)
+	for m: Dictionary in pick_moves:
+		if quota.has(m["to"]):
+			quota[m["to"]]["reg"] += 1
+		if quota.has(m["from"]):
+			quota[m["from"]]["reg"] = maxi(0, int(quota[m["from"]]["reg"]) - 1)
 
 
 func _done_set() -> Dictionary:
@@ -509,6 +528,7 @@ func _seek(index: int) -> void:
 			index = 0
 		if not done.has(base[index]):
 			_turn_team = base[index]
+			_turn_index = index
 			return
 		index += 1
 
@@ -554,7 +574,7 @@ func _next_turn() -> void:
 			stage = Stage.DONE
 			_turn_team = ""
 		return
-	_seek(_base_order(round).find(_turn_team) + 1)
+	_seek(_turn_index + 1)
 
 
 func _mark_done(team: String, ikusei: bool) -> void:
@@ -863,7 +883,7 @@ func to_save() -> Dictionary:
 	return {
 		"year": year, "user_team": user_team, "stage": stage, "teams": teams, "candidates": candidates,
 		"quota": quota, "picks": picks, "wave": wave, "bids": bids, "lotteries": lotteries,
-		"last_wave": last_wave, "order": order, "round": round, "turn_team": _turn_team,
+		"last_wave": last_wave, "order": order, "round": round, "turn_team": _turn_team, "turn_index": _turn_index, "pick_moves": pick_moves,
 		"done_reg": done_reg, "done_ikusei": done_ikusei, "user_auto": user_auto, "user_room": user_room,
 		"resolved": resolved, "data_through": data_through, "rng": SaveUtil.rng_state(_rng),
 		"team_noise": _team_noise, "need": _need,
@@ -888,6 +908,8 @@ static func from_save(d: Dictionary) -> Draft:
 	dr.order.assign(d.get("order", []))
 	dr.round = int(d.get("round", 2))
 	dr._turn_team = str(d.get("turn_team", ""))
+	dr.pick_moves = d.get("pick_moves", [])
+	dr._turn_index = int(d.get("turn_index", maxi(0, dr._base_order(dr.round).find(dr._turn_team))))
 	dr.done_reg = d.get("done_reg", {})
 	dr.done_ikusei = d.get("done_ikusei", {})
 	dr.user_auto = bool(d.get("user_auto", false))
