@@ -764,8 +764,8 @@
    "weight": 86,
    "draft": "",
    "career": "コバデナ高 - 米マイナー",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -833,7 +833,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 58,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 40,
+      "rank": "E"
+     },
+     "k9": {
+      "value": 55,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 60,
+      "rank": "C"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.4492,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 6.6334,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.4294,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.6765,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 3.1075,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 155,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {

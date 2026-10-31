@@ -34348,8 +34348,8 @@
    "weight": 94,
    "draft": "1999年ドラフト1位",
    "career": "国学院久我山高",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -34417,7 +34417,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 56,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 41,
+      "rank": "E"
+     },
+     "k9": {
+      "value": 56,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 56,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.7937,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 6.9047,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.2678,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.8792,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 3.2667,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 136,
+     "source": "early_career"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
@@ -86908,8 +86968,8 @@
    "weight": 97,
    "draft": "1995年ドラフト1位",
    "career": "南京都高",
-   "is_pitcher": false,
-   "primary_pos": null,
+   "is_pitcher": true,
+   "primary_pos": "投手",
    "batting": {
     "ratings": {
      "meet": {
@@ -86977,7 +87037,67 @@
     },
     "trajectory": 2
    },
-   "pitching": null,
+   "pitching": {
+    "ratings": {
+     "overall": {
+      "value": 56,
+      "rank": "D"
+     },
+     "stamina": {
+      "value": 41,
+      "rank": "E"
+     },
+     "k9": {
+      "value": 56,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 56,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "abilities": [],
+    "role": "救援",
+    "detail": {
+     "fip": {
+      "observed": null,
+      "blended": 3.7937,
+      "weight": 0.0
+     },
+     "k9": {
+      "observed": null,
+      "blended": 6.9047,
+      "weight": 0.0
+     },
+     "bb9": {
+      "observed": null,
+      "blended": 3.2678,
+      "weight": 0.0
+     },
+     "hr9": {
+      "observed": null,
+      "blended": 0.8792,
+      "weight": 0.0
+     },
+     "stamina": {
+      "observed": null,
+      "blended": 3.2667,
+      "weight": 0.0
+     }
+    },
+    "velocity": {
+     "kmh": 145,
+     "source": "provisional"
+    },
+    "sample": {
+     "outs_1": 0.0,
+     "outs_2": 0.0
+    }
+   },
    "fielding": {}
   },
   {
