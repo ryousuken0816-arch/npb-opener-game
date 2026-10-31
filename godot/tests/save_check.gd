@@ -22,6 +22,8 @@ var _season_gd: GDScript
 
 
 func _initialize() -> void:
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_NO_FOCUS, true)
 	var args := OS.get_cmdline_user_args()
 	_out = args[0] if args.size() > 0 else ""
 	if not _out.is_empty():

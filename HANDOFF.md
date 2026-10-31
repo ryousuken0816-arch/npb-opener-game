@@ -319,6 +319,11 @@
    - 作業15：①`ContractView` の増減・総額の色が出ていなかったのを `label_settings.font_color` で直した ②draft_check の不安定さは、入れ替える選手を DH ありの打順から選んでいたため（巨人は DH なしで戦うので、DH だけの枠の新人が出場0）。DH なしの打順から選ぶように ③contract_check の2013年の最高年俸は CPU の FA 入札（希望額の最大1.38倍）が `Salary.MAX` を超えるのが原因。CPU の入札を `max(Salary.MAX, 今の年俸)` までにした
      ④`data/trades.json` の2018年度以降（190行）の移籍先：npb.jp の列の並びが変わっていた（「→ 背番号 球団」）ので `npb_collector/trades.py` を直して取り直した。`LeagueRoster._infer_trade_dest` の補いは残してある
    - 確認：全テスト（15本）をヘッドレスで2回流して全てOK。契約更改のスクショで増減の赤が出ることを確認
+4.30 ~~フルスクリーン~~ → 完了（2026-11-01）。docs/AUTORUN.md の作業30
+   - 仕組み：`godot/scripts/user_settings.gd`（`UserSettings`、`user://settings.cfg` の ConfigFile。今は [display] fullscreen だけ）。`UiInput`（オートロード）が起動時に読んで反映し、`_input` で **F11・Alt+Enter**（押した瞬間だけ）を拾って `toggle_fullscreen()`（保存して次の起動でも同じ。`fullscreen_changed` シグナル）。ヘッドレスでは実際のウィンドウは変えない
+   - 画面：ハブの「システム」のセーブ／ロードの行の右端に「フルスクリーン：オン／オフ」のボタン（F11 で切り替えても表示が追従）
+   - `project.godot`：`window/stretch/aspect` を expand → **keep**（横長のモニターは左右、4:3・16:10 は上下に黒い帯。基準は 1280x720 のまま）、背景の既定色を黒に
+   - 確認：`godot/tests/fullscreen_check.gd`（新、ヘッドレス）：設定の保存・復元（ほかの項目を消さない）、F11・Alt+Enter・（リピート・離す・Enter だけ・Alt+ほかのキーでは切り替わらない）、システムのボタンの追従、aspect=keep。システム画面のスクショ1回（ボタンが枠に収まる）
 5. 次の候補（どれから進めるかユーザーと相談）
    - ~~FA・ポスティングの画面~~ → 完了（4.14）。~~契約更改・予算上限~~ → 完了（4.15）。~~戦力外・引退~~ → 完了（4.16）。~~ドラフト画面~~ → 完了（4.19）。残り：トレード交渉（予算の残りを使える）… 新しい画面なので Opus 向き
    - ~~記録室~~ → 完了（4.25）。~~表彰~~ → 完了（4.24）
