@@ -77,7 +77,7 @@ func _run() -> void:
 	while _gs.is_fast_forwarding():
 		await process_frame
 	print("最終日までの早送り: %.1f 秒" % ((Time.get_ticks_msec() - t0) / 1000.0))
-	_check(_gs.phase == _gs.Phase.AWARDS, "最終日のあとはシーズン終了・表彰へ（%s）" % _gs.phase_name())
+	_check(_gs.phase == _gs.Phase.POSTSEASON, "最終日のあとはポストシーズンへ（%s）" % _gs.phase_name())
 	_check(season.is_finished() and season.played_count() == season.scheduled_count(),
 			"全%d試合を消化" % season.scheduled_count())
 	for team: String in season.records:
@@ -85,6 +85,25 @@ func _run() -> void:
 		_check(rec["w"] + rec["l"] + rec["d"] == 144, "%s 144試合" % team)
 	_check(_months_started == [4, 5, 6, 7, 8, 9, 10], "月替わりの通知: %s" % [_months_started])
 	_verify("シーズン終了後")
+
+	# ポストシーズン：1日ずつ進めると日付が追従し、公式戦の成績は変わらない。試合へで日本一まで → 表彰へ
+	var ps_day: int = _gs.day
+	_gs.start_fast_forward(ps_day)
+	while _gs.is_fast_forwarding():
+		await process_frame
+	_check(_gs.day == ps_day + 1 and _gs.date_text() == "2008年 " + _gs.month_text(),
+			"ポストシーズンの1日: " + _gs.date_text())
+	var ps_guard := 0
+	while _gs.phase == _gs.Phase.POSTSEASON and not _gs.postseason_done() and ps_guard < 10:
+		_gs.advance()
+		ps_guard += 1
+		print("  ポストシーズン 試合へ → ", _gs.date_text(), " ", _gs.event_text())
+	_check(_gs.postseason_done() and not _gs.postseason.champion.is_empty(),
+			"日本一: " + _gs.postseason.champion)
+	_check(_gs.button_text() == "表彰へ", "日本一のあとは可変ボタンが表彰へ: " + _gs.button_text())
+	_verify("ポストシーズンの後")
+	_gs.advance()
+	_check(_gs.phase == _gs.Phase.AWARDS, "表彰へ進む（%s）" % _gs.phase_name())
 
 	# オフ → 翌年（2009年）の開幕 → 3日進める → 試合へを繰り返してオフ
 	while _gs.phase != _gs.Phase.SEASON:
@@ -99,6 +118,10 @@ func _run() -> void:
 		_gs.advance()
 		guard += 1
 		print("  試合へ → ", _gs.date_text())
+	_check(_gs.phase == _gs.Phase.POSTSEASON, "2009年もポストシーズンまで進む")
+	while _gs.phase == _gs.Phase.POSTSEASON and guard < 40:
+		_gs.advance()
+		guard += 1
 	_check(_gs.phase == _gs.Phase.AWARDS, "2009年もオフまで進む")
 
 	print("NG %d 件" % _failures if _failures > 0 else "すべてOK")

@@ -74,7 +74,13 @@ func _run() -> void:
 		while _gs.phase == _gs.Phase.SEASON and _gs.month < 7:
 			_gs.advance()
 		await _check_season(y, "%d年%d月" % [y, _gs.month])
-		_gs.advance_through(_gs.season_last_day())
+		_gs.advance_through(_gs.season_last_day(), true)
+		# ポストシーズン（作業23）：段階ごとに画面を開いて調べ、日本一のあとの画面も調べてから表彰へ
+		while _gs.phase == _gs.Phase.POSTSEASON:
+			await _open("postseason")
+			await _check_screen("%d年 %s：ポストシーズン" % [y, _gs.date_text()])
+			_hub.call("_close_sub_screen")
+			_gs.advance()
 		while _gs.phase != _gs.Phase.SEASON:
 			await _check_offseason(y)
 			if y == _last_year and _gs.phase == _gs.Phase.DRAFT:

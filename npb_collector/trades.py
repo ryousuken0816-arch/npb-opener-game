@@ -35,8 +35,13 @@ def parse(season: int) -> list[dict]:
         c = [clean(x.get_text(" ")) for x in tr.find_all(["td", "th"])]
         if len(c) < 7 or c[5] != "→":
             continue
+        # 2018年度以降は列の並びが「→ 移籍先の背番号 移籍先の球団」（それ以前は「→ 移籍先の球団 背番号」）。
+        # 背番号の列は数字か空欄なので、球団名の入っているほうを移籍先にする
+        to_team = c[6]
+        if c[7] and not c[7].isdigit() and (not c[6] or c[6].isdigit()):
+            to_team = c[7]
         row = {"date": c[0], "name": c[1], "pos": c[2].replace(" ", ""), "number": c[3],
-               "from_team": c[4], "to_team": c[6]}
+               "from_team": c[4], "to_team": to_team}
         if prev:  # 「〃」は上の行と同じ
             for k in ("date", "from_team", "to_team"):
                 if row[k] == "〃":

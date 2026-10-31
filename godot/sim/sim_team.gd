@@ -96,6 +96,17 @@ func add_player(p: Dictionary, debut_years: Dictionary = {}) -> void:
 	auto_register()
 
 
+## 育成選手の印を付け直す（ids：選手ID → true）。rebuild なら、1軍にいる育成選手を外して自動で組み直す
+func set_ikusei(ids: Dictionary, rebuild := true) -> void:
+	var on_first := false
+	for p in players:
+		p.is_ikusei = ids.has(p.id)
+		if p.is_ikusei and is_active(p):
+			on_first = true
+	if on_first and rebuild:
+		auto_register()
+
+
 ## 選手を外す（シーズン中の移籍。1軍・持ち場・スタメンは自動で組み直す）
 func remove_player(id: String) -> void:
 	if not by_id.has(id):
@@ -140,7 +151,7 @@ func _auto_choose(excluded: Dictionary) -> Array[SimPlayer]:
 	var pitchers: Array[SimPlayer] = []
 	var fielders: Array[SimPlayer] = []
 	for p in players:
-		if excluded.has(p.id):
+		if excluded.has(p.id) or p.is_ikusei:
 			continue
 		if p.is_pitcher:
 			if p.has_pitching:
@@ -459,6 +470,8 @@ func reregister_day(p: SimPlayer) -> int:
 func promote_error(p: SimPlayer, today: int, swap_out: SimPlayer = null) -> String:
 	if is_active(p):
 		return "%sはすでに1軍です" % p.name
+	if p.is_ikusei:
+		return "%sは育成選手です（支配下に登録すると1軍に上げられます）" % p.name
 	var back := reregister_day(p)
 	# 抹消したその日のうち（試合前）に戻すのは取り消しとみなす
 	if back >= 0 and today != int(demoted_day[p.id]) and today < back:
