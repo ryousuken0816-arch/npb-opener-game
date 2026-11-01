@@ -228,3 +228,13 @@ python tools/fictional_draft.py   # → generated/fictional_draft.json（Godot �
 - 学校（`schools`、777校）：2008〜2026年の指名の出身校・所属と人数（「〇〇大学」は「〇〇大」にそろえる）。1年の人数（`class_sizes`）：2016〜2025年の本指名・育成の人数
 - 転生のもと（`legends`、132人）：2008〜2026年の `_post` の日本人選手（ドラフト歴あり）で実力のピークが1.1以上。ピークの年の能力・球速（最速）・守備の記録・投打・体格・球団・出身校
 - `generated/ratings/` を作り直したら流し直す
+
+## ratings_audit.py — 能力値の点検の表（docs/AUTORUN.md 作業39）
+
+```
+godot --headless --path godot --script res://tests/ratings_audit_dump.gd -- 2026 <出力先>/sim2026_1.json   # 1回 約10秒、年と回数を変えて何回か
+python tools/ratings_audit.py --sims "<出力先>/sim*.json" --out <表>.md
+```
+
+能力値（2026_pre など）・npb.jp の実際の成績（記録室と同じ式の wRC+・FIP・WAR）・タイトルとゴールデングラブ・ゲームを回した成績の平均を並べた表を作る。
+ゲームの処理・能力値は変えない（読むだけ）。結果の資料は `docs/reports/ratings_audit.md`。
