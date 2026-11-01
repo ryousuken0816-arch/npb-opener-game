@@ -28,6 +28,12 @@ var _fullscreen_button: Button
 var _game_row: HBoxContainer
 var _hits_button: Button
 var _reincarnation_button: Button
+## 早送りを止めるニュース（作業35。セーブに残る）：まとめた選び方と、種類ごとのオン・オフ（開いている間は枠の札を隠す）
+var _stop_row: HBoxContainer
+var _stop_preset_button: Button
+var _stop_detail_button: Button
+var _stop_kinds_box: GridContainer
+var _stop_kind_buttons := {}
 var _slot_buttons := {}
 var _status_label: Label
 var _confirm_panel: PanelContainer
@@ -94,6 +100,7 @@ func setup(p: UiTheme.Palette, only_load := false) -> void:
 	_game_row.add_child(_reincarnation_button)
 	_game_row.visible = not only_load
 	add_child(_game_row)
+	_build_stop_settings()
 	_sync_game_settings()
 	for slot in SaveGame.all_slots():
 		var b := Button.new()
@@ -154,10 +161,59 @@ func _setting_button(tip: String) -> Button:
 	return b
 
 
-## ゲームの設定の行は、確認を出している間は隠す（枠の高さに収めるため）
+func _build_stop_settings() -> void:
+	_stop_row = HBoxContainer.new()
+	_stop_row.add_theme_constant_override("separation", 8)
+	_stop_row.add_child(UiTheme.small_label("早送りを止めるニュース", 17, UiTheme.TEXT, 800))
+	_stop_preset_button = _setting_button("早送り（日程表・ハブの「試合へ」）の途中で大事なニュースが出たら、その日の終わりで止めてニュースを開く。"
+		+ "押すたびに 大事なものだけ（アマ球界の号・自球団の速報・優勝決定・日本一）→ すべて → 止めない")
+	_stop_preset_button.pressed.connect(func() -> void:
+		var order: Array = GameState.NEWS_STOP_PRESETS.keys()
+		var i := order.find(GameState.news_stop_preset())
+		GameState.set_news_stop_preset(order[(i + 1) % order.size()])
+		_sync_game_settings())
+	_stop_row.add_child(_stop_preset_button)
+	_stop_detail_button = _setting_button("止めるニュースを種類ごとに選ぶ（もう一度押すと閉じる）")
+	_stop_detail_button.custom_minimum_size.x = 180
+	_stop_detail_button.toggle_mode = true
+	_stop_detail_button.text = "種類ごとに選ぶ"
+	_stop_detail_button.toggled.connect(func(on: bool) -> void:
+		_sync_game_row()
+		_sync_game_settings()
+		if on:
+			UiInput.grab(_stop_kind_buttons.values()[0]))
+	_stop_row.add_child(_stop_detail_button)
+	_stop_row.visible = not load_only
+	add_child(_stop_row)
+	_stop_kinds_box = GridContainer.new()
+	_stop_kinds_box.columns = 4
+	_stop_kinds_box.add_theme_constant_override("h_separation", 8)
+	_stop_kinds_box.add_theme_constant_override("v_separation", 8)
+	for kind: String in GameState.NEWS_STOP_KINDS:
+		var b := _setting_button("早送りの途中でこの種類のニュースが出たら止める")
+		b.custom_minimum_size = Vector2(190, 40)
+		b.add_theme_font_size_override("font_size", 16)
+		b.toggle_mode = true
+		b.toggled.connect(func(on: bool) -> void:
+			GameState.set_news_stop_kind(kind, on)
+			_sync_game_settings())
+		_stop_kinds_box.add_child(b)
+		_stop_kind_buttons[kind] = b
+	_stop_kinds_box.visible = false
+	add_child(_stop_kinds_box)
+
+
+## ゲームの設定の行は、確認を出している間は隠す（枠の高さに収めるため）。
+## 早送りを止めるニュースを種類ごとに選んでいる間は、枠の札を隠す
 func _sync_game_row() -> void:
-	if _game_row != null:
-		_game_row.visible = not load_only and not _confirm_panel.visible
+	if _game_row == null:
+		return
+	var detail := _stop_detail_button.button_pressed and not load_only and not _confirm_panel.visible
+	_game_row.visible = not load_only and not _confirm_panel.visible
+	_stop_row.visible = _game_row.visible
+	_stop_kinds_box.visible = detail
+	for slot: String in _slot_buttons:
+		_slot_buttons[slot].visible = not detail
 
 
 ## ゲームの設定の表示を GameState に合わせる（ロードしたあとも）
@@ -167,6 +223,13 @@ func _sync_game_settings() -> void:
 	_hits_button.text = "当たりの頻度：%s" % FictionalDraft.HIT_MODES.get(GameState.fictional_hits, "史実どおり")
 	_reincarnation_button.set_pressed_no_signal(GameState.reincarnation_on)
 	_reincarnation_button.text = "転生選手：%s" % ("オン" if GameState.reincarnation_on else "オフ")
+	if _stop_preset_button == null:
+		return
+	_stop_preset_button.text = GameState.NEWS_STOP_PRESET_NAMES.get(GameState.news_stop_preset(), "")
+	for kind: String in _stop_kind_buttons:
+		var on: bool = GameState.news_stop_kinds.get(kind, false)
+		_stop_kind_buttons[kind].set_pressed_no_signal(on)
+		_stop_kind_buttons[kind].text = "%s：%s" % [GameState.NEWS_STOP_KINDS[kind], "止める" if on else "－"]
 
 
 func _small_button(text: String, color: Color) -> Button:
@@ -183,6 +246,7 @@ func _small_button(text: String, color: Color) -> Button:
 func open() -> void:
 	_pending = ""
 	_confirm_panel.visible = false
+	_stop_detail_button.set_pressed_no_signal(false)
 	_sync_game_row()
 	_set_status(_default_status())
 	_sync_game_settings()
@@ -194,6 +258,10 @@ func open() -> void:
 func back() -> bool:
 	if not _pending.is_empty():
 		cancel_confirm()
+		return true
+	if _stop_detail_button.button_pressed:
+		_stop_detail_button.button_pressed = false
+		UiInput.grab(_stop_detail_button)
 		return true
 	return false
 
