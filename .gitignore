@@ -1,3 +1,4 @@
+__pycache__/
 npb_collector/cache/
 npb_collector/__pycache__/
 *.log
@@ -6,3 +7,4 @@ voice/
 *.vvm
 *.onnx
 npb_collector/out*/
+data/basement/
