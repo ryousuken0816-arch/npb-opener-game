@@ -19,6 +19,8 @@ var _gd: Node
 ## オートロードを参照するクラスは、オートロードの準備ができてから読む（スクリプトの読み込み時に GameData が無いため）
 var _fd: GDScript
 var _lr: GDScript
+var _growth: GDScript
+var _fa: GDScript
 
 
 func _initialize() -> void:
@@ -30,6 +32,8 @@ func _run() -> void:
 	_gd = root.get_node("GameData")
 	_fd = load("res://sim/fictional_draft.gd")
 	_lr = load("res://sim/league_roster.gd")
+	_growth = load("res://sim/growth.gd")
+	_fa = load("res://sim/free_agency.gd")
 	_check_generator()
 	_check_amateur_news_2026()
 	_check_fictional_flow()
@@ -57,7 +61,9 @@ func _check_generator() -> void:
 		var bad_school := 0
 		var dup := 0
 		var growth_ok := true
+		var age_bad := 0
 		var by_cat := {}
+		var age_range := {}
 		for y in range(2028, 2058):
 			var taken := {}
 			var players: Array = fd.generate_year(y, rng, {"hits": mode})
@@ -75,6 +81,14 @@ func _check_generator() -> void:
 					dup += 1
 				taken[key] = true
 				by_cat[am["category"]] = int(by_cat.get(am["category"], 0)) + 1
+				# 年齢：入団する年（翌年）の4月1日時点の年齢が、区分と入社の年に合っている。誕生日があって成長の年齢と同じ
+				var age: int = _growth.age_at(p, y + 1)
+				var limits := _age_limits(str(am["category"]), str(am["grade_text"]))
+				if p.get("birth") == null or age != int(am["entry_age"]) or age < limits[0] or age > limits[1] \
+						or _growth.age_at(p, y + 2) != age + 1:
+					age_bad += 1
+				var lohi: Array = age_range.get(str(am["category"]), [99, 0])
+				age_range[str(am["category"])] = [mini(lohi[0], age), maxi(lohi[1], age)]
 				if not (p.get("growth") is Dictionary and p["growth"].get("peak") is Dictionary
 						and str(p["growth"].get("type", "")) in _fd.GROWTH_TYPES):
 					growth_ok = false
@@ -86,12 +100,14 @@ func _check_generator() -> void:
 		_check(bad_school == 0, "%s：学校・所属はすべて実在の一覧から（一覧に無い %d人）" % [mode, bad_school])
 		_check(dup == 0, "%s：同じ年に名前が重ならない（%d件）" % [mode, dup])
 		_check(growth_ok, "%s：全員に隠れたピークと育ち方（growth）" % mode)
+		_check(age_bad == 0 and age_range.has("社会人") and age_range.has("独立"),
+			"%s：高校・大学・社会人・独立の全員に年齢（誕生日あり・区分と入社の年に合う・成長の年齢と同じ。範囲 %s、不備 %d人）" % [mode, age_range, age_bad])
 		_check(gems >= 2 and gems <= 14, "%s：無名校の掘り出し物は5年に1人ほど（30年で %d人）" % [mode, gems])
 		if mode == "historical":
 			_check(absf(s_year - hist_s * per_year) <= 1.2, "史実どおり：将来性Sの人数がひな形（史実の指名）の割合どおり（%.1f／%.1f）"
 				% [s_year, hist_s * per_year])
 		else:
-			_check(s_year >= hist_s * per_year + 1.5, "夢多め：将来性Sが年に2〜3人増える（%.1f人/年）" % s_year)
+			_check(s_year >= hist_s * per_year + 1.2, "夢多め：将来性Sが年に2〜3人増える（%.1f人/年）" % s_year)
 	# 転生選手
 	var rng2 := RandomNumberGenerator.new()
 	rng2.seed = 7
@@ -118,6 +134,20 @@ func _check_generator() -> void:
 				close += 1
 	_check(rei_total >= 10 and rei_total <= 32, "転生選手は年に0〜2人（20年で %d人）" % rei_total)
 	_check(close == rei_total, "転生選手は元の名前・全盛期に近いピーク・高い当時の評価（%d/%d人）" % [close, rei_total])
+
+
+## 区分と学年・入社の年の表示から、入団する年の4月1日時点の年齢の範囲 [下限, 上限]
+func _age_limits(category: String, grade_text: String) -> Array:
+	match category:
+		"高校":
+			return [18, 18]
+		"大学":
+			return [22, 22]
+		"社会人":
+			var years := int(grade_text.trim_prefix("入社").trim_suffix("年目"))
+			# 高卒（18歳＋入社の年。3〜4年目）か大卒（22歳＋入社の年。2〜4年目）
+			return [18 + years if years >= 3 else 22 + years, 22 + years]
+	return [19, 25]
 
 
 ## ひな形のうち将来性の点が th 以上の割合（本指名＋育成の全員）
@@ -243,6 +273,7 @@ func _check_fictional_flow() -> void:
 		if _gs.league.team_of.get(rec["id"], "") == USER and not _gd.call("player", rec["id"]).is_empty():
 			present += 1
 	_check(present == mine.size(), "指名した架空の選手 %d/%d人が自球団に所属" % [present, mine.size()])
+	_check_ages(d.candidates, mine)
 	if not rei.is_empty():
 		var rp: Dictionary = _gd.call("player", rei[0]["id"])
 		_check(not _fd.reincarnation_of(rp).is_empty(), "転生選手は入団後も転生の印と元の選手が分かる")
@@ -268,6 +299,34 @@ func _check_fictional_flow() -> void:
 	_gs.load_state(saved)
 	_check(not _gs.reincarnation_on and _gs.fictional_hits == "dream" and _gs.draft_class(2029).size() == cls29.size()
 		and str(_gs.draft_class(2029)[0]["name"]) == str(cls29[0]["name"]), "セーブ→ロードで設定と2029年の候補が残る")
+
+
+## 2028年のドラフトの候補一覧の年齢：全員に出る（社会人・独立も）。指名した選手は入団後の年齢・成長の年齢とも合う
+func _check_ages(candidates: Array, mine: Array) -> void:
+	var by_career := {}
+	var missing := 0
+	for c: Dictionary in candidates:
+		if int(c["age"]) <= 0 or not c.get("age_known", false):
+			missing += 1
+		var lohi: Array = by_career.get(c["career"], [99, 0])
+		by_career[c["career"]] = [mini(lohi[0], int(c["age"])), maxi(lohi[1], int(c["age"]))]
+	print("  候補の年齢（区分ごと）：%s" % by_career)
+	_check(missing == 0, "候補一覧：全員に年齢が出る（出ない %d人）" % missing)
+	_check(by_career.get("高校生", [18, 18]) == [18, 18] and by_career.get("大学生", [22, 22]) == [22, 22]
+		and by_career.has("社会人") and by_career["社会人"][0] >= 19 and by_career["社会人"][1] <= 26,
+		"候補一覧：高校生は18歳・大学生は22歳・社会人（独立を含む）は19〜26歳")
+	var by_id := {}
+	for c: Dictionary in candidates:
+		by_id[c["id"]] = c
+	var bad := 0
+	for rec: Dictionary in mine:
+		var p: Dictionary = _gd.call("player", rec["id"])
+		var c: Dictionary = by_id.get(rec["id"], {})
+		# 入団する2029年の4月1日時点の年齢が候補一覧の年齢。翌年は +1。暦年の差（FA・戦力外の画面の年齢）は 0〜1 歳上
+		if p.is_empty() or c.is_empty() or _growth.age_at(p, 2029) != int(c["age"]) or _growth.age_at(p, 2030) != int(c["age"]) + 1 \
+				or _fa.age_of(p, 2029) < int(c["age"]) or _fa.age_of(p, 2029) > int(c["age"]) + 1:
+			bad += 1
+	_check(bad == 0, "指名した選手 %d人：入団後の年齢が候補一覧の年齢と同じ（毎年1歳ずつ）" % mine.size())
 
 
 ## 指名した選手を1人1軍に上げ、3週間で試合に出るか

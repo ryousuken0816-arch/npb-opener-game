@@ -76,6 +76,10 @@ func _run() -> void:
 	_gs.start_fast_forward(season.last_day())
 	while _gs.is_fast_forwarding():
 		await process_frame
+		# 自球団のリーグ優勝（作業23の演出）で早送りが止まったら、続きから最終日まで早送りし直す
+		if not _gs.is_fast_forwarding() and _gs.phase == _gs.Phase.SEASON and not season.is_finished():
+			print("  優勝の演出で止まった（%s）→ 続きから早送り" % _gs.date_text())
+			_gs.start_fast_forward(season.last_day())
 	print("最終日までの早送り: %.1f 秒" % ((Time.get_ticks_msec() - t0) / 1000.0))
 	_check(_gs.phase == _gs.Phase.POSTSEASON, "最終日のあとはポストシーズンへ（%s）" % _gs.phase_name())
 	_check(season.is_finished() and season.played_count() == season.scheduled_count(),

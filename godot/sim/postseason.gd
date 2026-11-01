@@ -240,6 +240,7 @@ func _play(s: Dictionary, g: Dictionary, teams: Dictionary) -> void:
 	var away: SimTeam = teams[g["away"]]
 	var dh: bool = home.league == "P"
 	var result := GameSim.new(away, home, g["day"], dh, _rng).play()
+	result.erase("fielding")  # 守備得点は公式戦だけ
 	g["result"] = result
 	for side in 2:
 		for line: Dictionary in result["batting"][side]:
