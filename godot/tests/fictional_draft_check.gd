@@ -101,7 +101,7 @@ func _check_news_text() -> void:
 			c["pitcher"] = pos == "投手"
 			c["grade"] = grade
 			var story: Array = an.article(c, _an.STAGES[4], 2026, rng)
-			_check("ある球団のスカウト（ゲーム内の寸評）" in story[1] and not str(story[0]).is_empty(), "守備位置・評価別：%s %s" % [pos, grade])
+			_check("ある球団のスカウト" in story[1] and not str(story[0]).is_empty(), "守備位置・評価別：%s %s" % [pos, grade])
 
 
 func _check_tournaments() -> void:

@@ -59,7 +59,7 @@ static func simulate(year: int, event: String, prospects: Array, seed_value: int
 			title = "優勝投手"
 			champion_pitcher = true
 		if champion and not mvp:
-			title += "・" + ("橋戸賞" if event == "shakai" else "大会MVP（ゲーム内選出）")
+			title += "・" + ("橋戸賞" if event == "shakai" else "大会MVP")
 			mvp = true
 		var stat := ""
 		var peak: Dictionary = c.get("peak", {})
@@ -74,7 +74,12 @@ static func simulate(year: int, event: String, prospects: Array, seed_value: int
 			hr = rng.randi_range(1, mini(3, rounds)) if power >= 65.0 else (rng.randi_range(0, 1) if power >= 45.0 else 0)
 			stat = "大会通算%d本塁打" % hr if hr > 0 else "大会通算%d安打" % rng.randi_range(rounds, rounds * 3)
 		var row := {"name": c["name"], "school": c["school"], "title": title, "stat": stat,
-			"boost": 0.12 if champion else (0.06 if runner else 0.0), "source_url": ""}
+			"boost": 0.12 if champion else (0.06 if runner else 0.0), "source_url": "", "moment": ""}
+		if champion:
+			if c["pitcher"] and "優勝投手" in title:
+				row["moment"] = "決勝で完投勝利" if runner_score > 0 else "決勝で完封勝利"
+			elif not c["pitcher"]:
+				row["moment"] = "決勝打で頂点へ"
 		if strikeouts > int(best_k["value"]) and c["pitcher"]:
 			best_k = {"value": strikeouts, "row": row}
 		if hr > int(best_hr["value"]):
@@ -84,7 +89,7 @@ static func simulate(year: int, event: String, prospects: Array, seed_value: int
 		if record["row"].is_empty():
 			continue
 		var row: Dictionary = record["row"]
-		row["title"] += "・" + ("大会最多奪三振（ゲーム内）" if record == best_k else "大会最多本塁打（ゲーム内）")
+		row["title"] += "・" + ("大会最多奪三振" if record == best_k else "大会最多本塁打")
 		row["boost"] = maxf(float(row["boost"]), 0.08)
 	# 記事・候補の紹介には優勝・準優勝と個人賞だけ。無名の出場候補を一律に持ち上げない。
 	result["players"] = result["players"].filter(func(p: Dictionary) -> bool: return float(p["boost"]) > 0.0)
