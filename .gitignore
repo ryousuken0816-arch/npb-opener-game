@@ -8,3 +8,6 @@ voice/
 *.onnx
 npb_collector/out*/
 data/basement/
+
+.env
+scratch/
