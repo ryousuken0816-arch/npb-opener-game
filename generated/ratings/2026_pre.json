@@ -31260,28 +31260,28 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 60,
+      "value": 65,
       "rank": "C"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
+      "value": 72,
+      "rank": "B"
      },
      "eye": {
-      "value": 67,
+      "value": 60,
       "rank": "C"
      },
      "speed": {
-      "value": 58,
-      "rank": "D"
+      "value": 68,
+      "rank": "C"
      },
      "defense": {
-      "value": 63,
+      "value": 68,
       "rank": "C"
      },
      "arm": {
-      "value": 45,
-      "rank": "E"
+      "value": 76,
+      "rank": "B"
      }
     },
     "detail": {
@@ -31375,6 +31375,18 @@
       "value": 45,
       "rank": "E"
      }
+    }
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 88,
+     "power": 94,
+     "eye": 82,
+     "speed": 76,
+     "defense": 85,
+     "arm": 85
     }
    }
   },
@@ -40572,24 +40584,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 68,
-      "rank": "C"
-     },
-     "stamina": {
       "value": 76,
       "rank": "B"
      },
-     "k9": {
-      "value": 64,
-      "rank": "C"
-     },
-     "bb9": {
-      "value": 77,
+     "stamina": {
+      "value": 78,
       "rank": "B"
      },
+     "k9": {
+      "value": 82,
+      "rank": "A"
+     },
+     "bb9": {
+      "value": 85,
+      "rank": "A"
+     },
      "hr9": {
-      "value": 64,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -40645,6 +40657,18 @@
        "weight": 0.09
       }
      }
+    }
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 92,
+     "stamina": 82,
+     "k9": 94,
+     "bb9": 96,
+     "hr9": 85,
+     "velocity": 156
     }
    }
   },
@@ -63642,24 +63666,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "stamina": {
-      "value": 64,
+      "value": 66,
       "rank": "C"
      },
      "k9": {
-      "value": 62,
-      "rank": "C"
+      "value": 80,
+      "rank": "A"
      },
      "bb9": {
-      "value": 62,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "hr9": {
-      "value": 62,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -63692,7 +63716,7 @@
      }
     },
     "velocity": {
-     "kmh": 153,
+     "kmh": 157,
      "source": "observed"
     },
     "sample": {
@@ -63715,6 +63739,18 @@
        "weight": 0.024
       }
      }
+    }
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 88,
+     "stamina": 74,
+     "k9": 94,
+     "bb9": 86,
+     "hr9": 82,
+     "velocity": 160
     }
    }
   },
@@ -124844,27 +124880,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 67,
-      "rank": "C"
+      "value": 82,
+      "rank": "A"
      },
      "power": {
-      "value": 51,
-      "rank": "D"
+      "value": 68,
+      "rank": "C"
      },
      "eye": {
-      "value": 43,
-      "rank": "E"
+      "value": 72,
+      "rank": "B"
      },
      "speed": {
-      "value": 67,
+      "value": 68,
       "rank": "C"
      },
      "defense": {
-      "value": 52,
-      "rank": "D"
+      "value": 92,
+      "rank": "S"
      },
      "arm": {
-      "value": 76,
+      "value": 74,
       "rank": "B"
      }
     },
@@ -124938,6 +124974,18 @@
       "value": 76,
       "rank": "B"
      }
+    }
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 95,
+     "power": 84,
+     "eye": 88,
+     "speed": 75,
+     "defense": 98,
+     "arm": 82
     }
    }
   },
@@ -138434,27 +138482,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "power": {
-      "value": 67,
-      "rank": "C"
+      "value": 78,
+      "rank": "B"
      },
      "eye": {
-      "value": 46,
-      "rank": "E"
-     },
-     "speed": {
       "value": 66,
       "rank": "C"
      },
+     "speed": {
+      "value": 70,
+      "rank": "B"
+     },
      "defense": {
-      "value": 55,
-      "rank": "D"
+      "value": 72,
+      "rank": "B"
      },
      "arm": {
-      "value": 74,
+      "value": 78,
       "rank": "B"
      }
     },
@@ -138529,6 +138577,18 @@
       "value": 74,
       "rank": "B"
      }
+    }
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 86,
+     "power": 92,
+     "eye": 82,
+     "speed": 75,
+     "defense": 80,
+     "arm": 85
     }
    }
   },
@@ -153637,27 +153697,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 77,
+      "value": 76,
       "rank": "B"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
+      "value": 80,
+      "rank": "A"
      },
      "eye": {
-      "value": 40,
-      "rank": "E"
+      "value": 65,
+      "rank": "C"
      },
      "speed": {
-      "value": 61,
+      "value": 68,
       "rank": "C"
      },
      "defense": {
-      "value": 71,
-      "rank": "B"
+      "value": 68,
+      "rank": "C"
      },
      "arm": {
-      "value": 75,
+      "value": 76,
       "rank": "B"
      }
     },
@@ -153732,6 +153792,18 @@
       "value": 75,
       "rank": "B"
      }
+    }
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 88,
+     "power": 96,
+     "eye": 80,
+     "speed": 72,
+     "defense": 76,
+     "arm": 82
     }
    }
   },

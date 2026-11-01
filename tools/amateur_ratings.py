@@ -36,12 +36,13 @@ RANKS = [(90, "S"), (80, "A"), (70, "B"), (60, "C"), (50, "D"), (40, "E"), (20, 
 BANDS = {1: "1", 2: "2-3", 3: "2-3", 4: "4-5", 5: "4-5"}
 BAND_LEVEL = {"1": 4, "2-3": 3, "4-5": 2, "6-": 1, "育成": 0}
 GRADE_LEVEL = {"S": 5, "A": 4, "B": 3, "C": 2, "D": 0}
-## 格付けが帯より上（下）なら全能力を1段階あたりこれだけ上げる（下げる）。S は帯「1」の上に1段
-GRADE_STEP = 3
-## 長所・短所の言葉 → 能力（投手・野手）。1語あたりの加減と、1つの能力の上限
-STRENGTH_BONUS = 6
+## 格付けボーナス（目玉・上位新人をしっかり強くする）
+GRADE_BONUS = {"S": 10, "A": 7, "B": 4, "C": 1, "D": -2}
+GRADE_STEP = 5
+## 長所・短所の言葉 → 能力（投手・野手）。1語あたりの加減と、1つの能力の上限（武器を尖らせる）
+STRENGTH_BONUS = 9
 WEAKNESS_PENALTY = -5
-TRAIT_CAP = 12
+TRAIT_CAP = 18
 PITCH_WORDS = {
     "bb9": ["制球", "コントロール", "四球", "安定感", "まとまり"],
     "k9": ["奪三振", "三振", "変化球", "キレ", "フォーク", "スライダー", "カーブ", "チェンジアップ", "スプリット",
@@ -59,17 +60,17 @@ BAT_WORDS = {
     "defense": ["守備", "守備範囲", "グラブ", "フットワーク", "捕球", "リード", "キャッチング", "ブロッキング"],
     "arm": ["強肩", "肩", "送球", "スローイング"],
 }
-## 最速→平均球速の差（km/h）。能力値の球速はシーズンの平均球速の目安（tools/README.md「球速」）
-MAX_TO_AVG_KMH = 5
-VELOCITY_MIN, VELOCITY_MAX = 128, 158
-## 数字の補助：球速は下地の球速との差1km/hあたり総合を、50m走は6.0秒との差0.1秒あたり走力を、
-## 遠投は100mとの差1mあたり肩力を上下する（上限 NUMBER_CAP）
-VELO_TO_OVERALL = 0.5
-DASH_PER_TENTH = 2.0
-THROW_PER_M = 0.3
-NUMBER_CAP = 8
-## 2026年の新人（すでに compute_ratings の下地がある）は、下地と評価からの値をこの割合で混ぜる（評価側）
-ROOKIE_SCOUT_WEIGHT = 0.6
+## 最速→平均球速の差（km/h）
+MAX_TO_AVG_KMH_HS = 4
+MAX_TO_AVG_KMH_UNIV = 3
+VELOCITY_MIN, VELOCITY_MAX = 130, 160
+## 数字の補助：球速・走力・遠投
+VELO_TO_OVERALL = 0.8
+DASH_PER_TENTH = 2.5
+THROW_PER_M = 0.35
+NUMBER_CAP = 12
+## 2026年の新人（すでに compute_ratings の下地がある）は、評価からの値をこの割合で混ぜる
+ROOKIE_SCOUT_WEIGHT = 0.75
 
 
 def load(path: Path):
@@ -189,21 +190,29 @@ def scouted_entry(a: dict, templates: Templates, band: str, level_gap: float) ->
     pitcher = a["pos"] == "投手"
     category = category_of(a.get("school") or "", a.get("category"))
     e = Templates.mean_entry(templates.pick(pitcher, category, band))
-    shift = GRADE_STEP * level_gap
+    grade = (a.get("scout") or {}).get("grade") or a.get("eval_rank") or "C"
+    shift = GRADE_STEP * level_gap + GRADE_BONUS.get(grade, 0)
     deltas = trait_deltas(a, pitcher)
     if pitcher:
         r = e["pitching"]["ratings"]
         base_kmh = e["pitching"]["velocity"]["kmh"]
         kmh = base_kmh
+        max_sub = MAX_TO_AVG_KMH_HS if category == "高校" else MAX_TO_AVG_KMH_UNIV
         if a.get("max_kmh"):
-            kmh = max(VELOCITY_MIN, min(VELOCITY_MAX, int(a["max_kmh"]) - MAX_TO_AVG_KMH))
+            kmh = max(VELOCITY_MIN, min(VELOCITY_MAX, int(a["max_kmh"]) - max_sub))
         kmh += 1 if deltas.get("velocity", 0) > 0 else 0
         velo_bonus = max(-NUMBER_CAP, min(NUMBER_CAP, VELO_TO_OVERALL * (kmh - base_kmh)))
+        is_sp = "先発" in str(a.get("pos_detail") or "") or grade in ("S", "A")
         for k in list(r):
             extra = deltas.get(k, 0) + (velo_bonus if k in ("overall", "k9") else 0)
             set_value(r, k, r[k]["value"] + shift + extra)
+        # 先発投手のスタミナ底上げ（即戦力化）
+        if is_sp:
+            min_sta = 50 if category == "高校" else (68 if grade == "S" else 60)
+            r["stamina"]["value"] = max(r["stamina"]["value"], min_sta)
+            r["stamina"]["rank"] = rank_of(r["stamina"]["value"])
         e["pitching"]["velocity"] = {"kmh": int(kmh), "source": "amateur" if a.get("max_kmh") else "provisional"}
-        e["pitching"]["role"] = "先発" if "先発" in str(a.get("pos_detail") or "") else e["pitching"].get("role", "救援")
+        e["pitching"]["role"] = "先発" if is_sp else e["pitching"].get("role", "救援")
     else:
         r = e["batting"]["ratings"]
         numbers = {}
@@ -217,6 +226,35 @@ def scouted_entry(a: dict, templates: Templates, band: str, level_gap: float) ->
         if deltas.get("power", 0) > 0:
             e["batting"]["trajectory"] = min(4, int(e["batting"].get("trajectory", 2)) + 1)
     return e
+
+
+def make_amateur_growth(e: dict, a: dict) -> dict:
+    pitcher = a.get("pos") == "投手"
+    grade = (a.get("scout") or {}).get("grade") or a.get("eval_rank") or "C"
+    cat = a.get("category") or "大学"
+    is_hs = (cat == "高校")
+
+    headroom = 18 if grade == "S" else (14 if grade == "A" else (10 if grade == "B" else 6))
+    if is_hs:
+        headroom += 6
+
+    part = "pitching" if pitcher else "batting"
+    ratings = e.get(part, {}).get("ratings", {})
+    deltas = trait_deltas(a, pitcher)
+
+    peak = {}
+    for k, r in ratings.items():
+        if isinstance(r, dict) and r.get("value") is not None:
+            extra = 4 if deltas.get(k, 0) > 0 else 0
+            peak[k] = min(98, r["value"] + headroom + extra)
+
+    if pitcher and e.get("pitching", {}).get("velocity"):
+        cur_v = int(e["pitching"]["velocity"].get("kmh", 145))
+        peak["velocity"] = min(162, cur_v + (5 if is_hs else 3))
+
+    peak_age = 29 if is_hs else (28 if pitcher else 27)
+    gtype = "晩成" if is_hs else ("普通" if grade in ("S", "A") else "普通")
+    return {"type": gtype, "peak_age": peak_age, "peak": peak}
 
 
 def amateur_fields(a: dict, draft_year: int) -> dict:
@@ -244,10 +282,11 @@ def apply_profile(e: dict, a: dict, pid: str, team, draft_text: str, draft_year:
             e[part]["sample"] = sample
     if isinstance(e.get("pitching"), dict):
         e["pitching"]["abilities"] = []
+    e["growth"] = make_amateur_growth(e, a)
     return e
 
 
-def blend_into(base: dict, scouted: dict, w: float) -> None:
+def blend_into(base: dict, scouted: dict, w: float, a: dict = None) -> None:
     """下地（compute_ratings の新人の初期能力）に評価からの値を w の割合で混ぜる"""
     for part in ("batting", "pitching"):
         if not isinstance(base.get(part), dict) or not isinstance(scouted.get(part), dict):
@@ -260,6 +299,8 @@ def blend_into(base: dict, scouted: dict, w: float) -> None:
         base["pitching"]["velocity"] = scouted["pitching"]["velocity"]
     if isinstance(base.get("batting"), dict):
         base["batting"]["trajectory"] = scouted["batting"].get("trajectory", base["batting"].get("trajectory"))
+    if a:
+        base["growth"] = make_amateur_growth(base, a)
 
 
 def fill_leagues(ratings: dict) -> int:
@@ -301,7 +342,7 @@ def cmd_rookies(args) -> None:
         text = f"{y}年{'育成選手' if d['ikusei'] else ''}ドラフト{re.sub(r'[^0-9]', '', d['round'])}位"
         cur = by_name.get(norm_name(d["name"]))
         if cur is not None and str(cur.get("draft") or "").startswith(f"{y}年"):
-            blend_into(cur, scouted, ROOKIE_SCOUT_WEIGHT)
+            blend_into(cur, scouted, ROOKIE_SCOUT_WEIGHT, a)
             cur["amateur"] = amateur_fields(a, y)
             adjusted += 1
         else:

@@ -163970,24 +163970,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 66,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 54,
+      "rank": "D"
      },
      "k9": {
-      "value": 66,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "bb9": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -164020,7 +164020,7 @@
      }
     },
     "velocity": {
-     "kmh": 149,
+     "kmh": 151,
      "source": "amateur"
     },
     "sample": {
@@ -164038,6 +164038,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 92,
+     "stamina": 68,
+     "k9": 92,
+     "bb9": 80,
+     "hr9": 85,
+     "velocity": 154
+    }
    }
   },
   {
@@ -164126,24 +164138,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 61,
+      "value": 69,
       "rank": "C"
      },
      "stamina": {
-      "value": 36,
-      "rank": "F"
+      "value": 54,
+      "rank": "D"
      },
      "k9": {
-      "value": 67,
-      "rank": "C"
+      "value": 77,
+      "rank": "B"
      },
      "bb9": {
-      "value": 68,
-      "rank": "C"
+      "value": 76,
+      "rank": "B"
      },
      "hr9": {
-      "value": 72,
-      "rank": "B"
+      "value": 80,
+      "rank": "A"
      }
     },
     "abilities": [],
@@ -164176,7 +164188,7 @@
      }
     },
     "velocity": {
-     "kmh": 154,
+     "kmh": 156,
      "source": "amateur"
     },
     "sample": {
@@ -164194,6 +164206,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 83,
+     "stamina": 68,
+     "k9": 95,
+     "bb9": 94,
+     "hr9": 98,
+     "velocity": 159
+    }
    }
   },
   {
@@ -164215,20 +164239,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
+      "value": 69,
       "rank": "C"
      },
      "power": {
-      "value": 62,
+      "value": 67,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 49,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      }
     },
     "detail": {
@@ -164290,6 +164314,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 83,
+     "power": 81,
+     "eye": 70,
+     "speed": 62
+    }
    }
   },
   {
@@ -164378,23 +164412,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 48,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -164428,7 +164462,7 @@
      }
     },
     "velocity": {
-     "kmh": 148,
+     "kmh": 149,
      "source": "amateur"
     },
     "sample": {
@@ -164446,6 +164480,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 62,
+     "stamina": 48,
+     "k9": 73,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 154
+    }
    }
   },
   {
@@ -164534,23 +164580,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 60,
+      "value": 64,
       "rank": "C"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -164584,7 +164630,7 @@
      }
     },
     "velocity": {
-     "kmh": 148,
+     "kmh": 150,
      "source": "amateur"
     },
     "sample": {
@@ -164602,6 +164648,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 62,
+     "stamina": 42,
+     "k9": 74,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 153
+    }
    }
   },
   {
@@ -164690,23 +164748,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "stamina": {
-      "value": 36,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
-      "value": 62,
+      "value": 65,
       "rank": "C"
      },
      "bb9": {
-      "value": 62,
+      "value": 64,
       "rank": "C"
      },
      "hr9": {
-      "value": 64,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -164740,7 +164798,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -164758,6 +164816,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 64,
+     "stamina": 44,
+     "k9": 75,
+     "bb9": 70,
+     "hr9": 72,
+     "velocity": 151
+    }
    }
   },
   {
@@ -164846,11 +164916,11 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 44,
+      "value": 42,
       "rank": "E"
      },
      "stamina": {
-      "value": 41,
+      "value": 42,
       "rank": "E"
      },
      "k9": {
@@ -164858,11 +164928,11 @@
       "rank": "D"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -164896,7 +164966,7 @@
      }
     },
     "velocity": {
-     "kmh": 143,
+     "kmh": 144,
      "source": "amateur"
     },
     "sample": {
@@ -164914,6 +164984,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 54,
+     "stamina": 58,
+     "k9": 66,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 149
+    }
    }
   },
   {
@@ -164935,19 +165017,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 50,
       "rank": "D"
      }
     },
@@ -165010,6 +165092,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 58,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -165031,19 +165123,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      },
      "power": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -165106,6 +165198,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 76,
+     "power": 60,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -165127,19 +165229,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -165202,6 +165304,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 58,
+     "eye": 58,
+     "speed": 68
+    }
    }
   },
   {
@@ -165223,20 +165335,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 69,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "detail": {
@@ -165298,6 +165410,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 58,
+     "eye": 58,
+     "speed": 83
+    }
    }
   },
   {
@@ -165319,19 +165441,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -165394,6 +165516,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 64,
+     "power": 73,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -165415,20 +165547,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
+      "value": 66,
       "rank": "C"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "eye": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "speed": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      }
     },
     "detail": {
@@ -165490,6 +165622,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 76,
+     "power": 71,
+     "eye": 72,
+     "speed": 76
+    }
    }
   },
   {
@@ -165511,19 +165653,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
+      "value": 69,
       "rank": "C"
      },
      "power": {
-      "value": 56,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -165586,6 +165728,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 83,
+     "power": 69,
+     "eye": 70,
+     "speed": 67
+    }
    }
   },
   {
@@ -165674,7 +165826,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "stamina": {
@@ -165682,11 +165834,11 @@
       "rank": "F"
      },
      "k9": {
-      "value": 61,
+      "value": 64,
       "rank": "C"
      },
      "bb9": {
-      "value": 64,
+      "value": 67,
       "rank": "C"
      },
      "hr9": {
@@ -165724,7 +165876,7 @@
      }
     },
     "velocity": {
-     "kmh": 148,
+     "kmh": 150,
      "source": "amateur"
     },
     "sample": {
@@ -165742,6 +165894,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 62,
+     "stamina": 40,
+     "k9": 74,
+     "bb9": 77,
+     "hr9": 68,
+     "velocity": 153
+    }
    }
   },
   {
@@ -165830,23 +165994,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 62,
+      "value": 65,
       "rank": "C"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -165898,6 +166062,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 63,
+     "stamina": 42,
+     "k9": 75,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 154
+    }
    }
   },
   {
@@ -165919,19 +166095,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 60,
+      "value": 63,
       "rank": "C"
      },
      "eye": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -165994,6 +166170,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 73,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -166082,23 +166268,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
-      "rank": "C"
-     },
-     "stamina": {
-      "value": 36,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 66,
-      "rank": "C"
-     },
-     "bb9": {
       "value": 62,
       "rank": "C"
      },
-     "hr9": {
+     "stamina": {
+      "value": 38,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 70,
+      "rank": "B"
+     },
+     "bb9": {
       "value": 64,
+      "rank": "C"
+     },
+     "hr9": {
+      "value": 66,
       "rank": "C"
      }
     },
@@ -166150,6 +166336,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 68,
+     "stamina": 44,
+     "k9": 80,
+     "bb9": 70,
+     "hr9": 72,
+     "velocity": 157
+    }
    }
   },
   {
@@ -166171,19 +166369,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      },
      "power": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -166246,6 +166444,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 76,
+     "power": 60,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -166267,19 +166475,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 50,
       "rank": "D"
      }
     },
@@ -166342,6 +166550,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 71,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -166363,19 +166581,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 50,
       "rank": "D"
      }
     },
@@ -166438,6 +166656,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 58,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -166526,24 +166754,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
+      "value": 68,
       "rank": "C"
      },
      "stamina": {
-      "value": 41,
-      "rank": "E"
-     },
-     "k9": {
-      "value": 56,
+      "value": 55,
       "rank": "D"
      },
+     "k9": {
+      "value": 63,
+      "rank": "C"
+     },
      "bb9": {
-      "value": 72,
-      "rank": "B"
+      "value": 80,
+      "rank": "A"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -166576,7 +166804,7 @@
      }
     },
     "velocity": {
-     "kmh": 153,
+     "kmh": 155,
      "source": "amateur"
     },
     "sample": {
@@ -166594,6 +166822,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 82,
+     "stamina": 73,
+     "k9": 77,
+     "bb9": 98,
+     "hr9": 85,
+     "velocity": 158
+    }
    }
   },
   {
@@ -166615,19 +166855,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "power": {
-      "value": 62,
+      "value": 67,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 60,
+      "value": 65,
       "rank": "C"
      }
     },
@@ -166690,6 +166930,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 71,
+     "power": 81,
+     "eye": 70,
+     "speed": 79
+    }
    }
   },
   {
@@ -166715,7 +166965,7 @@
       "rank": "D"
      },
      "power": {
-      "value": 60,
+      "value": 63,
       "rank": "C"
      },
      "eye": {
@@ -166786,6 +167036,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 73,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -166878,7 +167138,7 @@
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
@@ -166886,11 +167146,11 @@
       "rank": "E"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -166924,7 +167184,7 @@
      }
     },
     "velocity": {
-     "kmh": 143,
+     "kmh": 144,
      "source": "amateur"
     },
     "sample": {
@@ -166942,6 +167202,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 58,
+     "stamina": 48,
+     "k9": 57,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 149
+    }
    }
   },
   {
@@ -167030,23 +167302,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 50,
+      "value": 51,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -167098,6 +167370,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 63,
+     "stamina": 48,
+     "k9": 74,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 155
+    }
    }
   },
   {
@@ -167119,19 +167403,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
+      "value": 67,
       "rank": "C"
      },
      "power": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -167194,6 +167478,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 77,
+     "power": 64,
+     "eye": 64,
+     "speed": 62
+    }
    }
   },
   {
@@ -167282,23 +167576,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -167332,7 +167626,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 147,
      "source": "amateur"
     },
     "sample": {
@@ -167350,6 +167644,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 56,
+     "stamina": 46,
+     "k9": 56,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 152
+    }
    }
   },
   {
@@ -167371,19 +167677,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 40,
-      "rank": "E"
+      "value": 38,
+      "rank": "F"
      },
      "power": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      }
     },
@@ -167446,6 +167752,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 50,
+     "power": 58,
+     "eye": 58,
+     "speed": 69
+    }
    }
   },
   {
@@ -167534,23 +167850,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 34,
-      "rank": "F"
+      "value": 54,
+      "rank": "D"
      },
      "k9": {
-      "value": 62,
+      "value": 65,
       "rank": "C"
      },
      "bb9": {
-      "value": 70,
+      "value": 74,
       "rank": "B"
      },
      "hr9": {
-      "value": 64,
+      "value": 67,
       "rank": "C"
      }
     },
@@ -167584,7 +167900,7 @@
      }
     },
     "velocity": {
-     "kmh": 144,
+     "kmh": 146,
      "source": "amateur"
     },
     "sample": {
@@ -167602,6 +167918,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 67,
+     "stamina": 64,
+     "k9": 79,
+     "bb9": 88,
+     "hr9": 77,
+     "velocity": 149
+    }
    }
   },
   {
@@ -167627,7 +167955,7 @@
       "rank": "D"
      },
      "power": {
-      "value": 60,
+      "value": 63,
       "rank": "C"
      },
      "eye": {
@@ -167698,6 +168026,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 68,
+     "power": 79,
+     "eye": 68,
+     "speed": 64
+    }
    }
   },
   {
@@ -167719,19 +168057,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "power": {
-      "value": 62,
+      "value": 67,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -167794,6 +168132,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 71,
+     "power": 81,
+     "eye": 70,
+     "speed": 67
+    }
    }
   },
   {
@@ -167882,23 +168230,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 68,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -167950,6 +168298,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 63,
+     "stamina": 42,
+     "k9": 83,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 154
+    }
    }
   },
   {
@@ -168038,23 +168398,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 62,
+      "value": 66,
       "rank": "C"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -168106,6 +168466,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 64,
+     "stamina": 42,
+     "k9": 76,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 155
+    }
    }
   },
   {
@@ -168127,19 +168499,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 70,
+      "value": 76,
       "rank": "B"
      },
      "power": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -168202,6 +168574,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 86,
+     "power": 64,
+     "eye": 64,
+     "speed": 62
+    }
    }
   },
   {
@@ -168223,19 +168605,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "power": {
-      "value": 62,
+      "value": 66,
       "rank": "C"
      },
      "eye": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -168298,6 +168680,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 66,
+     "power": 76,
+     "eye": 64,
+     "speed": 62
+    }
    }
   },
   {
@@ -168319,19 +168711,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 72,
-      "rank": "B"
+      "value": 82,
+      "rank": "A"
      },
      "power": {
-      "value": 62,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "eye": {
-      "value": 62,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "speed": {
-      "value": 60,
+      "value": 69,
       "rank": "C"
      }
     },
@@ -168394,6 +168786,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 98,
+     "power": 88,
+     "eye": 89,
+     "speed": 87
+    }
    }
   },
   {
@@ -168415,20 +168817,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 70,
+      "value": 78,
       "rank": "B"
      },
      "power": {
-      "value": 56,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "detail": {
@@ -168490,6 +168892,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 92,
+     "power": 69,
+     "eye": 70,
+     "speed": 87
+    }
    }
   },
   {
@@ -168578,23 +168990,23 @@
    "pitching": {
     "ratings": {
      "overall": {
+      "value": 60,
+      "rank": "C"
+     },
+     "stamina": {
+      "value": 54,
+      "rank": "D"
+     },
+     "k9": {
       "value": 58,
       "rank": "D"
      },
-     "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 56,
-      "rank": "D"
-     },
      "bb9": {
-      "value": 72,
+      "value": 77,
       "rank": "B"
      },
      "hr9": {
-      "value": 66,
+      "value": 69,
       "rank": "C"
      }
     },
@@ -168628,7 +169040,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -168646,6 +169058,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 70,
+     "stamina": 64,
+     "k9": 68,
+     "bb9": 91,
+     "hr9": 79,
+     "velocity": 151
+    }
    }
   },
   {
@@ -168667,19 +169091,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -168742,6 +169166,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 69,
+     "power": 65,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -168763,19 +169197,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 63,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -168838,6 +169272,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 69,
+     "power": 65,
+     "eye": 66,
+     "speed": 76
+    }
    }
   },
   {
@@ -168926,23 +169370,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
-      "rank": "C"
-     },
-     "stamina": {
-      "value": 36,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 66,
-      "rank": "C"
-     },
-     "bb9": {
       "value": 62,
       "rank": "C"
      },
-     "hr9": {
+     "stamina": {
+      "value": 38,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 69,
+      "rank": "C"
+     },
+     "bb9": {
       "value": 64,
+      "rank": "C"
+     },
+     "hr9": {
+      "value": 66,
       "rank": "C"
      }
     },
@@ -168994,6 +169438,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 68,
+     "stamina": 44,
+     "k9": 79,
+     "bb9": 70,
+     "hr9": 72,
+     "velocity": 156
+    }
    }
   },
   {
@@ -169015,19 +169471,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -169090,6 +169546,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 64,
+     "power": 73,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -169111,19 +169577,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 64,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -169186,6 +169652,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 64,
+     "power": 60,
+     "eye": 62,
+     "speed": 76
+    }
    }
   },
   {
@@ -169274,23 +169750,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 54,
+      "rank": "D"
      },
      "k9": {
-      "value": 68,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "bb9": {
-      "value": 62,
+      "value": 60,
       "rank": "C"
      },
      "hr9": {
-      "value": 63,
+      "value": 62,
       "rank": "C"
      }
     },
@@ -169324,7 +169800,7 @@
      }
     },
     "velocity": {
-     "kmh": 144,
+     "kmh": 146,
      "source": "amateur"
     },
     "sample": {
@@ -169342,6 +169818,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 60,
+     "stamina": 60,
+     "k9": 80,
+     "bb9": 66,
+     "hr9": 68,
+     "velocity": 149
+    }
    }
   },
   {
@@ -169363,19 +169851,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -169438,6 +169926,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 64,
+     "power": 73,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -169526,24 +170024,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 56,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 46,
+      "rank": "E"
      },
      "k9": {
-      "value": 52,
+      "value": 56,
       "rank": "D"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -169576,7 +170074,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -169594,6 +170092,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 76,
+     "stamina": 66,
+     "k9": 76,
+     "bb9": 83,
+     "hr9": 84,
+     "velocity": 153
+    }
    }
   },
   {
@@ -169615,19 +170125,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "power": {
-      "value": 62,
+      "value": 67,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -169690,6 +170200,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 77,
+     "power": 87,
+     "eye": 76,
+     "speed": 73
+    }
    }
   },
   {
@@ -169778,24 +170298,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 50,
+      "value": 54,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 58,
-      "rank": "D"
-     },
-     "bb9": {
-      "value": 47,
+      "value": 46,
       "rank": "E"
      },
-     "hr9": {
-      "value": 59,
+     "k9": {
+      "value": 63,
+      "rank": "C"
+     },
+     "bb9": {
+      "value": 50,
       "rank": "D"
+     },
+     "hr9": {
+      "value": 64,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -169846,6 +170366,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 70,
+     "stamina": 62,
+     "k9": 83,
+     "bb9": 66,
+     "hr9": 84,
+     "velocity": 157
+    }
    }
   },
   {
@@ -169934,23 +170466,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 62,
-      "rank": "C"
-     },
-     "bb9": {
       "value": 65,
       "rank": "C"
      },
+     "bb9": {
+      "value": 68,
+      "rank": "C"
+     },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -170002,6 +170534,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 63,
+     "stamina": 42,
+     "k9": 75,
+     "bb9": 78,
+     "hr9": 67,
+     "velocity": 154
+    }
    }
   },
   {
@@ -170090,23 +170634,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 48,
-      "rank": "E"
-     },
-     "bb9": {
       "value": 49,
       "rank": "E"
      },
+     "bb9": {
+      "value": 50,
+      "rank": "D"
+     },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -170158,6 +170702,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 62,
+     "stamina": 48,
+     "k9": 61,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 154
+    }
    }
   },
   {
@@ -170179,19 +170735,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 66,
+      "value": 69,
       "rank": "C"
      },
      "power": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -170254,6 +170810,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 79,
+     "power": 71,
+     "eye": 58,
+     "speed": 68
+    }
    }
   },
   {
@@ -170342,23 +170908,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -170410,6 +170976,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 56,
+     "stamina": 46,
+     "k9": 69,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 153
+    }
    }
   },
   {
@@ -170431,19 +171009,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -170506,6 +171084,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 68,
+     "power": 71,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -170527,19 +171115,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 50,
       "rank": "D"
      }
     },
@@ -170602,6 +171190,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 71,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -170623,19 +171221,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 50,
       "rank": "D"
      }
     },
@@ -170698,6 +171296,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 58,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -170786,24 +171394,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 54,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 46,
+      "rank": "E"
      },
      "k9": {
-      "value": 56,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -170836,7 +171444,7 @@
      }
     },
     "velocity": {
-     "kmh": 153,
+     "kmh": 154,
      "source": "amateur"
     },
     "sample": {
@@ -170854,6 +171462,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 80,
+     "stamina": 66,
+     "k9": 88,
+     "bb9": 83,
+     "hr9": 84,
+     "velocity": 159
+    }
    }
   },
   {
@@ -170942,23 +171562,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 48,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
+      "value": 60,
+      "rank": "C"
+     },
+     "bb9": {
       "value": 55,
       "rank": "D"
      },
-     "bb9": {
-      "value": 52,
-      "rank": "D"
-     },
      "hr9": {
-      "value": 53,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -170992,7 +171612,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -171010,6 +171630,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 67,
+     "stamina": 54,
+     "k9": 80,
+     "bb9": 71,
+     "hr9": 72,
+     "velocity": 153
+    }
    }
   },
   {
@@ -171043,7 +171675,7 @@
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      }
     },
@@ -171106,6 +171738,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 64,
+     "power": 66,
+     "eye": 68,
+     "speed": 67
+    }
    }
   },
   {
@@ -171194,23 +171836,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 50,
+      "value": 51,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -171262,6 +171904,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 63,
+     "stamina": 48,
+     "k9": 74,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 155
+    }
    }
   },
   {
@@ -171283,19 +171937,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 67,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -171358,6 +172012,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 82,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -171446,23 +172110,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "stamina": {
-      "value": 36,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "bb9": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      }
     },
@@ -171514,6 +172178,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 64,
+     "stamina": 44,
+     "k9": 64,
+     "bb9": 68,
+     "hr9": 68,
+     "velocity": 152
+    }
    }
   },
   {
@@ -171535,19 +172211,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -171610,6 +172286,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 68,
+     "power": 71,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -171631,19 +172317,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "power": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -171706,6 +172392,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 56,
+     "power": 71,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -171727,19 +172423,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "power": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -171802,6 +172498,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 56,
+     "power": 71,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -171823,19 +172529,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -171898,6 +172604,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 64,
+     "power": 60,
+     "eye": 62,
+     "speed": 71
+    }
    }
   },
   {
@@ -171919,19 +172635,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -171994,6 +172710,16 @@
     "fictional": false,
     "category": "その他",
     "grade_text": "中学3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 64,
+     "power": 60,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -172082,24 +172808,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 68,
-      "rank": "C"
-     },
-     "stamina": {
-      "value": 36,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 62,
-      "rank": "C"
-     },
-     "bb9": {
-      "value": 74,
+      "value": 79,
       "rank": "B"
      },
-     "hr9": {
-      "value": 68,
+     "stamina": {
+      "value": 60,
       "rank": "C"
+     },
+     "k9": {
+      "value": 71,
+      "rank": "B"
+     },
+     "bb9": {
+      "value": 84,
+      "rank": "A"
+     },
+     "hr9": {
+      "value": 76,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -172132,7 +172858,7 @@
      }
     },
     "velocity": {
-     "kmh": 151,
+     "kmh": 153,
      "source": "amateur"
     },
     "sample": {
@@ -172150,6 +172876,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 98,
+     "stamina": 78,
+     "k9": 89,
+     "bb9": 98,
+     "hr9": 94,
+     "velocity": 156
+    }
    }
   },
   {
@@ -172238,23 +172976,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 59,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
-      "value": 68,
-      "rank": "C"
+      "value": 76,
+      "rank": "B"
      },
      "bb9": {
-      "value": 60,
+      "value": 63,
       "rank": "C"
      },
      "hr9": {
-      "value": 64,
+      "value": 67,
       "rank": "C"
      }
     },
@@ -172288,7 +173026,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 149,
      "source": "amateur"
     },
     "sample": {
@@ -172306,6 +173044,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 69,
+     "stamina": 48,
+     "k9": 90,
+     "bb9": 73,
+     "hr9": 77,
+     "velocity": 152
+    }
    }
   },
   {
@@ -172394,23 +173144,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 59,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
-      "value": 68,
-      "rank": "C"
+      "value": 76,
+      "rank": "B"
      },
      "bb9": {
-      "value": 55,
+      "value": 58,
       "rank": "D"
      },
      "hr9": {
-      "value": 64,
+      "value": 67,
       "rank": "C"
      }
     },
@@ -172444,7 +173194,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -172462,6 +173212,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 69,
+     "stamina": 48,
+     "k9": 90,
+     "bb9": 68,
+     "hr9": 77,
+     "velocity": 151
+    }
    }
   },
   {
@@ -172483,19 +173245,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
+      "value": 64,
       "rank": "C"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -172558,6 +173320,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 74,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -172646,23 +173418,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "stamina": {
-      "value": 41,
+      "value": 44,
       "rank": "E"
      },
      "k9": {
-      "value": 68,
-      "rank": "C"
+      "value": 75,
+      "rank": "B"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -172696,7 +173468,7 @@
      }
     },
     "velocity": {
-     "kmh": 151,
+     "kmh": 153,
      "source": "amateur"
     },
     "sample": {
@@ -172714,6 +173486,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 64,
+     "stamina": 54,
+     "k9": 85,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 156
+    }
    }
   },
   {
@@ -172806,19 +173590,19 @@
       "rank": "D"
      },
      "stamina": {
-      "value": 36,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
-      "value": 61,
+      "value": 65,
       "rank": "C"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 64,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -172852,7 +173636,7 @@
      }
     },
     "velocity": {
-     "kmh": 142,
+     "kmh": 143,
      "source": "amateur"
     },
     "sample": {
@@ -172870,6 +173654,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 66,
+     "stamina": 50,
+     "k9": 81,
+     "bb9": 72,
+     "hr9": 78,
+     "velocity": 148
+    }
    }
   },
   {
@@ -172891,20 +173687,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 66,
       "rank": "C"
      },
      "power": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      }
     },
     "detail": {
@@ -172966,6 +173762,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 76,
+     "power": 64,
+     "eye": 64,
+     "speed": 72
+    }
    }
   },
   {
@@ -173054,23 +173860,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 36,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "bb9": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      }
     },
@@ -173104,7 +173910,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -173122,6 +173928,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 63,
+     "stamina": 44,
+     "k9": 76,
+     "bb9": 68,
+     "hr9": 68,
+     "velocity": 151
+    }
    }
   },
   {
@@ -173210,23 +174028,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 61,
+      "value": 68,
       "rank": "C"
      },
      "stamina": {
-      "value": 38,
-      "rank": "F"
+      "value": 42,
+      "rank": "E"
      },
      "k9": {
-      "value": 67,
-      "rank": "C"
+      "value": 76,
+      "rank": "B"
      },
      "bb9": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "hr9": {
-      "value": 62,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -173260,7 +174078,7 @@
      }
     },
     "velocity": {
-     "kmh": 155,
+     "kmh": 157,
      "source": "amateur"
     },
     "sample": {
@@ -173278,6 +174096,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 78,
+     "stamina": 52,
+     "k9": 90,
+     "bb9": 76,
+     "hr9": 76,
+     "velocity": 160
+    }
    }
   },
   {
@@ -173366,23 +174196,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -173416,7 +174246,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 147,
      "source": "amateur"
     },
     "sample": {
@@ -173434,6 +174264,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 56,
+     "stamina": 46,
+     "k9": 68,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 152
+    }
    }
   },
   {
@@ -173522,11 +174364,11 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 43,
+      "value": 41,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
@@ -173534,11 +174376,11 @@
       "rank": "E"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -173572,7 +174414,7 @@
      }
     },
     "velocity": {
-     "kmh": 142,
+     "kmh": 143,
      "source": "amateur"
     },
     "sample": {
@@ -173590,6 +174432,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 53,
+     "stamina": 46,
+     "k9": 65,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 148
+    }
    }
   },
   {
@@ -173678,23 +174532,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
-      "rank": "C"
-     },
-     "stamina": {
-      "value": 38,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 62,
-      "rank": "C"
-     },
-     "bb9": {
       "value": 65,
       "rank": "C"
      },
+     "stamina": {
+      "value": 40,
+      "rank": "E"
+     },
+     "k9": {
+      "value": 65,
+      "rank": "C"
+     },
+     "bb9": {
+      "value": 67,
+      "rank": "C"
+     },
      "hr9": {
-      "value": 66,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -173728,7 +174582,7 @@
      }
     },
     "velocity": {
-     "kmh": 150,
+     "kmh": 152,
      "source": "amateur"
     },
     "sample": {
@@ -173746,6 +174600,18 @@
     "fictional": false,
     "category": "その他",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 71,
+     "stamina": 46,
+     "k9": 71,
+     "bb9": 73,
+     "hr9": 74,
+     "velocity": 155
+    }
    }
   },
   {
@@ -173834,23 +174700,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
+      "value": 59,
       "rank": "D"
      },
      "bb9": {
-      "value": 55,
+      "value": 54,
       "rank": "D"
      },
      "hr9": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -173902,6 +174768,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 56,
+     "stamina": 40,
+     "k9": 69,
+     "bb9": 60,
+     "hr9": 60,
+     "velocity": 150
+    }
    }
   },
   {
@@ -173990,11 +174868,11 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 38,
+      "value": 35,
       "rank": "F"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
@@ -174002,11 +174880,11 @@
       "rank": "E"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -174040,7 +174918,7 @@
      }
     },
     "velocity": {
-     "kmh": 141,
+     "kmh": 142,
      "source": "amateur"
     },
     "sample": {
@@ -174058,6 +174936,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 47,
+     "stamina": 46,
+     "k9": 64,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 147
+    }
    }
   },
   {
@@ -174146,11 +175036,11 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 44,
+      "value": 42,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
@@ -174158,11 +175048,11 @@
       "rank": "D"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -174196,7 +175086,7 @@
      }
     },
     "velocity": {
-     "kmh": 143,
+     "kmh": 144,
      "source": "amateur"
     },
     "sample": {
@@ -174214,6 +175104,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 54,
+     "stamina": 46,
+     "k9": 66,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 149
+    }
    }
   },
   {
@@ -174235,19 +175137,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      },
      "power": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 50,
       "rank": "D"
      }
     },
@@ -174310,6 +175212,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 71,
+     "power": 58,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -174402,7 +175314,7 @@
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
@@ -174410,11 +175322,11 @@
       "rank": "D"
      },
      "bb9": {
-      "value": 55,
+      "value": 54,
       "rank": "D"
      },
      "hr9": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -174448,7 +175360,7 @@
      }
     },
     "velocity": {
-     "kmh": 148,
+     "kmh": 150,
      "source": "amateur"
     },
     "sample": {
@@ -174466,6 +175378,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 58,
+     "stamina": 40,
+     "k9": 58,
+     "bb9": 60,
+     "hr9": 60,
+     "velocity": 153
+    }
    }
   },
   {
@@ -174487,19 +175411,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "power": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -174562,6 +175486,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 56,
+     "power": 71,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -174583,19 +175517,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      },
      "power": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -174658,6 +175592,16 @@
     "fictional": false,
     "category": "その他",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 76,
+     "power": 73,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -174679,19 +175623,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -174754,6 +175698,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 64,
+     "power": 60,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -174842,23 +175796,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 51,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 52,
+      "value": 51,
       "rank": "D"
      },
      "bb9": {
-      "value": 55,
+      "value": 54,
       "rank": "D"
      },
      "hr9": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -174892,7 +175846,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -174910,6 +175864,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 57,
+     "stamina": 40,
+     "k9": 57,
+     "bb9": 60,
+     "hr9": 60,
+     "velocity": 151
+    }
    }
   },
   {
@@ -174998,23 +175964,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 51,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "bb9": {
-      "value": 61,
+      "value": 62,
       "rank": "C"
      },
      "hr9": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -175048,7 +176014,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -175066,6 +176032,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 57,
+     "stamina": 40,
+     "k9": 70,
+     "bb9": 72,
+     "hr9": 60,
+     "velocity": 151
+    }
    }
   },
   {
@@ -175087,19 +176065,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "power": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -175162,6 +176140,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 56,
+     "power": 58,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -175183,19 +176171,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "power": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -175258,6 +176246,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 56,
+     "power": 58,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -175346,24 +176344,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
+      "value": 69,
       "rank": "C"
      },
      "stamina": {
-      "value": 30,
-      "rank": "F"
+      "value": 52,
+      "rank": "D"
      },
      "k9": {
-      "value": 68,
-      "rank": "C"
+      "value": 77,
+      "rank": "B"
      },
      "bb9": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "hr9": {
-      "value": 72,
-      "rank": "B"
+      "value": 80,
+      "rank": "A"
      }
     },
     "abilities": [],
@@ -175396,7 +176394,7 @@
      }
     },
     "velocity": {
-     "kmh": 154,
+     "kmh": 156,
      "source": "amateur"
     },
     "sample": {
@@ -175414,6 +176412,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 83,
+     "stamina": 66,
+     "k9": 95,
+     "bb9": 80,
+     "hr9": 98,
+     "velocity": 159
+    }
    }
   },
   {
@@ -175502,23 +176512,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
+      "value": 65,
       "rank": "C"
      },
      "stamina": {
-      "value": 35,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
-      "value": 73,
-      "rank": "B"
+      "value": 80,
+      "rank": "A"
      },
      "bb9": {
-      "value": 66,
+      "value": 69,
       "rank": "C"
      },
      "hr9": {
-      "value": 61,
+      "value": 64,
       "rank": "C"
      }
     },
@@ -175570,6 +176580,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 75,
+     "stamina": 48,
+     "k9": 94,
+     "bb9": 79,
+     "hr9": 74,
+     "velocity": 158
+    }
    }
   },
   {
@@ -175658,23 +176680,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
+      "value": 65,
       "rank": "C"
      },
      "stamina": {
-      "value": 35,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
-      "value": 73,
-      "rank": "B"
+      "value": 80,
+      "rank": "A"
      },
      "bb9": {
-      "value": 66,
+      "value": 69,
       "rank": "C"
      },
      "hr9": {
-      "value": 66,
+      "value": 69,
       "rank": "C"
      }
     },
@@ -175726,6 +176748,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 75,
+     "stamina": 48,
+     "k9": 94,
+     "bb9": 79,
+     "hr9": 79,
+     "velocity": 158
+    }
    }
   },
   {
@@ -175747,19 +176781,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
-      "value": 55,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -175822,6 +176856,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 74,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -175843,19 +176887,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -175918,6 +176962,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 69,
+     "power": 65,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -176006,23 +177060,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
+      "value": 66,
       "rank": "C"
      },
      "stamina": {
-      "value": 38,
-      "rank": "F"
+      "value": 40,
+      "rank": "E"
      },
      "k9": {
-      "value": 68,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "bb9": {
-      "value": 65,
+      "value": 67,
       "rank": "C"
      },
      "hr9": {
-      "value": 66,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -176056,7 +177110,7 @@
      }
     },
     "velocity": {
-     "kmh": 151,
+     "kmh": 153,
      "source": "amateur"
     },
     "sample": {
@@ -176074,6 +177128,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": "3年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 72,
+     "stamina": 46,
+     "k9": 84,
+     "bb9": 73,
+     "hr9": 74,
+     "velocity": 156
+    }
    }
   },
   {
@@ -176162,24 +177228,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 48,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "stamina": {
-      "value": 38,
-      "rank": "F"
+      "value": 40,
+      "rank": "E"
      },
      "k9": {
-      "value": 54,
+      "value": 59,
       "rank": "D"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "hr9": {
-      "value": 49,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      }
     },
     "abilities": [],
@@ -176212,7 +177278,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -176230,6 +177296,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 63,
+     "stamina": 52,
+     "k9": 75,
+     "bb9": 63,
+     "hr9": 63,
+     "velocity": 153
+    }
    }
   },
   {
@@ -176251,20 +177329,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 48,
-      "rank": "E"
-     },
-     "power": {
-      "value": 57,
+      "value": 50,
       "rank": "D"
      },
+     "power": {
+      "value": 62,
+      "rank": "C"
+     },
      "eye": {
-      "value": 51,
+      "value": 53,
       "rank": "D"
      },
      "speed": {
-      "value": 57,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      }
     },
     "detail": {
@@ -176326,6 +177404,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 62,
+     "power": 78,
+     "eye": 65,
+     "speed": 78
+    }
    }
   },
   {
@@ -176414,23 +177502,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 34,
-      "rank": "F"
+      "value": 54,
+      "rank": "D"
      },
      "k9": {
-      "value": 62,
+      "value": 65,
       "rank": "C"
      },
      "bb9": {
-      "value": 70,
+      "value": 74,
       "rank": "B"
      },
      "hr9": {
-      "value": 64,
+      "value": 67,
       "rank": "C"
      }
     },
@@ -176464,7 +177552,7 @@
      }
     },
     "velocity": {
-     "kmh": 144,
+     "kmh": 146,
      "source": "amateur"
     },
     "sample": {
@@ -176482,6 +177570,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 67,
+     "stamina": 64,
+     "k9": 79,
+     "bb9": 88,
+     "hr9": 77,
+     "velocity": 149
+    }
    }
   },
   {
@@ -176570,24 +177670,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 58,
       "rank": "D"
      },
      "stamina": {
-      "value": 36,
-      "rank": "F"
+      "value": 46,
+      "rank": "E"
      },
      "k9": {
-      "value": 59,
-      "rank": "D"
+      "value": 67,
+      "rank": "C"
      },
      "bb9": {
-      "value": 60,
+      "value": 68,
       "rank": "C"
      },
      "hr9": {
-      "value": 54,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -176638,6 +177738,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 78,
+     "stamina": 66,
+     "k9": 91,
+     "bb9": 92,
+     "hr9": 80,
+     "velocity": 157
+    }
    }
   },
   {
@@ -176726,7 +177838,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 58,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
@@ -176734,7 +177846,7 @@
       "rank": "F"
      },
      "k9": {
-      "value": 64,
+      "value": 68,
       "rank": "C"
      },
      "bb9": {
@@ -176776,7 +177888,7 @@
      }
     },
     "velocity": {
-     "kmh": 149,
+     "kmh": 151,
      "source": "amateur"
     },
     "sample": {
@@ -176794,6 +177906,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社2年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 63,
+     "stamina": 34,
+     "k9": 78,
+     "bb9": 66,
+     "hr9": 70,
+     "velocity": 154
+    }
    }
   },
   {
@@ -176815,19 +177939,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 60,
+      "value": 63,
       "rank": "C"
      },
      "eye": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -176890,6 +178014,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 73,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -176982,19 +178116,19 @@
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 51,
+      "value": 53,
       "rank": "D"
      },
      "bb9": {
-      "value": 55,
+      "value": 58,
       "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -177028,7 +178162,7 @@
      }
     },
     "velocity": {
-     "kmh": 143,
+     "kmh": 144,
      "source": "amateur"
     },
     "sample": {
@@ -177046,6 +178180,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 58,
+     "stamina": 48,
+     "k9": 69,
+     "bb9": 74,
+     "hr9": 61,
+     "velocity": 149
+    }
    }
   },
   {
@@ -177067,19 +178213,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 52,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 50,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 50,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 42,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -177142,6 +178288,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 72,
+     "power": 64,
+     "eye": 64,
+     "speed": 56
+    }
    }
   },
   {
@@ -177163,20 +178319,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 43,
+      "value": 42,
       "rank": "E"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      }
     },
     "detail": {
@@ -177238,6 +178394,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 68,
+     "power": 54,
+     "eye": 58,
+     "speed": 66
+    }
    }
   },
   {
@@ -177326,23 +178492,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 46,
+      "value": 45,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -177394,6 +178560,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 57,
+     "stamina": 46,
+     "k9": 70,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 154
+    }
    }
   },
   {
@@ -177415,19 +178593,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "power": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -177490,6 +178668,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 56,
+     "power": 58,
+     "eye": 58,
+     "speed": 56
+    }
    }
   },
   {
@@ -177511,20 +178699,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 77,
-      "rank": "B"
+      "value": 87,
+      "rank": "A"
      },
      "power": {
+      "value": 74,
+      "rank": "B"
+     },
+     "eye": {
       "value": 66,
       "rank": "C"
      },
-     "eye": {
-      "value": 61,
-      "rank": "C"
-     },
      "speed": {
-      "value": 59,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      }
     },
     "detail": {
@@ -177586,6 +178774,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 98,
+     "power": 92,
+     "eye": 80,
+     "speed": 78
+    }
    }
   },
   {
@@ -177607,19 +178805,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
-     },
-     "power": {
-      "value": 63,
+      "value": 61,
       "rank": "C"
      },
+     "power": {
+      "value": 70,
+      "rank": "B"
+     },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -177682,6 +178880,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 71,
+     "power": 84,
+     "eye": 70,
+     "speed": 67
+    }
    }
   },
   {
@@ -177715,8 +178923,8 @@
       "rank": "D"
      },
      "speed": {
-      "value": 58,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      }
     },
     "detail": {
@@ -177778,6 +178986,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 60,
+     "eye": 62,
+     "speed": 71
+    }
    }
   },
   {
@@ -177799,19 +179017,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 51,
+      "value": 54,
       "rank": "D"
      },
      "power": {
+      "value": 50,
+      "rank": "D"
+     },
+     "eye": {
       "value": 49,
       "rank": "E"
      },
-     "eye": {
-      "value": 48,
-      "rank": "E"
-     },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -177874,6 +179092,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 70,
+     "power": 62,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -177962,23 +179190,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
+      "value": 64,
       "rank": "C"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 74,
-      "rank": "B"
+      "value": 81,
+      "rank": "A"
      },
      "bb9": {
-      "value": 63,
+      "value": 64,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -178012,7 +179240,7 @@
      }
     },
     "velocity": {
-     "kmh": 150,
+     "kmh": 152,
      "source": "amateur"
     },
     "sample": {
@@ -178030,6 +179258,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 70,
+     "stamina": 42,
+     "k9": 91,
+     "bb9": 70,
+     "hr9": 72,
+     "velocity": 155
+    }
    }
   },
   {
@@ -178118,23 +179358,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "stamina": {
-      "value": 36,
+      "value": 38,
       "rank": "F"
      },
      "k9": {
-      "value": 66,
+      "value": 69,
       "rank": "C"
      },
      "bb9": {
-      "value": 68,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "hr9": {
-      "value": 64,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -178186,6 +179426,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 68,
+     "stamina": 44,
+     "k9": 79,
+     "bb9": 82,
+     "hr9": 72,
+     "velocity": 156
+    }
    }
   },
   {
@@ -178207,19 +179459,19 @@
    "batting": {
     "ratings": {
      "meet": {
+      "value": 60,
+      "rank": "C"
+     },
+     "power": {
       "value": 58,
       "rank": "D"
      },
-     "power": {
-      "value": 56,
-      "rank": "D"
-     },
      "eye": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 60,
+      "value": 64,
       "rank": "C"
      }
     },
@@ -178282,6 +179534,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 66,
+     "power": 64,
+     "eye": 64,
+     "speed": 74
+    }
    }
   },
   {
@@ -178303,19 +179565,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -178378,6 +179640,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 64,
+     "power": 60,
+     "eye": 62,
+     "speed": 71
+    }
    }
   },
   {
@@ -178466,23 +179738,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 40,
-      "rank": "E"
+      "value": 36,
+      "rank": "F"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 40,
-      "rank": "E"
+      "value": 36,
+      "rank": "F"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -178516,7 +179788,7 @@
      }
     },
     "velocity": {
-     "kmh": 135,
+     "kmh": 136,
      "source": "amateur"
     },
     "sample": {
@@ -178534,6 +179806,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 48,
+     "stamina": 46,
+     "k9": 48,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 141
+    }
    }
   },
   {
@@ -178622,23 +179906,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 69,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "bb9": {
-      "value": 62,
+      "value": 60,
       "rank": "C"
      },
      "hr9": {
-      "value": 63,
+      "value": 62,
       "rank": "C"
      }
     },
@@ -178672,7 +179956,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 149,
      "source": "amateur"
     },
     "sample": {
@@ -178690,6 +179974,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社3年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 62,
+     "stamina": 40,
+     "k9": 82,
+     "bb9": 66,
+     "hr9": 68,
+     "velocity": 152
+    }
    }
   },
   {
@@ -178711,20 +180007,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "power": {
+      "value": 74,
+      "rank": "B"
+     },
+     "eye": {
       "value": 66,
       "rank": "C"
      },
-     "eye": {
-      "value": 61,
-      "rank": "C"
-     },
      "speed": {
-      "value": 65,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      }
     },
     "detail": {
@@ -178786,6 +180082,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 84,
+     "power": 92,
+     "eye": 80,
+     "speed": 90
+    }
    }
   },
   {
@@ -178882,7 +180188,7 @@
       "rank": "F"
      },
      "k9": {
-      "value": 62,
+      "value": 65,
       "rank": "C"
      },
      "bb9": {
@@ -178942,6 +180248,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 62,
+     "stamina": 40,
+     "k9": 75,
+     "bb9": 64,
+     "hr9": 68,
+     "velocity": 154
+    }
    }
   },
   {
@@ -179030,19 +180348,19 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 51,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
-      "value": 34,
-      "rank": "F"
+      "value": 54,
+      "rank": "D"
      },
      "k9": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "bb9": {
-      "value": 64,
+      "value": 67,
       "rank": "C"
      },
      "hr9": {
@@ -179080,7 +180398,7 @@
      }
     },
     "velocity": {
-     "kmh": 140,
+     "kmh": 142,
      "source": "amateur"
     },
     "sample": {
@@ -179098,6 +180416,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 56,
+     "stamina": 60,
+     "k9": 63,
+     "bb9": 77,
+     "hr9": 68,
+     "velocity": 145
+    }
    }
   },
   {
@@ -179119,19 +180449,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 68,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -179194,6 +180524,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 81,
+     "power": 65,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -179282,23 +180622,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 62,
+      "value": 66,
       "rank": "C"
      },
      "bb9": {
-      "value": 65,
+      "value": 68,
       "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -179350,6 +180690,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "4年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 64,
+     "stamina": 42,
+     "k9": 76,
+     "bb9": 78,
+     "hr9": 67,
+     "velocity": 155
+    }
    }
   },
   {
@@ -179371,19 +180723,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
+      "value": 67,
       "rank": "C"
      },
      "power": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -179446,6 +180798,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 77,
+     "power": 64,
+     "eye": 64,
+     "speed": 62
+    }
    }
   },
   {
@@ -179534,23 +180896,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
-      "rank": "C"
-     },
-     "stamina": {
-      "value": 36,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 66,
-      "rank": "C"
-     },
-     "bb9": {
       "value": 62,
       "rank": "C"
      },
+     "stamina": {
+      "value": 38,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 69,
+      "rank": "C"
+     },
+     "bb9": {
+      "value": 64,
+      "rank": "C"
+     },
      "hr9": {
-      "value": 70,
+      "value": 74,
       "rank": "B"
      }
     },
@@ -179602,6 +180964,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 68,
+     "stamina": 44,
+     "k9": 79,
+     "bb9": 70,
+     "hr9": 84,
+     "velocity": 156
+    }
    }
   },
   {
@@ -179690,23 +181064,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 58,
+      "value": 56,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 64,
+      "value": 65,
       "rank": "C"
      },
      "bb9": {
-      "value": 62,
+      "value": 60,
       "rank": "C"
      },
      "hr9": {
-      "value": 63,
+      "value": 62,
       "rank": "C"
      }
     },
@@ -179740,7 +181114,7 @@
      }
     },
     "velocity": {
-     "kmh": 148,
+     "kmh": 150,
      "source": "amateur"
     },
     "sample": {
@@ -179758,6 +181132,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 62,
+     "stamina": 40,
+     "k9": 75,
+     "bb9": 66,
+     "hr9": 68,
+     "velocity": 153
+    }
    }
   },
   {
@@ -179846,24 +181232,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 34,
       "rank": "F"
      },
      "k9": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "bb9": {
-      "value": 68,
+      "value": 69,
       "rank": "C"
      },
      "hr9": {
-      "value": 69,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -179896,7 +181282,7 @@
      }
     },
     "velocity": {
-     "kmh": 145,
+     "kmh": 147,
      "source": "amateur"
     },
     "sample": {
@@ -179914,6 +181300,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 60,
+     "stamina": 40,
+     "k9": 60,
+     "bb9": 79,
+     "hr9": 80,
+     "velocity": 150
+    }
    }
   },
   {
@@ -180002,24 +181400,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
-      "rank": "D"
+      "value": 68,
+      "rank": "C"
      },
      "stamina": {
-      "value": 38,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 62,
-      "rank": "C"
-     },
-     "bb9": {
-      "value": 56,
+      "value": 50,
       "rank": "D"
      },
-     "hr9": {
-      "value": 62,
+     "k9": {
+      "value": 77,
+      "rank": "B"
+     },
+     "bb9": {
+      "value": 68,
       "rank": "C"
+     },
+     "hr9": {
+      "value": 74,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -180052,7 +181450,7 @@
      }
     },
     "velocity": {
-     "kmh": 150,
+     "kmh": 151,
      "source": "amateur"
     },
     "sample": {
@@ -180070,6 +181468,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 92,
+     "stamina": 74,
+     "k9": 98,
+     "bb9": 92,
+     "hr9": 98,
+     "velocity": 156
+    }
    }
   },
   {
@@ -180158,24 +181568,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 51,
+      "value": 56,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 57,
-      "rank": "D"
-     },
-     "bb9": {
-      "value": 64,
+      "value": 65,
       "rank": "C"
      },
+     "bb9": {
+      "value": 74,
+      "rank": "B"
+     },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -180208,7 +181618,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 147,
      "source": "amateur"
     },
     "sample": {
@@ -180226,6 +181636,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 76,
+     "stamina": 70,
+     "k9": 89,
+     "bb9": 98,
+     "hr9": 86,
+     "velocity": 152
+    }
    }
   },
   {
@@ -180314,24 +181736,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 54,
-      "rank": "D"
-     },
-     "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 66,
+      "value": 60,
       "rank": "C"
      },
-     "bb9": {
-      "value": 58,
+     "stamina": {
+      "value": 50,
       "rank": "D"
      },
+     "k9": {
+      "value": 78,
+      "rank": "B"
+     },
+     "bb9": {
+      "value": 65,
+      "rank": "C"
+     },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -180364,7 +181786,7 @@
      }
     },
     "velocity": {
-     "kmh": 151,
+     "kmh": 152,
      "source": "amateur"
     },
     "sample": {
@@ -180382,6 +181804,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 80,
+     "stamina": 70,
+     "k9": 98,
+     "bb9": 85,
+     "hr9": 86,
+     "velocity": 157
+    }
    }
   },
   {
@@ -180470,24 +181904,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 53,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 59,
-      "rank": "D"
+      "value": 69,
+      "rank": "C"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 65,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -180520,7 +181954,7 @@
      }
     },
     "velocity": {
-     "kmh": 150,
+     "kmh": 151,
      "source": "amateur"
     },
     "sample": {
@@ -180538,6 +181972,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 80,
+     "stamina": 70,
+     "k9": 93,
+     "bb9": 85,
+     "hr9": 86,
+     "velocity": 156
+    }
    }
   },
   {
@@ -180626,23 +182072,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 48,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 48,
-      "rank": "E"
-     },
-     "bb9": {
       "value": 52,
       "rank": "D"
      },
+     "bb9": {
+      "value": 56,
+      "rank": "D"
+     },
      "hr9": {
-      "value": 53,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -180676,7 +182122,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 147,
      "source": "amateur"
     },
     "sample": {
@@ -180694,6 +182140,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 67,
+     "stamina": 66,
+     "k9": 68,
+     "bb9": 72,
+     "hr9": 73,
+     "velocity": 152
+    }
    }
   },
   {
@@ -180782,23 +182240,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 53,
+      "value": 50,
       "rank": "D"
      },
-     "bb9": {
+     "k9": {
       "value": 58,
       "rank": "D"
      },
+     "bb9": {
+      "value": 65,
+      "rank": "C"
+     },
      "hr9": {
-      "value": 53,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -180832,7 +182290,7 @@
      }
     },
     "velocity": {
-     "kmh": 143,
+     "kmh": 144,
      "source": "amateur"
     },
     "sample": {
@@ -180850,6 +182308,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 77,
+     "stamina": 66,
+     "k9": 78,
+     "bb9": 85,
+     "hr9": 73,
+     "velocity": 149
+    }
    }
   },
   {
@@ -180938,23 +182408,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 48,
-      "rank": "E"
-     },
-     "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 49,
-      "rank": "E"
-     },
-     "bb9": {
       "value": 52,
       "rank": "D"
      },
-     "hr9": {
+     "stamina": {
+      "value": 50,
+      "rank": "D"
+     },
+     "k9": {
       "value": 53,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 56,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
       "rank": "D"
      }
     },
@@ -180988,7 +182458,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -181006,6 +182476,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 68,
+     "stamina": 66,
+     "k9": 69,
+     "bb9": 72,
+     "hr9": 73,
+     "velocity": 153
+    }
    }
   },
   {
@@ -181094,23 +182576,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 46,
+      "value": 48,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 59,
+      "value": 50,
       "rank": "D"
      },
+     "k9": {
+      "value": 67,
+      "rank": "C"
+     },
      "bb9": {
-      "value": 52,
+      "value": 56,
       "rank": "D"
      },
      "hr9": {
-      "value": 53,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -181144,7 +182626,7 @@
      }
     },
     "velocity": {
-     "kmh": 143,
+     "kmh": 144,
      "source": "amateur"
     },
     "sample": {
@@ -181162,6 +182644,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 64,
+     "stamina": 66,
+     "k9": 87,
+     "bb9": 72,
+     "hr9": 73,
+     "velocity": 149
+    }
    }
   },
   {
@@ -181254,19 +182748,19 @@
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
       "value": 45,
       "rank": "E"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -181300,7 +182794,7 @@
      }
     },
     "velocity": {
-     "kmh": 143,
+     "kmh": 144,
      "source": "amateur"
     },
     "sample": {
@@ -181318,6 +182812,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 58,
+     "stamina": 62,
+     "k9": 57,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 149
+    }
    }
   },
   {
@@ -181406,23 +182912,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 46,
+      "value": 49,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 54,
+      "value": 59,
       "rank": "D"
      },
      "bb9": {
-      "value": 52,
+      "value": 56,
       "rank": "D"
      },
      "hr9": {
-      "value": 53,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -181456,7 +182962,7 @@
      }
     },
     "velocity": {
-     "kmh": 144,
+     "kmh": 145,
      "source": "amateur"
     },
     "sample": {
@@ -181474,6 +182980,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 65,
+     "stamina": 66,
+     "k9": 79,
+     "bb9": 72,
+     "hr9": 73,
+     "velocity": 150
+    }
    }
   },
   {
@@ -181562,23 +183080,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 48,
-      "rank": "E"
-     },
-     "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 50,
-      "rank": "D"
-     },
-     "bb9": {
       "value": 52,
       "rank": "D"
      },
-     "hr9": {
+     "stamina": {
+      "value": 50,
+      "rank": "D"
+     },
+     "k9": {
       "value": 53,
+      "rank": "D"
+     },
+     "bb9": {
+      "value": 56,
+      "rank": "D"
+     },
+     "hr9": {
+      "value": 57,
       "rank": "D"
      }
     },
@@ -181612,7 +183130,7 @@
      }
     },
     "velocity": {
-     "kmh": 148,
+     "kmh": 149,
      "source": "amateur"
     },
     "sample": {
@@ -181630,6 +183148,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 68,
+     "stamina": 66,
+     "k9": 69,
+     "bb9": 72,
+     "hr9": 73,
+     "velocity": 154
+    }
    }
   },
   {
@@ -181722,19 +183252,19 @@
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 57,
+      "value": 50,
       "rank": "D"
      },
+     "k9": {
+      "value": 63,
+      "rank": "C"
+     },
      "bb9": {
-      "value": 44,
+      "value": 45,
       "rank": "E"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -181768,7 +183298,7 @@
      }
     },
     "velocity": {
-     "kmh": 143,
+     "kmh": 144,
      "source": "amateur"
     },
     "sample": {
@@ -181786,6 +183316,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 58,
+     "stamina": 62,
+     "k9": 79,
+     "bb9": 57,
+     "hr9": 61,
+     "velocity": 149
+    }
    }
   },
   {
@@ -181874,23 +183416,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 48,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -181924,7 +183466,7 @@
      }
     },
     "velocity": {
-     "kmh": 148,
+     "kmh": 149,
      "source": "amateur"
     },
     "sample": {
@@ -181942,6 +183484,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 62,
+     "stamina": 62,
+     "k9": 74,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 154
+    }
    }
   },
   {
@@ -182030,23 +183584,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 46,
+      "value": 45,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
       "value": 44,
       "rank": "E"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -182080,7 +183634,7 @@
      }
     },
     "velocity": {
-     "kmh": 142,
+     "kmh": 143,
      "source": "amateur"
     },
     "sample": {
@@ -182098,6 +183652,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 57,
+     "stamina": 62,
+     "k9": 56,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 148
+    }
    }
   },
   {
@@ -182190,19 +183756,19 @@
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 44,
+      "value": 43,
       "rank": "E"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -182236,7 +183802,7 @@
      }
     },
     "velocity": {
-     "kmh": 140,
+     "kmh": 141,
      "source": "amateur"
     },
     "sample": {
@@ -182254,6 +183820,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 56,
+     "stamina": 62,
+     "k9": 55,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 146
+    }
    }
   },
   {
@@ -182342,23 +183920,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 60,
+      "value": 67,
       "rank": "C"
      },
      "bb9": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "hr9": {
-      "value": 43,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -182410,6 +183988,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 62,
+     "stamina": 62,
+     "k9": 83,
+     "bb9": 75,
+     "hr9": 56,
+     "velocity": 154
+    }
    }
   },
   {
@@ -182498,23 +184088,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 43,
+      "value": 41,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 48,
-      "rank": "E"
-     },
-     "bb9": {
       "value": 49,
       "rank": "E"
      },
+     "bb9": {
+      "value": 50,
+      "rank": "D"
+     },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -182548,7 +184138,7 @@
      }
     },
     "velocity": {
-     "kmh": 137,
+     "kmh": 138,
      "source": "amateur"
     },
     "sample": {
@@ -182566,6 +184156,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 53,
+     "stamina": 62,
+     "k9": 65,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 143
+    }
    }
   },
   {
@@ -182654,23 +184256,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 46,
+      "value": 45,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
       "value": 44,
       "rank": "E"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -182704,7 +184306,7 @@
      }
     },
     "velocity": {
-     "kmh": 142,
+     "kmh": 143,
      "source": "amateur"
     },
     "sample": {
@@ -182722,6 +184324,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 57,
+     "stamina": 62,
+     "k9": 56,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 148
+    }
    }
   },
   {
@@ -182810,23 +184424,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -182878,6 +184492,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 56,
+     "stamina": 62,
+     "k9": 56,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 153
+    }
    }
   },
   {
@@ -182966,23 +184592,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 39,
       "rank": "F"
      },
      "k9": {
-      "value": 46,
+      "value": 49,
       "rank": "E"
      },
      "bb9": {
-      "value": 52,
+      "value": 56,
       "rank": "D"
      },
      "hr9": {
-      "value": 53,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -183016,7 +184642,7 @@
      }
     },
     "velocity": {
-     "kmh": 142,
+     "kmh": 143,
      "source": "amateur"
     },
     "sample": {
@@ -183034,6 +184660,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 77,
+     "stamina": 55,
+     "k9": 65,
+     "bb9": 72,
+     "hr9": 73,
+     "velocity": 148
+    }
    }
   },
   {
@@ -183122,23 +184760,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -183190,6 +184828,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 62,
+     "stamina": 62,
+     "k9": 61,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 154
+    }
    }
   },
   {
@@ -183282,19 +184932,19 @@
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 44,
+      "value": 43,
       "rank": "E"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -183328,7 +184978,7 @@
      }
     },
     "velocity": {
-     "kmh": 140,
+     "kmh": 141,
      "source": "amateur"
     },
     "sample": {
@@ -183346,6 +184996,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 56,
+     "stamina": 62,
+     "k9": 55,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 146
+    }
    }
   },
   {
@@ -183434,23 +185096,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 42,
+      "value": 40,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 41,
-      "rank": "E"
+      "value": 39,
+      "rank": "F"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -183484,7 +185146,7 @@
      }
     },
     "velocity": {
-     "kmh": 135,
+     "kmh": 136,
      "source": "amateur"
     },
     "sample": {
@@ -183502,6 +185164,18 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 52,
+     "stamina": 62,
+     "k9": 51,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 141
+    }
    }
   },
   {
@@ -183523,19 +185197,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "power": {
-      "value": 62,
+      "value": 69,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -183598,6 +185272,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 91,
+     "power": 89,
+     "eye": 77,
+     "speed": 74
+    }
    }
   },
   {
@@ -183619,19 +185303,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 51,
+      "value": 55,
       "rank": "D"
      },
      "power": {
+      "value": 50,
+      "rank": "D"
+     },
+     "eye": {
       "value": 49,
       "rank": "E"
      },
-     "eye": {
-      "value": 48,
-      "rank": "E"
-     },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -183694,6 +185378,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 71,
+     "power": 62,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -183715,19 +185409,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
+      "value": 50,
+      "rank": "D"
+     },
+     "eye": {
       "value": 49,
       "rank": "E"
      },
-     "eye": {
-      "value": 48,
-      "rank": "E"
-     },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -183790,6 +185484,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 62,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -183811,19 +185515,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -183886,6 +185590,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 75,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -183907,19 +185621,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -183982,6 +185696,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 75,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -184003,20 +185727,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 71,
-      "rank": "B"
+      "value": 81,
+      "rank": "A"
      },
      "power": {
-      "value": 60,
+      "value": 67,
       "rank": "C"
      },
      "eye": {
-      "value": 61,
+      "value": 68,
       "rank": "C"
      },
      "speed": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      }
     },
     "detail": {
@@ -184078,6 +185802,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 98,
+     "power": 87,
+     "eye": 88,
+     "speed": 86
+    }
    }
   },
   {
@@ -184099,19 +185833,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -184174,6 +185908,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 78,
+     "power": 76,
+     "eye": 77,
+     "speed": 74
+    }
    }
   },
   {
@@ -184195,19 +185939,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 51,
+      "value": 55,
       "rank": "D"
      },
      "power": {
+      "value": 50,
+      "rank": "D"
+     },
+     "eye": {
       "value": 49,
       "rank": "E"
      },
-     "eye": {
-      "value": 48,
-      "rank": "E"
-     },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -184270,6 +186014,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 71,
+     "power": 62,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -184291,19 +186045,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
+      "value": 50,
+      "rank": "D"
+     },
+     "eye": {
       "value": 49,
       "rank": "E"
      },
-     "eye": {
-      "value": 48,
-      "rank": "E"
-     },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -184366,6 +186120,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 62,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -184387,19 +186151,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
+      "value": 50,
+      "rank": "D"
+     },
+     "eye": {
       "value": 49,
       "rank": "E"
      },
-     "eye": {
-      "value": 48,
-      "rank": "E"
-     },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -184462,6 +186226,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 62,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -184483,19 +186257,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
+      "value": 50,
+      "rank": "D"
+     },
+     "eye": {
       "value": 49,
       "rank": "E"
      },
-     "eye": {
-      "value": 48,
-      "rank": "E"
-     },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -184558,6 +186332,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 62,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -184579,19 +186363,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -184654,6 +186438,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 75,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -184675,20 +186469,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "power": {
-      "value": 66,
-      "rank": "C"
+      "value": 76,
+      "rank": "B"
      },
      "eye": {
-      "value": 61,
+      "value": 68,
       "rank": "C"
      },
      "speed": {
-      "value": 65,
-      "rank": "C"
+      "value": 75,
+      "rank": "B"
      }
     },
     "detail": {
@@ -184750,6 +186544,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 92,
+     "power": 98,
+     "eye": 88,
+     "speed": 98
+    }
    }
   },
   {
@@ -184771,19 +186575,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -184846,6 +186650,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 75,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -184867,19 +186681,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -184942,6 +186756,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 62,
+     "eye": 74,
+     "speed": 74
+    }
    }
   },
   {
@@ -184963,19 +186787,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 46,
       "rank": "E"
      },
      "power": {
+      "value": 50,
+      "rank": "D"
+     },
+     "eye": {
       "value": 49,
       "rank": "E"
      },
-     "eye": {
-      "value": 48,
-      "rank": "E"
-     },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -185038,6 +186862,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 58,
+     "power": 62,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -185059,19 +186893,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 51,
-      "rank": "D"
-     },
-     "power": {
       "value": 55,
       "rank": "D"
      },
+     "power": {
+      "value": 59,
+      "rank": "D"
+     },
      "eye": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -185134,6 +186968,16 @@
     "fictional": false,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 71,
+     "power": 75,
+     "eye": 61,
+     "speed": 59
+    }
    }
   },
   {
@@ -185222,24 +187066,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
-      "rank": "C"
+      "value": 75,
+      "rank": "B"
      },
      "stamina": {
-      "value": 44,
-      "rank": "E"
+      "value": 68,
+      "rank": "C"
      },
      "k9": {
-      "value": 62,
-      "rank": "C"
+      "value": 75,
+      "rank": "B"
      },
      "bb9": {
-      "value": 69,
-      "rank": "C"
+      "value": 81,
+      "rank": "A"
      },
      "hr9": {
-      "value": 69,
-      "rank": "C"
+      "value": 81,
+      "rank": "A"
      }
     },
     "abilities": [],
@@ -185272,7 +187116,7 @@
      }
     },
     "velocity": {
-     "kmh": 149,
+     "kmh": 151,
      "source": "amateur"
     },
     "sample": {
@@ -185290,6 +187134,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 93,
+     "stamina": 90,
+     "k9": 93,
+     "bb9": 98,
+     "hr9": 98,
+     "velocity": 154
+    }
    }
   },
   {
@@ -185378,24 +187234,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "stamina": {
-      "value": 38,
-      "rank": "F"
+      "value": 68,
+      "rank": "C"
      },
      "k9": {
-      "value": 66,
-      "rank": "C"
+      "value": 80,
+      "rank": "A"
      },
      "bb9": {
-      "value": 69,
-      "rank": "C"
+      "value": 81,
+      "rank": "A"
      },
      "hr9": {
-      "value": 69,
-      "rank": "C"
+      "value": 81,
+      "rank": "A"
      }
     },
     "abilities": [],
@@ -185428,7 +187284,7 @@
      }
     },
     "velocity": {
-     "kmh": 145,
+     "kmh": 147,
      "source": "amateur"
     },
     "sample": {
@@ -185446,6 +187302,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 89,
+     "stamina": 86,
+     "k9": 98,
+     "bb9": 98,
+     "hr9": 98,
+     "velocity": 150
+    }
    }
   },
   {
@@ -185534,28 +187402,28 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 58,
-      "rank": "D"
+      "value": 65,
+      "rank": "C"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 60,
+      "rank": "C"
      },
      "k9": {
-      "value": 64,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "bb9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "abilities": [],
-    "role": "救援",
+    "role": "先発",
     "detail": {
      "fip": {
       "observed": null,
@@ -185584,7 +187452,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 149,
      "source": "amateur"
     },
     "sample": {
@@ -185602,6 +187470,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 79,
+     "stamina": 74,
+     "k9": 92,
+     "bb9": 87,
+     "hr9": 87,
+     "velocity": 152
+    }
    }
   },
   {
@@ -185690,28 +187570,28 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
+      "value": 68,
       "rank": "C"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
       "value": 60,
       "rank": "C"
      },
-     "bb9": {
-      "value": 66,
+     "k9": {
+      "value": 68,
       "rank": "C"
      },
+     "bb9": {
+      "value": 73,
+      "rank": "B"
+     },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "abilities": [],
-    "role": "救援",
+    "role": "先発",
     "detail": {
      "fip": {
       "observed": null,
@@ -185740,7 +187620,7 @@
      }
     },
     "velocity": {
-     "kmh": 151,
+     "kmh": 153,
      "source": "amateur"
     },
     "sample": {
@@ -185758,6 +187638,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 82,
+     "stamina": 74,
+     "k9": 82,
+     "bb9": 87,
+     "hr9": 87,
+     "velocity": 156
+    }
    }
   },
   {
@@ -185846,28 +187738,28 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 60,
+      "rank": "C"
      },
      "k9": {
-      "value": 68,
-      "rank": "C"
+      "value": 79,
+      "rank": "B"
      },
      "bb9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "abilities": [],
-    "role": "救援",
+    "role": "先発",
     "detail": {
      "fip": {
       "observed": null,
@@ -185914,6 +187806,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 84,
+     "stamina": 74,
+     "k9": 97,
+     "bb9": 87,
+     "hr9": 87,
+     "velocity": 158
+    }
    }
   },
   {
@@ -186002,23 +187906,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "stamina": {
-      "value": 35,
+      "value": 39,
       "rank": "F"
      },
      "k9": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "bb9": {
-      "value": 60,
+      "value": 64,
       "rank": "C"
      },
      "hr9": {
-      "value": 64,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -186070,6 +187974,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 72,
+     "stamina": 49,
+     "k9": 85,
+     "bb9": 74,
+     "hr9": 78,
+     "velocity": 154
+    }
    }
   },
   {
@@ -186158,23 +188074,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 57,
-      "rank": "D"
-     },
-     "stamina": {
-      "value": 41,
-      "rank": "E"
-     },
-     "k9": {
-      "value": 63,
+      "value": 62,
       "rank": "C"
      },
-     "bb9": {
+     "stamina": {
       "value": 60,
       "rank": "C"
      },
-     "hr9": {
+     "k9": {
+      "value": 71,
+      "rank": "B"
+     },
+     "bb9": {
       "value": 64,
+      "rank": "C"
+     },
+     "hr9": {
+      "value": 68,
       "rank": "C"
      }
     },
@@ -186208,7 +188124,7 @@
      }
     },
     "velocity": {
-     "kmh": 149,
+     "kmh": 151,
      "source": "amateur"
     },
     "sample": {
@@ -186226,6 +188142,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 72,
+     "stamina": 74,
+     "k9": 85,
+     "bb9": 74,
+     "hr9": 78,
+     "velocity": 154
+    }
    }
   },
   {
@@ -186314,23 +188242,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
-      "rank": "D"
-     },
-     "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 62,
-      "rank": "C"
-     },
-     "bb9": {
       "value": 60,
       "rank": "C"
      },
-     "hr9": {
+     "stamina": {
+      "value": 60,
+      "rank": "C"
+     },
+     "k9": {
+      "value": 69,
+      "rank": "C"
+     },
+     "bb9": {
       "value": 64,
+      "rank": "C"
+     },
+     "hr9": {
+      "value": 68,
       "rank": "C"
      }
     },
@@ -186364,7 +188292,7 @@
      }
     },
     "velocity": {
-     "kmh": 146,
+     "kmh": 148,
      "source": "amateur"
     },
     "sample": {
@@ -186382,6 +188310,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 70,
+     "stamina": 70,
+     "k9": 83,
+     "bb9": 74,
+     "hr9": 78,
+     "velocity": 151
+    }
    }
   },
   {
@@ -186470,23 +188410,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 39,
       "rank": "F"
      },
      "k9": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "bb9": {
-      "value": 60,
+      "value": 64,
       "rank": "C"
      },
      "hr9": {
-      "value": 64,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -186520,7 +188460,7 @@
      }
     },
     "velocity": {
-     "kmh": 144,
+     "kmh": 146,
      "source": "amateur"
     },
     "sample": {
@@ -186538,6 +188478,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 68,
+     "stamina": 49,
+     "k9": 68,
+     "bb9": 74,
+     "hr9": 78,
+     "velocity": 149
+    }
    }
   },
   {
@@ -186626,23 +188578,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "stamina": {
-      "value": 35,
+      "value": 39,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "bb9": {
-      "value": 60,
+      "value": 64,
       "rank": "C"
      },
      "hr9": {
-      "value": 64,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -186676,7 +188628,7 @@
      }
     },
     "velocity": {
-     "kmh": 151,
+     "kmh": 153,
      "source": "amateur"
     },
     "sample": {
@@ -186694,6 +188646,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 74,
+     "stamina": 49,
+     "k9": 74,
+     "bb9": 74,
+     "hr9": 78,
+     "velocity": 156
+    }
    }
   },
   {
@@ -186782,23 +188746,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
-      "rank": "D"
-     },
-     "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 56,
-      "rank": "D"
-     },
-     "bb9": {
       "value": 60,
       "rank": "C"
      },
-     "hr9": {
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 60,
+      "rank": "C"
+     },
+     "bb9": {
       "value": 64,
+      "rank": "C"
+     },
+     "hr9": {
+      "value": 68,
       "rank": "C"
      }
     },
@@ -186832,7 +188796,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 149,
      "source": "amateur"
     },
     "sample": {
@@ -186850,6 +188814,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 70,
+     "stamina": 49,
+     "k9": 70,
+     "bb9": 74,
+     "hr9": 78,
+     "velocity": 152
+    }
    }
   },
   {
@@ -186938,23 +188914,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
+      "value": 66,
       "rank": "C"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "bb9": {
-      "value": 65,
+      "value": 69,
       "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -187006,6 +188982,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 76,
+     "stamina": 42,
+     "k9": 63,
+     "bb9": 79,
+     "hr9": 67,
+     "velocity": 154
+    }
    }
   },
   {
@@ -187094,23 +189082,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -187162,6 +189150,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 64,
+     "stamina": 42,
+     "k9": 64,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 155
+    }
    }
   },
   {
@@ -187250,23 +189250,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -187318,6 +189318,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 63,
+     "stamina": 42,
+     "k9": 63,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 154
+    }
    }
   },
   {
@@ -187406,23 +189418,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -187474,6 +189486,18 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 63,
+     "stamina": 42,
+     "k9": 63,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 154
+    }
    }
   },
   {
@@ -187495,20 +189519,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 74,
-      "rank": "B"
+      "value": 89,
+      "rank": "A"
      },
      "power": {
-      "value": 69,
-      "rank": "C"
+      "value": 84,
+      "rank": "A"
      },
      "eye": {
-      "value": 70,
-      "rank": "B"
+      "value": 85,
+      "rank": "A"
      },
      "speed": {
-      "value": 57,
-      "rank": "D"
+      "value": 69,
+      "rank": "C"
      }
     },
     "detail": {
@@ -187570,6 +189594,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 98,
+     "power": 98,
+     "eye": 98,
+     "speed": 87
+    }
    }
   },
   {
@@ -187591,19 +189625,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -187666,6 +189700,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 85,
+     "power": 70,
+     "eye": 71,
+     "speed": 68
+    }
    }
   },
   {
@@ -187687,19 +189731,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
-     },
-     "power": {
       "value": 62,
       "rank": "C"
      },
+     "power": {
+      "value": 69,
+      "rank": "C"
+     },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -187762,6 +189806,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 72,
+     "power": 83,
+     "eye": 71,
+     "speed": 68
+    }
    }
   },
   {
@@ -187783,19 +189837,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -187858,6 +189912,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 72,
+     "power": 70,
+     "eye": 71,
+     "speed": 68
+    }
    }
   },
   {
@@ -187879,19 +189943,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 53,
-      "rank": "D"
-     },
-     "power": {
-      "value": 62,
-      "rank": "C"
-     },
-     "eye": {
       "value": 57,
       "rank": "D"
      },
+     "power": {
+      "value": 69,
+      "rank": "C"
+     },
+     "eye": {
+      "value": 61,
+      "rank": "C"
+     },
      "speed": {
-      "value": 60,
+      "value": 67,
       "rank": "C"
      }
     },
@@ -187954,6 +190018,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 67,
+     "power": 83,
+     "eye": 71,
+     "speed": 81
+    }
    }
   },
   {
@@ -187975,20 +190049,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 64,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      }
     },
     "detail": {
@@ -188050,6 +190124,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 85,
+     "power": 70,
+     "eye": 71,
+     "speed": 86
+    }
    }
   },
   {
@@ -188071,19 +190155,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -188146,6 +190230,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 72,
+     "power": 70,
+     "eye": 71,
+     "speed": 68
+    }
    }
   },
   {
@@ -188167,19 +190261,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -188242,6 +190336,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 85,
+     "power": 70,
+     "eye": 71,
+     "speed": 68
+    }
    }
   },
   {
@@ -188263,20 +190367,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 56,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
-     "speed": {
-      "value": 57,
+     "eye": {
+      "value": 56,
       "rank": "D"
+     },
+     "speed": {
+      "value": 61,
+      "rank": "C"
      }
     },
     "detail": {
@@ -188338,6 +190442,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 70,
+     "power": 61,
+     "eye": 62,
+     "speed": 71
+    }
    }
   },
   {
@@ -188359,19 +190473,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
+      "value": 65,
       "rank": "C"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -188434,6 +190548,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 75,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -188455,19 +190579,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 60,
+      "value": 64,
       "rank": "C"
      },
      "eye": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -188530,6 +190654,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 74,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -188551,19 +190685,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -188626,6 +190760,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -188647,19 +190791,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -188722,6 +190866,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -188743,19 +190897,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -188818,6 +190972,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -188839,19 +191003,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -188914,6 +191078,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -188935,19 +191109,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
+      "value": 65,
       "rank": "C"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -189010,6 +191184,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 75,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -189031,19 +191215,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -189106,6 +191290,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -189127,19 +191321,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -189202,6 +191396,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -189223,19 +191427,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -189298,6 +191502,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -189319,19 +191533,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -189394,6 +191608,16 @@
     "fictional": false,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -189415,19 +191639,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "power": {
-      "value": 62,
+      "value": 69,
       "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -189490,6 +191714,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社1年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 85,
+     "power": 83,
+     "eye": 71,
+     "speed": 68
+    }
    }
   },
   {
@@ -189578,24 +191812,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
-      "rank": "C"
-     },
-     "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
       "value": 67,
       "rank": "C"
      },
+     "stamina": {
+      "value": 39,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 75,
+      "rank": "B"
+     },
      "bb9": {
-      "value": 72,
+      "value": 79,
       "rank": "B"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -189628,7 +191862,7 @@
      }
     },
     "velocity": {
-     "kmh": 143,
+     "kmh": 145,
      "source": "amateur"
     },
     "sample": {
@@ -189646,6 +191880,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社2年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 81,
+     "stamina": 49,
+     "k9": 89,
+     "bb9": 93,
+     "hr9": 80,
+     "velocity": 148
+    }
    }
   },
   {
@@ -189667,19 +191913,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
-     },
-     "power": {
       "value": 62,
       "rank": "C"
      },
+     "power": {
+      "value": 69,
+      "rank": "C"
+     },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -189742,6 +191988,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社2年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 72,
+     "power": 83,
+     "eye": 71,
+     "speed": 68
+    }
    }
   },
   {
@@ -189830,23 +192086,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
+      "value": 63,
       "rank": "C"
      },
      "stamina": {
-      "value": 41,
-      "rank": "E"
-     },
-     "k9": {
       "value": 60,
       "rank": "C"
      },
-     "bb9": {
-      "value": 69,
+     "k9": {
+      "value": 63,
       "rank": "C"
      },
+     "bb9": {
+      "value": 73,
+      "rank": "B"
+     },
      "hr9": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -189880,7 +192136,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 149,
      "source": "amateur"
     },
     "sample": {
@@ -189898,6 +192154,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社1年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 69,
+     "stamina": 70,
+     "k9": 69,
+     "bb9": 83,
+     "hr9": 72,
+     "velocity": 152
+    }
    }
   },
   {
@@ -189986,23 +192254,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "bb9": {
-      "value": 63,
+      "value": 64,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -190054,6 +192322,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社1年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 68,
+     "stamina": 42,
+     "k9": 68,
+     "bb9": 70,
+     "hr9": 72,
+     "velocity": 151
+    }
    }
   },
   {
@@ -190142,23 +192422,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 66,
+      "value": 60,
       "rank": "C"
      },
+     "k9": {
+      "value": 71,
+      "rank": "B"
+     },
      "bb9": {
-      "value": 63,
+      "value": 64,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -190210,6 +192490,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社2年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 68,
+     "stamina": 66,
+     "k9": 81,
+     "bb9": 70,
+     "hr9": 72,
+     "velocity": 151
+    }
    }
   },
   {
@@ -190298,23 +192590,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      },
      "bb9": {
-      "value": 63,
+      "value": 64,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -190366,6 +192658,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 67,
+     "stamina": 42,
+     "k9": 67,
+     "bb9": 70,
+     "hr9": 72,
+     "velocity": 150
+    }
    }
   },
   {
@@ -190387,19 +192691,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -190462,6 +192766,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社1年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 69,
+     "power": 65,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -190483,19 +192797,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 68,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -190558,6 +192872,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社1年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 82,
+     "power": 65,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -190579,19 +192903,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -190654,6 +192978,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社1年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 69,
+     "power": 65,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -190675,19 +193009,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 74,
-      "rank": "B"
+      "value": 81,
+      "rank": "A"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -190750,6 +193084,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社1年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 91,
+     "power": 65,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -190771,19 +193115,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "power": {
-      "value": 64,
+      "value": 68,
       "rank": "C"
      },
      "eye": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -190846,6 +193190,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社2年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 69,
+     "power": 78,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -190867,19 +193221,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "power": {
-      "value": 64,
+      "value": 68,
       "rank": "C"
      },
      "eye": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -190942,6 +193296,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社2年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 69,
+     "power": 78,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -191030,23 +193394,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 65,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "stamina": {
-      "value": 41,
-      "rank": "E"
-     },
-     "k9": {
-      "value": 65,
+      "value": 60,
       "rank": "C"
      },
+     "k9": {
+      "value": 70,
+      "rank": "B"
+     },
      "bb9": {
-      "value": 63,
+      "value": 64,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      }
     },
@@ -191080,7 +193444,7 @@
      }
     },
     "velocity": {
-     "kmh": 145,
+     "kmh": 147,
      "source": "amateur"
     },
     "sample": {
@@ -191098,6 +193462,18 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": "入社3年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 80,
+     "stamina": 70,
+     "k9": 80,
+     "bb9": 70,
+     "hr9": 72,
+     "velocity": 150
+    }
    }
   },
   {
@@ -191119,19 +193495,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 63,
+      "value": 67,
       "rank": "C"
      }
     },
@@ -191194,6 +193570,16 @@
     "fictional": false,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 69,
+     "power": 65,
+     "eye": 66,
+     "speed": 77
+    }
    }
   },
   {
@@ -191282,23 +193668,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 57,
+      "value": 55,
       "rank": "D"
      },
      "stamina": {
-      "value": 41,
-      "rank": "E"
-     },
-     "k9": {
-      "value": 69,
+      "value": 60,
       "rank": "C"
      },
+     "k9": {
+      "value": 73,
+      "rank": "B"
+     },
      "bb9": {
-      "value": 62,
+      "value": 60,
       "rank": "C"
      },
      "hr9": {
-      "value": 63,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -191332,7 +193718,7 @@
      }
     },
     "velocity": {
-     "kmh": 147,
+     "kmh": 149,
      "source": "amateur"
     },
     "sample": {
@@ -191350,6 +193736,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": "4年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 61,
+     "stamina": 70,
+     "k9": 83,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 152
+    }
    }
   },
   {
@@ -191442,19 +193840,19 @@
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 33,
       "rank": "F"
      },
      "k9": {
-      "value": 65,
+      "value": 68,
       "rank": "C"
      },
      "bb9": {
-      "value": 62,
+      "value": 60,
       "rank": "C"
      },
      "hr9": {
-      "value": 63,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -191488,7 +193886,7 @@
      }
     },
     "velocity": {
-     "kmh": 151,
+     "kmh": 153,
      "source": "amateur"
     },
     "sample": {
@@ -191506,6 +193904,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": "2年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 65,
+     "stamina": 39,
+     "k9": 78,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 156
+    }
    }
   },
   {
@@ -191594,23 +194004,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 33,
       "rank": "F"
      },
      "k9": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "bb9": {
-      "value": 62,
+      "value": 60,
       "rank": "C"
      },
      "hr9": {
-      "value": 63,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -191644,7 +194054,7 @@
      }
     },
     "velocity": {
-     "kmh": 145,
+     "kmh": 147,
      "source": "amateur"
     },
     "sample": {
@@ -191662,6 +194072,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": "1年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 60,
+     "stamina": 39,
+     "k9": 73,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 150
+    }
    }
   },
   {
@@ -191683,19 +194105,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 55,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -191758,6 +194180,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 60,
+     "eye": 61,
+     "speed": 58
+    }
    }
   },
   {
@@ -191850,19 +194282,19 @@
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 33,
       "rank": "F"
      },
      "k9": {
-      "value": 64,
+      "value": 67,
       "rank": "C"
      },
      "bb9": {
-      "value": 62,
+      "value": 60,
       "rank": "C"
      },
      "hr9": {
-      "value": 63,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -191896,7 +194328,7 @@
      }
     },
     "velocity": {
-     "kmh": 150,
+     "kmh": 152,
      "source": "amateur"
     },
     "sample": {
@@ -191914,6 +194346,18 @@
     "fictional": false,
     "category": "独立",
     "grade_text": "3年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 64,
+     "stamina": 39,
+     "k9": 77,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 155
+    }
    }
   },
   {
@@ -191935,19 +194379,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      },
      "power": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 63,
+      "value": 64,
       "rank": "C"
      },
      "speed": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -192010,6 +194454,16 @@
     "fictional": false,
     "category": "独立",
     "grade_text": "2年目"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 76,
+     "power": 60,
+     "eye": 74,
+     "speed": 71
+    }
    }
   },
   {
@@ -192098,23 +194552,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 47,
+      "value": 48,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 46,
+      "value": 47,
       "rank": "E"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -192148,7 +194602,7 @@
      }
     },
     "velocity": {
-     "kmh": 145,
+     "kmh": 146,
      "source": "amateur"
     },
     "sample": {
@@ -192166,6 +194620,18 @@
     "fictional": true,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 60,
+     "stamina": 48,
+     "k9": 59,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 151
+    }
    }
   },
   {
@@ -192254,23 +194720,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 42,
-      "rank": "E"
+      "value": 38,
+      "rank": "F"
      },
      "stamina": {
-      "value": 35,
+      "value": 33,
       "rank": "F"
      },
      "k9": {
-      "value": 42,
-      "rank": "E"
+      "value": 38,
+      "rank": "F"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -192304,7 +194770,7 @@
      }
     },
     "velocity": {
-     "kmh": 139,
+     "kmh": 140,
      "source": "amateur"
     },
     "sample": {
@@ -192322,6 +194788,18 @@
     "fictional": true,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 50,
+     "stamina": 45,
+     "k9": 50,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 145
+    }
    }
   },
   {
@@ -192410,23 +194888,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 44,
+      "value": 42,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 33,
       "rank": "F"
      },
      "k9": {
-      "value": 44,
+      "value": 42,
       "rank": "E"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -192460,7 +194938,7 @@
      }
     },
     "velocity": {
-     "kmh": 145,
+     "kmh": 146,
      "source": "amateur"
     },
     "sample": {
@@ -192478,6 +194956,18 @@
     "fictional": true,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 54,
+     "stamina": 45,
+     "k9": 54,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 151
+    }
    }
   },
   {
@@ -192566,23 +195056,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 44,
-      "rank": "E"
-     },
-     "stamina": {
-      "value": 35,
-      "rank": "F"
-     },
-     "k9": {
       "value": 42,
       "rank": "E"
      },
-     "bb9": {
-      "value": 49,
+     "stamina": {
+      "value": 36,
+      "rank": "F"
+     },
+     "k9": {
+      "value": 41,
       "rank": "E"
      },
+     "bb9": {
+      "value": 50,
+      "rank": "D"
+     },
      "hr9": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -192616,7 +195106,7 @@
      }
     },
     "velocity": {
-     "kmh": 138,
+     "kmh": 139,
      "source": "amateur"
     },
     "sample": {
@@ -192634,6 +195124,18 @@
     "fictional": true,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 54,
+     "stamina": 48,
+     "k9": 53,
+     "bb9": 62,
+     "hr9": 61,
+     "velocity": 144
+    }
    }
   },
   {
@@ -192722,23 +195224,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 42,
-      "rank": "E"
+      "value": 38,
+      "rank": "F"
      },
      "stamina": {
-      "value": 35,
+      "value": 33,
       "rank": "F"
      },
      "k9": {
-      "value": 42,
-      "rank": "E"
+      "value": 38,
+      "rank": "F"
      },
      "bb9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      },
      "hr9": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -192772,7 +195274,7 @@
      }
     },
     "velocity": {
-     "kmh": 140,
+     "kmh": 141,
      "source": "amateur"
     },
     "sample": {
@@ -192790,6 +195292,18 @@
     "fictional": true,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "overall": 50,
+     "stamina": 45,
+     "k9": 50,
+     "bb9": 56,
+     "hr9": 56,
+     "velocity": 146
+    }
    }
   },
   {
@@ -192878,23 +195392,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 48,
+      "value": 45,
       "rank": "E"
      },
      "stamina": {
-      "value": 35,
+      "value": 33,
       "rank": "F"
      },
      "k9": {
-      "value": 48,
+      "value": 45,
       "rank": "E"
      },
      "bb9": {
-      "value": 55,
+      "value": 53,
       "rank": "D"
      },
      "hr9": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -192928,7 +195442,7 @@
      }
     },
     "velocity": {
-     "kmh": 139,
+     "kmh": 141,
      "source": "amateur"
     },
     "sample": {
@@ -192946,6 +195460,18 @@
     "fictional": true,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 51,
+     "stamina": 39,
+     "k9": 51,
+     "bb9": 59,
+     "hr9": 60,
+     "velocity": 144
+    }
    }
   },
   {
@@ -192967,19 +195493,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      }
     },
@@ -193042,6 +195568,16 @@
     "fictional": true,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 62,
+     "power": 61,
+     "eye": 62,
+     "speed": 58
+    }
    }
   },
   {
@@ -193063,20 +195599,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
-      "rank": "D"
+      "value": 49,
+      "rank": "E"
      }
     },
     "detail": {
@@ -193138,6 +195674,16 @@
     "fictional": true,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 58,
+     "eye": 58,
+     "speed": 55
+    }
    }
   },
   {
@@ -193159,20 +195705,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
-      "rank": "D"
+      "value": 49,
+      "rank": "E"
      }
     },
     "detail": {
@@ -193234,6 +195780,16 @@
     "fictional": true,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 58,
+     "power": 58,
+     "eye": 58,
+     "speed": 55
+    }
    }
   },
   {
@@ -193255,19 +195811,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
-     },
-     "eye": {
       "value": 59,
       "rank": "D"
      },
+     "eye": {
+      "value": 60,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -193330,6 +195886,16 @@
     "fictional": true,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 69,
+     "power": 65,
+     "eye": 66,
+     "speed": 64
+    }
    }
   },
   {
@@ -193351,19 +195917,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
-      "rank": "D"
-     },
-     "power": {
-      "value": 56,
-      "rank": "D"
-     },
-     "eye": {
       "value": 57,
       "rank": "D"
      },
-     "speed": {
+     "power": {
       "value": 54,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 55,
+      "rank": "D"
+     },
+     "speed": {
+      "value": 52,
       "rank": "D"
      }
     },
@@ -193426,6 +195992,16 @@
     "fictional": true,
     "category": "社会人",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 63,
+     "power": 60,
+     "eye": 61,
+     "speed": 58
+    }
    }
   },
   {
@@ -193447,19 +196023,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
-      "rank": "D"
-     },
-     "power": {
-      "value": 56,
-      "rank": "D"
-     },
-     "eye": {
       "value": 57,
       "rank": "D"
      },
-     "speed": {
+     "power": {
       "value": 54,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 55,
+      "rank": "D"
+     },
+     "speed": {
+      "value": 52,
       "rank": "D"
      }
     },
@@ -193522,6 +196098,16 @@
     "fictional": true,
     "category": "独立",
     "grade_text": null
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 27,
+    "peak": {
+     "meet": 63,
+     "power": 60,
+     "eye": 61,
+     "speed": 58
+    }
    }
   },
   {
@@ -193610,23 +196196,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 51,
       "rank": "D"
      },
      "stamina": {
-      "value": 35,
+      "value": 36,
       "rank": "F"
      },
      "k9": {
-      "value": 52,
+      "value": 51,
       "rank": "D"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      }
     },
@@ -193660,7 +196246,7 @@
      }
     },
     "velocity": {
-     "kmh": 142,
+     "kmh": 144,
      "source": "amateur"
     },
     "sample": {
@@ -193678,6 +196264,18 @@
     "fictional": true,
     "category": "大学",
     "grade_text": "3年"
+   },
+   "growth": {
+    "type": "普通",
+    "peak_age": 28,
+    "peak": {
+     "overall": 57,
+     "stamina": 42,
+     "k9": 57,
+     "bb9": 66,
+     "hr9": 67,
+     "velocity": 147
+    }
    }
   },
   {
@@ -193699,19 +196297,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
+      "value": 43,
       "rank": "E"
      },
      "power": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "eye": {
-      "value": 48,
+      "value": 46,
       "rank": "E"
      },
      "speed": {
-      "value": 46,
+      "value": 44,
       "rank": "E"
      }
     },
@@ -193774,6 +196372,16 @@
     "fictional": true,
     "category": "高校",
     "grade_text": "2年"
+   },
+   "growth": {
+    "type": "晩成",
+    "peak_age": 29,
+    "peak": {
+     "meet": 55,
+     "power": 58,
+     "eye": 58,
+     "speed": 56
+    }
    }
   }
  ],
