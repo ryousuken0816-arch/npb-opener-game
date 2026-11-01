@@ -185,6 +185,14 @@ func grow(p: Dictionary, year: int, rng: RandomNumberGenerator, season: Dictiona
 	if side == "B" and _no_fielding(q):
 		_assign_rookie_fielding(q, block, rng)
 	_update_sample(q, side, season)
+
+	# 二刀流選手の副次能力成長と専念イベント
+	var two_way: Variant = q.get("two_way")
+	if two_way is Dictionary and bool(two_way.get("active", false)):
+		var sub_side := "B" if side == "P" else "P"
+		_grow_sub_side(q, sub_side, age, rng)
+		_check_two_way_focus(q, age, rng)
+
 	q["growth_year"] = year
 	return q
 
@@ -575,6 +583,80 @@ static func _shift_trajectory(batting: Dictionary, old_power: float, new_power: 
 	var step := _trajectory_class(new_power) - _trajectory_class(old_power)
 	if step != 0:
 		batting["trajectory"] = clampi(int(traj) + step, 1, 4)
+
+
+## 二刀流選手の副次側の成長（投手なら打撃、野手なら投球）
+func _grow_sub_side(q: Dictionary, sub_side: String, age: int, rng: RandomNumberGenerator) -> void:
+	var block_name := "batting" if sub_side == "B" else "pitching"
+	if not coeff.has(block_name):
+		return
+	var block: Dictionary = coeff[block_name]
+	var shocks := _shocks(block, rng)
+	var order: Array = block["order"]
+	var regular := 1.0
+
+	for i in order.size():
+		var key: String = order[i]
+		var cur: Variant = _value(q, sub_side, key)
+		if cur == null:
+			continue
+		var nxt := float(cur)
+		nxt += _mean_delta(q, block, key, nxt, age, regular) + _sd(q, block, key, age, regular) * float(shocks[i])
+		_set_value(q, sub_side, key, nxt)
+
+	# 投手の球速
+	if sub_side == "P" and q.get("pitching") is Dictionary and q["pitching"].get("velocity") is Dictionary:
+		var cur_vel: float = float(q["pitching"]["velocity"].get("kmh", 145))
+		var peak_vel: Variant = q.get("growth", {}).get("peak", {}).get("velocity")
+		if peak_vel != null and age <= peak_age_of(q):
+			var vel_delta := (float(peak_vel) - cur_vel) / float(maxi(1, peak_age_of(q) - age + 1))
+			q["pitching"]["velocity"]["kmh"] = roundi(cur_vel + vel_delta + rng.randfn(0.0, 0.8))
+
+
+## 二刀流選手の専念イベント判定（22〜25歳頃に判定）
+func _check_two_way_focus(q: Dictionary, age: int, rng: RandomNumberGenerator) -> void:
+	var tw: Variant = q.get("two_way")
+	if not (tw is Dictionary) or not bool(tw.get("active", false)):
+		return
+
+	# 本格二刀流（タイプA）は才能が高いため専念しにくく、素材型（D）や片方優位型（B, C）は専念しやすい
+	var tw_type: String = str(tw.get("type", ""))
+	if age < 22 or age > 25:
+		return
+
+	# 投打の現在能力スコアの差
+	var p_ovr: float = float(_value(q, "P", "overall") if _value(q, "P", "overall") != null else 40.0)
+	var b_meet: float = float(_value(q, "B", "meet") if _value(q, "B", "meet") != null else 40.0)
+	var b_power: float = float(_value(q, "B", "power") if _value(q, "B", "power") != null else 40.0)
+	var b_ovr: float = (b_meet + b_power) * 0.5
+
+	var delta: float = (p_ovr - b_ovr) / 12.0 # 正なら投手有利、負なら打者有利
+	var type_bias := -0.6 if tw_type == "A" else 0.4
+
+	# 専念確率（シグモイド）
+	var z: float = 1.2 * (float(age) - 23.5) + 1.8 * absf(delta) + type_bias
+	var p_focus: float = 1.0 / (1.0 + exp(-z))
+
+	if rng.randf() < p_focus:
+		tw["active"] = false
+		var focus_side := "P" if delta >= 0.0 else "B"
+		tw["focus"] = "投手" if focus_side == "P" else "打者"
+
+		# 専念した側にピーク上乗せボーナス（練習集中効果）
+		var peak_dict: Dictionary = q.get("growth", {}).get("peak", {})
+		if focus_side == "P":
+			for k in ["overall", "k9", "bb9", "stamina"]:
+				if peak_dict.has(k):
+					peak_dict[k] = float(peak_dict[k]) + rng.randf_range(2.0, 4.0)
+		else:
+			for k in ["meet", "power", "eye"]:
+				if peak_dict.has(k):
+					peak_dict[k] = float(peak_dict[k]) + rng.randf_range(2.0, 4.0)
+			# 打者専念の場合、本職が投手なら野手へ転向
+			if q.get("is_pitcher", false):
+				q["is_pitcher"] = false
+				if q.get("primary_pos") == "投手" or str(q.get("primary_pos", "")).is_empty():
+					q["primary_pos"] = "外野手"
 
 
 static func _trajectory_class(power: float) -> int:

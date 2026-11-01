@@ -787,6 +787,12 @@ func evaluate(team: String, c: Dictionary, first: bool) -> float:
 		v += TARGET_BONUS
 	if c.get("mlb_intent", false) and (team == user_team or not _team_dare.get(team, {}).has(c["id"])):
 		v -= MlbPersuasion.CPU_AVOID  # メジャー志望はふだん避ける（自球団のおまかせも）
+	if c.get("two_way", {}).get("active", false):
+		var tw_type: String = str(c.get("two_way", {}).get("type", ""))
+		match tw_type:
+			"A": v += 0.45
+			"B", "C": v += 0.20
+			"D": v += 0.15
 	return v + _need_bonus(team, c["pos"])
 
 
@@ -843,6 +849,29 @@ func _fill_profile(c: Dictionary, p: Dictionary) -> void:
 			c["velocity"] = int(pit["velocity"].get("kmh", 0))
 	c["ratings"] = ratings
 	var ama: Variant = p.get("amateur")
+	c["two_way"] = ama.get("two_way", {}) if ama is Dictionary and ama.get("two_way") is Dictionary else p.get("two_way", {})
+	if bool(c["two_way"].get("active", false)):
+		if c["pitcher"]:
+			var sub_bat: Variant = p.get("batting")
+			if sub_bat is Dictionary and sub_bat.get("ratings") is Dictionary:
+				var b_rat := {}
+				for k: String in ["meet", "power", "eye", "speed", "defense", "arm"]:
+					var r: Variant = sub_bat["ratings"].get(k)
+					if r is Dictionary and r.get("value") != null:
+						b_rat[k] = int(r["value"])
+				c["two_way_bat"] = b_rat
+		else:
+			var sub_pit: Variant = p.get("pitching")
+			if sub_pit is Dictionary:
+				var p_rat := {}
+				if sub_pit.get("ratings") is Dictionary:
+					for k: String in ["overall", "stamina", "k9", "bb9"]:
+						var r: Variant = sub_pit["ratings"].get(k)
+						if r is Dictionary and r.get("value") != null:
+							p_rat[k] = int(r["value"])
+				if sub_pit.get("velocity") is Dictionary:
+					p_rat["velocity"] = int(sub_pit["velocity"].get("kmh", 140))
+				c["two_way_pit"] = p_rat
 	c["intro"] = str(ama["intro"]) if ama is Dictionary and ama.get("intro") is String else intro_text(c)
 	var honors := AmateurTournament.summary(GameState.amateur_results, year, c["name"], c["school"])
 	if not honors.is_empty():
@@ -1077,7 +1106,8 @@ static func fictional_rows(draft_year: int) -> Array[Dictionary]:
 		result.append({"draft_year": draft_year, "name": p["name"], "pos": _pos_of(p), "school": am["school"],
 			"code": "", "round": "", "ikusei": false, "amateur": true, "grade": str(am["grade"]), "fictional": true,
 			"as_round": int(am["as_round"]), "as_ikusei": bool(am["as_ikusei"]), "bids": int(am.get("bids", 1)),
-			"future_score": float(am["future_score"]), "reincarnation": am.get("reincarnation", {})})
+			"future_score": float(am["future_score"]), "reincarnation": am.get("reincarnation", {}),
+			"two_way": am.get("two_way", p.get("two_way", {}))})
 	return result
 
 

@@ -971,6 +971,26 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 		b_box.add_child(b_detail)
 		banner.add_child(b_box)
 		_summary_box.add_child(banner)
+
+	# 二刀流バナー
+	var tw: Dictionary = c.get("two_way", {})
+	if bool(tw.get("active", false)):
+		var banner := PanelContainer.new()
+		banner.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
+		var b_style := UiTheme.card(Color("9c27b0"), 6, 2, 0.95)
+		b_style.bg_color = Color("f3e5f5")
+		banner.add_theme_stylebox_override("panel", b_style)
+		var b_box := VBoxContainer.new()
+		b_box.add_theme_constant_override("separation", 1)
+		var tw_desc: String = str(tw.get("desc", "二刀流候補"))
+		var b_title := UiTheme.small_label("★ 二刀流選手［%s］" % tw_desc, 14, Color("6a1b9a"), 800)
+		b_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b_box.add_child(b_title)
+		var b_detail := UiTheme.small_label("投打両面で高い才能を持つ二刀流選手です。", 13, UiTheme.TEXT, 700)
+		b_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b_box.add_child(b_detail)
+		banner.add_child(b_box)
+		_summary_box.add_child(banner)
 	if c.get("mlb_intent", false):
 		_summary_box.add_child(_mlb_box(d, c))  # 説得の約束を選ぶ欄が隠れないよう上のほうに
 	var ranks := HBoxContainer.new()
@@ -987,6 +1007,8 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 		board_label.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 		_summary_box.add_child(board_label)
 	_summary_box.add_child(_ability_grid(c))
+	if bool(c.get("two_way", {}).get("active", false)):
+		_summary_box.add_child(_two_way_grid(c))
 	_summary_box.add_child(_first_grid(c))
 	var intro := UiTheme.small_label("「%s」" % c["intro"], 15, Color("1e63c8"), 700)
 	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -1100,6 +1122,54 @@ func _ability_grid(c: Dictionary) -> Control:
 		else:
 			grid.add_child(UiTheme.rank_label({"rank": ability_rank(value), "value": value}, 20))
 	return grid
+
+
+## 二刀流の副次能力グリッド（投手の打撃、または野手の投球）
+func _two_way_grid(c: Dictionary) -> Control:
+	var tw: Dictionary = c.get("two_way", {})
+	if not bool(tw.get("active", false)):
+		return Control.new()
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 2)
+	var is_p := bool(c.get("pitcher", false))
+	var title_text := "★【二刀流】打撃能力" if is_p else "★【二刀流】投球能力"
+	var title := UiTheme.small_label(title_text, 14, Color("6a1b9a"), 800)
+	box.add_child(title)
+
+	var grid := GridContainer.new()
+	grid.columns = 6
+	grid.add_theme_constant_override("h_separation", 6)
+	grid.add_theme_constant_override("v_separation", 2)
+
+	if is_p:
+		var b_rat: Dictionary = c.get("two_way_bat", {})
+		var keys: Array = [["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"],
+			["speed", "走力"], ["arm", "肩力"], ["defense", "守備"]]
+		for k: Array in keys:
+			grid.add_child(UiTheme.small_label(k[1], 14, UiTheme.TEXT, 800))
+			var value := int(b_rat.get(k[0], -1))
+			if value < 0:
+				grid.add_child(UiTheme.small_label("-", 15, UiTheme.TEXT_SUB, 700))
+			else:
+				grid.add_child(UiTheme.rank_label({"rank": ability_rank(value), "value": value}, 18))
+	else:
+		var p_rat: Dictionary = c.get("two_way_pit", {})
+		var keys: Array = [["velocity", "球速"], ["overall", "総合"], ["stamina", "スタミナ"],
+			["bb9", "制球"], ["k9", "奪三振"]]
+		for k: Array in keys:
+			grid.add_child(UiTheme.small_label(k[1], 14, UiTheme.TEXT, 800))
+			if k[0] == "velocity":
+				var v := int(p_rat.get("velocity", 0))
+				grid.add_child(UiTheme.small_label("%dkm/h" % v if v > 0 else "-", 15, UiTheme.TEXT, 800))
+				continue
+			var value := int(p_rat.get(k[0], -1))
+			if value < 0:
+				grid.add_child(UiTheme.small_label("-", 15, UiTheme.TEXT_SUB, 700))
+			else:
+				grid.add_child(UiTheme.rank_label({"rank": ability_rank(value), "value": value}, 18))
+
+	box.add_child(grid)
+	return box
 
 
 ## 要約の1年目の能力：見出しの1行と主要能力のランク（3組ずつ）
