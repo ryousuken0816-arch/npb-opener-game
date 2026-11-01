@@ -59,6 +59,19 @@ RANKS = [(90, "S"), (80, "A"), (70, "B"), (60, "C"), (50, "D"), (40, "E"), (20, 
 # 守備: ゴールデングラブ受賞のボーナス（z 値加算）。キーは受賞年からの経過年数
 GG_BONUS = {0: 1.2, 1: 0.9, 2: 0.6, 3: 0.3}
 
+# basement (2020年〜): セイバーメトリクス守備指標（RngR, ARM, ErrR, DPR, Framing, Blocking）
+# 2020〜2025年の母集団（Inn >= 200）の rate1000（1000イニングあたり得点）の平均・標準偏差
+BASEMENT_START_YEAR = 2020
+BASEMENT_FULL_INN = {"一塁手": 600, "二塁手": 700, "三塁手": 700, "遊撃手": 700, "外野手": 800, "捕手": 600}
+BASEMENT_STATS = {
+    "一塁手": {"def_mean": 0.50, "def_sd": 7.16},
+    "二塁手": {"def_mean": 0.58, "def_sd": 10.39},
+    "三塁手": {"def_mean": 0.68, "def_sd": 9.67},
+    "遊撃手": {"def_mean": 0.27, "def_sd": 9.71},
+    "外野手": {"def_mean": 0.22, "def_sd": 12.29, "arm_mean": -0.19, "arm_sd": 4.25},
+    "捕手":   {"def_mean": -0.89, "def_sd": 12.40, "arm_mean": 0.00, "arm_sd": 4.70},
+}
+
 # 球速（投手）: data/velocity.json（2011年〜）の年別最速を Marcel 加重で平均。
 # データが無い年（2008〜2010）は、その投手の最古の実測値を年数差ぶん少し下げて代用。
 # 実測値が一切ない投手（2010年以前引退など）は K/9 からの単回帰で推定
@@ -162,6 +175,22 @@ class Data:
         mpath, spath = data_dir / "mlb_moves.json", data_dir / "mlb_stats.json"
         self.mlb_moves = load_json(mpath) if mpath.exists() else []
         self.mlb_stats = load_json(spath) if spath.exists() else {}
+        # npbbasement.com 守備データ（2020年〜、1軍・2軍。data/basement/）
+        self.basement: dict[tuple[int, str], dict[str, dict]] = {}
+        bdir = data_dir / "basement"
+        if bdir.exists():
+            for bp in bdir.glob("*.json"):
+                parts = bp.stem.split("_")
+                if len(parts) == 2 and parts[0].isdigit():
+                    byr, blvl = int(parts[0]), parts[1]
+                    bdata = load_json(bp)
+                    b_index = {}
+                    for row in bdata:
+                        for nk in ["nameJ", "nameSponavi"]:
+                            nm = norm_name(row.get(nk) or "")
+                            if nm:
+                                b_index[nm] = row
+                    self.basement[(byr, blvl)] = b_index
 
 
 # ---------------------------------------------------------------- 集計ヘルパ
@@ -644,8 +673,118 @@ class Calculator:
                 "velocity": self.velocity_for(pid, comb) or self.provisional_velocity(name),
                 "sample": {"outs_1": round(c1["outs"], 1), "outs_2": round(c2["outs"], 1)}}
 
+    def _fielding_basement(self, pid, key, name, games, gg_by_pos):
+        """npbbasement.com のデータを用いた守備力・肩力の算出（2020年以降）。"""
+        nm = norm_name(name)
+        pos_acc = defaultdict(lambda: {"inn": 0.0, "runs": 0.0, "arm": 0.0, "rng": 0.0, "err": 0.0,
+                                       "dpr": 0.0, "frm": 0.0, "blk": 0.0})
+        # 直近3年の basement データを加重合算（1.0 / 0.8 / 0.6、2軍は重み半分）
+        for dy in range(3):
+            yr = self.through - dy
+            if yr < BASEMENT_START_YEAR:
+                continue
+            w = season_weight(yr, self.through)
+            if not w:
+                continue
+            for lvl in ["1g", "2g"]:
+                lw = w * (1.0 if lvl == "1g" else FARM_SAMPLE_WEIGHT)
+                p = self.d.basement.get((yr, lvl), {}).get(nm)
+                if not p:
+                    continue
+                for f in p.get("Stats", {}).get("fld", []):
+                    pos = f.get("POS")
+                    inn = f.get("Inn") or 0.0
+                    if inn <= 0:
+                        continue
+                    if pos in ["LF", "CF", "RF"]:
+                        target_pos = "外野手"
+                        runs = (f.get("RngR") or 0.0) + (f.get("ErrR") or 0.0)
+                        arm = f.get("ARM") or 0.0
+                    elif pos == "1B":
+                        target_pos = "一塁手"
+                        runs = (f.get("RngR") or 0.0) + (f.get("ErrR") or 0.0) + (f.get("DPR") or 0.0)
+                        arm = 0.0
+                    elif pos == "2B":
+                        target_pos = "二塁手"
+                        runs = (f.get("RngR") or 0.0) + (f.get("ErrR") or 0.0) + (f.get("DPR") or 0.0)
+                        arm = 0.0
+                    elif pos == "3B":
+                        target_pos = "三塁手"
+                        runs = (f.get("RngR") or 0.0) + (f.get("ErrR") or 0.0) + (f.get("DPR") or 0.0)
+                        arm = 0.0
+                    elif pos == "SS":
+                        target_pos = "遊撃手"
+                        runs = (f.get("RngR") or 0.0) + (f.get("ErrR") or 0.0) + (f.get("DPR") or 0.0)
+                        arm = 0.0
+                    elif pos == "C":
+                        target_pos = "捕手"
+                        runs = (f.get("Framing") or 0.0) + (f.get("Blocking") or 0.0) + (f.get("ErrR") or 0.0) + (f.get("ARM") or 0.0)
+                        arm = f.get("ARM") or 0.0
+                    else:
+                        continue
+
+                    acc = pos_acc[target_pos]
+                    acc["inn"] += inn * lw
+                    acc["runs"] += runs * lw
+                    acc["arm"] += arm * lw
+                    acc["rng"] += (f.get("RngR") or 0.0) * lw
+                    acc["err"] += (f.get("ErrR") or 0.0) * lw
+                    acc["dpr"] += (f.get("DPR") or 0.0) * lw
+                    acc["frm"] += (f.get("Framing") or 0.0) * lw
+                    acc["blk"] += (f.get("Blocking") or 0.0) * lw
+
+        if not pos_acc:
+            return None
+
+        out = {}
+        for pos in sorted(pos_acc, key=POS_ORDER.index):
+            acc = pos_acc[pos]
+            inn = acc["inn"]
+            if inn < 5.0:
+                continue
+            st = BASEMENT_STATS[pos]
+            full = BASEMENT_FULL_INN[pos]
+            w_blend = min(1.0, inn / full)
+
+            # 守備力
+            obs_rate = (acc["runs"] / inn) * 1000
+            blended_rate = w_blend * obs_rate + (1 - w_blend) * 0.0
+            z_def = (blended_rate - st["def_mean"]) / st["def_sd"]
+            d = to_scale(z_def)
+
+            detail = {
+                "inn": round(inn, 1),
+                "rate1000": round(obs_rate, 2),
+                "blended": round(blended_rate, 2),
+                "weight": round(w_blend, 3),
+                "rngr": round(acc["rng"], 1),
+                "errr": round(acc["err"], 1),
+            }
+            if pos in ["一塁手", "二塁手", "三塁手", "遊撃手"]:
+                detail["dpr"] = round(acc["dpr"], 1)
+            elif pos == "捕手":
+                detail["frm"] = round(acc["frm"], 1)
+                detail["blk"] = round(acc["blk"], 1)
+
+            entry = {"games": int(games.get(pos, 0)), "defense": {"value": d, "rank": rank_of(d)},
+                     "gold_glove": bool(gg_by_pos.get(pos)), "detail": detail}
+
+            # 肩力（外野手・捕手）
+            if pos in ["外野手", "捕手"]:
+                obs_arm = (acc["arm"] / inn) * 1000
+                blended_arm = w_blend * obs_arm + (1 - w_blend) * 0.0
+                z_arm = (blended_arm - st["arm_mean"]) / st["arm_sd"]
+                a = to_scale(z_arm)
+                entry["arm"] = {"value": a, "rank": rank_of(a)}
+                detail["arm"] = round(acc["arm"], 1)
+                detail["arm1000"] = round(obs_arm, 2)
+
+            out[pos] = entry
+        return out
+
     def fielding(self, pid, key, name):
-        """守備位置ごとの守備力・肩力。1軍＋2軍（2軍は重み半分）の Marcel 加重。"""
+        """守備位置ごとの守備力・肩力。2020年以降は basement（RngR, ARM, ErrR, DPR, FRM）、
+        2019年以前は npb.jp（失策率＋GG賞、補殺/試合）の Marcel 加重で算出。"""
         prior_pctl = self.prior_pctl_for(name)
         per = defaultdict(lambda: {k: 0.0 for k in FLD_KEYS})
         games = defaultdict(float)
@@ -658,7 +797,14 @@ class Calculator:
         gg_by_pos = defaultdict(float)
         for yr, cat in self.gg.get(pid, []):
             gg_by_pos[cat] = max(gg_by_pos[cat], GG_BONUS.get(self.ts_through - yr, 0.0))
+
+        # 2020年以降かつ basement データがある場合
+        b_out = None
+        if self.through >= BASEMENT_START_YEAR and self.d.basement:
+            b_out = self._fielding_basement(pid, key, name, games, gg_by_pos)
+
         out = {}
+        # 従来方式での算出（basementが無いポジション、投手、三塁・遊撃の肩力、2019年以前のフォールバック用）
         for pos in sorted(per, key=POS_ORDER.index):
             if pos not in self.fld_dist:
                 continue
@@ -673,6 +819,19 @@ class Calculator:
                 a = comps["arm"].score(vals)
                 entry["arm"] = {"value": a, "rank": rank_of(a)}
             out[pos] = entry
+
+        if b_out:
+            # basement の結果で上書き（投手以外）
+            for pos, b_entry in b_out.items():
+                if pos in out and "arm" in out[pos] and "arm" not in b_entry:
+                    # 三塁手・遊撃手：外野守備があれば外野 ARM、無ければ従来の補殺肩力を引き継ぐ
+                    if "外野手" in b_out and "arm" in b_out["外野手"]:
+                        b_entry["arm"] = b_out["外野手"]["arm"]
+                    else:
+                        b_entry["arm"] = out[pos]["arm"]
+                out[pos] = b_entry
+            return out
+
         return out
 
     # ---- 出力
