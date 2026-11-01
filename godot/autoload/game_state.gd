@@ -1146,6 +1146,10 @@ func _enter(new_phase: Phase) -> void:
 				league.prepare_next_year(year, next, GameData.peek_ratings(year + 1, "post"))
 				league.apply_returns()
 			league.open_fa(year, leaving)
+			# 選手の好み「優勝争い」に使う今季の勝率（作業36）
+			for lg in ["C", "P"]:
+				for row in standings(lg):
+					league.fa.strength[row["team"]] = win_pct(row)
 		Phase.CONTRACT:
 			league.renew_contracts(year, season)
 			league.cpu_market_round()
