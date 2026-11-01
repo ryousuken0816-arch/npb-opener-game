@@ -31,3 +31,32 @@
 - 動画から切り出した画像・音声、実在の球団ロゴ・スポンサーの表示・実在の人物の顔は、リポジトリに入れない（見た目を参考に作り直すのはよい）
 - 抽選の結果・指名の順番などの進行は変えない（見せ方だけを変える）。結果がこれまでと同じことはドラフトのテストで確かめる
 - 始める前と終わったあとに、ユーザーに一言伝える（Claude の作業セッションとぶつからないように順番を合わせるため）
+
+---
+
+# 全体の UI の整理（2026-11-01 追加）
+
+ユーザーの希望：全体的に UI が見やすいように画面を整理したい。Claude の作業セッションがまだいくつかの画面を作っている最中なので、**2段階**で進める。
+
+## 第1段階：今すぐ触ってよい画面（Claude のセッションが触っていない）
+
+- タイトル：`godot/scenes/title/title.gd`
+- 日程表と順位表：`godot/scenes/hub/schedule_view.gd`・`standings_panel.gd`
+- 采配：`tactics_view.gd`・`order_page.gd`・`register_page.gd`・`info_page.gd`・`roster_view.gd`
+- オフの画面：`contract_view.gd`（契約更改）・`release_view.gd`（戦力外）・`trade_view.gd`（トレード）・`awards_view.gd`（表彰）・`postseason_view.gd`・`celebration.gd`（CS・日本シリーズ・優勝）
+- ハブのメニューのボタン：`hub_menu_button.gd`
+
+## 第2段階：Claude のセッションが終わってから（司令塔が「入ってよい」と伝えるまで触らない）
+
+- ハブ本体 `hub.gd`、ニュース `news_view.gd`・`news_ticker.gd`、セーブ・設定 `save_view.gd`・`game_settings.gd`・`user_settings.gd`（担当H）
+- 記録室 `records_view.gd`、選手詳細 `godot/scenes/player_detail/`（担当B2）
+- FA `fa_view.gd`・`comp_view.gd`（担当I）
+- ドラフト `draft_view.gd`・`scout_view.gd`・`godot/scenes/draft/`（担当J。そのあとドラフト画面の作り込み）
+- **共通の部品**（すべての画面に効く）：`godot/scripts/ui_theme.gd`・`gloss_box.gd`・`name_tag.gd`・`pad_guide.gd`・`team_background.gd`・`ui_fx.gd`
+
+## 整理するときの決まり（上の「守ること」に加えて）
+
+- 情報を減らさない（見せ方・並び・大きさ・余白・色・まとめ方を変える）。操作（コントローラー・キーボード・マウス）はこれまでどおり全部できること
+- 1280x720 からはみ出さない。最後に `godot/tests/layout_fit_check.gd` を `--headless` で流して通ること（時間がかかる：10〜30分）
+- 変えた画面の既存のテスト（`tactics_check`・`day_progress_check`・`contract_check`・`release_check`・`trade_check` など、`godot/tests/` の該当するもの）も1回だけ流す
+- 第1段階のブランチは `antigravity/ui-tidy-1`。main に入れる前に main を取り込む
