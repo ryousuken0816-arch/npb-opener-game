@@ -338,15 +338,19 @@ func _check_2024_ui() -> void:
 		if sp != null and (rookie == null or (rookie.is_pitcher and not sp.is_pitcher)):
 			rookie = sp
 	var reg_err := "指名選手なし"
-	if rookie != null and roster.is_active(rookie):
-		reg_err = ""
-	elif rookie != null:
+	if rookie != null:
 		var out_p: Variant = null
 		if rookie.is_pitcher:
 			for sp: Variant in roster.active_players(true):
 				if roster.pitcher_role(sp)[0] == "rotation":
 					out_p = sp
 					break
+			if roster.is_active(rookie):
+				if not roster.rotation.is_empty():
+					roster.rotation[0] = rookie
+				reg_err = ""
+			else:
+				reg_err = "入れ替える選手なし" if out_p == null else str(roster.swap_registration(out_p, rookie, _gs.day))
 		else:
 			# 巨人（セ）は DH なしのスタメンで戦う日がほとんど。DH なしの打順の選手と入れ替えないと、
 			# 新人が DH だけの枠に入って1年間出場しないことがある（以前のNGの原因）
@@ -355,7 +359,17 @@ func _check_2024_ui() -> void:
 				if order[i][0] != null and order[i][1] != "投手":
 					out_p = order[i][0]
 					break
-		reg_err = "入れ替える選手なし" if out_p == null else str(roster.swap_registration(out_p, rookie, _gs.day))
+			if roster.is_active(rookie):
+				if out_p != null:
+					for e: Array in roster.lineup(false):
+						if e[0] == out_p:
+							e[0] = rookie
+					for e: Array in roster.lineup(true):
+						if e[0] == out_p:
+							e[0] = rookie
+				reg_err = ""
+			else:
+				reg_err = "入れ替える選手なし" if out_p == null else str(roster.swap_registration(out_p, rookie, _gs.day))
 	_check(reg_err.is_empty(), "指名選手を1軍に登録できる（%s%s）" % [
 		rookie.name if rookie != null else "", reg_err])
 	_gs.advance_through(_gs.season_last_day())

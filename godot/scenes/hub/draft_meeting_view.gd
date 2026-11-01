@@ -19,18 +19,18 @@ signal draft_requested
 
 const TABS := [["info", "情報", Color("1e88e5")], ["pitch", "投手能力", Color("e53935")],
 	["bat", "野手能力", Color("2e9b48")], ["experts", "有識者の予想", Color("8a5cc8")]]
-const TAIL_COLUMNS := [["hyouka", "評価", 44], ["future", "将来性", 52], ["yosou", "予想", 46]]
+const TAIL_COLUMNS := [["first", "1年目", 38], ["hyouka", "評価", 38], ["future", "将来性", 42], ["yosou", "予想", 36]]
 const FILTERS := [["all", "全選手"], ["marked", "目星だけ"], ["left", "未指名"], ["投手", "投手"], ["捕手", "捕手"],
 	["内野手", "内野手"], ["外野手", "外野手"]]
 ## 一覧の幅（ドラフト画面より細め：左右に補強ポイントと印の欄があるため）
-const NAME_WIDTH := 104
-const MARK_WIDTH := 34
+const NAME_WIDTH := 102
+const MARK_WIDTH := 32
 const ROW_HEIGHT := 34
-const LEFT_WIDTH := 200
-const RIGHT_WIDTH := 290
-const COLUMN_WIDTH := {"school": 140, "career": 58, "age": 50, "pos": 42}
+const LEFT_WIDTH := 195
+const RIGHT_WIDTH := 280
+const COLUMN_WIDTH := {"school": 128, "career": 54, "age": 44, "pos": 38}
 ## 能力の列の幅の上限
-const ABILITY_WIDTH := 42
+const ABILITY_WIDTH := 38
 ## 有識者の予想の表の名前の幅
 const EXPERT_NAME_WIDTH := 150
 const MINE_INK := Color("ff6d00")
@@ -643,25 +643,100 @@ func _row(d: Draft, c: Dictionary) -> Control:
 	row.add_theme_constant_override("separation", 2)
 	row.custom_minimum_size = Vector2(0, ROW_HEIGHT)
 	var id: String = c["id"]
-	row.add_child(mark_label(GameState.draft_board.mark_of(d.year, DraftBoard.key_of(c)), MARK_WIDTH, ROW_HEIGHT - 4,
-		GameState.draft_board.memo_of(d.year, DraftBoard.key_of(c))))
+	row.add_child(_mark_button(d, c))
 	var tag := NameTag.new()
 	tag.custom_minimum_size = Vector2(NAME_WIDTH, ROW_HEIGHT - 2)
 	tag.font_size = 17
+	var display_name: String = NameTag.family_name(c["name"])
+	if is_breakout_rookie(c):
+		display_name = "★" + display_name
 	var p := GameData.player(id)
 	if p.is_empty():
-		tag.setup_plain(NameTag.family_name(c["name"]), NameTag.pos_color(c["pos"]))
+		tag.setup_plain(display_name, NameTag.pos_color(c["pos"]))
 	else:
-		tag.setup_player(p, NameTag.family_name(c["name"]))
+		tag.setup_player(p, display_name)
 	tag.selected = id == _selected
 	tag.dimmed = not str(c["picked_by"]).is_empty()
-	tag.tooltip_text = "%s（%s・%s）" % [c["name"], c["pos"], c["school"]]
+	var tips: Array[String] = ["%s（%s・%s）" % [c["name"], c["pos"], c["school"]]]
+	if is_breakout_rookie(c):
+		var first: Dictionary = c.get("first", {})
+		tips.append("★【史実1年目ブレイク・即戦力】1年目シーズン後総合: %d（%s）" % [
+			int(first.get("overall", -1)), DraftView.ability_rank(int(first.get("overall", -1)))])
+	for n: Dictionary in _needs:
+		if n.get("pos") == c["pos"] or NEED_GROUP.get(n.get("pos")) == c["pos"]:
+			tips.append("🎯自球団の補強ポイント【%s】に合致します！" % n.get("pos"))
+			break
+	tag.tooltip_text = "\n".join(tips)
 	tag.pressed.connect(_on_tag_pressed.bind(id))
 	row.add_child(tag)
 	_tags[id] = tag
 	for col: Array in _columns().slice(1):
 		row.add_child(_cell(c, col[0], col[2]))
 	return row
+
+
+## ワンクリックで印を切り替えられるボタンスタイル
+func _mark_button(d: Draft, c: Dictionary) -> Control:
+	var b := Button.new()
+	b.custom_minimum_size = Vector2(MARK_WIDTH, ROW_HEIGHT - 4)
+	var key := DraftBoard.key_of(c)
+	var mark := GameState.draft_board.mark_of(d.year, key)
+	var memo := GameState.draft_board.memo_of(d.year, key)
+	if not mark.is_empty():
+		b.text = mark
+		var color: Color = DraftBoard.MARK_COLORS.get(mark, UiTheme.TEXT)
+		UiTheme.style_button(b, color, Color.WHITE, 6, 2)
+		b.add_theme_font_override("font", UiTheme.font(900))
+		b.add_theme_font_size_override("font_size", 20)
+		b.tooltip_text = "作戦会議：%s%s\n【クリックで印変更（◎→○→△→☆→✕→解除）／右クリックで逆順】" \
+			% [DraftBoard.MARK_NAMES.get(mark, ""), "\n" + memo if not memo.is_empty() else ""]
+	else:
+		b.text = "＋"
+		UiTheme.style_button(b, Color(0.88, 0.91, 0.95, 0.7), Color(0.45, 0.5, 0.58), 6, 2)
+		b.add_theme_font_override("font", UiTheme.font(700))
+		b.add_theme_font_size_override("font_size", 14)
+		b.tooltip_text = "クリックで印をつける（◎→○→△→☆→✕）"
+	b.pressed.connect(func() -> void: _cycle_mark_for(c, 1))
+	b.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_RIGHT:
+			_cycle_mark_for(c, -1))
+	return b
+
+
+func _cycle_mark_for(c: Dictionary, delta: int = 1) -> void:
+	var d := source()
+	if d == null:
+		return
+	var key := DraftBoard.key_of(c)
+	var board := GameState.draft_board
+	var now := board.mark_of(d.year, key)
+	var cycle: Array[String] = [""] + DraftBoard.MARKS
+	var idx := cycle.find(now)
+	if idx < 0:
+		idx = 0
+	var next_idx := posmod(idx + delta, cycle.size())
+	var next := cycle[next_idx]
+	_selected = c["id"]
+	board.set_mark(d.year, key, next)
+	GameState.draft_board_changed()
+	if next.is_empty():
+		_message = "%sの印を外しました。" % c["name"]
+	else:
+		_message = "%sに%s（%s）を付けました。" % [c["name"], next, DraftBoard.MARK_NAMES[next]]
+		if next == "◎":
+			_message += "本命の%d番手です。" % (board.favorite_list(d.year).find(key) + 1)
+	refresh()
+
+
+## 史実1年目から活躍した選手判定
+static func is_breakout_rookie(c: Dictionary) -> bool:
+	var first: Dictionary = c.get("first", {})
+	var overall: int = int(first.get("overall", -1))
+	if overall >= 65:
+		return true
+	if first.get("status") == "1軍" and overall >= 55:
+		return true
+	return false
 
 
 ## 印の札（ドラフト画面の一覧でも使う）。memo があれば札に浮かぶ説明に出す
@@ -684,6 +759,8 @@ static func mark_label(mark: String, width: int, height: int, memo := "") -> Lab
 
 
 func _cell(c: Dictionary, key: String, width: int) -> Control:
+	if key == "first":
+		return _first_cell(c, width)
 	if key in ["hyouka", "future"]:
 		var rank: String = c["hyouka_rank"] if key == "hyouka" else c["future_rank"]
 		var label := UiTheme.rank_label({"rank": rank, "value": 0}, 21)
@@ -727,6 +804,31 @@ func _cell(c: Dictionary, key: String, width: int) -> Control:
 	l.add_theme_color_override("font_color", NameTag.pos_color(c["pos"]).darkened(0.45) if key == "pos" \
 		else UiTheme.TEXT)
 	return l
+
+
+func _first_cell(c: Dictionary, width: int) -> Control:
+	var first: Dictionary = c.get("first", {})
+	var overall: int = int(first.get("overall", -1))
+	var status: String = str(first.get("status", "なし"))
+	var box := HBoxContainer.new()
+	box.custom_minimum_size = Vector2(width, 0)
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 1)
+	if overall <= 0:
+		var l := UiTheme.small_label("-" if status != "未来" else "未来", 14, UiTheme.TEXT_SUB, 700)
+		l.custom_minimum_size = Vector2(width, 0)
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		return l
+	var rank_val := DraftView.ability_rank(overall)
+	var rank_label := UiTheme.rank_label({"rank": rank_val, "value": overall}, 18)
+	if overall >= 65:
+		rank_label.add_theme_color_override("font_color", Color("e65100"))
+	box.add_child(rank_label)
+	var num_label := UiTheme.small_label(str(overall), 12, UiTheme.TEXT if overall < 65 else Color("e65100"), 700)
+	box.add_child(num_label)
+	box.tooltip_text = "史実1年目のシーズン後能力（総合 %d / %sランク・%s）\n1年目から即戦力として活躍するかどうかの目安です" \
+		% [overall, rank_val, status]
+	return box
 
 
 ## 予想順位の札（ドラフト画面の一覧でも使う）。予想に入っていなければ「-」
@@ -965,6 +1067,37 @@ func _render_summary(d: Draft) -> void:
 	_summary_box.add_child(line)
 	var age := ("%d歳" % int(c["age"])) if int(c["age"]) > 0 else "年齢不明"
 	_add_text("%s　%s　%s\n%s" % [c["name"], c["career"], age, c["school"]], 15, UiTheme.TEXT)
+
+	# 1年目ブレイク・即戦力選手の見出し
+	if is_breakout_rookie(c):
+		var first: Dictionary = c.get("first", {})
+		var f_ovr: int = int(first.get("overall", -1))
+		var banner := PanelContainer.new()
+		banner.custom_minimum_size = Vector2(RIGHT_WIDTH - 40, 0)
+		var b_style := UiTheme.card(Color("ff9800"), 6, 2, 0.95)
+		b_style.bg_color = Color("fff8e1")
+		banner.add_theme_stylebox_override("panel", b_style)
+		var b_box := VBoxContainer.new()
+		b_box.add_theme_constant_override("separation", 1)
+		var b_title := UiTheme.small_label("★ 史実1年目から即戦力で大活躍！", 13, Color("e65100"), 800)
+		b_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b_box.add_child(b_title)
+		var b_detail := UiTheme.small_label("1年目総合 %d（%sランク・%s）" % [
+			f_ovr, DraftView.ability_rank(f_ovr), str(first.get("status", "1軍"))], 12, UiTheme.TEXT, 700)
+		b_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b_box.add_child(b_detail)
+		banner.add_child(b_box)
+		_summary_box.add_child(banner)
+
+	# 補強ポイント合致表示
+	for n: Dictionary in _needs:
+		if n.get("pos") == c["pos"] or NEED_GROUP.get(n.get("pos")) == c["pos"]:
+			var n_label := UiTheme.small_label("🎯 補強ポイント【%s】に合致します！" % n.get("pos"), 13, Color("b3261e"), 800)
+			n_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			n_label.custom_minimum_size = Vector2(RIGHT_WIDTH - 40, 0)
+			_summary_box.add_child(n_label)
+			break
+
 	var ranks := HBoxContainer.new()
 	ranks.add_theme_constant_override("separation", 4)
 	ranks.add_child(UiTheme.small_label("評価", 15, UiTheme.TEXT, 800))

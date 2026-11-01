@@ -628,14 +628,22 @@ func _row(d: Draft, c: Dictionary) -> Control:
 	var tag := NameTag.new()
 	tag.custom_minimum_size = Vector2(NAME_WIDTH, ROW_HEIGHT - 2)
 	tag.font_size = 18
+	var display_name := NameTag.family_name(c["name"])
+	if DraftMeetingView.is_breakout_rookie(c):
+		display_name = "★" + display_name
 	var p := GameData.player(id)
 	if p.is_empty():
-		tag.setup_plain(NameTag.family_name(c["name"]), NameTag.pos_color(c["pos"]))
+		tag.setup_plain(display_name, NameTag.pos_color(c["pos"]))
 	else:
-		tag.setup_player(p, NameTag.family_name(c["name"]))
+		tag.setup_player(p, display_name)
 	tag.selected = id == _selected
 	tag.dimmed = not str(c["picked_by"]).is_empty()
-	tag.tooltip_text = "%s（%s・%s）%s" % [c["name"], c["pos"], c["school"], _picked_text(c)]
+	var tips: Array[String] = ["%s（%s・%s）%s" % [c["name"], c["pos"], c["school"], _picked_text(c)]]
+	if DraftMeetingView.is_breakout_rookie(c):
+		var first: Dictionary = c.get("first", {})
+		tips.append("★【史実1年目ブレイク・即戦力】1年目シーズン後総合: %d（%s）" % [
+			int(first.get("overall", -1)), ability_rank(int(first.get("overall", -1)))])
+	tag.tooltip_text = "\n".join(tips)
 	tag.pressed.connect(_on_tag_pressed.bind(id))
 	row.add_child(tag)
 	_tags[id] = tag
@@ -942,6 +950,27 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(info)
+
+	# 1年目ブレイク・即戦力バナー
+	if DraftMeetingView.is_breakout_rookie(c):
+		var first: Dictionary = c.get("first", {})
+		var f_ovr: int = int(first.get("overall", -1))
+		var banner := PanelContainer.new()
+		banner.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
+		var b_style := UiTheme.card(Color("ff9800"), 6, 2, 0.95)
+		b_style.bg_color = Color("fff8e1")
+		banner.add_theme_stylebox_override("panel", b_style)
+		var b_box := VBoxContainer.new()
+		b_box.add_theme_constant_override("separation", 1)
+		var b_title := UiTheme.small_label("★ 史実1年目から即戦力で大活躍！", 14, Color("e65100"), 800)
+		b_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b_box.add_child(b_title)
+		var b_detail := UiTheme.small_label("1年目総合 %d（%sランク・%s）開幕即戦力！" % [
+			f_ovr, ability_rank(f_ovr), str(first.get("status", "1軍"))], 13, UiTheme.TEXT, 700)
+		b_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b_box.add_child(b_detail)
+		banner.add_child(b_box)
+		_summary_box.add_child(banner)
 	if c.get("mlb_intent", false):
 		_summary_box.add_child(_mlb_box(d, c))  # 説得の約束を選ぶ欄が隠れないよう上のほうに
 	var ranks := HBoxContainer.new()
