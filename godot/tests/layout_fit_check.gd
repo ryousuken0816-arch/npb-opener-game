@@ -296,6 +296,16 @@ func _check_records(when: String) -> void:
 					await _check_screen("%s：記録室 守備ランキング（%s）" % [when, pos], 0.0)
 				view.set("_fld_pos", "")
 				view.refresh()
+		elif t[0] == "pos_rank":
+			# 位置別の戦力（作業34）：棒グラフ・12球団の一覧・能力ランク、今季／昨季
+			for last: bool in [false, true]:
+				for mode: String in ["chart", "list", "ability"]:
+					view.set("_pv_last", last)
+					view.set("_pv_mode", mode)
+					view.refresh()
+					await _check_screen("%s：記録室 位置別の戦力（%s・%s）" % [when, mode, "昨季" if last else "今季"], 0.0)
+			view.set("_pv_mode", "chart")
+			view.set("_pv_last", false)
 		elif t[0] == "depth":
 			for team: String in root.get_node("GameData").teams():
 				view.set_team(team)
