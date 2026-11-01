@@ -184,8 +184,17 @@ func refresh() -> void:
 		_render_room(f)
 	else:
 		var focused := _focused_cell()
+		var scrolled := _scroll.scroll_vertical
 		_render_top(f)
 		_render_grid(f)
+		# 作り直すと中身が一度空になってスクロールが一番上に戻るので、並べ直したあと（次のフレーム）に戻す
+		_scroll.scroll_vertical = scrolled
+		get_tree().process_frame.connect(func() -> void:
+			if is_instance_valid(_scroll):
+				_scroll.scroll_vertical = scrolled
+				var owner := get_viewport().gui_get_focus_owner()
+				if owner != null and _scroll.is_ancestor_of(owner):
+					_scroll.ensure_control_visible(owner), CONNECT_ONE_SHOT)
 		_render_menu(f)
 		_render_summary(f)
 		if not focused.is_empty() and _cells.has(focused[0]) and _cells[focused[0]].has(focused[1]):

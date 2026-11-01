@@ -297,6 +297,7 @@ func _check_darvish(success: bool) -> void:
 	_check(DARVISH in view.marked_ids() and view.selected_id() == DARVISH,
 			"ダルビッシュのマスで印（%s）" % ("Enter" if success else "クリック"))
 	# 名前札で選手詳細（Esc で閉じる）
+	await _frames(3)  # 印で表が作り直されたあと、スクロールが落ち着いてから
 	var tag: Control = view.get("_tags").get(DARVISH)
 	if success:
 		UiInput_grab(tag)
