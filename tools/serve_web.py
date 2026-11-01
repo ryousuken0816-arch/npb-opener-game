@@ -8,8 +8,9 @@ import http.server
 import socketserver
 import os
 import socket
+import sys
 
-PORT = 8000
+DEFAULT_PORTS = [8000, 8080, 8888]
 WEB_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "build", "web"))
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -34,20 +35,48 @@ def get_local_ip():
         return "127.0.0.1"
 
 if __name__ == "__main__":
+    # Windows のコマンドプロンプト文字化け防止
+    if sys.platform == "win32":
+        try:
+            sys.stdout.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
     if not os.path.exists(WEB_DIR):
         print(f"[Error] Web build directory not found: {WEB_DIR}")
         print("Please export the web build first.")
+        input("Press Enter to exit...")
         exit(1)
 
     local_ip = get_local_ip()
-    print("=" * 60)
-    print("  NPBペナントゲーム Webサーバー起動")
-    print(f"  ローカルPC: http://localhost:{PORT}")
-    print(f"  スマホ実機: http://{local_ip}:{PORT} (同一Wi-Fiからアクセス)")
-    print("=" * 60)
 
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    httpd = None
+    selected_port = None
+    for port in DEFAULT_PORTS:
         try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\nサーバーを停止しました。")
+            httpd = socketserver.TCPServer(("", port), Handler)
+            selected_port = port
+            break
+        except OSError:
+            continue
+
+    if httpd is None:
+        print(f"[Error] Could not bind to any port in {DEFAULT_PORTS}")
+        input("Press Enter to exit...")
+        exit(1)
+
+    print("=" * 64)
+    print("   ★ NPBオーペナゲーム スマホWebサーバー起動中 ★")
+    print("=" * 64)
+    print(f"  [PCブラウザ]  http://localhost:{selected_port}")
+    print(f"  [スマホ実機]  http://{local_ip}:{selected_port}")
+    print("=" * 64)
+    print("  ※スマホをPCと同じWi-Fiにつないで、上記URLをブラウザで開いてください")
+    print("  ※終了するときは、この画面を閉じるか Ctrl+C を押してください")
+    print("=" * 64)
+    print("アクセス待機中...")
+
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nサーバーを停止しました。")
