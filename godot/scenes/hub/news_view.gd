@@ -6,6 +6,8 @@ extends VBoxContainer
 ## 記事の下の選手名の札からⒶ／クリックで選手詳細。号はセーブに残る（GameState.news）
 
 signal message_changed(text: String)
+## 早送りを止めて開いたとき（作業35）：「続ける」（true）／「ここで止める」（false）を選んだ
+signal stop_chosen(resume: bool)
 
 const TABS := [["paper", "新聞"], ["flash", "速報"], ["mine", "自球団の話題"]]
 const LIST_WIDTH := 250.0
@@ -23,11 +25,17 @@ var _list: VBoxContainer
 var _paper_scroll: ScrollContainer
 var _paper: VBoxContainer
 var _shown := ""
+## 早送りを止めて開いたときの帯（止めた理由と「続ける」「ここで止める」）
+var _stop_bar: PanelContainer
+var _stop_label: Label
+var _resume_button: Button
+var _halt_button: Button
 
 
 func setup(p: UiTheme.Palette) -> void:
 	_palette = p
 	add_theme_constant_override("separation", 8)
+	_build_stop_bar()
 	var tabs := HBoxContainer.new()
 	tabs.add_theme_constant_override("separation", 8)
 	add_child(tabs)
@@ -78,8 +86,84 @@ func open(issue_key := "") -> void:
 	_tab = "paper"
 	_issue_key = issue_key
 	_shown = ""
+	_stop_bar.visible = false
 	refresh()
 	focus_first()
+
+
+# --- 早送りを止めて開いたとき（作業35） ------------------------------------------------------
+
+func _build_stop_bar() -> void:
+	_stop_bar = PanelContainer.new()
+	var style := UiTheme.card(Color("c62828"), 10, 3, 0.98)
+	style.content_margin_left = 14
+	style.content_margin_right = 10
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	_stop_bar.add_theme_stylebox_override("panel", style)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	_stop_bar.add_child(row)
+	_stop_label = UiTheme.small_label("", 16, UiTheme.TEXT, 800)
+	_stop_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_stop_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_stop_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_stop_label.max_lines_visible = 2
+	row.add_child(_stop_label)
+	_resume_button = _stop_button("▶ 続ける", Color("e53935"))
+	_resume_button.pressed.connect(func() -> void: stop_chosen.emit(true))
+	row.add_child(_resume_button)
+	_halt_button = _stop_button("■ ここで止める", Color("8a9199"))
+	_halt_button.pressed.connect(func() -> void: stop_chosen.emit(false))
+	row.add_child(_halt_button)
+	_stop_bar.visible = false
+	add_child(_stop_bar)
+
+
+func _stop_button(text: String, color: Color) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.custom_minimum_size = Vector2(150, 40)
+	b.add_theme_font_size_override("font_size", 18)
+	UiTheme.style_button(b, color, Color.WHITE, 10, 4)
+	return b
+
+
+## 早送りを止めたところ（GameState.news_stop）を帯に出す。号の記事なら紙面、速報だけなら速報のタブ
+func show_stop(stop: Dictionary) -> void:
+	var heads: Array[String] = []
+	var has_issue := false
+	for r: Dictionary in stop.get("reasons", []):
+		heads.append("【%s】%s" % [GameState.NEWS_STOP_KINDS.get(r["kind"], ""), r["headline"]])
+		has_issue = has_issue or not str(r["issue"]).is_empty()
+	var more := int(stop.get("resume_to", -1)) >= 0
+	_stop_label.text = "⏸ %s　早送りを止めました：%s" % [stop.get("date", ""), "／".join(heads)]
+	_resume_button.visible = more
+	_halt_button.visible = more
+	_stop_bar.visible = true
+	if not has_issue:
+		set_tab("flash")
+	focus_first()
+	message_changed.emit("早送りを止めました（大事なニュース）。読んだら「続ける」で早送りの続き、「ここで止める」で終わります。"
+		+ "止めるニュースの種類はシステムで選べます。" if more else "早送りの途中で出た大事なニュースです。")
+
+
+## 早送りを止めて開いた帯がある
+func stop_shown() -> bool:
+	return _stop_bar.visible
+
+
+## 戻る（Ⓑ）：続きを選べるときは、まず「続ける」にフォーカスを移して true（閉じる前に選ばせる）。
+## もう帯にフォーカスがある・続きが無いときは false（呼び出し元が「ここで止める」として閉じる）
+func stop_back() -> bool:
+	if not _stop_bar.visible or not _resume_button.visible:
+		return false
+	var owner := get_viewport().gui_get_focus_owner()
+	if owner == _resume_button or owner == _halt_button:
+		return false
+	UiInput.grab(_resume_button)
+	message_changed.emit("早送りを続けますか？「続ける」で再開、「ここで止める」かⒷでここで終わります。")
+	return true
 
 
 func focus_first() -> void:

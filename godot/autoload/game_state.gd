@@ -19,6 +19,8 @@ signal celebrate(kind: String, team_name: String, title: String)
 signal news_posted(article: Dictionary)
 ## 新聞の号を出した（月ごとの新聞・日本シリーズ号など。ハブが次に開く）
 signal issue_published(key: String)
+## 大事なニュースが出たので日程表の早送りを止めた（作業35。ハブがニュースを開く。中身は news_stop）
+signal news_stopped
 
 enum Phase {
 	SEASON,        ## レギュラーシーズン（日単位で進行）
@@ -70,6 +72,18 @@ const DEFAULT_SEASON_END := "10-31"
 const ACTIVE_DRAFT_START_YEAR := 2022
 ## 早送りで1日進める間隔（秒）。将来はシステム設定の「早送り速度」で変える
 const FAST_FORWARD_INTERVAL := 0.18
+## 早送りを止めるニュースの種類（作業35）→ システムの設定に出す名前
+const NEWS_STOP_KINDS := {
+	"amateur": "アマ球界の号", "mine": "自球団の速報", "magic": "マジック点灯", "pennant": "優勝決定",
+	"series": "CSの勝ち抜け", "champion": "日本一", "monthly": "月ごとの新聞",
+}
+## 早送りを止めるニュースのまとめた選び方（"important" が初期値）
+const NEWS_STOP_PRESETS := {
+	"important": ["amateur", "mine", "pennant", "champion"],
+	"all": ["amateur", "mine", "magic", "pennant", "series", "champion", "monthly"],
+	"none": [],
+}
+const NEWS_STOP_PRESET_NAMES := {"important": "大事なものだけ", "all": "すべて", "none": "止めない", "custom": "種類ごと"}
 ## 育成選手を支配下に登録できる最後の日（月-日。史実のルール）
 const IKUSEI_DEADLINE := "07-31"
 ## CPU球団が育成から支配下に上げる時期（この月に替わったとき）と1回の人数
@@ -120,6 +134,16 @@ var reincarnation_on := true
 ## 転生した選手（元の選手ID → 転生した年のドラフト）。同じ選手は一度だけ
 var reincarnated := {}
 var _fictional: FictionalDraft = null
+## 早送りを止めるニュースの種類（NEWS_STOP_KINDS → 止めるか）。システムの設定。セーブに残る
+var news_stop_kinds := {}
+## 早送りを止める仕組みを使うか：-1＝自動（テストのスクリプトの中は使わない）、0＝使わない、1＝使う（作業35のテスト）
+var news_stop_override := -1
+## 早送りを止めたところ（ハブがニュースを開いて「続ける」「ここで止める」を選ばせる。空なら止めていない）：
+## {reasons: [{kind, headline, issue}], resume_to: 続きの目標の通し日数（続きが無ければ -1）, mode: "schedule"／"hub", date}
+var news_stop := {}
+## 1日ずつ進めながら止める理由を集めている間（日程表の早送り・ハブの「試合へ」）
+var _stop_watch := false
+var _stop_reasons: Array[Dictionary] = []
 
 ## 表彰の履歴（年の文字列 → Awards.compute() の結果）。シーズン終了・表彰の段階に入ったときに足す
 var awards_history := {}
@@ -169,6 +193,8 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	fictional_hits = "historical"
 	reincarnation_on = true
 	reincarnated = {}
+	set_news_stop_preset("important")
+	news_stop = {}
 	GameData.debut_extra = {}
 	GameData.load_ratings(year, "pre")
 	league = LeagueRoster.new()
@@ -188,18 +214,24 @@ func _process(delta: float) -> void:
 	if _fast_forward_time < FAST_FORWARD_INTERVAL:
 		return
 	_fast_forward_time = 0.0
+	var target := fast_forward_target
+	_stop_watch = news_stop_on()
 	_advance_one_day()
 	if not is_daily_phase() or day > fast_forward_target or postseason_done():
 		fast_forward_target = -1
+	var stopped := _end_stop_watch(target, "schedule")
 	changed.emit()
+	if stopped:
+		news_stopped.emit()
 
 
 ## 可変ボタンを押したときの処理。シーズン中はその月の残り日程を行って翌月1日へ（最終月ならシーズン終了へ）、
 ## オフは次のフェーズへ。
 func advance() -> void:
 	stop_fast_forward()
+	news_stop = {}
 	if phase == Phase.SEASON:
-		advance_through(_month_end_day(day), true)
+		advance_through(_month_end_day(day), true, true)
 		changed.emit()
 		return
 	if phase == Phase.POSTSEASON and not postseason_done():
@@ -239,10 +271,14 @@ func skip_to_phase(target: Phase) -> bool:
 
 ## target_day（通し日数）の試合が終わるまで一気に進める。最終日を越えるとポストシーズンへ入り、
 ## stop_at_postseason でなければ CS・日本シリーズもすべて行ってシーズン終了・表彰まで進む
-## （テスト・「すぐドラフトへ」用。ハブの「試合へ」はポストシーズンの入口で止まる）
-func advance_through(target_day: int, stop_at_postseason := false) -> void:
+## （テスト・「すぐドラフトへ」用。ハブの「試合へ」はポストシーズンの入口で止まる）。
+## news_stops（ハブの「試合へ」）なら、大事なニュースが出た日の終わりで止めて news_stop に残す（作業35）
+func advance_through(target_day: int, stop_at_postseason := false, news_stops := false) -> void:
 	while phase == Phase.SEASON and day <= target_day:
+		_stop_watch = news_stops and news_stop_on()
 		_advance_one_day()
+		if news_stops and _end_stop_watch(target_day, "hub"):
+			break
 	if phase == Phase.POSTSEASON and not stop_at_postseason:
 		postseason_play_all()
 		_enter(Phase.AWARDS)
@@ -299,6 +335,101 @@ func stop_fast_forward() -> void:
 		return
 	fast_forward_target = -1
 	changed.emit()
+
+
+# --- 大事なニュースで早送りを止める（作業35） ------------------------------------------------
+
+## 早送りを止める仕組みを使うか（テストのスクリプトの中は news_stop_override で入れたときだけ。自動処理の途中は使わない）
+func news_stop_on() -> bool:
+	if _busy:
+		return false
+	if news_stop_override >= 0:
+		return news_stop_override == 1
+	return not GameSettings._under_test()
+
+
+## まとめた選び方（NEWS_STOP_PRESETS のキー）に合わせる
+func set_news_stop_preset(preset: String) -> void:
+	var on: Array = NEWS_STOP_PRESETS.get(preset, NEWS_STOP_PRESETS["important"])
+	news_stop_kinds = {}
+	for kind: String in NEWS_STOP_KINDS:
+		news_stop_kinds[kind] = kind in on
+
+
+## 今の種類の選び方に合うまとめた選び方（どれにも合わなければ "custom"）
+func news_stop_preset() -> String:
+	for preset: String in NEWS_STOP_PRESETS:
+		var same := true
+		for kind: String in NEWS_STOP_KINDS:
+			if bool(news_stop_kinds.get(kind, false)) != (kind in NEWS_STOP_PRESETS[preset]):
+				same = false
+				break
+		if same:
+			return preset
+	return "custom"
+
+
+func set_news_stop_kind(kind: String, on: bool) -> void:
+	if NEWS_STOP_KINDS.has(kind):
+		news_stop_kinds[kind] = on
+
+
+## 載せた記事が早送りを止める種類か（NEWS_STOP_KINDS のキー。止めないものは空）
+func _stop_kind_of(a: Dictionary, issue_key: String) -> String:
+	if issue_key.contains("-amateur-"):
+		return "amateur"
+	if not a.get("flash", false):
+		return ""
+	match a["kind"]:
+		"race":
+			return "magic"
+		"pennant":
+			return "pennant"
+		"postseason":
+			return "champion" if postseason != null and postseason.is_finished() else "series"
+		"feat", "milestone", "team":
+			return "mine" if a["mine"] else ""
+	return ""
+
+
+## 止める理由を1つ足す（集めている間で、設定で選んだ種類だけ。同じ号は1回）
+func _note_stop(kind: String, headline: String, issue_key := "") -> void:
+	if not _stop_watch or kind.is_empty() or not news_stop_kinds.get(kind, false):
+		return
+	if not issue_key.is_empty():
+		for r: Dictionary in _stop_reasons:
+			if r["issue"] == issue_key:
+				return
+	_stop_reasons.append({"kind": kind, "headline": headline, "issue": issue_key})
+
+
+## 1日分の理由を締める。理由があれば早送りを止めて news_stop に残し true。
+## target は早送りの目標の日（まだ届いていなければ「続ける」でそこまで進む）
+func _end_stop_watch(target: int, mode: String) -> bool:
+	_stop_watch = false
+	if _stop_reasons.is_empty():
+		return false
+	var more := is_daily_phase() and day <= target and not postseason_done()
+	news_stop = {"reasons": _stop_reasons.duplicate(), "resume_to": target if more else -1, "mode": mode,
+		"date": date_text()}
+	_stop_reasons = []
+	fast_forward_target = -1
+	return true
+
+
+## 止めたところから早送りの続きをする（日程表は早送りを再開、ハブの「試合へ」は月末までまとめて進める）。
+## 続きが無ければ何もしない
+func resume_news_stop() -> void:
+	var st := news_stop
+	news_stop = {}
+	var to := int(st.get("resume_to", -1))
+	if to < 0:
+		return
+	if st.get("mode", "") == "hub":
+		advance_through(to, true, true)
+		changed.emit()
+	else:
+		start_fast_forward(to)
 
 
 ## 自球団の編成（シーズン中はその年のペナントの SimTeam、オフは今の所属で自動編成したもの）。
@@ -1304,6 +1435,7 @@ func post_news(a: Dictionary, issue_key := "", flash := false) -> Dictionary:
 				break
 	a["mine"] = mine
 	news.post(a, issue_key)
+	_note_stop(_stop_kind_of(a, issue_key), a["headline"], issue_key)
 	if flash and not _busy:
 		news_posted.emit(a)
 	return a
@@ -1319,7 +1451,12 @@ func open_off_issue() -> String:
 
 
 func _publish(issue_key: String) -> void:
-	if not issue_key.is_empty() and not _busy:
+	if issue_key.is_empty():
+		return
+	# 月ごとの新聞（"2008-05"）
+	if issue_key.length() == 7 and issue_key[4] == "-" and issue_key.substr(5).is_valid_int():
+		_note_stop("monthly", str(news.get_issue(issue_key).get("title", "新聞")), issue_key)
+	if not _busy:
 		issue_published.emit(issue_key)
 
 
@@ -1513,6 +1650,7 @@ func to_save() -> Dictionary:
 		"synthetic": _synthetic_save(),
 		"draft_classes": _draft_classes_save(), "fictional_hits": fictional_hits,
 		"reincarnation_on": reincarnation_on, "reincarnated": reincarnated, "amateur_news_done": amateur_news_done,
+		"news_stop_kinds": news_stop_kinds,
 	}
 
 
@@ -1567,6 +1705,12 @@ func load_state(d: Dictionary) -> void:
 	reincarnated = d.get("reincarnated", {})
 	amateur_news_done = d.get("amateur_news_done", {})
 	_amateur = null
+	set_news_stop_preset("important")
+	var stops: Variant = d.get("news_stop_kinds")
+	if stops is Dictionary:
+		for kind: String in stops:
+			set_news_stop_kind(kind, bool(stops[kind]))
+	news_stop = {}
 	GameData.synthetic.clear()
 	var syn: Variant = d.get("synthetic")
 	if syn is Dictionary:
