@@ -598,6 +598,17 @@ func fa_resolve() -> void:
 	if f == null or f.resolved:
 		return
 	f.resolve(league)
+	# メジャー復帰選手のニュース（作業41）
+	for res in f.results:
+		var id: String = res["id"]
+		if f.info.get(id, {}).get("mlb_return", false):
+			var p_name: String = league.names.get(id, id)
+			var to_team: String = res["to"]
+			var from_team: String = res["from"]
+			var is_return: bool = (to_team == from_team)
+			var headline := "%sが古巣に復帰" % p_name if is_return else "%sが%sに入団" % [p_name, GameData.short_name(to_team)]
+			var body := "%sが古巣・%sへの復帰を決断した（%s・%d年契約）。" % [p_name, GameData.short_name(to_team), Salary.text(res["amount"]), res["years"]] if is_return else "%sが日本球界へ復帰し、%sに入団することが決定した（%s・%d年契約）。" % [p_name, GameData.short_name(to_team), Salary.text(res["amount"]), res["years"]]
+			post_news(News.article("%d-11-15" % year, "mlb", headline, body, [id], [to_team]), open_off_issue(), true)
 	# FA移籍の補償（作業18）：CPU球団どうしはここで決まり、人的補償の選手も移る
 	league.compensation = FaCompensation.new()
 	league.compensation.open(league, f)
@@ -1105,7 +1116,7 @@ func record_text() -> String:
 
 ## 史実の能力値ファイルが無い年（Growth.FIRST_YEAR〜）は、来季の開幕時点の能力値をここで作る（FutureYear：
 ## 引退・成長・ドラフト候補・架空の外国人）。以後は来季のファイルと同じに扱われ、セーブにも残る（docs/AUTORUN.md 作業27・31）
-func _prepare_future_year() -> void:
+func _prepare_future_year(mlb_returns: Array = []) -> void:
 	var next_year := year + 1
 	if next_year < Growth.FIRST_YEAR or GameData.synthetic.has(next_year):
 		return
@@ -1117,7 +1128,7 @@ func _prepare_future_year() -> void:
 	# 今年の秋の架空のドラフト候補（作業22・32。球団なしで入れ、ドラフトで行き先が決まる）
 	for p: Dictionary in draft_class(year):
 		extra.append(p.duplicate(true))
-	GameData.synthetic[next_year] = FutureYear.new().build(year, league, season, base, rng, extra)
+	GameData.synthetic[next_year] = FutureYear.new().build(year, league, season, base, rng, extra, mlb_returns)
 	for y: int in GameData.synthetic.keys():
 		if y < year:
 			GameData.synthetic.erase(y)
@@ -1143,14 +1154,33 @@ func _enter(new_phase: Phase) -> void:
 			history().titles_decided(year, open_off_issue(), "%d-11-01" % year)
 		Phase.FA_TRADE:
 			var leaving := league.depart_mlb(year)
+			for mv: Dictionary in leaving:
+				if year >= LeagueRoster.MLB_FUTURE_START_YEAR:
+					var p_name: String = league.names.get(mv["id"], mv["id"])
+					var team_name: String = GameData.short_name(mv["from"])
+					post_news(News.article("%d-11-05" % year, "mlb",
+						"%s、メジャー挑戦を表明" % p_name,
+						"%sの%sが、%sによるメジャーリーグ移籍を表明した。" % [team_name, p_name, mv["route"]],
+						[mv["id"]], [mv["from"]]), open_off_issue(), true)
+			var mlb_returns: Array[String] = []
+			if year >= LeagueRoster.MLB_FUTURE_START_YEAR:
+				mlb_returns = league.decide_mlb_returns(year)
+				for ret_id: String in mlb_returns:
+					var p_name: String = league.names.get(ret_id, ret_id)
+					var m: Dictionary = league.in_mlb.get(ret_id, {})
+					var from_team: String = m.get("npb_team_before", "")
+					post_news(News.article("%d-11-06" % year, "mlb",
+						"%sが日本球界への復帰を表明" % p_name,
+						"メジャーリーグで活躍した%sが、来季からの日本球界復帰を決断。FA市場で各球団による交渉が行われる。" % p_name,
+						[ret_id], [from_team] if not from_team.is_empty() else []), open_off_issue(), true)
 			_apply_trades("%d-12-31" % year)
-			_prepare_future_year()
+			_prepare_future_year(mlb_returns)
 			var next := GameData.peek_ratings(year + 1, "pre")
 			if not next.is_empty():
 				GameData.set_supplement(next)
 				league.prepare_next_year(year, next, GameData.peek_ratings(year + 1, "post"))
 				league.apply_returns()
-			league.open_fa(year, leaving)
+			league.open_fa(year, leaving, mlb_returns)
 			# 選手の好み「優勝争い」に使う今季の勝率（作業36）
 			for lg in ["C", "P"]:
 				for row in standings(lg):
