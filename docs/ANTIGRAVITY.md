@@ -62,3 +62,40 @@
 - 1280x720 からはみ出さない。最後に `godot/tests/layout_fit_check.gd` を `--headless` で流して通ること（時間がかかる：10〜30分）
 - 変えた画面の既存のテスト（`tactics_check`・`day_progress_check`・`contract_check`・`release_check`・`trade_check` など、`godot/tests/` の該当するもの）も1回だけ流す
 - 第1段階のブランチは `antigravity/ui-tidy-1`。main に入れる前に main を取り込む
+
+
+---
+
+# Claude が止まったときの引き継ぎ（2026-11-01）
+
+ユーザーの Claude の使用量が上限に近い。Claude（司令塔と作業セッション）が止まったら、**Antigravity がこのファイルを見て続きを進める**。
+
+## Claude が途中だった作業（止まっていたら、ここから続ける）
+
+それぞれ Claude の作業セッションが「テストして main に入れる」途中だった。`git log origin/main` で入ったか確かめ、入っていなければ次の手順で自分で入れる。
+
+| 作業 | ブランチ（ローカル） | すること |
+|---|---|---|
+| 作業41 メジャー移籍と帰国（Antigravity 作） | `antigravity/mlb-moves`（`5fb2180`） | origin/main を取り込み → 関係テスト（mlb_future_check・roster_year_check・fa_check・fa_comp_check・future_year_check・growth_check・foreign_check・save_check・news_check・start_year_check）→ main へ |
+| アマのニュースの作り直し（Codex 作） | `antigravity/amateur-news-text`（`d6ac0db`） | origin/main を取り込み → news_check・news_stop_check・fictional_draft_check・draft_check・save_check・history_check → main へ |
+| 作業42 ドラフトの外れ1位の発表でフリーズ（最優先の不具合） | Claude の担当L の `claude/lane-l-draft-freeze-*`（`git branch -a` で探す） | 途中なら docs/AUTORUN.md の作業42 を読んで続きを直す。読み上げオン・オフ両方で、2020年のように外れ1位が続く年を最後まで進められるかテスト |
+
+main に入れたら `docs/AUTORUN.md` の表を「完了」にし、`HANDOFF.md` に数行書く。
+
+## 次にやる作業（おすすめの順）
+
+1. **作業42**（上。ドラフトのフリーズ。最優先）
+2. **作業40** シーズン中に能力を史実へ寄せる＋直近の年を重く（佐藤輝明が弱い件）。docs/AUTORUN.md の作業40
+3. **作業43** 中堅の守備に走力・昔の年の外野の守備力に走力（docs/AUTORUN.md の作業43）
+4. **CPU の自動オーダーの守備位置の選び方**（近藤・筒香が中堅、清宮が二塁など。`godot/sim/sim_team.gd` の自動編成）と**試合での守備の効き方**（近藤が肩だけで+15.7）。根拠は `docs/reports/ratings_audit.md`
+5. **ドラフト画面の見た目の作り込み**（上の「Antigravity でドラフト画面を作り込むとき」。作業42のあと）
+6. **UI 整理の第2段階**（上の「全体の UI の整理」の第2段階。Claude の担当はもう動いていないので、全部触ってよい。共通の部品を変えたら `layout_fit_check` を必ず流す）
+7. 新しい機能（ユーザーと相談して順番を決める）：故障・好不調／試合結果画面／育成と春季キャンプ／2軍の試合／現役ドラフト（2022年オフ〜。オフの段階だけあって中身が空）
+
+## Claude がいないときの進め方
+
+- 1つの作業ごとにブランチ（`antigravity/<名前>`）を作る → 実装 → 関係するテストを `--headless` で → origin/main を取り込み直す → main にマージして push → `docs/AUTORUN.md`（表と詳細）と `HANDOFF.md` を更新
+- 画面を作ったら、`CLAUDE.md` の「完成の条件」どおり Godot を起動してエラー0件とスクショ（右下の隅、フォーカスを奪わず1回だけ）、ゲーム内の日付を進めて表示が追従するか確かめる
+- 新しいワークツリー・フォルダでテストする前は `--headless --path godot --import` で準備する
+- テストは同時に流さない（セーブの枠がぶつかる）。`draft_check` の「2025年に指名選手が試合に出た」と `fa_comp_check` の長野の件は、乱数しだいで落ちる既知の件
+- ユーザーは遊ぶとき `C:/Users/user/Desktop/npb-opener-game-play/play_latest.bat`（main の最新で起動）を使う。デスクトップの `npb-opener-game` が作業中のブランチでも遊べる
