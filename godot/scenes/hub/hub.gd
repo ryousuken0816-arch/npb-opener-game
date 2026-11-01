@@ -15,7 +15,7 @@ const MENUS := [
 	["scout", "新戦力", "scout", Color("00a396"),
 		"トレード交渉（シーズン中は7月31日まで）、外国人選手の獲得（外国人市場）、移籍・引退などの出来事を見ます。（スカウティングは未実装）"],
 	["records", "記録室", "records", Color("e0a400"),
-		"個人成績（セイバー指標）・通算成績、チームのデプス・守備位置ランク、チーム成績の推移、表彰の歴代、ドラフト・達成記録を見ます。"],
+		"個人成績（セイバー指標）・通算成績、チームのデプス・位置別の戦力（球団×位置の得失点）、チーム成績の推移、表彰の歴代、ドラフト・達成記録を見ます。"],
 	["system", "システム", "system", Color("7e57c2"),
 		"セーブ／ロード（スロット3つ＋オートセーブ）をします。（難易度・表示・サウンド・早送り速度の設定は未実装）"],
 ]
@@ -57,6 +57,9 @@ var _news_card: Button
 var _news_lines: Array[Label] = []
 ## まだ開いていない新しい号（「試合へ」のあとに開く）
 var _pending_issue := ""
+## 大事なニュースで早送りを止めて新聞の画面を開いている（GameState.news_stop の写し。作業35）と、閉じたら戻る画面
+var _stop := {}
+var _stop_return := ""
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -164,6 +167,8 @@ func _ready() -> void:
 	add_child(_ticker)
 	GameState.news_posted.connect(_ticker.push)
 	GameState.issue_published.connect(_on_issue_published)
+	GameState.news_stopped.connect(func() -> void: _open_news_stop(_open_key))
+	_news_view.stop_chosen.connect(_on_stop_chosen)
 	_build_news_card()
 	_save_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "system":
@@ -450,23 +455,68 @@ func _on_menu_chosen(key: String) -> void:
 			return
 		_pending_issue = ""
 		GameState.advance()
-		if GameState.phase == GameState.Phase.POSTSEASON:
-			_open_sub_screen("postseason")
-		elif GameState.phase == GameState.Phase.AWARDS and GameState.awards_pending:
-			GameState.awards_pending = false
-			_open_sub_screen("awards")
-		elif GameState.fa_open():
-			_open_sub_screen("fa")
-		elif GameState.contract_open():
-			_open_sub_screen("contract")
-		elif GameState.release_open():
-			_open_sub_screen("release")
-		elif GameState.draft_open():
-			_open_sub_screen("draft")
-		elif not _pending_issue.is_empty():
-			open_news(_pending_issue)
+		_after_advance()
 		return
 	_open_sub_screen(key)
+
+
+## 可変ボタンで進めたあと：大事なニュースで途中で止めたところ（作業35）、次の段階の画面、新しい号のどれかを開く
+func _after_advance() -> void:
+	var stop := GameState.news_stop
+	if int(stop.get("resume_to", -1)) >= 0:
+		_open_news_stop("")
+	elif GameState.phase == GameState.Phase.POSTSEASON:
+		_open_sub_screen("postseason")
+	elif GameState.phase == GameState.Phase.AWARDS and GameState.awards_pending:
+		GameState.awards_pending = false
+		_open_sub_screen("awards")
+	elif GameState.fa_open():
+		_open_sub_screen("fa")
+	elif GameState.contract_open():
+		_open_sub_screen("contract")
+	elif GameState.release_open():
+		_open_sub_screen("release")
+	elif GameState.draft_open():
+		_open_sub_screen("draft")
+	elif not _pending_issue.is_empty():
+		open_news(_pending_issue)
+	elif not stop.is_empty():
+		_open_news_stop("")
+
+
+## 大事なニュースで早送りを止めた（GameState.news_stop）：その号（速報だけなら速報のタブ）を開いて、
+## 帯で「続ける」「ここで止める」を選ばせる。return_key は閉じたら戻る画面（日程表・ポストシーズン。空ならハブ）
+func _open_news_stop(return_key: String) -> void:
+	if GameState.news_stop.is_empty():
+		return
+	_stop = GameState.news_stop.duplicate(true)
+	_stop_return = return_key if return_key != "news" else _stop_return
+	_pending_issue = ""
+	for r: Dictionary in _stop["reasons"]:
+		if not str(r["issue"]).is_empty():
+			_pending_issue = r["issue"]
+			break
+	_open_sub_screen("news")
+	_news_view.show_stop(_stop)
+
+
+## 止めたあとの「続ける」（resume）／「ここで止める」：元の画面へ戻り、続けるなら早送りの続き
+func _on_stop_chosen(resume: bool) -> void:
+	var mode := str(_stop.get("mode", ""))
+	var back := _stop_return
+	_stop = {}
+	_stop_return = ""
+	if back.is_empty():
+		_close_sub_screen()
+	else:
+		_open_sub_screen(back)
+	if not resume:
+		GameState.news_stop = {}
+		return
+	_pending_issue = ""
+	GameState.resume_news_stop()
+	if mode == "hub":
+		_after_advance()
 
 
 func _open_sub_screen(key: String) -> void:
@@ -563,6 +613,10 @@ func _on_back() -> void:
 	if _open_key in ["schedule", "postseason"] and GameState.is_fast_forwarding():
 		GameState.stop_fast_forward()
 		return
+	if _open_key == "news" and not _stop.is_empty():
+		if not _news_view.stop_back():
+			_on_stop_chosen(false)
+		return
 	if _open_key == "tactics" and _tactics_view.back():
 		return
 	if _open_key == "fa" and _fa_view.back():
@@ -594,6 +648,7 @@ func _set_wide(wide: bool) -> void:
 func _close_sub_screen() -> void:
 	# 早送りは日程表を開いている間だけ（閉じたら止める）
 	GameState.stop_fast_forward()
+	_stop = {}
 	_set_wide(false)
 	var key := _open_key
 	_open_key = ""

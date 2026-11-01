@@ -10,7 +10,9 @@ extends VBoxContainer
 ##   暴投捕逸。年度別のみ）
 ## - チームのデプス：守備位置ごとにスタメン（正選手）と控え（2軍も）を並べ、現在の能力と将来性のランク（Depth）・年齢。
 ##   若手の有望株（将来性が現在より2段以上高い25歳以下）は緑の枠と「有望」。並び替え（現在の能力／将来性／年齢）、層の厚さ
-## - 守備位置ランク：12球団×守備位置のチームとしてのランク（現在→将来性）。球団名でその球団のデプスへ
+## - 位置別の戦力（作業34）：球団×位置の得失点（TeamValue。リーグ平均＝0）を、球団ごとの棒グラフ（◀▶で球団）と
+##   12球団の一覧（数字と色の濃さ、見出しは固定、並び替え）で。今季／昨季（試合が少ないうちは昨季が初期表示。昨季がゲームより前の
+##   年なら能力から見込んだ値）。「能力ランク」で今までの12球団×守備位置のランク（現在→将来性。球団名でデプスへ）
 ## - チーム成績の推移：年ごとの順位と勝敗
 ## - 表彰の歴代：AwardsView を年を選んで表示
 ## - ドラフト・達成記録：ゲーム内のドラフトの指名結果と、ノーヒットノーラン・サイクル安打
@@ -18,7 +20,7 @@ extends VBoxContainer
 
 signal message_changed(text: String)
 
-const TABS := [["bat", "打撃成績"], ["pit", "投手成績"], ["depth", "チームのデプス"], ["pos_rank", "守備位置ランク"],
+const TABS := [["bat", "打撃成績"], ["pit", "投手成績"], ["depth", "チームのデプス"], ["pos_rank", "位置別の戦力"],
 	["teams", "チーム成績の推移"], ["awards", "表彰の歴代"], ["history", "ドラフト・達成記録"]]
 ## ランキングに出す人数（多いと重いので上位だけ）
 const RANKING_ROWS := 50
@@ -53,6 +55,15 @@ const FLD_COLUMNS_OF := [
 	["err", "失策点", "runs", false], ["arm", "肩", "runs", false], ["total", "守備得点", "runs", false],
 	["per1000", "/1000回", "runs", false],
 ]
+## 位置別の戦力：表示の切り替え、今季の試合がこれより少ないうちは昨季を初期表示（1球団あたりの試合数）
+const PV_MODES := [["chart", "球団ごとの棒グラフ"], ["list", "12球団の一覧"], ["ability", "能力ランク（現在→将来）"]]
+const PV_MIN_GAMES := 20
+## 12球団の一覧の列の幅（球団・各位置）と、色が一番濃くなる点
+const PV_TEAM_WIDTH := 110
+const PV_CELL_WIDTH := 75
+const PV_FULL_COLOR_RUNS := 25.0
+const PV_PLUS := Color("e53935")
+const PV_MINUS := Color("1e63c9")
 const FLD_COLUMNS_C := [
 	["g", "試合", "int", false], ["outs", "守備回", "ip", false], ["sba", "企図", "int", false],
 	["cs_n", "盗塁刺", "int", false], ["cs_pct", "阻止率", "pct", false], ["wp_n", "暴投捕逸", "int", true],
@@ -68,14 +79,21 @@ var _awards_year := 0
 var _career := false
 var _qualified := true
 var _league := ""
-var _sort := {"bat": ["avg", true], "pit": ["era", false], "fld": ["total", true]}
+var _sort := {"bat": ["avg", true], "pit": ["era", false], "fld": ["total", true], "pv": ["total", true]}
 ## 打撃成績で見ている守備ランキングの守備位置（空なら打撃のランキング）
 var _fld_pos := ""
+## 位置別の戦力：表示（PV_MODES）、昨季か、棒グラフの球団、年 → TeamValue の結果
+var _pv_mode := "chart"
+var _pv_last := false
+var _pv_team := ""
+var _pv_cache := {}
 var _team := ""
 var _depth_sort := "now"
 var _tab_buttons := {}
 var _options: HBoxContainer
 var _sub_options: HBoxContainer
+## スクロールしても見える表の見出し（位置別の戦力の一覧・能力ランク）
+var _fixed: VBoxContainer
 var _scroll: ScrollContainer
 var _body: VBoxContainer
 var _awards_view: AwardsView
@@ -111,6 +129,9 @@ func setup(p: UiTheme.Palette) -> void:
 	_sub_options = HBoxContainer.new()
 	_sub_options.add_theme_constant_override("separation", 6)
 	add_child(_sub_options)
+	_fixed = VBoxContainer.new()
+	_fixed.add_theme_constant_override("separation", 2)
+	add_child(_fixed)
 	_scroll = ScrollContainer.new()
 	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -131,6 +152,8 @@ func setup(p: UiTheme.Palette) -> void:
 
 func open() -> void:
 	_coef_cache.clear()
+	_pv_cache.clear()
+	_pv_last = _pv_default_last()
 	var years := GameState.records_years()
 	_year = years[-1] if not years.is_empty() else GameState.year
 	_team = GameState.team
@@ -195,6 +218,7 @@ func refresh() -> void:
 		_tab_buttons[key].set_pressed_no_signal(key == _tab)
 	_clear(_options)
 	_clear(_sub_options)
+	_clear(_fixed)
 	_clear(_body)
 	_ids = []
 	_scroll.visible = _tab != "awards"
@@ -206,7 +230,7 @@ func refresh() -> void:
 		"depth":
 			_build_depth()
 		"pos_rank":
-			_build_pos_rank()
+			_build_position_value()
 		"teams":
 			_build_teams()
 		"awards":
@@ -214,6 +238,7 @@ func refresh() -> void:
 		"history":
 			_build_history()
 	_sub_options.visible = _sub_options.get_child_count() > 0
+	_fixed.visible = _fixed.get_child_count() > 0
 
 
 static func _clear(node: Node) -> void:
@@ -686,7 +711,7 @@ func _build_pos_rank() -> void:
 	header.add_child(_cell("球団", POS_RANK_TEAM_WIDTH, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_CENTER))
 	for pos: String in Depth.POSITIONS:
 		header.add_child(_cell(pos, POS_RANK_CELL_WIDTH, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_CENTER))
-	_body.add_child(header)
+	_fixed.add_child(_header_panel(header))
 	for lg: String in ["C", "P"]:
 		_section(GameData.LEAGUE_NAMES.get(lg, lg), Color("1e88e5") if lg == "C" else Color("43a047"))
 		for team: String in GameData.teams(lg):
@@ -714,6 +739,245 @@ func _build_pos_rank() -> void:
 				cell.mouse_filter = Control.MOUSE_FILTER_PASS
 				row.add_child(cell)
 	message_changed.emit("12球団の守備位置ごとのチームランク（現在 → 将来性）。正選手を重く、控え・2軍を軽く数えます。球団名でデプスへ。")
+
+
+# --- 位置別の戦力（作業34） ------------------------------------------------------------------------
+
+func _build_position_value() -> void:
+	for m: Array in PV_MODES:
+		var key: String = m[0]
+		_options.add_child(_option_button(m[1], _pv_mode == key, func() -> void: _pv_mode = key))
+	if _pv_mode == "ability":
+		_build_pos_rank()
+		return
+	var cur := pv_current_year()
+	_options.add_child(_option_button("今季（%d年）" % cur, not _pv_last, func() -> void: _pv_last = false))
+	_options.add_child(_option_button("昨季（%d年）" % (cur - 1), _pv_last, func() -> void: _pv_last = true))
+	var values := position_values()
+	if _pv_team.is_empty() or not values.has(_pv_team):
+		_pv_team = GameState.team if values.has(GameState.team) else ""
+	if values.is_empty():
+		_body.add_child(UiTheme.small_label("%d年の成績がまだありません（試合が始まると表示されます）" % shown_pv_year(),
+			16, UiTheme.TEXT, 700))
+		message_changed.emit("位置別の戦力：%d年の成績がまだありません" % shown_pv_year())
+		return
+	var note := "（能力から見込んだ値）" if pv_estimated() else ""
+	if _pv_mode == "chart":
+		_build_pv_chart(values, note)
+	else:
+		_build_pv_list(values, note)
+
+
+## 位置別の戦力で見せている年（今季か昨季）
+func shown_pv_year() -> int:
+	return pv_current_year() - (1 if _pv_last else 0)
+
+
+## 今季の年（シーズン中・オフの表彰までは Season の年）
+func pv_current_year() -> int:
+	return GameState.season.year if GameState.season != null else GameState.year
+
+
+## 昨季がゲームより前の年で、能力から見込んだ値を出しているか
+func pv_estimated() -> bool:
+	var y := shown_pv_year()
+	return y < GameState.first_year and GameState.season_stats(y).is_empty()
+
+
+## 見せている年の TeamValue の結果（テストからも使う）
+func position_values() -> Dictionary:
+	var y := shown_pv_year()
+	var key := "%d/%s" % [y, pv_estimated()]
+	if _pv_cache.has(key):
+		return _pv_cache[key]
+	var result := {}
+	if pv_estimated():
+		var ranks := {}
+		for team: String in GameData.teams():
+			ranks[team] = Depth.team_ranks(GameState.depth_of(team))
+		result = TeamValue.estimate(ranks)
+	else:
+		var st := GameState.season_stats(y)
+		if not st.is_empty():
+			result = TeamValue.from_stats(st, func(id: String) -> String:
+				var pos: Variant = GameData.player(id).get("primary_pos")
+				return str(pos) if pos != null else "")
+	_pv_cache[key] = result
+	return result
+
+
+## 今季の試合が少ないうちは昨季を初期表示にする（記録室を開いたとき）
+func _pv_default_last() -> bool:
+	var season: Season = GameState.season
+	if season == null:
+		return false
+	var games := 0
+	for team: String in season.records:
+		var rec: Dictionary = season.records[team]
+		games += int(rec["w"]) + int(rec["l"]) + int(rec["d"])
+	return games < PV_MIN_GAMES * maxi(season.records.size(), 1)
+
+
+func _build_pv_chart(values: Dictionary, note: String) -> void:
+	var teams := _pv_team_order()
+	var i := maxi(teams.find(_pv_team), 0)
+	for d: int in [-1, 1]:
+		var b := _option_button("◀" if d < 0 else "▶", false, func() -> void:
+			_pv_team = teams[posmod(teams.find(_pv_team) + d, teams.size())], 40)
+		b.toggle_mode = false
+		if d > 0:
+			var label := UiTheme.small_label(GameData.short_name(teams[i]), 18, UiTheme.TEXT, 800)
+			label.custom_minimum_size = Vector2(110, 0)
+			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			_options.add_child(label)
+		_options.add_child(b)
+	var team: String = teams[i]
+	var v: Dictionary = values[team]
+	var colors := GameData.team_colors(team)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 16)
+	# 球団名の札（一覧の球団名と同じ球団カラーのボタンの見た目。押しても何もしない）
+	var badge := Button.new()
+	badge.text = team
+	badge.focus_mode = Control.FOCUS_NONE
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.custom_minimum_size = Vector2(260, 36)
+	badge.add_theme_font_size_override("font_size", 19)
+	UiTheme.style_button(badge, colors[0], Color.TRANSPARENT, 8, 4)
+	head.add_child(badge)
+	var summary := UiTheme.small_label("合計 %s点　12球団中 %d位　%d年%s" % [Records.format("runs", v["total"]),
+		int(v["rank"]), shown_pv_year(), note], 22, UiTheme.TEXT, 800)
+	summary.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	head.add_child(summary)
+	_body.add_child(head)
+	var chart := TeamValueChart.new()
+	chart.name = "TeamValueChart"
+	chart.custom_minimum_size = Vector2(RANKING_WIDTH - 20.0, 320)
+	chart.set_data(v, colors[0])
+	_body.add_child(chart)
+	# 内訳（打撃・走塁／守備／投球）
+	var parts: Array[String] = []
+	for col: String in TeamValue.COLUMNS:
+		var c: Dictionary = v[col]
+		if col in ["先発", "救援"]:
+			parts.append("%s %s" % [TeamValue.SHORT[col], Records.format("runs", c["pit"])])
+		else:
+			parts.append("%s 打%s・守%s" % [TeamValue.SHORT[col], Records.format("runs", c["bat"]),
+				Records.format("runs", c["fld"])])
+	var detail := UiTheme.small_label("内訳：" + "　".join(parts), 14, UiTheme.TEXT_SUB, 700)
+	detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	detail.custom_minimum_size = Vector2(RANKING_WIDTH - 20.0, 0)
+	_body.add_child(detail)
+	message_changed.emit("%d年%s・%s：位置ごとの得失点（リーグ平均＝0、点）。野手は打撃・走塁（wRAA）＋守備得点、投手は FIP からの失点の少なさ。◀▶で球団" % [
+		shown_pv_year(), note, GameData.short_name(team)])
+
+
+## 棒グラフで送る球団の並び（セ・パの順）
+func _pv_team_order() -> Array:
+	var teams: Array = []
+	for lg: String in ["C", "P"]:
+		for t: String in GameData.teams(lg):
+			teams.append(t)
+	if not _pv_team in teams:
+		_pv_team = GameState.team if GameState.team in teams else teams[0]
+	return teams
+
+
+func _build_pv_list(values: Dictionary, note: String) -> void:
+	var sort: Array = _sort["pv"]
+	var key: String = sort[0]
+	var teams: Array = values.keys()
+	var value_of := func(team: String) -> float:
+		match key:
+			"total":
+				return float(values[team]["total"])
+			"rank":
+				return float(values[team]["rank"])
+		return float(values[team][key]["total"])
+	teams.sort_custom(func(a: String, b: String) -> bool:
+		var va: float = value_of.call(a)
+		var vb: float = value_of.call(b)
+		if va == vb:
+			return a < b
+		return va > vb if sort[1] else va < vb)
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 4)
+	header.add_child(_cell("球団", PV_TEAM_WIDTH, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_CENTER))
+	var columns: Array = TeamValue.COLUMNS + ["total", "rank"]
+	for col: String in columns:
+		var title: String = TeamValue.SHORT.get(col, "合計" if col == "total" else "順位")
+		var b := Button.new()
+		b.text = title + ("▼" if col == key and sort[1] else "▲" if col == key else "")
+		b.custom_minimum_size = Vector2(PV_CELL_WIDTH, 28)
+		b.clip_text = true
+		b.add_theme_font_size_override("font_size", 14)
+		UiTheme.style_button(b, _palette.main if col == key else Color("e3e8ee"), Color.TRANSPARENT, 6, 3)
+		b.pressed.connect(func() -> void:
+			var desc := col != "rank"
+			if _sort["pv"][0] == col:
+				desc = not _sort["pv"][1]
+			_sort["pv"] = [col, desc]
+			refresh()
+			for c in UiInput.focusables(_fixed):
+				if c is Button and (c as Button).text.begins_with(title):
+					UiInput.grab(c))
+		header.add_child(b)
+	_fixed.add_child(_header_panel(header))
+	for i in teams.size():
+		var team: String = teams[i]
+		var v: Dictionary = values[team]
+		var row := _row_panel(MINE_TINT if team == GameState.team else Color(1, 1, 1, 0.5 if i % 2 == 0 else 0.25))
+		var b := Button.new()
+		b.text = GameData.short_name(team)
+		b.custom_minimum_size = Vector2(PV_TEAM_WIDTH, 30)
+		b.clip_text = true
+		b.add_theme_font_size_override("font_size", 15)
+		UiTheme.style_button(b, GameData.team_colors(team)[0], Color.TRANSPARENT, 6, 4)
+		b.tooltip_text = "%sの棒グラフを見る" % team
+		b.pressed.connect(func() -> void:
+			_pv_team = team
+			_pv_mode = "chart"
+			refresh()
+			focus_first())
+		row.add_child(b)
+		for col: String in TeamValue.COLUMNS:
+			var c: Dictionary = v[col]
+			var cell := _pv_cell(float(c["total"]), PV_FULL_COLOR_RUNS)
+			cell.tooltip_text = "%s %s：%s点（打撃・走塁 %s・守備 %s・投球 %s）" % [GameData.short_name(team), col,
+				Records.format("runs", c["total"]), Records.format("runs", c["bat"]), Records.format("runs", c["fld"]),
+				Records.format("runs", c["pit"])]
+			row.add_child(cell)
+		row.add_child(_pv_cell(float(v["total"]), PV_FULL_COLOR_RUNS * 3.0))
+		row.add_child(_cell("%d位" % int(v["rank"]), PV_CELL_WIDTH, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_CENTER))
+	message_changed.emit("%d年%s：12球団×位置の得失点（リーグ平均＝0、点）。赤はプラス・青はマイナス、濃いほど大きい。見出しで並び替え、球団名で棒グラフへ" % [
+		shown_pv_year(), note])
+
+
+## 得失点の数字のマス（プラスは赤・マイナスは青、full 点で一番濃い）
+func _pv_cell(value: float, full: float) -> Control:
+	var panel := PanelContainer.new()
+	var style := UiTheme.box((PV_PLUS if value >= 0.0 else PV_MINUS) * Color(1, 1, 1, clampf(absf(value) / full, 0.0, 1.0) * 0.8), 4)
+	style.content_margin_left = 2
+	style.content_margin_right = 6
+	panel.add_theme_stylebox_override("panel", style)
+	panel.custom_minimum_size = Vector2(PV_CELL_WIDTH, ROW_HEIGHT)
+	var strong := absf(value) / full > 0.55
+	var label := _cell(Records.format("runs", value), PV_CELL_WIDTH - 8, Color.WHITE if strong else UiTheme.TEXT)
+	panel.add_child(label)
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	return panel
+
+
+## スクロールの外に置く見出しの行（スクロールバーの分だけ右を空ける）
+func _header_panel(header: HBoxContainer) -> Control:
+	var panel := PanelContainer.new()
+	var style := UiTheme.box(Color(1, 1, 1, 0.85), 6)
+	style.content_margin_left = 4
+	style.content_margin_right = 4
+	panel.add_theme_stylebox_override("panel", style)
+	panel.add_child(header)
+	return panel
 
 
 # --- チーム成績の推移 ------------------------------------------------------------------------------
