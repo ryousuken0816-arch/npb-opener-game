@@ -489,8 +489,13 @@ func _tile(id: String, excluded: Dictionary) -> Control:
 		badge.text = "交渉中"
 		badge.add_theme_color_override("font_color", Color.WHITE)
 		badge.add_theme_font_override("font", UiTheme.font(800))
-		badge.add_theme_font_size_override("font_size", 13)
-		badge.add_theme_stylebox_override("normal", UiTheme.gloss(Color("ff8a3d"), 5, 1, 1))
+		badge.add_theme_font_size_override("font_size", 12)
+		var b_style := UiTheme.gloss(Color("e65100"), 4, 1, 1)
+		b_style.content_margin_left = 6
+		b_style.content_margin_right = 6
+		b_style.content_margin_top = 2
+		b_style.content_margin_bottom = 2
+		badge.add_theme_stylebox_override("normal", b_style)
 		row.add_child(badge)
 	return row
 

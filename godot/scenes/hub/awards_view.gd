@@ -181,11 +181,20 @@ func _league_column(lg: String, a: Dictionary) -> VBoxContainer:
 	return col
 
 
-func _section_label(text: String, color: Color) -> Label:
+func _section_label(text: String, color: Color) -> Control:
+	var panel := PanelContainer.new()
+	var style := UiTheme.gloss(color, 6, 2, 2)
+	style.content_margin_top = 3
+	style.content_margin_bottom = 3 + style.depth
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	panel.add_theme_stylebox_override("panel", style)
 	var label := Label.new()
 	label.text = text
-	UiTheme.heading(label, 22, color, Color.WHITE, 6)
-	return label
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.heading(label, 20, Color.WHITE, color.darkened(0.5), 5, false)
+	panel.add_child(label)
+	return panel
 
 
 ## 1行：賞の名前・名前札・球団・成績。自球団は金色の帯と★
@@ -195,7 +204,12 @@ func _row(award: String, e: Variant) -> PanelContainer:
 	row.add_theme_constant_override("separation", 8)
 	panel.add_child(row)
 	var is_mine: bool = e is Dictionary and e.get("team", "") == GameState.team
-	var style := UiTheme.box(Color(MINE_COLOR, 0.85) if is_mine else Color(1, 1, 1, 0.55), 8)
+	var style: StyleBoxFlat
+	if is_mine:
+		style = UiTheme.box(Color(MINE_COLOR, 0.9), 8, Color("f57f17"), 1)
+		style.border_width_left = 5
+	else:
+		style = UiTheme.box(Color(1, 1, 1, 0.6), 8, Color(0, 0, 0, 0.08), 1)
 	style.content_margin_left = 6
 	style.content_margin_right = 6
 	panel.add_theme_stylebox_override("panel", style)

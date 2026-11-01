@@ -38,8 +38,8 @@ func setup(menu_key: String, text: String, icon: Texture2D, color: Color, glow: 
 	_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_button.focus_mode = Control.FOCUS_ALL
 	_button.add_theme_font_override("font", UiTheme.font(800))
-	_button.add_theme_constant_override("outline_size", 10)
-	_button.add_theme_constant_override("h_separation", 8)
+	_button.add_theme_constant_override("outline_size", 8)
+	_button.add_theme_constant_override("h_separation", 12)
 	_button.add_theme_color_override("font_outline_color", color.darkened(0.55))
 	for c in UiTheme.BUTTON_FONT_COLORS:
 		_button.add_theme_color_override(c, Color.WHITE)
@@ -106,7 +106,7 @@ func _make_style(color: Color, selected: bool, glow: Color) -> GlossBox:
 	s.skew = Vector2(0.3, 0)
 	s.gloss = 0.5
 	s.gradient = 0.2
-	s.content_margin_left = 18
+	s.content_margin_left = 20
 	s.content_margin_right = 24
 	s.content_margin_top = 2
 	s.content_margin_bottom = 4 + s.depth

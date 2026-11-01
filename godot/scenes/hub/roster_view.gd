@@ -196,6 +196,7 @@ func _set_stat_texts(item: TreeItem, values: Array) -> void:
 	for i in values.size():
 		item.set_text(i + 1, str(values[i]))
 		item.set_text_alignment(i + 1, HORIZONTAL_ALIGNMENT_RIGHT)
+		item.set_custom_font(i + 1, UiTheme.font(700))
 
 
 ## 打率などの表示（".312"）

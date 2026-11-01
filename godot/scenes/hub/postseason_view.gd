@@ -143,10 +143,20 @@ func _league_column(ps: Postseason, lg: String) -> Control:
 	var col := VBoxContainer.new()
 	col.custom_minimum_size.x = COLUMN_WIDTH
 	col.add_theme_constant_override("separation", 6)
+	var lg_color := Color("1e88e5") if lg == "C" else Color("2e7d32")
+	var title_panel := PanelContainer.new()
+	var style := UiTheme.gloss(lg_color, 6, 2, 2)
+	style.content_margin_top = 3
+	style.content_margin_bottom = 3 + style.depth
+	style.content_margin_left = 8
+	style.content_margin_right = 8
+	title_panel.add_theme_stylebox_override("panel", style)
 	var title := Label.new()
 	title.text = "%s クライマックスシリーズ" % GameData.LEAGUE_NAMES.get(lg, "")
-	UiTheme.heading(title, 20, _palette.ink, Color.WHITE, 6)
-	col.add_child(title)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.heading(title, 19, Color.WHITE, lg_color.darkened(0.5), 5, false)
+	title_panel.add_child(title)
+	col.add_child(title_panel)
 	var any := false
 	for s in ps.series:
 		if s["league"] == lg:
@@ -250,7 +260,18 @@ func _team_row(s: Dictionary, team: String, big: bool) -> Control:
 		var badge := UiTheme.small_label("日本一！" if s["stage"] == "js" else "勝ち抜け", 16, WIN_COLOR.darkened(0.3), 800)
 		row.add_child(badge)
 	if team == GameState.team:
-		row.add_child(UiTheme.small_label("自球団", 13, _palette.ink, 800))
+		var own_badge := PanelContainer.new()
+		var ob_style := UiTheme.box(_palette.main, 4)
+		ob_style.content_margin_left = 6
+		ob_style.content_margin_right = 6
+		ob_style.content_margin_top = 1
+		ob_style.content_margin_bottom = 1
+		own_badge.add_theme_stylebox_override("panel", ob_style)
+		var own_lbl := Label.new()
+		own_lbl.text = "自球団"
+		UiTheme.heading(own_lbl, 13, _palette.on_main, _palette.main.darkened(0.4), 4, false)
+		own_badge.add_child(own_lbl)
+		row.add_child(own_badge)
 	return row
 
 

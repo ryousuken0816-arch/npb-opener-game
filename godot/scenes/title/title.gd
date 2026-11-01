@@ -186,12 +186,19 @@ func set_skip_to_draft(on: bool) -> void:
 func _make_league_column(league: String) -> VBoxContainer:
 	var column := VBoxContainer.new()
 	column.custom_minimum_size = Vector2(320, 0)
-	column.add_theme_constant_override("separation", 10)
+	column.add_theme_constant_override("separation", 8)
+	var league_color := Color("1e88e5") if league == "C" else Color("2e7d32")
+	var header_panel := PanelContainer.new()
+	var header_style := UiTheme.gloss(league_color, 8, 2, 3)
+	header_style.content_margin_top = 4
+	header_style.content_margin_bottom = 4 + header_style.depth
+	header_panel.add_theme_stylebox_override("panel", header_style)
 	var header := Label.new()
 	header.text = GameData.LEAGUE_NAMES[league]
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.heading(header, 24, UiTheme.TEXT, Color.WHITE, 8)
-	column.add_child(header)
+	UiTheme.heading(header, 22, Color.WHITE, league_color.darkened(0.5), 6, false)
+	header_panel.add_child(header)
+	column.add_child(header_panel)
 	for team in GameData.teams(league):
 		column.add_child(_make_team_button(team))
 	return column
@@ -202,10 +209,13 @@ func _make_team_button(team: String) -> Button:
 	var colors := GameData.team_colors(team)
 	var button := Button.new()
 	button.text = team
-	button.custom_minimum_size = Vector2(0, 48)
+	button.custom_minimum_size = Vector2(0, 46)
 	button.add_theme_font_size_override("font_size", 20)
 	button.add_theme_font_override("font", UiTheme.font(800))
-	UiTheme.style_button(button, colors[0])
+	var ink := UiTheme.text_on(colors[0])
+	UiTheme.style_button(button, colors[0], ink)
+	button.add_theme_color_override("font_outline_color", UiTheme.outline_for(ink, colors[0]))
+	button.add_theme_constant_override("outline_size", 6)
 	for state in ["normal", "hover", "pressed", "hover_pressed"]:
 		var st := button.get_theme_stylebox(state) as GlossBox
 		st.border_color = colors[1].darkened(0.1)
