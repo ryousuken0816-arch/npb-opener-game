@@ -12,4 +12,5 @@ data/basement/
 .env
 scratch/
 build/
+godot/data/
 *.uid

@@ -132,11 +132,11 @@ func _ready() -> void:
 	var margin_top := (UiLayout.safe_area_top + 6.0) if UiLayout.is_portrait else float(MARGIN)
 	var margin_side := 4.0 if UiLayout.is_portrait else float(MARGIN)
 	var margin_bottom := (UiLayout.safe_area_bottom + 6.0) if UiLayout.is_portrait else float(MARGIN)
+	_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_frame.offset_left = margin_side
 	_frame.offset_top = margin_top
 	_frame.offset_right = -margin_side
 	_frame.offset_bottom = -margin_bottom
-	_frame.set_anchors_preset(Control.PRESET_FULL_RECT)
 	# 中身が枠より大きくなっても、枠を画面の外へ広げずにスクロールさせる（ハブのサブ画面と同じ）
 	_fit = ScrollContainer.new()
 	_frame.add_child(_fit)
@@ -292,12 +292,12 @@ func _build_top_bar() -> Control:
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bar.add_child(spacer)
-	bar.add_child(_arrow_button("▲", func() -> void: step(-1), "前の選手"))
+	bar.add_child(_arrow_button("▲" if UiLayout.is_portrait else "▲ 前", func() -> void: step(-1), "前の選手"))
 	_counter = UiTheme.small_label("", 15 if UiLayout.is_portrait else 17, UiTheme.TEXT, 800)
 	_counter.custom_minimum_size = Vector2(50 if UiLayout.is_portrait else 70, 0)
 	_counter.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bar.add_child(_counter)
-	bar.add_child(_arrow_button("▼", func() -> void: step(1), "次の選手"))
+	bar.add_child(_arrow_button("▼" if UiLayout.is_portrait else "次 ▼", func() -> void: step(1), "次の選手"))
 	if not UiLayout.is_portrait:
 		var guide := PadGuide.new()
 		guide.set_items([["十字", "選手"], ["LB/RB", "タブ"], ["B", "閉じる"]])

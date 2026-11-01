@@ -52,6 +52,13 @@ func _init(m: Dictionary = {}) -> void:
 
 
 func load_model() -> void:
+	var bundled := "res://data/generated/fictional_model.json"
+	if FileAccess.file_exists(bundled):
+		var bp: Variant = JSON.parse_string(FileAccess.get_file_as_string(bundled))
+		if bp is Dictionary:
+			model = bp
+			ready = true
+			return
 	var path := ProjectSettings.globalize_path(MODEL_PATH)
 	if not FileAccess.file_exists(path):
 		return

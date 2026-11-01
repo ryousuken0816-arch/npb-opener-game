@@ -65,6 +65,11 @@ func _init(coefficients: Dictionary = {}) -> void:
 
 ## generated/growth.json を読む（無ければ空）
 static func load_coefficients() -> Dictionary:
+	var bundled := "res://data/generated".path_join(COEFF_FILE)
+	if FileAccess.file_exists(bundled):
+		var bp: Variant = JSON.parse_string(FileAccess.get_file_as_string(bundled))
+		if bp is Dictionary:
+			return bp
 	var path := ProjectSettings.globalize_path("res://").path_join("../generated").path_join(COEFF_FILE).simplify_path()
 	if not FileAccess.file_exists(path):
 		push_error("成長の係数がありません: " + path)

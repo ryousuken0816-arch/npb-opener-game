@@ -93,6 +93,11 @@ func _init(fictional_data: Dictionary = {}, growth: Growth = null) -> void:
 
 
 static func load_data() -> Dictionary:
+	var bundled := "res://data/generated".path_join(DATA_FILE)
+	if FileAccess.file_exists(bundled):
+		var bp: Variant = JSON.parse_string(FileAccess.get_file_as_string(bundled))
+		if bp is Dictionary:
+			return bp
 	var path := ProjectSettings.globalize_path("res://").path_join("../generated").path_join(DATA_FILE).simplify_path()
 	if not FileAccess.file_exists(path):
 		push_error("架空のドラフト候補のひな形がありません: " + path)

@@ -8,6 +8,8 @@ extends Node
 
 const DATA_DIR := "res://data/ratings"
 const GENERATED_DIR := "../generated/ratings"
+const BUNDLE_GENERATED_DIR := "res://data/generated"
+const BUNDLE_DATA_DIR := "res://data"
 ## 史実の日程（npb_collector/schedule.py の出力）。書き出し時は res://data/schedule/<年>.json にコピーする想定
 const SCHEDULE_DIR := "res://data/schedule"
 const REPO_DATA_DIR := "../data"
@@ -356,6 +358,9 @@ func find_ratings_path(year: int, phase: String) -> String:
 
 ## リポジトリ直下の generated/ の JSON（draft_future.json など）。無ければ null
 func read_generated(file_name: String) -> Variant:
+	var bundled := BUNDLE_GENERATED_DIR.path_join(file_name)
+	if FileAccess.file_exists(bundled):
+		return JSON.parse_string(FileAccess.get_file_as_string(bundled))
 	var path := ProjectSettings.globalize_path("res://").path_join("../generated").path_join(file_name).simplify_path()
 	if not FileAccess.file_exists(path):
 		return null
@@ -443,6 +448,10 @@ func _roster_field(year: int, key: String) -> Dictionary:
 	return result
 
 
+var _all_players_master: Dictionary = {}
+var _players_by_year_map: Dictionary = {}
+
+
 ## 選手ページ（data/<年>/players.json）の中身：bio（経歴・ドラフト）と batting/pitching（1軍の年度別成績）。
 ## **npb.jp の今の選手ページなので <年> より後の成績も入っている**（表示する側で年度を絞る）。
 ## 5MB 前後あるので、選手詳細を初めて開いたときに1年分だけ読んで持っておく。無ければ空
@@ -450,8 +459,36 @@ func player_page(year: int, id: String) -> Dictionary:
 	if _pages_year != year:
 		_pages_year = year
 		var parsed: Variant = _read_repo_json("%d/players.json" % year)
-		_pages = parsed if parsed is Dictionary else {}
+		if parsed is Dictionary:
+			_pages = parsed
+		else:
+			_ensure_bundled_players()
+			var y_ids: Array = _players_by_year_map.get(str(year), [])
+			if not y_ids.is_empty():
+				var sub := {}
+				for pid in y_ids:
+					var key := str(pid)
+					if _all_players_master.has(key):
+						sub[key] = _all_players_master[key]
+				_pages = sub
+			else:
+				_pages = _all_players_master
 	return _pages.get(id, {})
+
+
+func _ensure_bundled_players() -> void:
+	if not _all_players_master.is_empty():
+		return
+	var all_path := BUNDLE_DATA_DIR.path_join("all_players.json")
+	if FileAccess.file_exists(all_path):
+		var p1: Variant = JSON.parse_string(FileAccess.get_file_as_string(all_path))
+		if p1 is Dictionary:
+			_all_players_master = p1
+	var map_path := BUNDLE_DATA_DIR.path_join("players_by_year.json")
+	if FileAccess.file_exists(map_path):
+		var p2: Variant = JSON.parse_string(FileAccess.get_file_as_string(map_path))
+		if p2 is Dictionary:
+			_players_by_year_map = p2
 
 
 ## その年の選手ページ全部（選手ID → player_page と同じ中身）。player_page と同じ1年分の持ち方を使う
@@ -461,6 +498,9 @@ func all_player_pages(year: int) -> Dictionary:
 
 
 func _read_repo_json(relative: String) -> Variant:
+	var bundled := BUNDLE_DATA_DIR.path_join(relative)
+	if FileAccess.file_exists(bundled):
+		return JSON.parse_string(FileAccess.get_file_as_string(bundled))
 	var repo_path := ProjectSettings.globalize_path("res://").path_join(REPO_DATA_DIR)
 	var path := repo_path.path_join(relative).simplify_path()
 	if not FileAccess.file_exists(path):
