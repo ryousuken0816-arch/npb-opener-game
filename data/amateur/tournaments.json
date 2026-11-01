@@ -1,0 +1,1538 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-01",
+  "description": "2008〜2027年。空欄は未確認・未開催で結果記事なし。publish_after は決勝日ではなく、開催終了後の安全な掲載目安。選手の実績は source_url で確認できるものだけ。",
+  "years": {
+    "2008": {
+      "spring": {
+        "winner": "沖縄尚学",
+        "runner_up": "聖望学園",
+        "score": "9-0",
+        "fictional": false,
+        "publish_after": "2008-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "新日本石油ENEOS",
+        "runner_up": "王子製紙",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2008-09-30",
+        "players": [
+          {
+            "name": "田澤純一",
+            "school": "新日本石油ENEOS",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "東洋大",
+        "runner_up": "東北福祉大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2008-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "大阪桐蔭",
+        "runner_up": "常葉菊川",
+        "score": "17-0",
+        "fictional": false,
+        "publish_after": "2008-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "東洋大",
+        "runner_up": "東海大",
+        "score": "7-5",
+        "fictional": false,
+        "publish_after": "2008-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2009": {
+      "spring": {
+        "winner": "清峰",
+        "runner_up": "花巻東",
+        "score": "1-0",
+        "fictional": false,
+        "publish_after": "2009-04-10",
+        "players": [
+          {
+            "name": "今村 猛",
+            "school": "清峰",
+            "title": "優勝投手",
+            "stat": "",
+            "source_url": "https://www.jhbf.or.jp/senbatsu/history/"
+          },
+          {
+            "name": "菊池 雄星",
+            "school": "花巻東",
+            "title": "準優勝投手",
+            "stat": "",
+            "source_url": "https://www.jhbf.or.jp/senbatsu/history/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "Honda",
+        "runner_up": "トヨタ自動車",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2009-09-30",
+        "players": [
+          {
+            "name": "筑川利希也",
+            "school": "Honda",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "立正大",
+        "runner_up": "上武大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2009-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "中京大中京",
+        "runner_up": "日本文理",
+        "score": "10-9",
+        "fictional": false,
+        "publish_after": "2009-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "法政大",
+        "runner_up": "富士大",
+        "score": "5-1",
+        "fictional": false,
+        "publish_after": "2009-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2010": {
+      "spring": {
+        "winner": "興南",
+        "runner_up": "日大三",
+        "score": "10-5",
+        "fictional": false,
+        "publish_after": "2010-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "東芝",
+        "runner_up": "JR九州",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2010-09-30",
+        "players": [
+          {
+            "name": "藤田卓史",
+            "school": "東芝",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "早稲田大",
+        "runner_up": "東海大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2010-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "興南",
+        "runner_up": "東海大相模",
+        "score": "13-1",
+        "fictional": false,
+        "publish_after": "2010-08-31",
+        "players": [],
+        "notes": [
+          {
+            "text": "春夏連覇",
+            "source_url": "https://www.jhbf.or.jp/sensyuken/history/"
+          }
+        ],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "東洋大",
+        "runner_up": "東海大",
+        "score": "5-0",
+        "fictional": false,
+        "publish_after": "2010-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2011": {
+      "spring": {
+        "winner": "東海大相模",
+        "runner_up": "九州国際大付",
+        "score": "6-1",
+        "fictional": false,
+        "publish_after": "2011-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "JR東日本",
+        "runner_up": "NTT東日本",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2011-11-30",
+        "players": [
+          {
+            "name": "松本晃",
+            "school": "JR東日本",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "明治大",
+        "runner_up": "愛知学院大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2011-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "日大三",
+        "runner_up": "光星学院",
+        "score": "11-0",
+        "fictional": false,
+        "publish_after": "2011-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "東洋大",
+        "runner_up": "慶應義塾大",
+        "score": "3-1",
+        "fictional": false,
+        "publish_after": "2011-06-30",
+        "players": [
+          {
+            "name": "藤岡 貴裕",
+            "school": "東洋大",
+            "title": "大会MVP",
+            "stat": "最優秀投手賞も受賞",
+            "source_url": "https://www.nikkansports.com/baseball/news/p-bb-tp3-20110613-789668.html"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2012": {
+      "spring": {
+        "winner": "大阪桐蔭",
+        "runner_up": "光星学院",
+        "score": "7-3",
+        "fictional": false,
+        "publish_after": "2012-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "JX-ENEOS",
+        "runner_up": "JR東日本",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2012-09-30",
+        "players": [
+          {
+            "name": "大城基志",
+            "school": "JX-ENEOS",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "桐蔭横浜大",
+        "runner_up": "法政大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2012-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "大阪桐蔭",
+        "runner_up": "光星学院",
+        "score": "3-0",
+        "fictional": false,
+        "publish_after": "2012-08-31",
+        "players": [
+          {
+            "name": "藤浪 晋太郎",
+            "school": "大阪桐蔭",
+            "title": "優勝投手",
+            "stat": "決勝で14奪三振",
+            "source_url": "https://www.daily.co.jp/hsbaseball/2012/08/24/1p_0005325981.shtml"
+          }
+        ],
+        "notes": [
+          {
+            "text": "春夏連覇",
+            "source_url": "https://www.jhbf.or.jp/sensyuken/history/"
+          }
+        ],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "早稲田大",
+        "runner_up": "亜細亜大",
+        "score": "4-0",
+        "fictional": false,
+        "publish_after": "2012-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2013": {
+      "spring": {
+        "winner": "浦和学院",
+        "runner_up": "済美",
+        "score": "17-1",
+        "fictional": false,
+        "publish_after": "2013-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "JX-ENEOS",
+        "runner_up": "JR東日本",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2013-09-30",
+        "players": [
+          {
+            "name": "大城基志",
+            "school": "JX-ENEOS",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "亜細亜大",
+        "runner_up": "明治大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2013-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "前橋育英",
+        "runner_up": "延岡学園",
+        "score": "4-3",
+        "fictional": false,
+        "publish_after": "2013-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "上武大",
+        "runner_up": "亜細亜大",
+        "score": "6-5",
+        "fictional": false,
+        "publish_after": "2013-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2014": {
+      "spring": {
+        "winner": "龍谷大平安",
+        "runner_up": "履正社",
+        "score": "6-2",
+        "fictional": false,
+        "publish_after": "2014-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "西濃運輸",
+        "runner_up": "富士重工業",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2014-09-30",
+        "players": [
+          {
+            "name": "佐伯尚治",
+            "school": "西濃運輸",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "駒澤大",
+        "runner_up": "明治大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2014-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "大阪桐蔭",
+        "runner_up": "三重",
+        "score": "4-3",
+        "fictional": false,
+        "publish_after": "2014-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "東海大",
+        "runner_up": "神奈川大",
+        "score": "2-0",
+        "fictional": false,
+        "publish_after": "2014-06-30",
+        "players": [
+          {
+            "name": "大城 卓三",
+            "school": "東海大",
+            "title": "大会MVP",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/daigaku/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2015": {
+      "spring": {
+        "winner": "敦賀気比",
+        "runner_up": "東海大四",
+        "score": "3-1",
+        "fictional": false,
+        "publish_after": "2015-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "日本生命",
+        "runner_up": "大阪ガス",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2015-09-30",
+        "players": [
+          {
+            "name": "藤井貴之",
+            "school": "日本生命",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "亜細亜大",
+        "runner_up": "早稲田大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2015-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "東海大相模",
+        "runner_up": "仙台育英",
+        "score": "10-6",
+        "fictional": false,
+        "publish_after": "2015-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "早稲田大",
+        "runner_up": "流通経済大",
+        "score": "8-5",
+        "fictional": false,
+        "publish_after": "2015-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2016": {
+      "spring": {
+        "winner": "智弁学園",
+        "runner_up": "高松商",
+        "score": "2-1",
+        "fictional": false,
+        "publish_after": "2016-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "トヨタ自動車",
+        "runner_up": "日立製作所",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2016-09-30",
+        "players": [
+          {
+            "name": "佐竹功年",
+            "school": "トヨタ自動車",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "明治大",
+        "runner_up": "桜美林大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2016-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "作新学院",
+        "runner_up": "北海",
+        "score": "7-1",
+        "fictional": false,
+        "publish_after": "2016-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "中京学院大",
+        "runner_up": "中央学院大",
+        "score": "5-2",
+        "fictional": false,
+        "publish_after": "2016-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2017": {
+      "spring": {
+        "winner": "大阪桐蔭",
+        "runner_up": "履正社",
+        "score": "8-3",
+        "fictional": false,
+        "publish_after": "2017-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "NTT東日本",
+        "runner_up": "日本通運",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2017-09-30",
+        "players": [
+          {
+            "name": "福田周平",
+            "school": "NTT東日本",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "日本体育大",
+        "runner_up": "星槎道都大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2017-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "花咲徳栄",
+        "runner_up": "広陵",
+        "score": "14-4",
+        "fictional": false,
+        "publish_after": "2017-08-31",
+        "players": [
+          {
+            "name": "中村 奨成",
+            "school": "広陵",
+            "title": "準優勝メンバー",
+            "stat": "大会新記録の6本塁打",
+            "source_url": "https://www.nikkansports.com/baseball/highschool/news/1876172.html"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "立教大",
+        "runner_up": "国際武道大",
+        "score": "9-2",
+        "fictional": false,
+        "publish_after": "2017-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2018": {
+      "spring": {
+        "winner": "大阪桐蔭",
+        "runner_up": "智弁和歌山",
+        "score": "5-2",
+        "fictional": false,
+        "publish_after": "2018-04-10",
+        "players": [
+          {
+            "name": "根尾 昂",
+            "school": "大阪桐蔭",
+            "title": "優勝投手",
+            "stat": "",
+            "source_url": "https://www.nikkansports.com/baseball/highschool/news/201804040000146.html"
+          },
+          {
+            "name": "藤原 恭大",
+            "school": "大阪桐蔭",
+            "title": "優勝メンバー",
+            "stat": "決勝で適時打",
+            "source_url": "https://www.nikkansports.com/baseball/highschool/news/201804040000146.html"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "大阪ガス",
+        "runner_up": "三菱重工神戸・高砂",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2018-09-30",
+        "players": [
+          {
+            "name": "近本光司",
+            "school": "大阪ガス",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "立正大",
+        "runner_up": "環太平洋大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2018-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "大阪桐蔭",
+        "runner_up": "金足農",
+        "score": "13-2",
+        "fictional": false,
+        "publish_after": "2018-08-31",
+        "players": [
+          {
+            "name": "根尾 昂",
+            "school": "大阪桐蔭",
+            "title": "優勝メンバー",
+            "stat": "大会3本塁打・2勝",
+            "source_url": "https://www.nikkansports.com/baseball/highschool/news/201808210000947.html"
+          },
+          {
+            "name": "藤原 恭大",
+            "school": "大阪桐蔭",
+            "title": "優勝メンバー",
+            "stat": "大会3本塁打",
+            "source_url": "https://www.nikkansports.com/baseball/highschool/news/201808210000947.html"
+          }
+        ],
+        "notes": [
+          {
+            "text": "春夏連覇",
+            "source_url": "https://www.jhbf.or.jp/sensyuken/history/"
+          }
+        ],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "東北福祉大",
+        "runner_up": "国際武道大",
+        "score": "6-2",
+        "fictional": false,
+        "publish_after": "2018-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2019": {
+      "spring": {
+        "winner": "東邦",
+        "runner_up": "習志野",
+        "score": "6-0",
+        "fictional": false,
+        "publish_after": "2019-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "JFE東日本",
+        "runner_up": "トヨタ自動車",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2019-09-30",
+        "players": [
+          {
+            "name": "須田幸太",
+            "school": "JFE東日本",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "慶應義塾大",
+        "runner_up": "関西大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2019-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "履正社",
+        "runner_up": "星稜",
+        "score": "5-3",
+        "fictional": false,
+        "publish_after": "2019-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "明治大",
+        "runner_up": "佛教大",
+        "score": "6-1",
+        "fictional": false,
+        "publish_after": "2019-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2020": {
+      "shakai": {
+        "winner": "Honda",
+        "runner_up": "NTT東日本",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2020-12-31",
+        "players": [
+          {
+            "name": "井上彰吾",
+            "school": "Honda",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "spring": {
+        "cancelled": true,
+        "source_url": "https://www.jhbf.or.jp/senbatsu/history/"
+      },
+      "summer": {
+        "cancelled": true,
+        "source_url": "https://www.jhbf.or.jp/sensyuken/history/"
+      },
+      "college": {
+        "cancelled": true,
+        "source_url": "https://jubf.net/records/championship_champion.html"
+      },
+      "jingu": {
+        "cancelled": true,
+        "source_url": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+      }
+    },
+    "2021": {
+      "spring": {
+        "winner": "東海大相模",
+        "runner_up": "明豊",
+        "score": "3-2",
+        "fictional": false,
+        "publish_after": "2021-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "東京ガス",
+        "runner_up": "Honda熊本",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2021-12-31",
+        "players": [
+          {
+            "name": "臼井浩",
+            "school": "東京ガス",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "中央学院大",
+        "runner_up": "慶應義塾大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2021-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "智弁和歌山",
+        "runner_up": "智弁学園",
+        "score": "9-2",
+        "fictional": false,
+        "publish_after": "2021-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "慶應義塾大",
+        "runner_up": "福井工業大",
+        "score": "13-2",
+        "fictional": false,
+        "publish_after": "2021-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2022": {
+      "spring": {
+        "winner": "大阪桐蔭",
+        "runner_up": "近江",
+        "score": "18-1",
+        "fictional": false,
+        "publish_after": "2022-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "ENEOS",
+        "runner_up": "東京ガス",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2022-09-30",
+        "players": [
+          {
+            "name": "度会隆輝",
+            "school": "ENEOS",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "明治大",
+        "runner_up": "國學院大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2022-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "仙台育英",
+        "runner_up": "下関国際",
+        "score": "8-1",
+        "fictional": false,
+        "publish_after": "2022-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "亜細亜大",
+        "runner_up": "上武大",
+        "score": "7-1",
+        "fictional": false,
+        "publish_after": "2022-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2023": {
+      "spring": {
+        "winner": "山梨学院",
+        "runner_up": "報徳学園",
+        "score": "7-3",
+        "fictional": false,
+        "publish_after": "2023-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "トヨタ自動車",
+        "runner_up": "ヤマハ",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2023-09-30",
+        "players": [
+          {
+            "name": "嘉陽宗一郎",
+            "school": "トヨタ自動車",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "慶應義塾大",
+        "runner_up": "青山学院大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2023-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "慶応",
+        "runner_up": "仙台育英",
+        "score": "8-2",
+        "fictional": false,
+        "publish_after": "2023-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "青山学院大",
+        "runner_up": "明治大",
+        "score": "4-0",
+        "fictional": false,
+        "publish_after": "2023-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2024": {
+      "spring": {
+        "winner": "健大高崎",
+        "runner_up": "報徳学園",
+        "score": "3-2",
+        "fictional": false,
+        "publish_after": "2024-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "三菱重工East",
+        "runner_up": "JR東日本東北",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2024-09-30",
+        "players": [
+          {
+            "name": "本間大暉",
+            "school": "三菱重工East",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "青山学院大",
+        "runner_up": "創価大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2024-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "京都国際",
+        "runner_up": "関東一",
+        "score": "2-1",
+        "fictional": false,
+        "publish_after": "2024-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "青山学院大",
+        "runner_up": "早稲田大",
+        "score": "2-1",
+        "fictional": false,
+        "publish_after": "2024-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2025": {
+      "spring": {
+        "winner": "横浜",
+        "runner_up": "智弁和歌山",
+        "score": "11-4",
+        "fictional": false,
+        "publish_after": "2025-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "王子",
+        "runner_up": "三菱自動車岡崎",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2025-09-30",
+        "players": [
+          {
+            "name": "九谷瑠",
+            "school": "王子",
+            "title": "橋戸賞",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/",
+          "runner_up": "https://www.jsports.co.jp/baseball/shakaijin_yakyu/stats/"
+        }
+      },
+      "jingu": {
+        "winner": "青山学院大",
+        "runner_up": "立命館大",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2025-11-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://student-baseball.or.jp/game/jingu/champions_college.html",
+          "runner_up": "https://student-baseball.or.jp/game/jingu/champions_college.html"
+        }
+      },
+      "summer": {
+        "winner": "沖縄尚学",
+        "runner_up": "日大三",
+        "score": "3-1",
+        "fictional": false,
+        "publish_after": "2025-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "東北福祉大",
+        "runner_up": "福井工業大",
+        "score": "8-1",
+        "fictional": false,
+        "publish_after": "2025-06-30",
+        "players": [
+          {
+            "name": "佐藤 悠太",
+            "school": "東北福祉大",
+            "title": "大会MVP",
+            "stat": "",
+            "source_url": "https://www.jsports.co.jp/baseball/daigaku/stats/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2026": {
+      "spring": {
+        "winner": "大阪桐蔭",
+        "runner_up": "智弁学園",
+        "score": "7-3",
+        "fictional": false,
+        "publish_after": "2026-04-10",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSspr.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSspr.html",
+          "score": "https://koshien.otodo.net/archive/HSspr.html"
+        }
+      },
+      "shakai": {
+        "winner": "西濃運輸",
+        "runner_up": "NTT西日本",
+        "score": "",
+        "fictional": false,
+        "publish_after": "2026-09-30",
+        "players": [
+          {
+            "name": "前野幹博",
+            "school": "ヤマハ",
+            "title": "橋戸賞",
+            "stat": "西濃運輸の補強選手として出場",
+            "source_url": "https://news.jsports.co.jp/baseball/article/20190310239712/"
+          }
+        ],
+        "notes": [],
+        "sources": {
+          "winner": "https://www.nikkansports.com/baseball/news/202609060001097.html",
+          "runner_up": "https://www.nikkansports.com/baseball/news/202609060001097.html"
+        }
+      },
+      "summer": {
+        "winner": "智弁和歌山",
+        "runner_up": "健大高崎",
+        "score": "4-3",
+        "fictional": false,
+        "publish_after": "2026-08-31",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://koshien.otodo.net/archive/HSsum.html",
+          "runner_up": "https://koshien.otodo.net/archive/HSsum.html",
+          "score": "https://koshien.otodo.net/archive/HSsum.html"
+        }
+      },
+      "college": {
+        "winner": "関西大",
+        "runner_up": "慶應義塾大",
+        "score": "2-1",
+        "fictional": false,
+        "publish_after": "2026-06-30",
+        "players": [],
+        "notes": [],
+        "sources": {
+          "winner": "https://jubf.net/records/championship_champion.html",
+          "runner_up": "https://jubf.net/records/championship_champion.html",
+          "score": "https://jubf.net/records/championship_champion.html"
+        }
+      }
+    },
+    "2027": {}
+  }
+}

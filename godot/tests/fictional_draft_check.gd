@@ -21,6 +21,9 @@ var _fd: GDScript
 var _lr: GDScript
 var _growth: GDScript
 var _fa: GDScript
+var _an: GDScript
+var _at: GDScript
+var _examples: Array[String] = []
 
 
 func _initialize() -> void:
@@ -34,11 +37,169 @@ func _run() -> void:
 	_lr = load("res://sim/league_roster.gd")
 	_growth = load("res://sim/growth.gd")
 	_fa = load("res://sim/free_agency.gd")
+	_an = load("res://sim/amateur_news.gd")
+	_at = load("res://sim/amateur_tournament.gd")
 	_check_generator()
+	_check_news_text()
+	_check_tournaments()
 	_check_amateur_news_2026()
 	_check_fictional_flow()
+	var args := OS.get_cmdline_user_args()
+	if not args.is_empty():
+		var file := FileAccess.open(args[0], FileAccess.WRITE)
+		if file != null:
+			file.store_string("# アマ球界の記事例10本\n\n実際の生成処理から採取。架空年の大会はゲーム内の結果。\n\n" + "\n\n".join(_examples))
 	print("ALL OK" if _failures == 0 else "FAILED (%d)" % _failures)
 	quit(1 if _failures > 0 else 0)
+
+
+func _example(a: Array, label: String) -> void:
+	if _examples.size() < 10:
+		_examples.append("## %d. %s（%s）\n\n%s" % [_examples.size() + 1, a[0], label, str(a[1]).replace("\n", "\n\n")])
+
+
+func _check_news_text() -> void:
+	print("== 記事の再現性・史実の扱い ==")
+	_gs.new_game(USER, 2008)
+	var an: RefCounted = _an.new(_gs)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 1
+	var historical: Array = an.prospects(2008)
+	var a: Array = an.article(historical[0], _an.STAGES[0], 2008, rng)
+	rng.seed = 99999
+	_check(a == an.article(historical[0], _an.STAGES[0], 2008, rng), "同じ選手・同じ号なら呼び出し元の乱数に左右されず同じ全文")
+	var made_up := false
+	for c: Dictionary in historical:
+		var text: Array = an.article(c, _an.STAGES[3], 2008, rng)
+		for word: String in ["完封", "奪三振", "本塁打", "優勝投手", "MVP"]:
+			if word in str(text):
+				made_up = true
+	_check(not made_up, "2008年の紹介に架空の完封・奪三振・本塁打・優勝を足さない")
+	_gs.call("_amateur_news", "2008-03-31")
+	var spring: Array = _gs.news.of_issue("2008-amateur-spring")
+	var lowered := false
+	for story: Dictionary in spring:
+		if "中位" in story["body"] or "育成" in story["body"]:
+			lowered = true
+	_check(lowered, "同じ号に中位・育成級にも光を当てる記事")
+	_example(a, "2008年・事実未確認の大会成績は書かない")
+	_gs.new_game(USER, 2026)
+	an = _an.new(_gs)
+	for c: Dictionary in an.prospects(2026):
+		if c["category"] == "大学" and _examples.size() == 1:
+			_example(an.article(c, _an.STAGES[1], 2026, rng), "2026年・収集済みの実績")
+		if c["category"] == "独立" and _examples.size() == 2:
+			var story: Array = an.article(c, _an.STAGES[2], 2026, rng)
+			_check(not "都市対抗で" in str(story), "独立候補を都市対抗出場者にしない")
+			_example(story, "2026年・独立リーグ")
+	# 区分・守備位置・評価別のすべての経路を通す（事実の追加はしない）。
+	var seed_c: Dictionary = an.prospects(2026)[0]
+	for pos: String in ["投手", "捕手", "内野手", "外野手"]:
+		for grade: String in ["S", "A", "B", "C", "D"]:
+			var c := seed_c.duplicate(true)
+			c["pos"] = pos
+			c["pitcher"] = pos == "投手"
+			c["grade"] = grade
+			var story: Array = an.article(c, _an.STAGES[4], 2026, rng)
+			_check("ある球団のスカウト（ゲーム内の寸評）" in story[1] and not str(story[0]).is_empty(), "守備位置・評価別：%s %s" % [pos, grade])
+
+
+func _check_tournaments() -> void:
+	print("== 史実の出典・大会結果・候補への反映 ==")
+	var data: Dictionary = _gd.read_data("amateur/tournaments.json")
+	var sourced := true
+	var count := 0
+	for year: String in data["years"]:
+		for event: String in data["years"][year]:
+			var r: Dictionary = data["years"][year][event]
+			if r.get("cancelled", false):
+				continue
+			count += 1
+			sourced = sourced and str(r["sources"]["winner"]).begins_with("https://") and str(r["sources"]["runner_up"]).begins_with("https://")
+			for p: Dictionary in r["players"]:
+				sourced = sourced and str(p["source_url"]).begins_with("https://")
+	_check(sourced and count >= 85, "史実の大会結果と選手の活躍には出典URL（%d大会）" % count)
+	_gs.new_game(USER, 2018)
+	_gs.call("_amateur_news", "2018-03-31")
+	_check(_gs.amateur_results.is_empty(), "センバツ紹介号の日には未開催の決勝結果を出さない")
+	_gs.call("_amateur_news", "2018-10-08")
+	var summary: String = _at.summary(_gs.amateur_results, 2018, "根尾 昂", "大阪桐蔭高")
+	_check("センバツ優勝投手" in summary and "夏の甲子園優勝メンバー" in summary, "学校名の「高」表記を照合し、根尾の春夏の実績")
+	var summer: Array = _gs.news.of_issue("2018-amateur-summer-result")
+	_check(summer.size() == 1 and "春夏連覇" in summer[0]["headline"] and "13-2" in summer[0]["body"], "2018大阪桐蔭の春夏連覇・決勝スコアは史実どおり")
+	_example([summer[0]["headline"], summer[0]["body"]], "2018年・史実")
+	var before: int = _gs.news.articles.size()
+	_gs.call("_amateur_news", "2018-10-08")
+	_check(_gs.news.articles.size() == before and not _gs.amateur_results.has("2018-jingu"), "同じ結果を二重掲載せず、11月の神宮結果はまだ出さない")
+	_gs.new_game(USER, 2020)
+	_gs.call("_amateur_news", "2020-10-31")
+	_check(_gs.amateur_results.is_empty(), "2020年の中止大会と12月開催の都市対抗の結果は秋に出さない")
+	_gs.new_game(USER, 2027)
+	_gs.call("_amateur_news", "2027-10-08")
+	_check(_gs.amateur_results.is_empty(), "未確認の2027年は史実の結果を捏造しない")
+	_gs.new_game(USER, 2027)
+	_gs.skip_to_phase(_gs.Phase.DRAFT)
+	_gs.advance()
+	_gs.advance()
+	_gs.call("_amateur_news", "2028-10-08")
+	var results: Dictionary = _gs.amateur_results.duplicate(true)
+	_check(results.size() == 4, "架空年は秋までに4大会の結果を保存、神宮はまだ")
+	var all: Array = _an.new(_gs).prospects(2028)
+	var champion: Dictionary = results["2028-summer"]
+	_check(champion["winner"] != champion["runner_up"] and not champion["players"].is_empty(), "優勝・準優勝が重ならず、活躍選手がいる")
+	var seed_value := hash("tournament:%d:%s:%d:%s" % [2028, "summer", _gs.first_year, USER])
+	var reproduced: Dictionary = _at.simulate(2028, "summer", all, seed_value)
+	reproduced["notes"] = champion["notes"].duplicate(true)
+	_check(reproduced == champion, "同じ種なら大会結果も同じ（春夏連覇の注記は掲載時に付く）")
+	var entries := {}
+	for p: Dictionary in _gs.draft_class(2028):
+		entries[p["id"]] = p
+	var ds: GDScript = load("res://sim/draft.gd")
+	var d: RefCounted = ds.new()
+	d.setup(2028, USER, _gd.teams(), entries, {}, _gd.teams(), 123)
+	var displayed := 0
+	for c: Dictionary in d.candidates:
+		var h: String = _at.summary(results, 2028, c["name"], c["school"])
+		if not h.is_empty():
+			displayed += 1
+			_check(h in c["intro"], "作戦会議・ドラフト共通の紹介文に実績：%s" % c["name"])
+			var row: Dictionary = {}
+			for candidate: Dictionary in ds.fictional_rows(2028):
+				if candidate["name"] == c["name"]:
+					row = candidate
+			var base: float = ds.hyouka_value(int(row["as_round"]), bool(row["as_ikusei"]), maxi(1, int(row["bids"])), false)
+			_check(float(c["hyouka"]) > base and float(c["hyouka"]) <= base + 0.24001, "大会実績は当時の評価だけに小さく加算：%s" % c["name"])
+	_check(displayed > 0, "大会で活躍した候補を紹介できる")
+	for c: Dictionary in all:
+		if not _at.summary(results, 2028, c["name"], c["school"]).is_empty() and _examples.size() < 8:
+			_example(_an.new(_gs).article(c, _an.STAGES[4], 2028, RandomNumberGenerator.new()), "2028年・架空選手の秋の紹介")
+	for key: String in ["2028-amateur-spring-result", "2028-amateur-summer-result"]:
+		var story: Dictionary = _gs.news.of_issue(key)[0]
+		_example([story["headline"], story["body"]], "2028年・ゲーム内大会")
+	var saved: Dictionary = SaveUtil.ints(JSON.parse_string(JSON.stringify(_gs.to_save())))
+	_gs.new_game(USER, 2008)
+	_gs.load_state(saved)
+	_check(_gs.amateur_results == results, "セーブ→ロードで優勝・準優勝・個人賞・数字が同じ")
+	before = _gs.news.articles.size()
+	_gs.call("_amateur_news", "2028-10-08")
+	_check(before == _gs.news.articles.size(), "ロード後も大会の記事は増殖しない")
+	var old_save := saved.duplicate(true)
+	old_save.erase("amateur_results")
+	_gs.load_state(old_save)
+	_check(_gs.amateur_results.is_empty(), "大会結果の項目が無い古いセーブも読み込める")
+	# 実在校の同じ2校を多数回抽選し、強豪優位と番狂わせの両方を確認する。
+	var fixture: Dictionary = all[0].duplicate(true)
+	fixture["category"] = "大学"
+	fixture["school"] = "明治大"
+	var underdog := fixture.duplicate(true)
+	underdog["school"] = "未登録の大学（テスト）"
+	var strong_wins := 0
+	for seed_value2 in 200:
+		if _at.simulate(2028, "college", [fixture, underdog], seed_value2)["winner"] == "明治大":
+			strong_wins += 1
+	_check(strong_wins > 120 and strong_wins < 195, "強豪が勝ちやすく、伏兵も勝てる（強豪 %d/200勝）" % strong_wins)
+	_gs.new_game(USER, 2008)
+	_check(_gs.amateur_results.is_empty(), "新しいゲームには前の大会結果が残らない")
 
 
 # --- 1) 作る仕組みだけ ----------------------------------------------------------------------

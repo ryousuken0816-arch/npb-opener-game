@@ -129,6 +129,8 @@ var _last_draft: Draft = null
 var draft_board := DraftBoard.new()
 ## アマ球界のニュース（作業21）で載せ終えた段階（"<年>-<段階>" → true）
 var amateur_news_done := {}
+## ゲーム内のアマ大会の結果。年-段階 → 優勝・準優勝・候補の活躍（古いセーブは空）。
+var amateur_results := {}
 var _amateur: AmateurNews = null
 ## 架空のドラフト候補（作業22・32）の設定：当たりの頻度（FictionalDraft.HIT_MODES）・転生選手を出すか。セーブに残る
 var fictional_hits := "historical"
@@ -191,6 +193,7 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	GameData.synthetic.clear()
 	GameData.clear_draft_classes()
 	amateur_news_done = {}
+	amateur_results = {}
 	_amateur = null
 	draft_board = DraftBoard.new()
 	fictional_hits = "historical"
@@ -1174,6 +1177,8 @@ func _enter(new_phase: Phase) -> void:
 			league.cpu_market_round()
 			league.cpu_release_round()
 		Phase.CAMP:
+			# 神宮大会・冬開催の都市対抗はドラフト前に結果を出さず、年越し前のオフに届ける。
+			_amateur_news("%d-12-31" % year)
 			_last_draft = league.draft
 			history().draft_decided(_last_draft, open_off_issue(), "%d-11-20" % year)
 			_draft_review(_last_draft)
@@ -1345,8 +1350,11 @@ func _amateur_news(date: String) -> void:
 		var key := "%d-%s" % [year, stage["key"]]
 		if amateur_news_done.has(key) or date < "%d-%s" % [year, stage["date"]]:
 			continue
+		# まとめて進めても、春の紹介に夏の結果が混ざらないよう日付順で載せる。
+		_amateur.post_results_through(year, "%d-%s" % [year, stage["date"]])
 		amateur_news_done[key] = true
 		_amateur.post_stage(year, stage)
+	_amateur.post_results_through(year, date)
 
 
 # --- ドラフト前の作戦会議・有識者の予想（作業37・38） ------------------------------------------
@@ -1699,6 +1707,7 @@ func to_save() -> Dictionary:
 		"synthetic": _synthetic_save(),
 		"draft_classes": _draft_classes_save(), "fictional_hits": fictional_hits,
 		"reincarnation_on": reincarnation_on, "reincarnated": reincarnated, "amateur_news_done": amateur_news_done,
+		"amateur_results": amateur_results,
 		"draft_board": draft_board.to_save(year),
 		"news_stop_kinds": news_stop_kinds,
 	}
@@ -1754,6 +1763,7 @@ func load_state(d: Dictionary) -> void:
 	reincarnation_on = bool(d.get("reincarnation_on", true))
 	reincarnated = d.get("reincarnated", {})
 	amateur_news_done = d.get("amateur_news_done", {})
+	amateur_results = d.get("amateur_results", {})
 	_amateur = null
 	draft_board = DraftBoard.from_save(d.get("draft_board"))
 	set_news_stop_preset("important")

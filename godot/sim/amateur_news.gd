@@ -28,11 +28,127 @@ const GRADE_ORDER := {"S": 4.0, "A": 3.0, "B": 2.0, "C": 1.0, "D": 0.0}
 ## 上位の候補ほど選ばれやすく（評価にこの幅の乱数を足して並べる）
 const PICK_JITTER := 1.2
 
+## 見出し・導入は号の中で重ねず、特徴・区分・評価ごとの文を組み合わせる。
+const HEADLINES := ["{school}・{name}に熱視線！{hook}", "{hook}――{school}の{name}、秋への切り札",
+	"主役候補はこの男　{school}・{name}、{hook}", "{school}に光る原石！{name}の{feature}",
+	"ドラフト戦線に名乗り　{school}・{name}、{hook}", "見逃すな、この才能！{school}・{name}の{feature}",
+	"{name}を追え！{school}が送り出す{role}", "秋の一票を引き寄せろ　{school}・{name}の{feature}"]
+const LEADS := ["{context}。{school}の{name}（{category}{grade_text}・{pos}）を取り上げる。",
+	"{school}からプロへの道をうかがう{name}。{context}、{pos}としての持ち味を整理した。",
+	"{name}の名前を覚えておきたい。{context}、{school}の{pos}に焦点を当てる。",
+	"秋の指名まで、何を見極めるか。{context}に合わせ、{school}・{name}の可能性を探る。",
+	"候補の横顔を追う今回の主役は、{school}の{name}。{context}を入り口に、持ち味に迫る。",
+	"{context}。{school}の{name}が目指すのは、{category}から次の舞台へ進む道だ。",
+	"スカウトの見立ては一つではない。{context}、{school}・{name}に求められる役割を探る。",
+	"指名の決め手はどこにあるのか。{context}、{school}の{name}をチェックする。"]
+const CONTEXTS := {
+	"spring": ["センバツの季節、今年の高校生候補を展望する", "春の聖地に注目が集まる時期", "春から始まる高校球界の候補探し"],
+	"college": ["大学日本一を争う季節", "大学選手権の時期、大学生の実力を見極める", "春の大学球界を振り返る候補特集"],
+	"shakai": ["都市対抗の季節、社会人の即戦力に目を向ける", "黒獅子旗を争う季節", "社会人球界の候補を点検する夏"],
+	"summer": ["夏の甲子園をめぐる話題が尽きない時期", "高校球界の夏を振り返る候補特集", "最後の夏から秋の指名へ目が移る季節"],
+	"fall": ["運命のドラフトが近づく秋", "各球団の指名方針が問われるドラフト直前", "入札と指名順の駆け引きが始まる季節"],
+}
+const CATEGORY_LINES := {
+	"高校": ["完成度だけでなく、プロで育つ余地まで見極めたい高校生だ。", "次の舞台でどこまで伸びるか。高校生ならではの成長の余白も選考のポイントになる。", "進路と育成方針を重ねて考えたい高校生候補。目先の結果だけでは測れない。"],
+	"大学": ["大学からプロへ。技術の完成度と、一軍で通用する武器の両方が問われる。", "大学で培った技術を、プロの速さの中で再現できるかが焦点だ。", "同世代との比較に加え、入団後の役割まで描けるかが指名の鍵になる。"],
+	"社会人": ["社会人で積んだ経験を、プロの勝負にどう生かすか。即戦力としての役割が焦点だ。", "企業チームからプロへ。持ち味の明確さが編成の判断を左右する。", "短期決戦と日々の鍛錬で磨く技術。必要な戦力に合致すれば、指名が近づく。"],
+	"独立": ["独立リーグから支配下への道を狙う。所属リーグでの経験と、一芸の使い道を見極めたい。", "全国大会の看板に頼らず、独立の舞台からプロを目指す候補。持ち味が指名の扉を開くか。", "独立リーグで挑むもう一つのプロへの道。役割を絞った獲得も選択肢になる。"],
+}
+const POSITION_LINES := {
+	"投手": ["直球と変化球の組み合わせ、そして制球が評価の分かれ目になる。", "先発で長い回を任せるか、短い回で持ち味を生かすか。起用のイメージも大切だ。", "球速だけでなく、打者との勝負の組み立てにも注目したい。"],
+	"捕手": ["打つだけでなく、捕球・送球と投手を支える役割も背負うポジションだ。", "扇の要としての守りと打力。その両立ができれば編成上の価値は高い。", "捕手を育てたい球団にとって、長い目で見ておきたい存在だ。"],
+	"内野手": ["内野のどこを任せるか。打力と守備範囲を合わせて獲得後の配置を考えたい。", "打席での持ち味に加え、内野を守る確かさが出場機会につながる。", "二遊間か、打力を生かすコーナーか。適性の見極めが編成の腕の見せどころになる。"],
+	"外野手": ["打力と走力、守備での貢献。外野の一角を任せるための武器が問われる。", "広い外野を守れるか、打線の核を担うか。球団ごとに期待する役割は変わる。", "バットだけでなく、走塁と外野守備も含めて一軍への道を探りたい。"],
+}
+const OUTLOOKS := {
+	"S": ["今秋の目玉候補。1位入札が重なれば、交渉権は抽選に委ねられる。", "複数球団が1位で狙う可能性を持つ候補。競合を覚悟して踏み込む球団が出るか。", "世代を代表する存在として、1位の入札先を左右しそうだ。競合の読みも難しくなる。"],
+	"A": ["1位候補の一角。単独指名を狙うか、競合へ踏み込むか、球団の判断が注目される。", "1位指名を視野に置く存在。ほかの目玉候補との兼ね合いで入札が動きそうだ。", "1巡目から名前が挙がる候補。指名順と補強ポイントが鍵を握る。"],
+	"B": ["上位指名が視野に入る。2巡目以降の指名順が、縁のある球団を分けるかもしれない。", "上位をうかがう候補。先に確保するか、次の巡目まで待つかは悩ましい。", "上位の補強リストに入る存在。同じ守備位置を欲する球団の動向に注意したい。"],
+	"C": ["中位以降で光る候補。目玉が消えたあとの指名で、編成の目利きが試される。", "中位から下位の指名で、持ち味に賭ける球団を待つ。", "順位の看板より、チームに足りない武器があるか。中位以降の候補として追いたい。"],
+	"D": ["下位・育成からの挑戦も視野に入る。磨く武器を絞れれば、掘り出し物になる可能性がある。", "大きな評判がなくても、編成に合う一芸があれば指名の余地はある。育成も含めた判断だ。", "掘り出し物を探すなら見ておきたい一人。入団後の伸びを見越した下位・育成指名が焦点になる。"],
+}
+const SCOUT_LINES := {
+	"投手": ["球速の数字と、打者を抑える力を分けて見たい", "任せたい役割に合う武器があるかが大事", "制球やスタミナも含めて判断したい"],
+	"捕手": ["打力と守りをセットで見たい", "捕手を任せるまでの育成計画も必要", "打てる捕手は編成の選択肢を増やす"],
+	"内野手": ["守れる位置と打席の内容を合わせて考えたい", "一軍で使える武器を一つ見つけたい", "チームの内野の層と照らして判断したい"],
+	"外野手": ["打つだけでなく走塁と守備も見たい", "外野のどの役割を任せるかがポイント", "持ち味がはっきりすれば獲得後の道筋も見える"],
+}
+
 var gs: Node
 
 
 func _init(game_state: Node) -> void:
 	gs = game_state
+
+
+## 決勝の前に結果を載せない。候補を紹介する従来の号とは別の「大会結果号」にする。
+func post_results_through(year: int, date: String) -> void:
+	var events: Array = AmateurTournament.EVENTS.keys()
+	events.sort_custom(func(a: String, b: String) -> bool:
+		return str(AmateurTournament.EVENTS[a]["date"]) < str(AmateurTournament.EVENTS[b]["date"]))
+	for event: String in events:
+		var info: Dictionary = AmateurTournament.EVENTS[event]
+		var done_key := "%d-%s-result" % [year, event]
+		if gs.amateur_news_done.has(done_key) or date < "%d-%s" % [year, info["date"]]:
+			continue
+		var result := AmateurTournament.historical(year, event) if year <= 2027 else {}
+		if year <= 2027:
+			if result.is_empty() or result.get("cancelled", false):
+				gs.amateur_news_done[done_key] = true
+				continue
+			if date < str(result["publish_after"]):
+				continue
+		else:
+			result = AmateurTournament.simulate(year, event, prospects(year), hash("tournament:%d:%s:%d:%s" % [year, event, gs.first_year, gs.team]))
+			if result.is_empty():
+				gs.amateur_news_done[done_key] = true
+				continue
+		# 春夏連覇は同じ年の春と夏の勝者が一致したときだけ。
+		if result.get("fictional", false) and event == "summer":
+			var spring: Dictionary = gs.amateur_results.get("%d-spring" % year, {})
+			if spring.get("winner", "") == result["winner"]:
+				result["notes"].append({"text": "春夏連覇", "source_url": ""})
+		gs.amateur_results["%d-%s" % [year, event]] = result
+		gs.amateur_news_done[done_key] = true
+		_post_result(year, event, result)
+
+
+func _post_result(year: int, event: String, result: Dictionary) -> void:
+	var label: String = AmateurTournament.EVENTS[event]["label"]
+	var date: String = result["publish_after"]
+	var key := "%d-amateur-%s-result" % [year, event]
+	gs.news.open_issue(key, "%d年 %s・大会結果号" % [year, label], date, year)
+	var note := ""
+	for entry: Dictionary in result.get("notes", []):
+		note += "、" + str(entry["text"])
+	var headline := "%sが%s制覇%s！準優勝は%s" % [result["winner"], label, note, result["runner_up"]]
+	var body := "%d年%sは%sが優勝、%sが準優勝。" % [year, label, result["winner"], result["runner_up"]]
+	if not str(result.get("score", "")).is_empty():
+		body += "決勝は%s。" % result["score"]
+	var ids: Array = []
+	var all := prospects(year)
+	for p: Dictionary in result.get("players", []):
+		body += "\n%s（%s）：%s%s。" % [p["name"], p["school"], p["title"], "・" + str(p["stat"]) if not str(p.get("stat", "")).is_empty() else ""]
+		for c: Dictionary in all:
+			if LeagueRoster.norm_name(c["name"]) == LeagueRoster.norm_name(p["name"]):
+				for id: String in _ids(c):
+					if id not in ids:
+						ids.append(id)
+	if result.get("fictional", false):
+		body += "\nゲーム内で決まった大会結果。秋の候補紹介と当時の評価にも、この活躍が加わる。"
+	else:
+		var urls: Array[String] = []
+		for url: String in result.get("sources", {}).values():
+			if url not in urls:
+				urls.append(url)
+		for p: Dictionary in result.get("players", []):
+			if str(p["source_url"]) not in urls:
+				urls.append(str(p["source_url"]))
+		for entry: Dictionary in result.get("notes", []):
+			if str(entry["source_url"]) not in urls:
+				urls.append(str(entry["source_url"]))
+		body += "\n出典：" + "\n".join(urls)
+	gs.post_news(News.article(date, "amateur", headline, body, ids), key, true)
 
 
 ## その段階の記事を載せる（GameState が日付を見て1回だけ呼ぶ）。載せた記事の数
@@ -46,11 +162,19 @@ func post_stage(year: int, stage: Dictionary) -> int:
 	for c: Dictionary in all:
 		if c["category"] in stage["categories"]:
 			pool.append([c, float(GRADE_ORDER.get(c["grade"], 0.0)) + rng.randf() * PICK_JITTER
-				+ (3.0 if not c["reincarnation"].is_empty() else 0.0)])
+				+ (3.0 if not c["reincarnation"].is_empty() else 0.0)
+				+ AmateurTournament.bonus(gs.amateur_results, year, c["name"], c["school"]) * 4.0])
 	pool.sort_custom(func(a: Array, b: Array) -> bool: return a[1] > b[1])
 	var chosen: Array = []
 	for item: Array in pool.slice(0, int(stage["count"])):
 		chosen.append(item[0])
+	# 目玉だけの紙面にせず、最後の1枠は中位・育成級の候補にも光を当てる。
+	for item: Array in pool:
+		if item[0]["grade"] in ["C", "D"] and item[0] not in chosen:
+			if chosen.size() >= int(stage["count"]):
+				chosen.pop_back()
+			chosen.append(item[0])
+			break
 	var mlb: Array = []
 	if stage["key"] == "fall":
 		for c: Dictionary in all:
@@ -69,8 +193,18 @@ func post_stage(year: int, stage: Dictionary) -> int:
 		gs.post_news(News.article(date, "amateur", "%sの%s、メジャー挑戦を表明" % [c["school"], c["name"]], body,
 			_ids(c)), key, n == 0)
 		n += 1
-	for c: Dictionary in chosen:
-		var a := article(c, stage, year, rng)
+	# 全文は選手と号の固定シード。見出し・導入の型は号内で重複させない。
+	var styles: Array[int] = []
+	for i in HEADLINES.size():
+		styles.append(i)
+	for i in range(styles.size() - 1, 0, -1):
+		var j := rng.randi_range(0, i)
+		var old := styles[i]
+		styles[i] = styles[j]
+		styles[j] = old
+	for i in chosen.size():
+		var c: Dictionary = chosen[i]
+		var a := article(c, stage, year, rng, styles[i % styles.size()])
 		gs.post_news(News.article(date, "amateur", a[0], a[1], _ids(c)), key, n == 0)
 		n += 1
 	if stage["key"] == "fall":
@@ -82,29 +216,61 @@ func post_stage(year: int, stage: Dictionary) -> int:
 
 
 ## 1本分 [見出し, 本文]
-func article(c: Dictionary, stage: Dictionary, year: int, rng: RandomNumberGenerator) -> Array:
-	var hl := _highlight(c, stage, rng)
-	var rei: Dictionary = c["reincarnation"]
-	var headline := ""
-	if not rei.is_empty():
-		headline = "「%sの再来」%sの%s、%s" % [rei["name"], c["school"], _family(c["name"]), hl if not hl.is_empty()
-			else "スカウトの熱視線"]
-	elif not hl.is_empty():
-		headline = "%sの%s、%s" % [c["school"], c["name"], hl]
+func article(c: Dictionary, stage: Dictionary, year: int, _rng: RandomNumberGenerator, style := -1) -> Array:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("article:%d:%s:%s:%s" % [year, stage["key"], c["school"], c["name"]])
+	var form := style if style >= 0 else rng.randi_range(0, HEADLINES.size() - 1)
+	var pos := _position(c)
+	var feature := _feature(c)
+	var hl := _highlight(c, stage, year, rng)
+	var honors := AmateurTournament.summary(gs.amateur_results, year, c["name"], c["school"], "%d-%s" % [year, stage["date"]])
+	var hook := hl if not hl.is_empty() else feature
+	var context := str(_pick(CONTEXTS[stage["key"]], rng))
+	if c["category"] == "独立":
+		context = "独立リーグからプロを目指す候補を追う" if stage["key"] != "fall" else "ドラフトを前に独立リーグの候補を点検する"
+	var words := {"school": c["school"], "name": c["name"], "category": c["category"],
+		"grade_text": c["grade_text"], "pos": c["pos"], "hook": hook, "feature": feature,
+		"context": context, "role": "注目の" + pos}
+	var headline := str(HEADLINES[form % HEADLINES.size()]).format(words)
+	var lines: Array[String] = [str(LEADS[form % LEADS.size()]).format(words)]
+	if not c["reincarnation"].is_empty():
+		var rei: Dictionary = c["reincarnation"]
+		headline = "「%sの再来」" % rei["name"] + headline
+		lines.append("全盛期の%s（%d年・%s）を思わせるプレースタイルも話題だ。" % [rei["name"], int(rei["peak_year"]), GameData.short_name(str(rei["peak_team"]))])
+	if not hl.is_empty():
+		lines.append("注目の材料は「%s」。" % hl)
+	elif not c["intro"].is_empty():
+		lines.append(c["intro"])
 	else:
-		headline = "%sの注目株　%sの%s" % [stage["label"], c["school"], c["name"]]
-	var lines: Array[String] = []
-	var who := "%s（%s%s）の%s" % [c["school"], c["category"], c["grade_text"], c["pos"]]
-	lines.append(who + ("。" + c["intro"] if not c["intro"].is_empty() else "。"))
-	if not rei.is_empty():
-		lines.append("投げ方・打ち方が全盛期の%s（%d年・%s）にそっくりだと話題に。" % [rei["name"], int(rei["peak_year"]),
-			GameData.short_name(str(rei["peak_team"]))])
-	if not c["evaluation"].is_empty():
-		lines.append(c["evaluation"])
-	if not c["highlights"].is_empty() and c["fictional"] == false:
-		lines.append("主な実績：" + "／".join(c["highlights"].slice(0, 3)))
-	lines.append("%d年秋のドラフトの%s。" % [year, c["projected"]])
+		lines.append("持ち味を見極めるポイントは、%s。" % feature)
+	lines.append(str(_pick(POSITION_LINES[pos], rng)))
+	lines.append(str(_pick(CATEGORY_LINES.get(c["category"], CATEGORY_LINES["社会人"]), rng)))
+	if not honors.is_empty():
+		lines.append("今季の足跡：" + honors + "。")
+	# 実在の発言と誤認しないよう、寸評がゲーム内の演出であることを明記する。
+	lines.append("ある球団のスカウト（ゲーム内の寸評）「%s」。" % _pick(SCOUT_LINES[pos], rng))
+	lines.append(str(_pick(OUTLOOKS.get(c["grade"], OUTLOOKS["D"]), rng)))
 	return [headline, "\n".join(lines)]
+
+
+static func _pick(options: Array, rng: RandomNumberGenerator) -> Variant:
+	return options[rng.randi_range(0, options.size() - 1)]
+
+
+static func _position(c: Dictionary) -> String:
+	if c["pitcher"]:
+		return "投手"
+	if "捕" in str(c["pos"]):
+		return "捕手"
+	return "外野手" if "外" in str(c["pos"]) or c["pos"] in ["左翼手", "中堅手", "右翼手"] else "内野手"
+
+
+static func _feature(c: Dictionary) -> String:
+	if c["pitcher"] and int(c["kmh"]) > 0:
+		return "最速%dキロの直球" % int(c["kmh"])
+	if not str(c.get("type", "")).is_empty():
+		return str(c["type"])
+	return {"投手": "マウンドでの可能性", "捕手": "攻守を担う可能性", "内野手": "内野から挑むプロへの道", "外野手": "外野から挑むプロへの道"}[_position(c)]
 
 
 ## その年のドラフト候補（記事の材料）。{name, school, category, grade_text, pos, pitcher, kmh, grade, intro,
@@ -137,7 +303,7 @@ func _from_fictional(p: Dictionary) -> Dictionary:
 	var kmh: Variant = Growth._value(p, "P", "velocity") if Growth._side(p) == "P" else null
 	var mi: Variant = am.get("mlb_intent")
 	return {"name": p["name"], "school": am["school"], "category": am["category"], "grade_text": am.get("grade_text", ""),
-		"pos": Draft._pos_of(p), "pitcher": Growth._side(p) == "P", "kmh": roundi(float(kmh)) + 3 if kmh != null else 0,
+		"pos": Draft._pos_of(p), "pitcher": Growth._side(p) == "P", "kmh": roundi(float(kmh)) if kmh != null else 0,
 		"grade": am["grade"], "intro": am.get("intro", ""), "evaluation": _fictional_eval(am), "highlights": [],
 		"projected": am.get("projected", ""), "mlb": mi is Dictionary and bool(mi.get("stated", false)),
 		"mlb_note": str(mi.get("note", "")) if mi is Dictionary else "", "id": p["id"], "fictional": true,
@@ -200,33 +366,32 @@ static func _fictional_eval(am: Dictionary) -> String:
 
 
 ## 記事の見出しに使う成績（実在の選手は集めた実績から、架空の選手は能力から作る。無ければ空）
-func _highlight(c: Dictionary, stage: Dictionary, rng: RandomNumberGenerator) -> String:
-	if not c["fictional"] or c["peak"].is_empty():
+func _highlight(c: Dictionary, stage: Dictionary, year: int, rng: RandomNumberGenerator) -> String:
+	if not c["fictional"]:
 		var words: Array = STAGE_WORDS.get(stage["key"], [])
+		var facts: Array[String] = []
 		for h: Variant in c["highlights"]:
 			var text := str(h)
 			for w: String in words:
 				if w in text:
-					return _short(text)
+					facts.append(text)
+					break
+		if not facts.is_empty():
+			# 数字や出来事の範囲を切り落とさず、収集済みの事実をそのまま使う。
+			return str(_pick(facts, rng))
 		return "最速%dkmの快速球" % int(c["kmh"]) if c["pitcher"] and int(c["kmh"]) >= 150 else ""
-	var label: String = stage["label"]
-	var peak: Dictionary = c["peak"]
-	if c["pitcher"]:
-		var kmh := int(c["kmh"])
-		var options := ["%sで最速%dkm" % [label, kmh], "%sで%d奪三振の快投" % [label, rng.randi_range(9, 16)],
-			"%sで完封勝利" % label]
-		if float(peak.get("bb9", 0.0)) >= 70.0:
-			options.append("%sで無四球完投" % label)
-		return options[rng.randi_range(0, options.size() - 1)]
-	var options := ["%sで%d安打" % [label, rng.randi_range(6, 11)]]
-	if float(peak.get("power", 0.0)) >= 65.0:
-		options.append("%sで%d本塁打" % [label, rng.randi_range(2, 4)])
-		options.append("%sで特大の一発" % label)
-	if float(peak.get("speed", 0.0)) >= 68.0:
-		options.append("%sで%d盗塁" % [label, rng.randi_range(3, 6)])
-	if float(peak.get("meet", 0.0)) >= 65.0:
-		options.append("%sで打率.%d" % [label, rng.randi_range(450, 650)])
-	return options[rng.randi_range(0, options.size() - 1)]
+	# 架空の出来事も、保存済みの大会結果からだけ引用する。
+	var honors := AmateurTournament.honors(gs.amateur_results, year, c["name"], c["school"], "%d-%s" % [year, stage["date"]])
+	if not honors.is_empty():
+		var h: Dictionary = honors[-1]
+		# 見出しには最も大切な肩書を一つ。全実績は本文・候補紹介で読める。
+		var title := "躍進"
+		for word: String in ["橋戸賞", "優勝投手", "大会MVP", "準優勝", "優勝", "大会最多奪三振", "大会最多本塁打"]:
+			if word in str(h["title"]):
+				title = word
+				break
+		return "%s%s！%s" % [h["label"], title, h["stat"]]
+	return ""
 
 
 ## 実績の文を見出し向けに短く（括弧の中と年の前置きを省く）

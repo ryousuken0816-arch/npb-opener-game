@@ -29,7 +29,7 @@ func _initialize() -> void:
 func _run() -> void:
 	_gs = root.get_node("GameState")
 	_sg = load("res://scripts/save_game.gd")
-	_sg.set("dir", "user://test_saves")
+	_sg.set("dir", "res://.godot/test_saves_news_stop")
 	_sg.set("autosave_enabled", false)
 	_gs.new_game(USER, 2008)
 	change_scene_to_file("res://scenes/hub/hub.tscn")
@@ -123,7 +123,7 @@ func _schedule_run() -> void:
 		await process_frame
 		_check(_hub.get("_open_key") == "schedule" and _gs.is_fast_forwarding() and _gs.fast_forward_target == target,
 			"「続ける」で日程表の早送りの続き")
-	_check(amateur_dates == ["03-31", "06-15", "07-28", "08-23"], "アマ球界の号の日で止まる：%s（止まった回数 %d）" % [
+	_check(amateur_dates == ["03-31", "04-10", "06-15", "06-30", "07-28", "08-23", "08-31", "09-30"], "候補紹介号と大会結果号の日で止まる：%s（止まった回数 %d）" % [
 		str(amateur_dates), stops])
 	_check(_gs.day == target + 1 and _hub.get("_stop").is_empty(), "目標の日まで進む（%s）" % _gs.date_text())
 	_hub.call("_close_sub_screen")
@@ -146,7 +146,8 @@ func _hub_run() -> void:
 		_check(stop["mode"] == "hub" and _hub.get("_open_key") == "news" and _gs.month == 7,
 			"試合へ：%s で止まる（%s）" % [_gs.month_text(), stop["reasons"][0]["headline"]])
 		if view.current_issue() == "2008-amateur-shakai":
-			amateur = _gs.season.date_of_day(_gs.day) == "2008-07-28"
+			# 後日の速報タブにも直前に読んだ号のキーが残る。確認済みの結果を上書きしない。
+			amateur = amateur or _gs.season.date_of_day(_gs.day) == "2008-07-28"
 		view.get("_resume_button").pressed.emit()
 		await process_frame
 		stop = _hub.get("_stop")

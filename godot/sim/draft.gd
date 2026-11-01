@@ -214,6 +214,7 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 		elif scout_grades.has(key):
 			c["grade"] = str(scout_grades[key])
 			c["hyouka"] = lerpf(c["hyouka"], grade_value(c["grade"]), SCOUT_HYOUKA_WEIGHT)
+		c["hyouka"] += AmateurTournament.bonus(GameState.amateur_results, year, c["name"], c["school"])
 		c["hyouka_rank"] = rank_of(c["hyouka"], HYOUKA_RANKS)
 		c["mlb_intent"] = mlb.has(key)
 		if c["mlb_intent"]:
@@ -843,6 +844,9 @@ func _fill_profile(c: Dictionary, p: Dictionary) -> void:
 	c["ratings"] = ratings
 	var ama: Variant = p.get("amateur")
 	c["intro"] = str(ama["intro"]) if ama is Dictionary and ama.get("intro") is String else intro_text(c)
+	var honors := AmateurTournament.summary(GameState.amateur_results, year, c["name"], c["school"])
+	if not honors.is_empty():
+		c["intro"] += "\n" + honors
 
 
 ## 1年目の能力（入団1年目のシーズン後＝generated/ratings/<入団年>_post.json の値。ノイズなし。作業13）を

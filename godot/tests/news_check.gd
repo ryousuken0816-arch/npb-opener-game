@@ -30,7 +30,7 @@ func _initialize() -> void:
 func _run() -> void:
 	_gs = root.get_node("GameState")
 	_sg = load("res://scripts/save_game.gd")
-	_sg.set("dir", "user://test_saves")
+	_sg.set("dir", "res://.godot/test_saves_news")
 	_sg.set("autosave_enabled", false)
 	_gs.new_game(USER, 2008)
 	change_scene_to_file("res://scenes/hub/hub.tscn")

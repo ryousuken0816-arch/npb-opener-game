@@ -467,3 +467,29 @@
    - 采配の残り：練習設定（SPEC の育成コマンド）、登録設定、情報… 練習設定は育成の仕組みを決める必要があるので Opus 向き（対左投手用オーダーはユーザー判断で作らない、2026-10-31）
    - ~~上の「既知の課題（データ側）」の修正（新加入選手の投手/野手の判定）~~ → 完了（4.24）
    - ~~セーブ/ロード~~ → 完了（4.20）
+
+## 2026-11-01 追記：アマニュースの文面・大会結果（Codex、レビュー待ち）
+
+- 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。
+- 候補紹介の同じ文の繰り返しを解消。大会・区分・守備位置・評価ごとの文を、選手と号で固定した乱数で組み合わせる。見出し・導入は号内で重ねず、中位・育成級にも枠を設ける。実在選手の具体的な数字・出来事は既存資料だけ、スカウトの言葉はゲーム内の寸評と明記。
+- `data/amateur/tournaments.json` に2008〜2027年の器、確認した90大会の結果＋中止4件（計94件）。優勝・準優勝・スコア・選手の実績ごとに出典URL。未確認の2027年、未開催の2026年神宮などは空で結果記事を出さない。結果は従来の紹介号と別の結果号に載せ、開催前に先取りしない。神宮・冬開催の都市対抗は年越し前のオフに届ける。
+- 新 `AmateurTournament` が架空年の重み付き抽選・大会成績・優勝投手・MVP／橋戸賞・大会最多・春夏連覇を作り、`GameState.amateur_results` に保存。ドラフトと作戦会議の共通の紹介文へ年・大会・肩書を追加。架空の活躍だけ当時の評価へ年間最大0.24の小さな加算、有識者の予想も同じ値。将来性・成長値は変更しない。
+- 元の社会人所属一覧に「○○高卒」、大学・独立・海外プロなどが混在していた。候補生成そのものは変えず、都市対抗の抽選対象は出典付き史実データに登場する所属（優勝・準優勝チーム）に絞った。その他は候補紹介だけ。記事例の確認時に、長すぎた見出しも肩書1つへ整理した。
+- 指定の Godot 4.7.2 `--headless --path godot --import` は1回（終了コード0）。スクリプトの構文チェック成功。環境に由来する `Failed to read the root certificate store` が各起動で出た。import のエディター設定保存先（作業フォルダ外）は権限により書き込みが拒否された。外部フォルダを編集する対応は行っていない。
+- テストは最後に各1回：`news_check` **ALL OK**、`fictional_draft_check` **ALL OK**（追加した文面・出典・史実の非創作・保存・旧セーブ・候補紹介と評価・強豪153/200勝も成功）。`news_stop_check` は **1件NG**。実際には7/28で停止し、その後7/30の速報でも直前の号キーが残るため、テストの `amateur` が false に上書きされた。`amateur = amateur or …` に修正し構文チェック成功。ユーザーの「テストは1回だけ」に従い、この修正後のテスト一式は未再実行。紹介号と結果号の8日付で停止・続行、設定、セーブ／ロードなど他の項目は成功。
+- テスト後の見出し整理と所属の制限は、ヘッドレスの記事例出力で実動作を確認。記事例全文10本は `docs/reports/amateur_news_examples.md`。例だけを出す新スクリプト `godot/tests/amateur_news_examples.gd`（テスト一式は回さない）。通常のテスト用セーブはこの作業フォルダ内の `.godot/` に変更。
+- **次の確認（Claude）**：差分と記事例10本をレビューし、必要なら `news_stop_check` の修正後の判定を確認してから取り込む。社会人の元の所属一覧の分類修正は別作業。
+- 変更ファイル：
+  - `data/amateur/tournaments.json`
+  - `godot/sim/amateur_news.gd`
+  - `godot/sim/amateur_tournament.gd`・同 `.uid`
+  - `godot/autoload/game_state.gd`
+  - `godot/sim/draft.gd`
+  - `godot/sim/draft_experts.gd`
+  - `godot/tests/fictional_draft_check.gd`
+  - `godot/tests/news_check.gd`
+  - `godot/tests/news_stop_check.gd`
+  - `godot/tests/amateur_news_examples.gd`
+  - `godot/README.md`
+  - `docs/reports/amateur_news_examples.md`
+  - `HANDOFF.md`

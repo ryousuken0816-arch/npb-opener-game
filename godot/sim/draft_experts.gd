@@ -63,6 +63,7 @@ static func prospects(year: int) -> Array[Dictionary]:
 			if scout.has(key):
 				hyouka = lerpf(hyouka, Draft.grade_value(str(scout[key])), Draft.SCOUT_HYOUKA_WEIGHT)
 		var school := str(d.get("school", ""))
+		hyouka += AmateurTournament.bonus(GameState.amateur_results, year, d["name"], school)
 		result.append({"key": key, "name": d["name"], "pos": str(d.get("pos", "")), "school": school,
 			"career": Draft.career_of(school), "hyouka": hyouka, "ikusei": ikusei})
 	return result
