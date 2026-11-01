@@ -48,6 +48,13 @@ const REINCARNATION_SAME_SCHOOL := 0.25
 const HIT_MODES := {"historical": "史実どおり", "dream": "夢多め"}
 const GROWTH_TYPES := {"早熟": 25, "普通": 28, "晩成": 31}
 const GRADE_TEXT := {"高校": "3年", "大学": "4年"}
+## 社会人の出身（高卒・大卒）の割合と、入社の年（ドラフトの年の「入社◯年目」。高卒は3年目以降が指名できる）。
+## 入団の年の4月1日時点の年齢＝高卒18・大卒22 に入社の年を足したもの（高卒3年目＝21歳・大卒2年目＝24歳）
+const COMPANY_COLLEGE_SHARE := 0.7
+const COMPANY_HS_YEARS := [3, 4]
+const COMPANY_COLLEGE_YEARS := [2, 4]
+## 独立リーグの入団の年の4月1日時点の年齢
+const INDEPENDENT_AGE := [19, 25]
 
 const SURNAMES := [
 	"佐藤", "鈴木", "高橋", "田中", "伊藤", "渡辺", "山本", "中村", "小林", "加藤", "吉田", "山田", "佐々木", "山口", "松本",
@@ -191,7 +198,9 @@ func make(t: Dictionary, draft_year: int, rng: RandomNumberGenerator, taken: Dic
 	p["id"] = "fic:%d:%03d" % [draft_year, _serial]
 	p["provisional_id"] = false
 	p["name"] = _unique_name(rng, taken)
+	var entry := _entry_of(category, rng)
 	_fill_common(p, draft_year, school[0])
+	p["birth"] = _birth(draft_year + 1, int(entry["age"]), rng)
 	_perturb(p, side, ENTRY_NOISE, rng)
 	if strong:
 		_shift_all(p, side, STRONG_BONUS)
@@ -207,7 +216,7 @@ func make(t: Dictionary, draft_year: int, rng: RandomNumberGenerator, taken: Dic
 	var bids := rng.randi_range(S_BIDS[0], S_BIDS[1]) if grade == "S" else 1
 	p["amateur"] = {
 		"draft_year": draft_year, "category": category, "school": school[0], "grade": grade,
-		"grade_text": GRADE_TEXT.get(category, "入社%d年目" % rng.randi_range(2, 4) if category == "社会人" else "1年目"),
+		"grade_text": entry["text"], "entry_age": entry["age"],
 		"as_round": int(t["round"]), "as_ikusei": bool(t["ikusei"]), "bids": bids,
 		"future_score": float(t["score"]) + rng.randfn(0.0, 0.1), "fictional": true, "strong_school": strong,
 		"projected": _projected(band), "template_year": int(t["year"]),
@@ -237,7 +246,9 @@ func make_reincarnation(legend: Dictionary, draft_year: int, rng: RandomNumberGe
 	for k: String in ["throws", "bats", "height", "weight"]:
 		if legend.get(k) != null:
 			p[k] = legend[k]
+	var entry := _entry_of(category, rng)
 	_fill_common(p, draft_year, school[0])
+	p["birth"] = _birth(draft_year + 1, int(entry["age"]), rng)
 	_perturb(p, side, ENTRY_NOISE, rng)
 	var scale := rng.randf_range(REINCARNATION_SCALE[0], REINCARNATION_SCALE[1])
 	var peak := {}
@@ -258,7 +269,7 @@ func make_reincarnation(legend: Dictionary, draft_year: int, rng: RandomNumberGe
 	var grade := "S" if float(legend["score"]) >= DREAM_MIN_SCORE or rng.randf() < 0.5 else "A"
 	p["amateur"] = {
 		"draft_year": draft_year, "category": category, "school": school[0], "grade": grade,
-		"grade_text": GRADE_TEXT[category], "as_round": 1, "as_ikusei": false,
+		"grade_text": entry["text"], "entry_age": entry["age"], "as_round": 1, "as_ikusei": false,
 		"bids": rng.randi_range(S_BIDS[0], S_BIDS[1]) if grade == "S" else 1,
 		"future_score": float(legend["score"]) * scale + rng.randfn(0.0, 0.15), "fictional": true,
 		"strong_school": int(school[1]) >= STRONG_SCHOOL, "projected": "1位候補", "template_year": int(t["year"]),
@@ -342,6 +353,28 @@ func _mark_mlb_intent(out: Array, rng: RandomNumberGenerator) -> void:
 
 
 # --- 部品 ------------------------------------------------------------------------------
+
+## 区分ごとの入団の年（ドラフトの翌年）の4月1日時点の年齢と学年・入社の年の表示。
+## 高校18・大学22。社会人は高卒（入社3〜4年目）か大卒（2〜4年目）に合わせる。独立は19〜25歳
+func _entry_of(category: String, rng: RandomNumberGenerator) -> Dictionary:
+	match category:
+		"高校", "大学":
+			return {"age": int(Growth.AMATEUR_ENTRY_AGE[category]), "text": GRADE_TEXT[category]}
+		"社会人":
+			var college := rng.randf() < COMPANY_COLLEGE_SHARE
+			var years := rng.randi_range(COMPANY_COLLEGE_YEARS[0], COMPANY_COLLEGE_YEARS[1]) if college \
+				else rng.randi_range(COMPANY_HS_YEARS[0], COMPANY_HS_YEARS[1])
+			return {"age": (22 if college else 18) + years, "text": "入社%d年目" % years}
+	return {"age": rng.randi_range(INDEPENDENT_AGE[0], INDEPENDENT_AGE[1]), "text": "1年目"}
+
+
+## year 年の4月1日時点で age 歳になる誕生日（ForeignPlayers と同じ作り）
+static func _birth(year: int, age: int, rng: RandomNumberGenerator) -> String:
+	var month := rng.randi_range(1, 12)
+	var day := rng.randi_range(1, 28)
+	var after_april1 := month > 4 or (month == 4 and day > 1)
+	return "%04d-%02d-%02d" % [year - age - (1 if after_april1 else 0), month, day]
+
 
 func _fill_common(p: Dictionary, draft_year: int, school: String) -> void:
 	p["birth"] = null

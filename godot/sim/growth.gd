@@ -87,7 +87,7 @@ static func age_at(p: Dictionary, year: int) -> int:
 	if not (birth is String) or birth.length() < 10:
 		var am: Variant = p.get("amateur")
 		if am is Dictionary and am.get("draft_year") != null:
-			return year - int(am["draft_year"]) - 1 + int(AMATEUR_ENTRY_AGE.get(str(am.get("category", "")), 22))
+			return year - int(am["draft_year"]) - 1 + int(am.get("entry_age", AMATEUR_ENTRY_AGE.get(str(am.get("category", "")), 22)))
 		return -1
 	var parts: PackedStringArray = birth.split("-")
 	if parts.size() < 3 or not parts[0].is_valid_int():
