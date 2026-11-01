@@ -5,6 +5,7 @@ extends SceneTree
 ## - 毎年の開幕・7月：ハブ、日程表、采配の一覧と全サブ画面（1軍登録は全選手を1人ずつ選ぶ）、新戦力、トレード交渉（両側3人＋金銭・全タブ）、システム、選手詳細の4タブ
 ## - 毎年のオフの各段階：ハブ、采配（オフは「見るだけ」の文言が出る）、FA・契約更改・戦力外の画面（全タブ・選手を選ぶ）、
 ##   FAは印を付けた表と交渉の部屋（全員。作業36）、ドラフト（開幕の演出・候補を選んで入札・抽選（3Dの演出の途中と結果の場面）・指名一覧）、新戦力、トレード交渉
+## - ドラフトの作戦会議（作業37・38）の全タブ・候補を選んで印：毎年の7月とオフのドラフトの段階
 ## - 記録室の全タブ（打撃・投手は今季／通算・規定の切り替え、デプスは全球団・全並び順）：毎年の開幕・7月・オフの表彰の段階
 ## - 表彰の画面の全タブ（作業9）：毎年のオフの表彰の段階
 ## - 切り替えの演出の途中で開く・閉じるをくり返したあと（作業11の不具合の原因。最初と毎年の開幕・7月）
@@ -107,7 +108,7 @@ func _check_season(y: int, when: String) -> void:
 		await _open(key)
 		await _check_screen("%s：%s" % [when, key])
 		if key != "system":
-			for i in 2:
+			for i in (3 if key == "scout" else 2):
 				_hub.get("_" + ("schedule" if key == "schedule" else "scout") + "_view").switch_tab(1)
 				await _check_screen("%s：%s タブ%d" % [when, key, i + 1])
 		_hub.call("_close_sub_screen")
@@ -119,6 +120,8 @@ func _check_season(y: int, when: String) -> void:
 		await _check_screen("%s：新聞 タブ%d" % [when, i + 1])
 	_hub.call("_close_sub_screen")
 	await _check_tactics(when, TACTICS_PAGES, _gs.month >= 7)
+	if _gs.month >= 7:
+		await _check_meeting(when)
 	await _check_trade(when)
 	await _check_records(when)
 	await _check_detail(when)
@@ -364,7 +367,30 @@ func _check_offseason(y: int) -> void:
 	elif _gs.release_open():
 		await _check_phase_view("release", "_release_view", when)
 	elif _gs.draft_open():
+		await _check_meeting(when)
 		await _check_draft(when)
+
+
+## ドラフトの作戦会議（作業37・38）：全タブ、候補を選んで印を付けた画面、補強ポイントで絞り込んだ画面
+func _check_meeting(when: String) -> void:
+	await _open("meeting")
+	var view: Node = _hub.get("_meeting_view")
+	await _check_screen("%s：作戦会議" % when)
+	var ids: Array = view.list_ids()
+	if not ids.is_empty():
+		view.select_candidate(ids[0])
+		view.set_mark("◎")
+		await _check_screen("%s：作戦会議 候補を選んで印" % when, 0.0)
+	for i in 3:
+		view.switch_tab(1)
+		await _check_screen("%s：作戦会議 タブ%d" % [when, i + 2], 0.0)
+	view.switch_tab(1)
+	var needs: Array = view.needs()
+	if not needs.is_empty():
+		view.set_filter(load("res://scenes/hub/draft_meeting_view.gd").NEED_GROUP[needs[0]["pos"]])
+		await _check_screen("%s：作戦会議 補強ポイントで絞り込み" % when, 0.0)
+	view.set_filter("all")
+	_hub.call("_close_sub_screen")
 
 
 ## スクショ（ウィンドウ付きで出力先を渡したときだけ）：作業11の報告と同じ、オフの采配 → 投手1軍登録で先発の2番手を選んだ画面

@@ -12,6 +12,9 @@ extends VBoxContainer
 ## （CPU球団の指名は自動で進み、「早送り」「自球団の番まで飛ばす」もできる。自球団の番で止まる）→ 育成 → 結果まとめ。
 ## 操作：札をⒶ／クリックで選び、もう一度Ⓐ／クリック（右クリック）で選手詳細。十字キーで右の「入札する」や上の見出しへ。
 ## LB/RB（Q/E）でタブ、Ⓑは選択の取り消し→ハブ（ドラフトは途中から再開できる）。
+## 作戦会議（作業37・38、DraftBoard）：一覧の左端に印（◎○△☆✕）、絞り込み「目星だけ」、列「予想」（有識者の予想順位）。
+## 自球団が入札・指名する番には、印の上の順（本命の順番 → ○ → ☆ → △）の候補を最初から選んでおく（おすすめ）。
+## 開幕の演出に有識者の12球団の1位予想
 
 signal message_changed(text: String)
 
@@ -26,17 +29,20 @@ const COLUMNS := {
 		["speed", "走力", 56], ["arm", "肩力", 56], ["defense", "守備", 56]],
 }
 ## 1年目＝入団1年目のシーズン後の総合（作業13。Draft._fill_first_years）
-const TAIL_COLUMNS := [["first", "1年目", 60], ["hyouka", "評価", 52], ["future", "将来性", 62]]
+## 予想＝有識者の予想順位（作業38）。この列を足した分、名前・1年目・評価・将来性を少し細くした（画面からはみ出さないように）
+const TAIL_COLUMNS := [["first", "1年目", 54], ["hyouka", "評価", 46], ["future", "将来性", 56], ["yosou", "予想", 38]]
 ## 並び替えのキー（テスト用にまとめて）。名前・出身校以外は大きい順が先
 const SORT_KEYS := ["pos", "career", "age", "school", "name", "velocity", "overall", "stamina", "k9", "bb9",
-	"meet", "power", "eye", "speed", "arm", "defense", "first", "hyouka", "future"]
+	"meet", "power", "eye", "speed", "arm", "defense", "first", "hyouka", "future", "yosou"]
 ## 小さい順が自然なキー（最初に押したとき小さい順）
 const ASCENDING_FIRST := ["pos", "career", "age", "school", "name"]
-const FILTERS := [["all", "全選手"], ["left", "未指名"], ["投手", "投手"], ["捕手", "捕手"], ["内野手", "内野手"],
+const FILTERS := [["all", "全選手"], ["left", "未指名"], ["marked", "目星だけ"], ["投手", "投手"], ["捕手", "捕手"], ["内野手", "内野手"],
 	["外野手", "外野手"]]
 const POS_SHORT := {"投手": "投", "捕手": "捕", "内野手": "内", "外野手": "外"}
-const NAME_WIDTH := 150
+const NAME_WIDTH := 128
 const MARK_WIDTH := 56
+## 済マークの欄のうち、作戦会議の印の幅
+const BOARD_MARK_WIDTH := 22
 const ROW_HEIGHT := 36
 const RIGHT_WIDTH := 330
 ## 抽選の演出の封筒を1行に並べる数（それより多い競合は2行にする）
@@ -161,6 +167,10 @@ func open() -> void:
 	_fast = false
 	var d := GameState.draft()
 	_tab = "picks" if d != null and d.stage == Draft.Stage.DONE else "info"
+	if d != null:
+		GameState.draft_predictions()
+		GameState.draft_board.apply_to(d)
+		_preselect(d)
 	refresh()
 	focus_first()
 	if d != null and d.picks.is_empty() and d.wave == 1 and _shown_opening_year != d.year:
@@ -545,6 +555,8 @@ func _render_header() -> void:
 			sb.content_margin_left = 3
 			sb.content_margin_right = 3
 		b.tooltip_text = "%sで並び替え（もう一度押すと逆順）" % col[1]
+		if col[0] == "yosou":
+			b.tooltip_text = "予想＝有識者3人の順位予想を合わせた順位（作戦会議で詳しく）\n" + b.tooltip_text
 		if col[0] == "first":
 			b.tooltip_text = "1年目＝入団1年目のシーズン後の総合（史実の成績から。ノイズなし）\n" + b.tooltip_text
 		b.pressed.connect(_on_header_pressed.bind(key))
@@ -571,6 +583,8 @@ func sorted_candidates(d: Draft) -> Array[Dictionary]:
 		return rows
 	for c in d.candidates:
 		if _filter == "left" and not str(c["picked_by"]).is_empty():
+			continue
+		if _filter == "marked" and GameState.draft_board.mark_of(d.year, DraftBoard.key_of(c)).is_empty():
 			continue
 		if _filter in POS_SHORT and c["pos"] != _filter:
 			continue
@@ -630,8 +644,25 @@ func _row(d: Draft, c: Dictionary) -> Control:
 	return row
 
 
-## 済マーク（指名済みの球団の色）・自球団の入札
+## 済マーク（指名済みの球団の色）・自球団の入札。作戦会議の印があれば左に添える
 func _mark_label(d: Draft, c: Dictionary) -> Control:
+	var label := _status_label_of(d, c)
+	var mark := GameState.draft_board.mark_of(d.year, DraftBoard.key_of(c)) if d != null else ""
+	if mark.is_empty():
+		return label
+	var box := HBoxContainer.new()
+	box.add_theme_constant_override("separation", 0)
+	box.custom_minimum_size = Vector2(MARK_WIDTH, ROW_HEIGHT - 4)
+	box.add_child(DraftMeetingView.mark_label(mark, BOARD_MARK_WIDTH, ROW_HEIGHT - 4,
+		GameState.draft_board.memo_of(d.year, DraftBoard.key_of(c))))
+	label.custom_minimum_size = Vector2(MARK_WIDTH - BOARD_MARK_WIDTH, ROW_HEIGHT - 4)
+	label.clip_text = true
+	label.add_theme_font_size_override("font_size", 13)
+	box.add_child(label)
+	return box
+
+
+func _status_label_of(d: Draft, c: Dictionary) -> Label:
 	var label := Label.new()
 	label.custom_minimum_size = Vector2(MARK_WIDTH, ROW_HEIGHT - 4)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -665,6 +696,8 @@ func _mark_label(d: Draft, c: Dictionary) -> Control:
 func _cell(c: Dictionary, key: String, width: int) -> Control:
 	if key == "first":
 		return _first_cell(c, width)
+	if key == "yosou":
+		return DraftMeetingView.yosou_label(c, width)
 	if key in ["hyouka", "future"]:
 		var rank: String = c["hyouka_rank"] if key == "hyouka" else c["future_rank"]
 		var label := UiTheme.rank_label({"rank": rank, "value": 0}, 22)
@@ -859,6 +892,14 @@ func _hint_text(d: Draft) -> String:
 	lines.append("評価＝当時の評価（史実の指名順位・1位の競合数）")
 	lines.append("将来性＝入団後の史実の活躍（ノイズあり。CPU球団も同じ見立てで指名します）")
 	lines.append("列の見出しを押すと並び替えます。")
+	var counts := GameState.draft_board.counts(d.year)
+	var marked: Array[String] = []
+	for mark: String in DraftBoard.MARKS:
+		if int(counts.get(mark, 0)) > 0:
+			marked.append("%s%d人" % [mark, int(counts[mark])])
+	if not marked.is_empty():
+		lines.append("作戦会議の印：%s（絞り込み「目星だけ」）。印の上の順におすすめを選んでおきます（おまかせも印を優先）。" \
+			% "　".join(marked))
 	if d.year >= d.data_through - 2:
 		lines.append("※%d年のドラフトは入団後の成績がまだ少ないため、将来性は当てになりません（当時の評価で補っています）。" \
 			% d.year)
@@ -910,6 +951,12 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	ranks.add_child(UiTheme.small_label("　将来性", 16, UiTheme.TEXT, 800))
 	ranks.add_child(UiTheme.rank_label({"rank": c["future_rank"], "value": 0}, 30))
 	_summary_box.add_child(ranks)
+	var board_text := _board_text(d, c)
+	if not board_text.is_empty():
+		var board_label := UiTheme.small_label(board_text, 14, Color("b3261e"), 800)
+		board_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		board_label.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
+		_summary_box.add_child(board_label)
 	_summary_box.add_child(_ability_grid(c))
 	_summary_box.add_child(_first_grid(c))
 	var intro := UiTheme.small_label("「%s」" % c["intro"], 15, Color("1e63c8"), 700)
@@ -935,6 +982,36 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	state_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	state_label.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(state_label)
+
+
+## 要約の作戦会議の1行：印（本命なら何番手）・メモ・有識者の予想順位（どれも無ければ空）
+func _board_text(d: Draft, c: Dictionary) -> String:
+	var key := DraftBoard.key_of(c)
+	var board := GameState.draft_board
+	var parts: Array[String] = []
+	var mark := board.mark_of(d.year, key)
+	if not mark.is_empty():
+		var text: String = "%s%s" % [mark, DraftBoard.MARK_NAMES[mark]]
+		if mark == "◎":
+			text += "（%d番手）" % (board.favorite_list(d.year).find(key) + 1)
+		parts.append(text)
+	var memo := board.memo_of(d.year, key)
+	if not memo.is_empty():
+		parts.append("メモ：" + memo)
+	if int(c.get("yosou", 0)) > 0:
+		parts.append("有識者の予想 %d位" % int(c["yosou"]))
+	if d.user_recommend() == c["id"] and str(c["picked_by"]).is_empty():
+		parts.push_front("おすすめ")
+	return "作戦会議：" + "　".join(parts) if not parts.is_empty() else ""
+
+
+## 作戦会議のおすすめ（印の上の順。Draft.user_recommend）を選んでおく：自球団が入札・指名できる番で、まだ何も選んで
+## いない（または選んでいた候補が指名された）とき（作業37）
+func _preselect(d: Draft) -> void:
+	if d == null or (not _selected.is_empty() and str(d.by_id.get(_selected, {}).get("picked_by", "")).is_empty()):
+		return
+	if (d.stage == Draft.Stage.FIRST and d.first_pick_of(GameState.team).is_empty()) or d.is_user_turn():
+		_selected = d.user_recommend()
 
 
 ## メジャー志望の欄：交渉期限・説得の条件（約束の年数）・結果
@@ -1261,6 +1338,7 @@ func _on_skip_pressed() -> void:
 	for rec in d.run_until_user():
 		_note_pick(d, rec)
 	_message = ""
+	_preselect(d)
 	_after_change(d)
 
 
@@ -1283,6 +1361,8 @@ func _cpu_step(d: Draft) -> void:
 	_after_change(d)
 	if d.is_user_turn():
 		_announce_skip = false
+		_preselect(d)
+		refresh()
 		UiFx.bump(_turn_label, 1.08)
 		focus_first()
 
@@ -1311,6 +1391,7 @@ func _after_change(d: Draft) -> void:
 	if not _selected.is_empty() and not str(d.by_id.get(_selected, {}).get("picked_by", "")).is_empty() \
 			and (d.is_user_turn() or d.stage == Draft.Stage.FIRST):
 		_selected = ""
+	_preselect(d)
 	GameState.draft_sync()
 	refresh()
 
@@ -1419,6 +1500,7 @@ func _next_overlay() -> void:
 		_overlay.visible = false
 		if _continue_first():
 			return
+		_preselect(GameState.draft())
 		refresh()
 		focus_first()
 		return
@@ -1475,6 +1557,7 @@ func _render_opening(d: Draft) -> void:
 	order.custom_minimum_size = Vector2(840, 0)
 	UiTheme.heading(order, 16, UiTheme.TEXT_SUB, Color.WHITE, 3, false)
 	_overlay_box.add_child(order)
+	_overlay_box.add_child(_experts_grid(d))
 	var hint := UiTheme.small_label("まずは全球団が同時に1位を入札します。重複したら抽選で交渉権を決めます。", 17,
 		UiTheme.TEXT, 700)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1484,6 +1567,41 @@ func _render_opening(d: Draft) -> void:
 	title.scale = Vector2(0.6, 0.6)
 	var tw := title.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.tween_property(title, "scale", Vector2.ONE, 0.35)
+
+
+## 開幕の演出の、有識者の12球団の1位予想（作業38）：球団ごとに、評論家3人の予想（同じ選手なら「2人」など）
+func _experts_grid(d: Draft) -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 2)
+	var pred := GameState.draft_board.prediction(d.year)
+	if pred.get("experts", []).is_empty():
+		return box
+	var title := UiTheme.small_label("有識者3人の1位予想（%s）" % "・".join(PackedStringArray(
+		DraftExperts.EXPERTS.map(func(e: Dictionary) -> String: return e["name"]))), 16, Color("8a5cc8"), 800)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(title)
+	var grid := GridContainer.new()
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 18)
+	grid.add_theme_constant_override("v_separation", 1)
+	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	box.add_child(grid)
+	var names: Dictionary = pred.get("names", {})
+	for t in d.order:
+		var votes := {}
+		for key: String in DraftExperts.firsts_of(pred, t):
+			if not key.is_empty():
+				votes[key] = int(votes.get(key, 0)) + 1
+		var parts: Array[String] = []
+		for key: String in votes:
+			parts.append(str(names.get(key, key)) + ("（%d人）" % int(votes[key]) if int(votes[key]) >= 2 else ""))
+		var line := UiTheme.small_label("%s：%s" % [GameData.short_name(t), "／".join(parts)], 14,
+			MINE_COLOR if t == GameState.team else UiTheme.TEXT, 700)
+		line.custom_minimum_size = Vector2(270, 0)
+		line.clip_text = true
+		line.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		grid.add_child(line)
+	return box
 
 
 # --- 指名の発表（作業28） ------------------------------------------------------------------

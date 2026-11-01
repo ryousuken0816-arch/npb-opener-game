@@ -253,6 +253,9 @@ func _open_draft(year: int) -> Array:
 	var hub: Node = current_scene
 	hub.call("_on_menu_chosen", "advance")
 	await _frames(3)
+	# 戦力外・引退のあとはまず作戦会議（作業37）。もう一度可変ボタンでドラフトへ
+	hub.call("_on_menu_chosen", "advance")
+	await _frames(3)
 	var d: RefCounted = _gs.draft()
 	var view: Node = _find_draft_view(hub)
 	if d == null or view == null:

@@ -73,6 +73,11 @@ func post_stage(year: int, stage: Dictionary) -> int:
 		var a := article(c, stage, year, rng)
 		gs.post_news(News.article(date, "amateur", a[0], a[1], _ids(c)), key, n == 0)
 		n += 1
+	if stage["key"] == "fall":
+		# ドラフト直前号に有識者の指名予想（作業38）
+		for a: Array in DraftExperts.preview_articles(gs.draft_predictions()):
+			gs.post_news(News.article(date, "draft", a[0], a[1]), key)
+			n += 1
 	return n
 
 

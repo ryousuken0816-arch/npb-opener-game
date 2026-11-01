@@ -446,7 +446,21 @@
 4.45 ~~Antigravity による UI 第1段階の整理~~ → 完了（2026-11-01、docs/ANTIGRAVITY.md「全体の UI の整理」）。ブランチ `antigravity/ui-tidy-1` を main に取り込み済み
    - 変えた画面（情報は減らさず、見せ方だけ）：タイトル（セ・パの見出しを色帯に、球団ボタンに縁取り文字）・日程表（ボタンを球団色の立体ボタンに、タイルの余白・終了済みの色・自球団の影）・順位表（列見出し「順・球団・勝-敗-分・差」を追加、自球団の行に左の太い帯、行を少し低く）・采配（1軍/2軍の見出し色分け、「自動で組む」「詳細を見る」「1軍へ上げる/2軍へ落とす」を色付きボタンに、クリーンナップの打順番号を橙）・契約更改/戦力外/トレードのバッジ（大きさと余白をそろえた）・表彰/CS・日本シリーズの見出しを色帯に、自球団の印・日本一の「Ⓐ/Ⓑ で閉じる」を暗い帯の上に・ハブのメニューボタンの文字と余白
    - 確認：Godot 4.7.2 ヘッドレスでエラー0件。tactics_check・day_progress_check・pad_flow_check・contract_check・release_check・trade_check・awards_check・postseason_check・start_year_check・records_check 全て OK、layout_fit_check と全テストは最後に1回。スクショ1回（タイトル・日程表（日付を進めて順位表も追従）・采配の野手1軍登録/起用設定）
-4.46 ~~守備能力値の再構築（npbbasement データ統合）~~ → 完了（2026-11-01、ブランチ `antigravity/defense-ratings`）。詳細レポートは `docs/reports/defense_ratings.md`
+4.46 ~~ドラフト前の作戦会議・有識者の指名予想~~ → 完了（2026-11-01、担当J）。docs/AUTORUN.md の作業37・38、仕組みは godot/README.md「ドラフト前の作戦会議・有識者の指名予想」
+   - 作業37：`godot/sim/draft_board.gd`（`DraftBoard`、`GameState.draft_board`、セーブに入る）＝印（◎○△☆✕）・メモ・本命の順番を候補の名前のキーで持つ。画面 `godot/scenes/hub/draft_meeting_view.gd`
+     （左＝補強ポイント3つ（デプスと作業34の位置別の戦力から）と印の数、中央＝候補の一覧（ドラフト画面と同じ列・並び替え・絞り込み「目星だけ」）、右＝要約・印・メモ・本命の順番▲▼）。
+     開き方：新戦力の4つ目のタブ「ドラフト候補」→「作戦会議へ」（シーズン中は3月31日から）と、戦力外・引退を締めたあとの可変ボタン「作戦会議」（年に1回、`GameState.draft_meeting_due`）→「ドラフト会議へ」。
+     ドラフトの段階に入るとき・ドラフト画面を開くとき・印を変えたときに `DraftBoard.apply_to` が Draft に印（`user_marks`・`user_favorites`）を渡し、**自球団だけ**おすすめ・おまかせが印の順（`Draft.user_recommend`）、✕は選ばない。CPU の指名は変えていない
+   - ドラフト画面（`draft_view.gd` は最小限）：済マークの欄の左に印、絞り込み「目星だけ」、列「予想」（有識者の予想順位）、要約に「作戦会議：…」、入札・指名の番に本命・おすすめを選んでおく、開幕の演出に12球団の1位予想。予想の列の分だけ名前・1年目・評価・将来性の列を少し細くした
+   - 作業38：`godot/sim/draft_experts.gd`（`DraftExperts`）。架空の評論家3人が順位予想30人と12球団の1位予想（競合の予想つき）。もとは当時の評価（`Draft.setup` と同じ。2026・2027年は data/amateur/ の格付け入り）＋好み＋ノイズ。
+     `GameState.draft_predictions()`（10月8日のドラフト直前号で固定。それより前は途中経過）。記事：ドラフト直前号に予想、春季キャンプに入るときオフ号に答え合わせ（種類「ドラフト」）。作戦会議のタブ「有識者の予想」（ドラフトの途中からは実際の1位入札と的中）
+   - 確認：`godot/tests/draft_meeting_check.gd`（新、ヘッドレス約1分半）：開幕日は候補なし→日付を進めると候補・補強ポイント、印・メモ・並べ替え・「目星だけ」、7月まで進めても残る、セーブ／ロードで全状態が一致、
+     戦力外のあと可変ボタン「作戦会議」→ ドラフト会議（初期値＝本命の1番目、目星だけ、予想の列）→ おまかせの入札は本命・✕は指名しない → オフ号に答え合わせ。2024年・2026年で予想と実際の1回目の入札が一部一致・一部外れ（36中13・36中8）。
+     `layout_fit_check` に作戦会議の全タブ（7月とドラフトの段階）を追加。スクショ `godot/tests/draft_meeting_capture.gd`（作戦会議・有識者の予想・開幕の1位予想・ドラフトの一覧）。既存テストの変更：draft_check・draft_announce_check・lottery_3d_check は可変ボタンをもう一度押す（作戦会議のあと）、release_check は締めたあとの可変ボタンが「作戦会議」。
+     全テスト35本をヘッドレスで1回：layout_fit_check 1953画面 ALL OK ほか全て OK。NG だったのは release_check（上の期待値の変更前）・roster_year_check（福盛の復帰先。new_game の乱数の種が毎回違い CPU の戦力外・移籍しだい）・
+     draft_check の既知の「2025年に指名選手が試合に出た」（自球団の1位が抽選で投手になると下位の野手を1軍に上げて出場0のことがある。main のままでも同じ）→ どれも流し直して OK。
+     そのあと担当B2・H・I（作業34〜36）を取り込み、補強ポイントに作業34の今季の位置別の戦力（得失点）を足して、全テスト37本をもう1回：全て OK（layout_fit_check・news_stop_check・position_value_check を含む）
+4.47 ~~守備能力値の再構築（npbbasement データ統合）~~ → 完了（2026-11-01、ブランチ `antigravity/defense-ratings`）。詳細レポートは `docs/reports/defense_ratings.md`
    - 背景：npb.jp の刺殺・補殺・失策から計算していた旧方式による評判とのズレ（牧の二塁守備F、中山礼都の肩A、近藤の守備C、岡林・辰己の過剰インフレ等）を是正。
    - 指標取得：`https://npbbasement.com/` から2020〜2026年（1軍・2軍）の守備指標（RngR, ARM, ErrR, DPR, Framing, Blocking）を取得（`tools/fetch_basement.py`、`.gitignore` でリポジトリ外）。
    - 計算仕様：`tools/compute_ratings.py`。直近3年加重平均（1.0 / 0.8 / 0.6、2軍は重み0.5）、規定イニングによる少サンプル縮約（守備位置平均 0.0 へのブレンド）。内野は RngR+ErrR+DPR、外野は守備 RngR+ErrR・肩 ARM、捕手は総合守備得点（Framing+Blocking+ErrR+ARM）・肩 ARM、三塁・遊撃の肩は外野ARMまたは補殺/試合。

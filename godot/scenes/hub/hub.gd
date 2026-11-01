@@ -13,7 +13,7 @@ const MENUS := [
 	["tactics", "采配", "tactics", Color("f57c00"),
 		"1・2軍の入れ替え、オーダーや起用法の設定、所属選手の確認をします。"],
 	["scout", "新戦力", "scout", Color("00a396"),
-		"トレード交渉（シーズン中は7月31日まで）、外国人選手の獲得（外国人市場）、移籍・引退などの出来事を見ます。（スカウティングは未実装）"],
+		"トレード交渉（シーズン中は7月31日まで）、外国人選手の獲得（外国人市場）、移籍・引退などの出来事を見ます。「ドラフト候補」からドラフト前の作戦会議（ほしい選手に印・有識者の予想）を開きます。"],
 	["records", "記録室", "records", Color("e0a400"),
 		"個人成績（セイバー指標）・通算成績、チームのデプス・位置別の戦力（球団×位置の得失点）、チーム成績の推移、表彰の歴代、ドラフト・達成記録を見ます。"],
 	["system", "システム", "system", Color("7e57c2"),
@@ -46,6 +46,9 @@ var _comp_view := CompView.new()
 var _contract_view := ContractView.new()
 var _release_view := ReleaseView.new()
 var _draft_view := DraftView.new()
+var _meeting_view := DraftMeetingView.new()
+## 作戦会議を新戦力から開いた（閉じたら新戦力のボタンへ戻る）
+var _meeting_from_scout := false
 var _save_view := SaveView.new()
 var _awards_view := AwardsView.new()
 var _records_view := RecordsView.new()
@@ -115,6 +118,9 @@ func _ready() -> void:
 		if _open_key == "comp":
 			_description_label.text = text)
 	_scout_view.trade_requested.connect(func() -> void: _open_sub_screen("trade"))
+	_scout_view.meeting_requested.connect(func() -> void:
+		_meeting_from_scout = true
+		_open_sub_screen("meeting"))
 	_trade_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "trade":
 			_description_label.text = text)
@@ -130,6 +136,14 @@ func _ready() -> void:
 	_draft_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_draft_view.visible = false
 	_placeholder_label.get_parent().add_child(_draft_view)
+	_meeting_view.setup(_palette)
+	_meeting_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_meeting_view.visible = false
+	_placeholder_label.get_parent().add_child(_meeting_view)
+	_meeting_view.message_changed.connect(func(text: String) -> void:
+		if _open_key == "meeting":
+			_description_label.text = text)
+	_meeting_view.draft_requested.connect(func() -> void: _on_menu_chosen("advance"))
 	_save_view.setup(_palette)
 	_save_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_save_view.visible = false
@@ -229,6 +243,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_release_view.switch_tab(delta)
 			"draft":
 				_draft_view.switch_tab(delta)
+			"meeting":
+				_meeting_view.switch_tab(delta)
 			"system":
 				_save_view.switch_tab(delta)
 			"awards":
@@ -343,7 +359,7 @@ func _refresh() -> void:
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
 	_standings.refresh()
 	if _open_key not in ["tactics", "fa", "trade", "comp", "contract", "release", "draft", "system", "awards", "records",
-			"postseason", "news"]:
+			"postseason", "news", "meeting"]:
 		_description_label.text = _description(_focused_key)
 	if _open_key == "tactics":
 		_tactics_view.refresh()
@@ -363,6 +379,8 @@ func _refresh() -> void:
 		_release_view.refresh()
 	elif _open_key == "draft":
 		_draft_view.refresh()
+	elif _open_key == "meeting":
+		_meeting_view.refresh()
 	elif _open_key == "system":
 		_save_view.refresh()
 	elif _open_key == "awards":
@@ -453,6 +471,12 @@ func _on_menu_chosen(key: String) -> void:
 		if GameState.draft_open():
 			_open_sub_screen("draft")
 			return
+		# 戦力外・引退を締めたら、ドラフトの段階へ進む前に作戦会議（その年に一度。作業37）
+		if GameState.draft_meeting_due():
+			GameState.draft_board.hold(GameState.year)
+			_meeting_from_scout = false
+			_open_sub_screen("meeting")
+			return
 		_pending_issue = ""
 		GameState.advance()
 		_after_advance()
@@ -537,6 +561,7 @@ func _open_sub_screen(key: String) -> void:
 	var is_contract := key == "contract"
 	var is_release := key == "release"
 	var is_draft := key == "draft"
+	var is_meeting := key == "meeting"
 	var is_system := key == "system"
 	var is_awards := key == "awards"
 	var is_records := key == "records"
@@ -548,6 +573,7 @@ func _open_sub_screen(key: String) -> void:
 	_records_view.visible = is_records
 	_save_view.visible = is_system
 	_draft_view.visible = is_draft
+	_meeting_view.visible = is_meeting
 	_tactics_view.visible = is_tactics
 	_schedule_view.visible = is_schedule
 	_scout_view.visible = is_scout
@@ -556,9 +582,9 @@ func _open_sub_screen(key: String) -> void:
 	_comp_view.visible = is_comp
 	_contract_view.visible = is_contract
 	_release_view.visible = is_release
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_trade and not is_comp and not is_contract and not is_release and not is_draft and not is_system and not is_awards and not is_records 		and not is_postseason and not is_news
+	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_trade and not is_comp and not is_contract and not is_release and not is_draft and not is_meeting and not is_system and not is_awards and not is_records 		and not is_postseason and not is_news
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
-	_set_wide(is_tactics or is_fa or is_trade or is_comp or is_contract or is_release or is_draft or is_awards or is_records or is_postseason or is_news)
+	_set_wide(is_tactics or is_fa or is_trade or is_comp or is_contract or is_release or is_draft or is_meeting or is_awards or is_records or is_postseason or is_news)
 	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
@@ -587,6 +613,9 @@ func _open_sub_screen(key: String) -> void:
 	elif is_draft:
 		_sub_title_label.text = "ドラフト会議（%d年）" % GameState.year
 		_draft_view.open()
+	elif is_meeting:
+		_sub_title_label.text = "ドラフト作戦会議（%d年）" % GameState.year
+		_meeting_view.open()
 	elif is_system:
 		_sub_title_label.text = "システム：セーブ／ロード"
 		_save_view.open()
@@ -662,9 +691,9 @@ func _close_sub_screen() -> void:
 	_description_label.text = _description(_focused_key)
 	if _buttons.has(key):
 		_buttons[key].grab_button_focus()
-	elif key == "trade":
+	elif key == "trade" or key == "meeting" and _meeting_from_scout:
 		_buttons["scout"].grab_button_focus()
-	elif key in ["fa", "comp", "contract", "release", "draft", "awards", "postseason"]:
+	elif key in ["fa", "comp", "contract", "release", "draft", "awards", "postseason", "meeting"]:
 		_buttons["advance"].grab_button_focus()
 	elif key == "news":
 		_news_card.grab_focus()

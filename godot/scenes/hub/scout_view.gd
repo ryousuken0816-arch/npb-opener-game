@@ -1,6 +1,6 @@
 class_name ScoutView
 extends TabContainer
-## 「新戦力」画面（ハブ）。トレード交渉の入口と、外国人市場と、年越しの出来事の一覧（スカウティングは未実装）。
+## 「新戦力」画面（ハブ）。トレード交渉の入口と、外国人市場と、年越しの出来事の一覧と、ドラフト候補（作戦会議の入口）。
 ##
 ## - トレード：交渉できるかどうか（シーズン中は7月31日まで）と「トレード交渉へ」。押すと trade_requested
 ##   （ハブがトレード交渉の画面 TradeView を広げて開く）
@@ -9,6 +9,8 @@ extends TabContainer
 ##   「戦力外・引退」の段階からは、戦力外になった選手（来季の成績がある選手）も並ぶ（史実の球団の列に「戦力外（元の球団）」）。
 ##   戦力外・引退の段階からは支配下の上限（70人）に空きが無いと獲れない
 ## - 出来事：メジャー移籍・復帰、史実のトレード、引退、新人、外国人の獲得など（LeagueRoster.log の新しい順）
+## - ドラフト候補：今年のドラフト候補の事前スカウティング。「作戦会議へ」で DraftMeetingView（ほしい選手に印・本命の順番・
+##   有識者の予想。作業37・38）を開く（meeting_requested）
 ## 行をⒶ（Enter）／クリックで選手詳細。LB/RB でタブ切り替え。
 
 const MARKET_COLUMNS := [["名前", 0], ["投野", 64], ["守備位置", 96], ["主な能力", 170],
@@ -19,6 +21,7 @@ const LOG_KINDS := ["mlb_leave", "mlb_return", "trade", "retire", "rookie", "joi
 const LOG_LIMIT := 400
 
 signal trade_requested
+signal meeting_requested
 
 var _palette: UiTheme.Palette
 var _trade_box: VBoxContainer
@@ -29,6 +32,9 @@ var _status: Label
 var _sign_button: Button
 var _log_tree: Tree
 var _shown_key := ""
+var _meeting_box: VBoxContainer
+var _meeting_label: Label
+var _meeting_button: Button
 
 
 func setup(p: UiTheme.Palette) -> void:
@@ -72,9 +78,26 @@ func setup(p: UiTheme.Palette) -> void:
 	add_child(_log_tree)
 	set_tab_title(2, "出来事")
 
+	_meeting_box = VBoxContainer.new()
+	_meeting_box.add_theme_constant_override("separation", 14)
+	add_child(_meeting_box)
+	set_tab_title(3, "ドラフト候補")
+	_meeting_label = UiTheme.small_label("", 18, UiTheme.TEXT, 700)
+	_meeting_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_meeting_box.add_child(_meeting_label)
+	_meeting_button = Button.new()
+	_meeting_button.text = "作戦会議へ"
+	_meeting_button.custom_minimum_size = Vector2(280, 56)
+	_meeting_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_meeting_button.add_theme_font_size_override("font_size", 24)
+	UiTheme.style_button(_meeting_button, Color("8a5cc8"))
+	_meeting_button.pressed.connect(func() -> void: meeting_requested.emit())
+	_meeting_box.add_child(_meeting_button)
+
 
 func refresh() -> void:
 	var league := GameState.league
+	_render_meeting()  # 印の数は作戦会議で変わるので毎回
 	var key := "%d|%d|%d|%d" % [GameState.year, GameState.phase, GameState.roster_version, GameState.day]
 	if key == _shown_key or league == null:
 		return
@@ -87,6 +110,9 @@ func refresh() -> void:
 func focus_first() -> void:
 	if get_current_tab_control() == _trade_box:
 		_trade_button.grab_focus()
+		return
+	if get_current_tab_control() == _meeting_box:
+		_meeting_button.grab_focus()
 		return
 	var tree := get_current_tab_control() as Tree
 	if tree == null:
@@ -112,6 +138,25 @@ func _render_trade() -> void:
 	lines.append("%s：%s" % [GameState.date_text(), "交渉できます" if block.is_empty() else block])
 	_trade_label.text = "\n".join(lines)
 	_trade_button.text = "トレード交渉へ" if block.is_empty() else "トレード交渉（見るだけ）"
+
+
+## ドラフト候補のタブ：今年の候補の数・印の数・有識者の予想の有無
+func _render_meeting() -> void:
+	var y := GameState.year
+	var board := GameState.draft_board
+	var lines: Array[String] = ["%d年秋のドラフトに向けた作戦会議を開きます。" % y,
+		"ほしい選手に印（◎本命・○上位候補・△中位・☆掘り出し物・✕回避）とメモを付け、1位入札の本命の順番を決めます。",
+		"左に自球団の補強ポイント（デプスから）、タブ「有識者の予想」に評論家3人の順位予想と12球団の1位予想。",
+		"ドラフト会議では印の選手が目立ち、本命の1番目が1位入札の初期値・おすすめになります（おまかせでも印を優先）。", ""]
+	var counts := board.counts(y)
+	var parts: Array[String] = []
+	for mark: String in DraftBoard.MARKS:
+		if int(counts.get(mark, 0)) > 0:
+			parts.append("%s%d人" % [mark, int(counts[mark])])
+	lines.append("印：%s" % ("　".join(parts) if not parts.is_empty() else "まだ付けていません"))
+	if not board.prediction(y).is_empty():
+		lines.append("有識者の予想：出ています（%s）" % str(board.prediction(y).get("date", "")))
+	_meeting_label.text = "\n".join(lines)
 
 
 func _render_market(league: LeagueRoster) -> void:
