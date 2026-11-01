@@ -11,13 +11,19 @@ extends Node
 
 signal layout_changed(is_portrait: bool, is_mobile: bool)
 
+const PC_SCALE_SIZE := Vector2i(1280, 720)
+const MOBILE_HOME_SCALE_SIZE := Vector2i(580, 960)
+const MOBILE_SUB_SCALE_SIZE := Vector2i(860, 1280)
+
 var force_mode: String = "auto"
 var is_portrait: bool = false
 var is_mobile: bool = false
+var sub_screen_active: bool = false
 var safe_area_top: float = 0.0
 var safe_area_bottom: float = 0.0
 
 var _last_size := Vector2.ZERO
+var _updating_scale := false
 
 
 func _ready() -> void:
@@ -26,7 +32,17 @@ func _ready() -> void:
 
 
 func _on_viewport_size_changed() -> void:
+	if _updating_scale:
+		return
 	_update_layout()
+
+
+## サブ画面（采配・日程・ドラフト等の詳細画面）が開いているかを通知し、スケールを最適化する
+func set_sub_screen_active(active: bool) -> void:
+	if sub_screen_active == active:
+		return
+	sub_screen_active = active
+	_apply_content_scale()
 
 
 ## 手動でモードを切り替える（"auto", "pc", "mobile"）
@@ -45,15 +61,29 @@ func toggle_mode() -> void:
 		set_force_mode("mobile")
 
 
+func _apply_content_scale() -> void:
+	var root_win := get_tree().root if get_tree() != null else null
+	if root_win == null:
+		return
+	var target_scale := PC_SCALE_SIZE
+	if is_portrait:
+		target_scale = MOBILE_SUB_SCALE_SIZE if sub_screen_active else MOBILE_HOME_SCALE_SIZE
+	if root_win.content_scale_size != target_scale:
+		_updating_scale = true
+		root_win.content_scale_size = target_scale
+		_updating_scale = false
+
+
 func _update_layout(force_notify := false) -> void:
 	var vp := get_viewport()
 	if vp == null:
 		return
+	var win_size := DisplayServer.window_get_size()
 	var vp_size := vp.get_visible_rect().size
 	if vp_size.x <= 0 or vp_size.y <= 0:
 		return
 
-	var natural_portrait := vp_size.x < vp_size.y
+	var natural_portrait := (win_size.x < win_size.y) if (win_size.x > 0 and win_size.y > 0) else (vp_size.x < vp_size.y)
 	var touch := DisplayServer.is_touchscreen_available()
 	var os_mobile := (
 		OS.has_feature("mobile")
@@ -75,6 +105,9 @@ func _update_layout(force_notify := false) -> void:
 			is_portrait = natural_portrait
 			is_mobile = natural_portrait or touch or os_mobile
 
+	_apply_content_scale()
+	vp_size = vp.get_visible_rect().size
+
 	# セーフエリアの計算（スマホ縦画面時にノッチとホームバーの安全マージンを確保）
 	if is_mobile and is_portrait:
 		var sa := DisplayServer.get_display_safe_area()
@@ -83,8 +116,8 @@ func _update_layout(force_notify := false) -> void:
 			safe_area_bottom = maxf(0.0, vp_size.y - (sa.position.y + sa.size.y))
 		else:
 			# ブラウザや未対応環境向けの標準セーフエリア
-			safe_area_top = 40.0
-			safe_area_bottom = 24.0
+			safe_area_top = 12.0
+			safe_area_bottom = 14.0
 	else:
 		safe_area_top = 0.0
 		safe_area_bottom = 0.0

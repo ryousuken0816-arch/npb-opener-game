@@ -31,6 +31,7 @@ var _selected_mobile_league: String = "C"
 
 
 func _ready() -> void:
+	UiLayout.set_sub_screen_active(false)
 	var palette := UiTheme.neutral_palette()
 	theme = UiTheme.build(palette)
 	_update_title_typography(palette)
@@ -288,8 +289,8 @@ func set_skip_to_draft(on: bool) -> void:
 
 func _make_league_column(league: String) -> VBoxContainer:
 	var column := VBoxContainer.new()
-	column.custom_minimum_size = Vector2(320, 0)
-	column.add_theme_constant_override("separation", 8)
+	column.custom_minimum_size = Vector2(480 if UiLayout.is_portrait else 320, 0)
+	column.add_theme_constant_override("separation", 10 if UiLayout.is_portrait else 8)
 	var league_color := Color("1e88e5") if league == "C" else Color("2e7d32")
 	var header_panel := PanelContainer.new()
 	var header_style := UiTheme.gloss(league_color, 8, 2, 3)
@@ -312,8 +313,8 @@ func _make_team_button(team: String) -> Button:
 	var colors := GameData.team_colors(team)
 	var button := Button.new()
 	button.text = team
-	button.custom_minimum_size = Vector2(0, 46)
-	button.add_theme_font_size_override("font_size", 20)
+	button.custom_minimum_size = Vector2(0, 56 if UiLayout.is_portrait else 46)
+	button.add_theme_font_size_override("font_size", 23 if UiLayout.is_portrait else 20)
 	button.add_theme_font_override("font", UiTheme.font(800))
 	var ink := UiTheme.text_on(colors[0])
 	UiTheme.style_button(button, colors[0], ink)

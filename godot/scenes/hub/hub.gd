@@ -71,6 +71,7 @@ var _mobile_advance_button: Button
 var _mobile_menu_buttons := {}
 var _mobile_header_label: Label
 var _mobile_team_label: Label
+var _mobile_standings: StandingsPanel
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -566,6 +567,7 @@ func _on_stop_chosen(resume: bool) -> void:
 
 func _open_sub_screen(key: String) -> void:
 	_open_key = key
+	UiLayout.set_sub_screen_active(true)
 	_sub_screen.visible = true
 	if UiLayout.is_portrait:
 		if _mobile_scroll != null:
@@ -725,6 +727,7 @@ func _close_sub_screen() -> void:
 	_set_wide(false)
 	var key := _open_key
 	_open_key = ""
+	UiLayout.set_sub_screen_active(false)
 	_sub_screen.visible = false
 	if UiLayout.is_portrait:
 		if _mobile_scroll != null:
@@ -813,7 +816,7 @@ func _build_news_card() -> void:
 func _refresh_news_card() -> void:
 	if _news_card == null:
 		return
-	_news_card.visible = _open_key.is_empty()
+	_news_card.visible = _open_key.is_empty() and not UiLayout.is_portrait
 	var items: Array[Dictionary] = GameState.news.latest(3) if GameState.news != null else []
 	for i in _news_lines.size():
 		var label := _news_lines[i]
@@ -877,6 +880,7 @@ func _on_layout_changed(is_portrait: bool, is_mobile: bool) -> void:
 
 
 func _apply_layout(is_portrait: bool, _is_mobile: bool) -> void:
+	UiLayout.set_sub_screen_active(not _open_key.is_empty())
 	if is_portrait:
 		_menu_box.visible = false
 		_center_area.visible = false
@@ -929,43 +933,43 @@ func _build_mobile_dashboard() -> void:
 	var margin := MarginContainer.new()
 	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	margin.add_theme_constant_override("margin_left", 14)
-	margin.add_theme_constant_override("margin_right", 14)
-	margin.add_theme_constant_override("margin_top", 8)
-	margin.add_theme_constant_override("margin_bottom", 20)
+	margin.add_theme_constant_override("margin_left", 16)
+	margin.add_theme_constant_override("margin_right", 16)
+	margin.add_theme_constant_override("margin_top", 6)
+	margin.add_theme_constant_override("margin_bottom", 24)
 	_mobile_scroll.add_child(margin)
 
 	var vbox := VBoxContainer.new()
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	vbox.add_theme_constant_override("separation", 12)
+	vbox.add_theme_constant_override("separation", 14)
 	margin.add_child(vbox)
 
 	# 1. ヘッダーカード
 	var header_panel := PanelContainer.new()
-	var h_style := UiTheme.card(_palette.main, 10, 2, 0.95)
-	h_style.set_content_margin_all(10)
+	var h_style := UiTheme.card(_palette.main, 12, 3, 0.96)
+	h_style.set_content_margin_all(12)
 	header_panel.add_theme_stylebox_override("panel", h_style)
 	var hvbox := VBoxContainer.new()
-	hvbox.add_theme_constant_override("separation", 4)
+	hvbox.add_theme_constant_override("separation", 6)
 	header_panel.add_child(hvbox)
 
 	_mobile_header_label = Label.new()
 	_mobile_header_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.heading(_mobile_header_label, 20, _palette.ink, Color.WHITE, 5)
+	UiTheme.heading(_mobile_header_label, 25, _palette.ink, Color.WHITE, 6)
 	hvbox.add_child(_mobile_header_label)
 
 	_mobile_team_label = Label.new()
 	_mobile_team_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.heading(_mobile_team_label, 16, UiTheme.TEXT, Color.WHITE, 4, false)
+	UiTheme.heading(_mobile_team_label, 19, UiTheme.TEXT, Color.WHITE, 5, false)
 	hvbox.add_child(_mobile_team_label)
 	vbox.add_child(header_panel)
 
 	# 2. メインアクション巨大ボタン（「試合へ」等）
 	_mobile_advance_button = Button.new()
-	_mobile_advance_button.custom_minimum_size = Vector2(0, 58)
-	_mobile_advance_button.add_theme_font_size_override("font_size", 22)
+	_mobile_advance_button.custom_minimum_size = Vector2(0, 68)
+	_mobile_advance_button.add_theme_font_size_override("font_size", 26)
 	_mobile_advance_button.add_theme_font_override("font", UiTheme.font(800))
-	UiTheme.style_button(_mobile_advance_button, Color("e53935"), Color.WHITE, 10, 4)
+	UiTheme.style_button(_mobile_advance_button, Color("e53935"), Color.WHITE, 12, 4)
 	_mobile_advance_button.pressed.connect(func() -> void: _on_menu_chosen("advance"))
 	vbox.add_child(_mobile_advance_button)
 
@@ -973,8 +977,8 @@ func _build_mobile_dashboard() -> void:
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	grid.add_theme_constant_override("h_separation", 10)
-	grid.add_theme_constant_override("v_separation", 10)
+	grid.add_theme_constant_override("h_separation", 12)
+	grid.add_theme_constant_override("v_separation", 12)
 	vbox.add_child(grid)
 
 	for menu: Array in MENUS:
@@ -983,12 +987,12 @@ func _build_mobile_dashboard() -> void:
 			continue
 		var btn := Button.new()
 		btn.text = menu[1]
-		btn.custom_minimum_size = Vector2(0, 50)
+		btn.custom_minimum_size = Vector2(0, 60)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.add_theme_font_size_override("font_size", 18)
+		btn.add_theme_font_size_override("font_size", 21)
 		btn.add_theme_font_override("font", UiTheme.font(800))
 		var color: Color = menu[3]
-		UiTheme.style_button(btn, color, Color.WHITE, 8, 3)
+		UiTheme.style_button(btn, color, Color.WHITE, 10, 3)
 		var icon: Texture2D = load(ICON_DIR.path_join(menu[2] + ".svg"))
 		if icon != null:
 			btn.icon = icon
@@ -999,14 +1003,23 @@ func _build_mobile_dashboard() -> void:
 
 	# 4. 最新ニュースカード
 	var news_btn := Button.new()
-	news_btn.custom_minimum_size = Vector2(0, 60)
+	news_btn.custom_minimum_size = Vector2(0, 56)
 	news_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	UiTheme.style_button(news_btn, Color.WHITE, _palette.ink, 8, 2)
+	UiTheme.style_button(news_btn, Color.WHITE, _palette.ink, 10, 2)
 	news_btn.text = "📰 最新ニュース・速報を見る"
-	news_btn.add_theme_font_size_override("font_size", 17)
+	news_btn.add_theme_font_size_override("font_size", 20)
 	news_btn.add_theme_font_override("font", UiTheme.font(700))
 	news_btn.pressed.connect(func() -> void: open_news())
 	vbox.add_child(news_btn)
+
+	# 5. モバイル順位表カード（ホーム画面の下部にそのまま表示）
+	_mobile_standings = StandingsPanel.new()
+	_mobile_standings.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var st_card := UiTheme.card(_palette.main, 12, 2, 0.96)
+	st_card.set_content_margin_all(10)
+	_mobile_standings.add_theme_stylebox_override("panel", st_card)
+	vbox.add_child(_mobile_standings)
+	_mobile_standings.setup(_palette, GameData.league_of(GameState.team))
 
 
 func _refresh_mobile_dashboard() -> void:
@@ -1016,3 +1029,5 @@ func _refresh_mobile_dashboard() -> void:
 		_mobile_header_label.text = "%s年 %s　%s" % [GameState.year_text(), GameState.month_text(), GameState.event_text()]
 	if _mobile_team_label != null and is_instance_valid(_mobile_team_label):
 		_mobile_team_label.text = "%s （%s）" % [GameState.team, _summary_text()]
+	if _mobile_standings != null and is_instance_valid(_mobile_standings):
+		_mobile_standings.refresh()
