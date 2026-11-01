@@ -477,7 +477,7 @@
    - ~~上の「既知の課題（データ側）」の修正（新加入選手の投手/野手の判定）~~ → 完了（4.24）
    - ~~セーブ/ロード~~ → 完了（4.20）
 
-## 2026-11-01 追記：アマニュースの文面・大会結果（Codex、レビュー待ち）
+## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。
 - 候補紹介の同じ文の繰り返しを解消。大会・区分・守備位置・評価ごとの文を、選手と号で固定した乱数で組み合わせる。見出し・導入は号内で重ねず、中位・育成級にも枠を設ける。実在選手の具体的な数字・出来事は既存資料だけ、スカウトの言葉はゲーム内の寸評と明記。
@@ -487,7 +487,7 @@
 - 指定の Godot 4.7.2 `--headless --path godot --import` は1回（終了コード0）。スクリプトの構文チェック成功。環境に由来する `Failed to read the root certificate store` が各起動で出た。import のエディター設定保存先（作業フォルダ外）は権限により書き込みが拒否された。外部フォルダを編集する対応は行っていない。
 - テストは最後に各1回：`news_check` **ALL OK**、`fictional_draft_check` **ALL OK**（追加した文面・出典・史実の非創作・保存・旧セーブ・候補紹介と評価・強豪153/200勝も成功）。`news_stop_check` は **1件NG**。実際には7/28で停止し、その後7/30の速報でも直前の号キーが残るため、テストの `amateur` が false に上書きされた。`amateur = amateur or …` に修正し構文チェック成功。ユーザーの「テストは1回だけ」に従い、この修正後のテスト一式は未再実行。紹介号と結果号の8日付で停止・続行、設定、セーブ／ロードなど他の項目は成功。
 - テスト後の見出し整理と所属の制限は、ヘッドレスの記事例出力で実動作を確認。記事例全文10本は `docs/reports/amateur_news_examples.md`。例だけを出す新スクリプト `godot/tests/amateur_news_examples.gd`（テスト一式は回さない）。通常のテスト用セーブはこの作業フォルダ内の `.godot/` に変更。
-- **次の確認（Claude）**：差分と記事例10本をレビューし、必要なら `news_stop_check` の修正後の判定を確認してから取り込む。社会人の元の所属一覧の分類修正は別作業。
+- **取り込み確認（Claude、2026-11-01）**：差分と `tournaments.json` の実在結果（2018夏 大阪桐蔭13-2金足農、2013夏 前橋育英4-3延岡学園、2022夏 仙台育英8-1下関国際、2008夏 大阪桐蔭17-0常葉菊川、2019春 東邦6-0習志野）を確認。セーブ／ロードは `amateur_results` を保存・古いセーブ（項目なし）も読めることをテストで確認。origin/main を取り込み（衝突は HANDOFF のみ）、ヘッドレスでエラー0件、`news_check`・`news_stop_check`（修正後も OK）・`fictional_draft_check`・`draft_check`・`draft_meeting_check`・`draft_rebid_check`・`draft_announce_check`・`save_check`・`history_check` と全テスト（37本）を流した。NG は乱数しだいの既知3本だけ（`fa_comp_check` 人的補償の仮ID選手、`lottery_3d_check` 藤浪の抽選、`mlb_draftee_check` 佐々木麟太郎）で、流し直してすべて OK（`fa_comp_check` は流し直し3回とも OK）。社会人の元の所属一覧の分類修正は別作業のまま。
 - 変更ファイル：
   - `data/amateur/tournaments.json`
   - `godot/sim/amateur_news.gd`
@@ -502,3 +502,7 @@
   - `godot/README.md`
   - `docs/reports/amateur_news_examples.md`
   - `HANDOFF.md`
+
+## 次にやること（2026-11-01 司令塔より）
+
+Claude の使用量が上限に近いため、続きは Antigravity などが進める前提。**`docs/ANTIGRAVITY.md` の最後の節「Claude が止まったときの引き継ぎ」**に、途中の作業・次の順番・進め方をまとめた。
