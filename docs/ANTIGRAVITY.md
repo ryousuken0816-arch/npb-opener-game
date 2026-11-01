@@ -51,7 +51,9 @@
 - ハブ本体 `hub.gd`、ニュース `news_view.gd`・`news_ticker.gd`、セーブ・設定 `save_view.gd`・`game_settings.gd`・`user_settings.gd`（担当H）
 - 記録室 `records_view.gd`、選手詳細 `godot/scenes/player_detail/`（担当B2）
 - FA `fa_view.gd`・`comp_view.gd`（担当I）
-- ドラフト `draft_view.gd`・`scout_view.gd`・`godot/scenes/draft/`（担当J。そのあとドラフト画面の作り込み）
+- ドラフト `draft_view.gd`・`draft_meeting_view.gd`（作戦会議・有識者の予想。担当Jが作業37・38で追加）・`scout_view.gd`・`godot/scenes/draft/`（担当J。そのあとドラフト画面の作り込み）
+  - `draft_view.gd` に担当Jが足したもの（見た目は変えてよいが、働きは残す）：一覧の左端の印（◎○△☆✕）、絞り込み「目星だけ」、列「予想」、要約の「作戦会議：…」の1行、
+    入札・指名の番におすすめを選んでおく `_preselect`、開幕の演出の「有識者3人の1位予想」`_experts_grid`。テストは `godot/tests/draft_meeting_check.gd`
 - **共通の部品**（すべての画面に効く）：`godot/scripts/ui_theme.gd`・`gloss_box.gd`・`name_tag.gd`・`pad_guide.gd`・`team_background.gd`・`ui_fx.gd`
 
 ## 整理するときの決まり（上の「守ること」に加えて）

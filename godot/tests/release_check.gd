@@ -66,7 +66,8 @@ func _check_years() -> void:
 		_check_stage(y)
 		_choose_user(y)
 		_gs.release_resolve()
-		_check(not _gs.release_open() and _gs.button_text() == "ドラフトへ", "%d年オフ：締めると次はドラフト（%s）" % [
+		# 締めると次はドラフトの段階。その前に可変ボタンが一度だけ「作戦会議」（作業37）
+		_check(not _gs.release_open() and _gs.button_text() == "作戦会議", "%d年オフ：締めると次はドラフト（作戦会議 %s）" % [
 			y, _gs.button_text()])
 		_after_resolve(y)
 		while _gs.phase != _gs.Phase.SEASON:
@@ -354,7 +355,7 @@ func _check_ui(y: int) -> void:
 	await _shot("r6_done")
 	await _key(KEY_ESCAPE)
 	await _key(KEY_ESCAPE)
-	_check(_gs.button_text() == "ドラフトへ", "締めると可変ボタンは「ドラフトへ」（%s）" % _gs.button_text())
+	_check(_gs.button_text() == "作戦会議", "締めると可変ボタンは「作戦会議」（ドラフトの前。%s）" % _gs.button_text())
 	while _gs.phase != _gs.Phase.SEASON:
 		_gs.advance()
 	await _frames(3)
