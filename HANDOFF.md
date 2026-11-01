@@ -396,6 +396,7 @@
    - 作業22：`tools/fictional_draft.py` → `generated/fictional_draft.json`（2008〜2020年の指名選手990人のひな形・学校777校・転生のもと132人）、`godot/sim/fictional_draft.gd`（`FictionalDraft`）。`GameState.draft_class(年)` が初めて要るとき（春のニュースかオフの来季の準備）に作って `GameData.draft_classes` に置き（セーブに残る）、`_prepare_future_year` が来季の能力値に球団なしで入れ、`Draft.fictional_rows` が候補にする。当たりの頻度（史実どおり／夢多め）と転生選手のオン・オフはハブの「システム」（セーブに残る）
    - 作業32：転生選手は `rei:<年>:<元のID>`、名前は元の選手と同じ。候補一覧に「転生」、選手詳細の経歴に元の選手と全盛期の球団、ニュースに「〇〇の再来」
    - 確認：`godot/tests/fictional_draft_check.gd`（新）、スクショ `godot/tests/fictional_capture.gd`（2028年のセンバツ号・ドラフトの転生選手と架空の候補・システムの設定）。決めたことは docs/AUTORUN.md「あとで確認」の [アマ21]・[架空22]・[転生32]
+   - 年齢の修正（2026-11-01）：架空の候補に誕生日（`birth`）と `amateur.entry_age`（入団の年の4月1日時点の年齢）を付けた。高校18・大学22、社会人は入社の年（高卒3〜4年目＝21〜22歳・大卒2〜4年目＝24〜26歳）に合わせ、独立は19〜25歳。転生選手も同じ。候補一覧・要約の年齢は `Growth.age_at(p, 年+1)`（`draft.gd` の `_fill_profile`）、入団後は誕生日から毎年+1。ひな形の古いセーブ（誕生日なし）は区分の目安（`AMATEUR_ENTRY_AGE`）で出る。テストは `fictional_draft_check.gd`（`_check_ages`）、スクショ `tests/fictional_age_capture.gd`
 5. 次の候補（どれから進めるかユーザーと相談）
    - ~~FA・ポスティングの画面~~ → 完了（4.14）。~~契約更改・予算上限~~ → 完了（4.15）。~~戦力外・引退~~ → 完了（4.16）。~~ドラフト画面~~ → 完了（4.19）。残り：トレード交渉（予算の残りを使える）… 新しい画面なので Opus 向き
    - ~~記録室~~ → 完了（4.25）。~~表彰~~ → 完了（4.24）

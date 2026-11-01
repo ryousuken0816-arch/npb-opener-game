@@ -772,7 +772,12 @@ func _fill_profile(c: Dictionary, p: Dictionary) -> void:
 	c["primary_pos"] = p.get("primary_pos", c["pos"]) if p.get("primary_pos") != null else c["pos"]
 	var age := FreeAgency.age_of(p, year)
 	c["age_known"] = age > 0
-	if age <= 0:
+	var ama0: Variant = p.get("amateur")
+	if ama0 is Dictionary and ama0.get("fictional", false):
+		# 架空の候補は入団する年（翌年）の4月1日時点の年齢（高校18・大学22・社会人は入社の年に合わせた21〜26、独立19〜25）
+		age = Growth.age_at(p, year + 1)
+		c["age_known"] = age > 0
+	elif age <= 0:
 		age = 18 if c["career"] == "高校生" else (22 if c["career"] == "大学生" else 0)
 	c["age"] = age
 	var ratings := {}
