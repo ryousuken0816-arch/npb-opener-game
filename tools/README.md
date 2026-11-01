@@ -233,7 +233,7 @@ python tools/fictional_draft.py   # → generated/fictional_draft.json（Godot �
 
 ```
 godot --headless --path godot --script res://tests/ratings_audit_dump.gd -- 2026 <出力先>/sim2026_1.json   # 1回 約10秒、年と回数を変えて何回か
-python tools/ratings_audit.py --sims "<出力先>/sim*.json" --out <表>.md
+python tools/ratings_audit.py --sims "<出力先>/sim*.json" --out <表>.md [--saber <外部の指標の CSV（リポジトリには入れない）>]
 ```
 
 能力値（2026_pre など）・npb.jp の実際の成績（記録室と同じ式の wRC+・FIP・WAR）・タイトルとゴールデングラブ・ゲームを回した成績の平均を並べた表を作る。

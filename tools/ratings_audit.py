@@ -348,10 +348,140 @@ def ratings_index(path):
     return idx
 
 
+SABER_POS = {"捕手": "捕手", "一塁手": "一塁手", "二塁手": "二塁手", "三塁手": "三塁手", "遊撃手": "遊撃手",
+             "左翼手": "外野手", "中堅手": "外野手", "右翼手": "外野手"}
+
+
+def saber_section(out, path: Path, R, A, sims):
+    """外部の指標（tooldock の wRC+・WAR、DELTA の UZR・RngR、1.02 の WAR）とゲームの能力値・ゲームの成績を並べる"""
+    import csv
+    with open(path, encoding="utf-8-sig") as f:
+        rows = list(csv.DictReader(f))
+    rows = [r for r in rows if r["選手名"] != "名前"]  # 表の見出しが行として混ざっているもの
+    pre = R["2026_pre"]
+    by_name = {}
+    for pid, p in pre.items():
+        by_name.setdefault(nn(p["name"]).replace(".", ""), pid)
+
+    def pid_of(nm):
+        key = nn(nm).replace(".", "")
+        if key in by_name:
+            return by_name[key]
+        c = [pid for n, pid in by_name.items() if n.endswith(key)]
+        return c[0] if len(c) == 1 else None
+
+    def val(r):
+        return float(r["値"].rstrip("%"))
+
+    out("")
+    out("### 6.5 外部の指標との比べ")
+    out("")
+    out("外部のサイトの集計（ユーザーが別の AI に集めてもらった CSV。数字は下の出典から引用し、CSV そのものはリポジトリに入れない）。"
+        "DELTA の UZR は守備範囲（RngR）・失策（ErrR）・肩（ARM）などの合計で、＋が平均より失点を防いだ。2026年の守備位置ごとの UZR は11月中旬に公開予定で、まだ無い")
+    out("")
+    out("#### 2025年の守備（DELTA）と、ゲームの守備力（2026_pre＝2025年までの成績）・ゲーム2026年のその位置の守備得点（10回の平均、300回以上）")
+    out("")
+    out("| 選手 | DELTA の位置 | UZR | RngR（範囲） | その他（DELTA） | ゲームの守備力（その位置） | ゲームの肩 | ゲーム26 の守備得点 |")
+    out("|---|---|---|---|---|---|---|---|")
+    fl = defaultdict(dict)
+    for r in rows:
+        if r["年"] == "2025" and r["指標名"].endswith("(DELTA)"):
+            fl[(r["選手名"], r["守備位置"])][r["指標名"].split("(")[0]] = val(r)
+    order = list(SABER_POS)
+    xs, ys = defaultdict(list), defaultdict(list)
+    gx, gy = [], []
+    for (nm, pos), d in sorted(fl.items(), key=lambda t: (order.index(t[0][1]) if t[0][1] in order else 9,
+                                                         -t[1].get("RngR", t[1].get("UZR", 0)))):
+        pid = pid_of(nm)
+        key = SABER_POS.get(pos)
+        f = (pre.get(pid, {}).get("fielding") or {}).get(key) if pid and key else None
+        fr = "-"
+        if pid:
+            got = [r2["batting"][pid]["fld"]["pos"].get(pos) for r2 in sims[2026].runs if pid in r2["batting"]]
+            got = [g for g in got if g]
+            if got:
+                inn = statistics.mean(g["outs"] for g in got) / 3
+                if inn >= 300:
+                    fr = f"{statistics.mean(g['total'] for g in got):+.1f}（{inn:.0f}回）"
+        others = "・".join(f"{k} {v:+.1f}" for k, v in d.items() if k not in ("UZR", "RngR"))
+        uzr = f"{d['UZR']:+.1f}" if "UZR" in d else "-"
+        rng = f"{d['RngR']:+.1f}" if "RngR" in d else "-"
+        out(f"| {nm} | {pos} | {uzr} | {rng} | {others or '-'} | {rv(f['defense']) if f else '-'} | "
+            f"{rv(f.get('arm')) if f else '-'} | {fr} |")
+        if f and "RngR" in d and key != "捕手":
+            xs[key].append(f["defense"]["value"])
+            ys[key].append(d["RngR"])
+            gx.append(f["defense"]["value"])
+            gy.append(d["RngR"])
+    out("")
+    if gx:
+        out(f"- ゲームの守備力と DELTA の RngR（範囲）の相関：全体 {pearson(gx, gy):.2f}（{len(gx)}人、捕手を除く）、"
+            + "・".join(f"{k} {pearson(xs[k], ys[k]):.2f}（{len(xs[k])}人）" for k in xs if len(xs[k]) >= 5))
+
+    def metric(year, name):
+        return {r["選手名"]: val(r) for r in rows if r["年"] == str(year) and r["指標名"] == name}
+
+    out("")
+    out("#### 打撃・WAR（tooldock の簡易版、1.02 の WAR）と、ゲームの成績（10回の平均）")
+    out("")
+    out("tooldock の WAR は守備・球場の補正なし。1.02 の WAR は DELTA の守備・球場の補正込み。この資料の WAR（6.2）は守備なしで代替水準もゲームの式なので、tooldock・1.02 より1〜2高めに出る")
+    out("")
+    out("| 選手 | tooldock wRC+ 25→26 | この資料の wRC+ 25→26 | ゲーム wRC+ 25／26 | tooldock WAR 25→26 | 1.02 WAR 26 | ゲーム WAR 25／26 |")
+    out("|---|---|---|---|---|---|---|")
+    w25, w26 = metric(2025, "wRC+(tooldock)"), metric(2026, "wRC+(tooldock)")
+    t25, t26 = metric(2025, "WAR(tooldock簡易・守備UZR未含)"), metric(2026, "WAR(tooldock簡易・守備UZR未含)")
+    d26 = metric(2026, "WAR(DELTA/1.02)")
+    names = sorted(set(w26) | set(w25) | set(d26), key=lambda n: -(w26.get(n) or w25.get(n) or 0))
+    cx, cy = [], []
+    for nm in names:
+        pid = pid_of(nm)
+        if not pid or pre.get(pid, {}).get("is_pitcher"):
+            continue
+        a25, a26 = A[2025].bat_line(pid), A[2026].bat_line(pid)
+        s25, s26 = sims[2025].bat(pid), sims[2026].bat(pid)
+        aw = lambda b: f"{b['wrc_plus']:.0f}" if b and b["pa"] >= 100 else "-"
+        gw = lambda s: f"{s['wrc_plus']:.0f}" if s and s["pa"] >= 100 else "-"
+        gwar = lambda s: f"{s['war']:.1f}" if s and s["pa"] >= 100 else "-"
+        tw = lambda d: f"{d[nm]:.0f}" if nm in d else "-"
+        out(f"| {nm} | {tw(w25)}→{tw(w26)} | {aw(a25)}→{aw(a26)} | {gw(s25)}／{gw(s26)} | "
+            f"{t25.get(nm, '-')}→{t26.get(nm, '-')} | {d26.get(nm, '-')} | {gwar(s25)}／{gwar(s26)} |")
+        if nm in w26 and a26 and a26["pa"] >= 300:
+            cx.append(w26[nm])
+            cy.append(a26["wrc_plus"])
+    if cx:
+        out("")
+        out(f"- tooldock の2026年の wRC+ と、この資料で npb.jp から計算した wRC+ の相関 {pearson(cx, cy):.2f}（{len(cx)}人）、"
+            f"平均の差（tooldock − この資料）{statistics.mean(a - b for a, b in zip(cx, cy)):+.1f}")
+    out("")
+    out("| 投手 | FIP 25（tooldock／ヌルデータ置き場） | tooldock FIP 26 | tooldock WAR 25→26 | 1.02 WAR 26 | ゲーム FIP 25／26 | ゲーム WAR 25／26 |")
+    out("|---|---|---|---|---|---|---|")
+    f25, n25, f26 = metric(2025, "FIP(tooldock)"), metric(2025, "FIP(nf3 ヌルデータ置き場)"), metric(2026, "FIP(tooldock)")
+    pw25, pw26 = metric(2025, "WAR(tooldock簡易)"), metric(2026, "WAR(tooldock簡易)")
+    pnames = set(f26) | set(f25) | set(n25) | {n for n in d26 if pid_of(n) and pre[pid_of(n)].get("is_pitcher")}
+    for nm in sorted(pnames, key=lambda n: f26.get(n, f25.get(n, n25.get(n, 9)))):
+        pid = pid_of(nm)
+        if not pid or not pre.get(pid, {}).get("is_pitcher"):
+            continue
+        s25, s26 = sims[2025].pit(pid), sims[2026].pit(pid)
+        gf = lambda s: f"{s['fip']:.2f}" if s and s["ip"] >= 30 else "-"
+        gwar = lambda s: f"{s['war']:.1f}" if s and s["ip"] >= 30 else "-"
+        out(f"| {nm} | {f25.get(nm, '-')}／{n25.get(nm, '-')} | {f26.get(nm, '-')} | {pw25.get(nm, '-')}→{pw26.get(nm, '-')} | "
+            f"{d26.get(nm, '-')} | {gf(s25)}／{gf(s26)} | {gwar(s25)}／{gwar(s26)} |")
+    u26 = [(r["選手名"], r["球団"], val(r)) for r in rows if r["年"] == "2026" and r["指標名"] == "UZR(DELTA/1.02)"]
+    if u26:
+        out("")
+        out("- 1.02 の2026年の球団ごとの UZR 1位（守備位置の記載なし）：" + "・".join(
+            f"{n}（{t}）{v:+.1f}" for n, t, v in sorted(u26, key=lambda t: -t[2])))
+    out("")
+    out("出典：" + "、".join(f"<{u}>" for u in sorted({r["出典URL"] for r in rows})))
+    out("")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--sims", required=True, help="ゲームを回した結果の JSON（glob。2025年・2026年が混ざってよい）")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--saber", type=Path, help="外部のセイバー指標の CSV（年,選手名,球団,守備位置,指標名,値,出典URL）。リポジトリには入れない")
     args = ap.parse_args(argv)
     files = sorted(glob.glob(args.sims))
     sims = {y: Sims([f for f in files if load(f)["year"] == y]) for y in (2025, 2026)}
@@ -657,6 +787,8 @@ def main(argv=None):
                 continue
             out(f"| {short(team)} | {name} | {slot} | {POS_SHORT.get(mp, mp) if mp else '-'}({mg}) | {prev} | {ab} |")
     out("")
+    if args.saber and args.saber.exists():
+        saber_section(out, args.saber, R, A, sims)
     if missing:
         out(f"（名前が見つからなかった選手：{'・'.join(missing)}）")
     args.out.write_text("\n".join(lines) + "\n", encoding="utf-8")
