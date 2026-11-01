@@ -340,9 +340,10 @@ func _render_summary() -> void:
 	_summary_box.add_child(spacer)
 	var detail := Button.new()
 	detail.text = "詳細を見る"
+	detail.custom_minimum_size = Vector2(0, 38)
 	detail.tooltip_text = "選手詳細（能力・成績・経歴）。札をもう一度押しても開きます"
 	detail.focus_mode = Control.FOCUS_NONE
-	UiTheme.style_button(detail, Color("1e88e5"), Color.WHITE)
+	UiTheme.style_button(detail, Color("1e88e5"), Color.WHITE, 8, 3)
 	detail.pressed.connect(_open_detail.bind(p))
 	_summary_box.add_child(detail)
 	if p.is_ikusei and not _team.is_active(p):
@@ -350,11 +351,14 @@ func _render_summary() -> void:
 	elif GameState.can_edit_roster():
 		var button := Button.new()
 		button.focus_mode = Control.FOCUS_NONE
+		button.custom_minimum_size = Vector2(0, 38)
 		if _team.is_active(p):
 			button.text = "▼ 2軍へ落とす"
+			UiTheme.style_button(button, Color("d84315"), Color.WHITE, 8, 3)
 			button.pressed.connect(_demote_selected)
 		else:
 			button.text = "▲ 1軍へ上げる"
+			UiTheme.style_button(button, Color("2e7d32"), Color.WHITE, 8, 3)
 			button.pressed.connect(_promote_selected)
 		_summary_box.add_child(button)
 

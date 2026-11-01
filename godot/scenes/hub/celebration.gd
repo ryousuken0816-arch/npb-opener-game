@@ -53,9 +53,18 @@ func setup(team_name: String, title: String) -> void:
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UiTheme.heading(title_label, 84, Color("ffd400"), Color("7a3d00"), 16)
 	box.add_child(title_label)
-	var hint := UiTheme.small_label("Ⓐ / Ⓑ で閉じる", 18, Color(1, 1, 1, 0.85), 800)
+	var hint_panel := PanelContainer.new()
+	hint_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var h_style := UiTheme.box(Color(0, 0, 0, 0.45), 8)
+	h_style.content_margin_left = 16
+	h_style.content_margin_right = 16
+	h_style.content_margin_top = 4
+	h_style.content_margin_bottom = 4
+	hint_panel.add_theme_stylebox_override("panel", h_style)
+	var hint := UiTheme.small_label("Ⓐ / Ⓑ で閉じる", 18, Color.WHITE, 800)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(hint)
+	hint_panel.add_child(hint)
+	box.add_child(hint_panel)
 	for i in CONFETTI:
 		_confetti.append(_new_piece(true))
 	title_label.pivot_offset = Vector2(400, 50)
