@@ -153,6 +153,10 @@ var _need := {}  ## 球団 → {守備位置: 今の人数}
 var cpu_targets := {}
 ## 当時の評価・将来性（ノイズ入り）の候補全体の平均と標準偏差（2位以降の評価の z。setup・ロードで計算）
 var _scale := {}
+## 自球団の作戦会議の印（作業37、DraftBoard.apply_to）：候補ID → 印（◎○△☆✕）と、本命（◎）の順 [候補ID]。
+## 自球団のおまかせ・おすすめ（user_recommend）だけに使う。CPU球団の指名は変わらない
+var user_marks := {}
+var user_favorites: Array = []
 
 
 ## 候補を作る。league: 所属（守備位置の不足の計算に使う）、entries: 来季の開幕時点の能力値ファイルの選手
@@ -577,6 +581,9 @@ static func sort_value(c: Dictionary, key: String) -> Variant:
 			return int(c.get("velocity", 0))
 		"first":
 			return int(c.get("first", {}).get("overall", -1))
+		"yosou":
+			# 有識者の予想順位（作業38。1位が上、予想に入っていない候補は下）
+			return 100 - int(c["yosou"]) if int(c.get("yosou", 0)) > 0 else -1
 	return int(c.get("ratings", {}).get(key, -1))
 
 
@@ -713,11 +720,17 @@ func _remaining() -> Array[Dictionary]:
 	return result
 
 
-## 球団が一番ほしい候補。first: 1位入札（当時の評価を重く）
+## 球団が一番ほしい候補。first: 1位入札（当時の評価を重く）。自球団は作戦会議の印を優先し、✕（回避）は選ばない
 func _best_for(team: String, first: bool, ikusei: bool) -> String:
+	if team == user_team:
+		var recommended := user_recommend()
+		if not recommended.is_empty():
+			return recommended
 	var best := ""
 	var best_value := -INF
 	for c in _remaining():
+		if team == user_team and user_marks.get(c["id"], "") == "✕":
+			continue
 		var v := evaluate(team, c, first)
 		if ikusei and not c["hist_ikusei"]:
 			# 育成では本指名級の候補ほど入団しにくいので少し下げる（残っていれば指名はする）
@@ -726,6 +739,36 @@ func _best_for(team: String, first: bool, ikusei: bool) -> String:
 			best_value = v
 			best = c["id"]
 	return best
+
+
+## 作戦会議の印（DraftBoard.apply_to から）
+func set_user_board(marks_by_id: Dictionary, favorite_ids: Array) -> void:
+	user_marks = marks_by_id.duplicate()
+	user_favorites = favorite_ids.duplicate()
+
+
+## 自球団のおすすめ（作業37）：残っている候補のうち、本命（◎）の順番 → ○ → ☆ → △（同じ印の中は CPU球団と同じ
+## 考え方の評価の順）。印の付いた候補が残っていなければ空
+func user_recommend() -> String:
+	var left := {}
+	for c in _remaining():
+		left[c["id"]] = c
+	for id: Variant in user_favorites:
+		if left.has(str(id)):
+			return str(id)
+	for mark: String in ["○", "☆", "△"]:
+		var best := ""
+		var best_value := -INF
+		for id: String in left:
+			if user_marks.get(id, "") != mark:
+				continue
+			var v := evaluate(user_team, left[id], stage == Stage.FIRST)
+			if v > best_value:
+				best_value = v
+				best = id
+		if not best.is_empty():
+			return best
+	return ""
 
 
 ## CPU球団の評価：球団ごとの見立ての違い＋当時の評価と将来性（ノイズ入り）＋守備位置の不足＋目玉の上乗せ
@@ -1111,7 +1154,7 @@ func to_save() -> Dictionary:
 		"done_reg": done_reg, "done_ikusei": done_ikusei, "user_auto": user_auto, "user_room": user_room,
 		"resolved": resolved, "data_through": data_through, "rng": SaveUtil.rng_state(_rng),
 		"team_noise": _team_noise, "need": _need, "cpu_targets": cpu_targets, "talks": talks,
-		"team_dare": _team_dare,
+		"team_dare": _team_dare, "user_marks": user_marks, "user_favorites": user_favorites,
 	}
 
 
@@ -1147,5 +1190,7 @@ static func from_save(d: Dictionary) -> Draft:
 	dr.talks = d.get("talks", {})
 	dr._team_dare = d.get("team_dare", {})
 	dr.cpu_targets = d.get("cpu_targets", {})
+	dr.user_marks = d.get("user_marks", {})
+	dr.user_favorites = d.get("user_favorites", [])
 	dr._compute_scale()
 	return dr

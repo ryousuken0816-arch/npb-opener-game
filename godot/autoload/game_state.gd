@@ -111,6 +111,8 @@ var _desk: NewsDesk = null
 var _history: HistoryCompare = null
 ## 春季キャンプで「史実との比較」に使う、いま終わったオフのドラフト
 var _last_draft: Draft = null
+## ドラフト前の作戦会議の印・本命の順と有識者の予想（作業37・38）。セーブに残る
+var draft_board := DraftBoard.new()
 ## アマ球界のニュース（作業21）で載せ終えた段階（"<年>-<段階>" → true）
 var amateur_news_done := {}
 var _amateur: AmateurNews = null
@@ -166,6 +168,7 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	GameData.clear_draft_classes()
 	amateur_news_done = {}
 	_amateur = null
+	draft_board = DraftBoard.new()
 	fictional_hits = "historical"
 	reincarnation_on = true
 	reincarnated = {}
@@ -873,6 +876,8 @@ func button_text() -> String:
 		return "戦力外・引退"
 	if draft_open():
 		return "ドラフト会議"
+	if draft_meeting_due():
+		return "作戦会議"
 	return PHASE_BUTTON[next_phase()]
 
 
@@ -1029,11 +1034,14 @@ func _enter(new_phase: Phase) -> void:
 			league.draft = null
 			if league.draft_available():
 				league.open_draft(year, draft_waiver_order(), GameData.teams())
+				draft_predictions()
+				draft_board.apply_to(league.draft)
 			league.cpu_market_round()
 			league.cpu_release_round()
 		Phase.CAMP:
 			_last_draft = league.draft
 			history().draft_decided(_last_draft, open_off_issue(), "%d-11-20" % year)
+			_draft_review(_last_draft)
 			year += 1
 			GameData.load_ratings(year, "pre")
 			league.begin_year(year, GameData.ratings)
@@ -1204,6 +1212,43 @@ func _amateur_news(date: String) -> void:
 			continue
 		amateur_news_done[key] = true
 		_amateur.post_stage(year, stage)
+
+
+# --- ドラフト前の作戦会議・有識者の予想（作業37・38） ------------------------------------------
+
+## ドラフト直前の作戦会議を開く番か（戦力外・引退を締めて、次がドラフトの段階。その年にまだ開いていない）
+func draft_meeting_due() -> bool:
+	return phase != Phase.DRAFT and next_phase() == Phase.DRAFT and not release_open() and league != null \
+		and league.draft_available() and draft_board.meeting_due(year)
+
+
+## 今年の有識者の予想（無ければ今の編成で作る）。シーズン中の秋のドラフト直前号（AmateurNews の fall）より前に作った
+## 予想は途中経過で、直前号の日（オフ）に作り直す。直前の予想は変えない
+func draft_predictions() -> Dictionary:
+	if league == null:
+		return {}
+	draft_class(year)  # 架空の候補の年は候補を先に作る
+	var final := phase != Phase.SEASON or season == null \
+		or Season.date_of_day(day) >= "%d-%s" % [year, AmateurNews.STAGES[-1]["date"]]
+	return draft_board.ensure_predictions(year, date_text(), DraftBoard.pos_counts(league.team_of), GameData.teams(),
+		final)
+
+
+## 作戦会議の印を変えたあと：ドラフト会議の途中なら印・本命の順を渡し直す
+func draft_board_changed() -> void:
+	var d := draft()
+	if d != null:
+		draft_board.apply_to(d)
+
+
+## ドラフトのあとの答え合わせの記事（オフ号）
+func _draft_review(d: Draft) -> void:
+	if d == null:
+		return
+	var a := DraftExperts.review_article(draft_board.prediction(d.year), d, team)
+	if a.is_empty():
+		return
+	post_news(News.article("%d-11-20" % d.year, "draft", a[0], a[1], [], []), open_off_issue())
 
 
 # --- 架空のドラフト候補（作業22・32） ------------------------------------------------------
@@ -1513,6 +1558,7 @@ func to_save() -> Dictionary:
 		"synthetic": _synthetic_save(),
 		"draft_classes": _draft_classes_save(), "fictional_hits": fictional_hits,
 		"reincarnation_on": reincarnation_on, "reincarnated": reincarnated, "amateur_news_done": amateur_news_done,
+		"draft_board": draft_board.to_save(year),
 	}
 
 
@@ -1567,6 +1613,7 @@ func load_state(d: Dictionary) -> void:
 	reincarnated = d.get("reincarnated", {})
 	amateur_news_done = d.get("amateur_news_done", {})
 	_amateur = null
+	draft_board = DraftBoard.from_save(d.get("draft_board"))
 	GameData.synthetic.clear()
 	var syn: Variant = d.get("synthetic")
 	if syn is Dictionary:
