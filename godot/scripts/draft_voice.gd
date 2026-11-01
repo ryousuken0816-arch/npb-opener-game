@@ -9,12 +9,24 @@ extends Node
 ## （PickAnnounce.voice_parts が作る。差し込み方は godot/README.md「ドラフトの読み上げ」）。
 ## 実在のアナウンサーの声をまねることはしない。声のデータ・モデルはリポジトリに入れない（.gitignore）。
 ## テスト（-s）・ヘッドレスでは音を出さない（muted）。どこから読むかの段取り（last_plan）は同じように作る
+##
+## OS の音声合成は終わり際に止めない（作業42）。Godot 4.7 の Windows（OneCore）は、読み終えた瞬間に別のスレッドで
+## MediaPlayer を閉じる。同じときに tts_stop() でメインのスレッドからも閉じると、ゲームごと固まる
+## （発表の最後の部品を OS の声で読み終えたところで「次へ」を押すとフリーズした）。
+## そこで、残りが短いと見込まれるときは止めずに自然に終わらせ、終わるまで次の OS の読み上げを始めない。
+## テストでは tts_sim で OS の音声合成のまねをする（音を出さない。終わりの合図が来る・来ないを作れる）
 
 const PAUSE_SEC := 0.15
 const HTTP_TIMEOUT := 4.0
 ## OS の音声合成が話し始めるまでの猶予（その間は「話していない」と返ることがある）
 const TTS_START_GRACE := 0.4
 const SAMPLE_RATE := 22050
+## OS の音声合成の長さの見込み（1文字あたりの秒。短めに見込むほど、終わり際に止めない側に倒れる）
+const TTS_SEC_PER_CHAR := 0.08
+## 見込みの残りがこれより短ければ止めない（秒）
+const TTS_CUT_MARGIN := 0.8
+## 前の OS の読み上げが終わるのを待つ上限（終わりの合図が来ないとき。過ぎたらその部品は読まない）
+const TTS_BUSY_WAIT := 5.0
 
 ## 音を出さない（テスト・ヘッドレス）
 var muted := false
@@ -22,6 +34,10 @@ var muted := false
 var last_plan: Array[Dictionary] = []
 ## voicevox に失敗したら true（その起動の間は os で読む）
 var voicevox_down := false
+## テスト用：OS の音声合成のまね {sec_per_char（実際の速さ）, never_end（終わりの合図が来ない）}。空なら本物
+var tts_sim: Dictionary = {}
+## テスト用：OS の音声合成への呼び出しの記録 [{op: speak/stop/hold, left（そのときの本当の残り秒。まねのときだけ）}]
+var tts_log: Array[Dictionary] = []
 
 static var _chime: AudioStreamWAV
 
@@ -33,6 +49,11 @@ var _sfx: AudioStreamPlayer
 var _http: HTTPRequest
 var _http_stage := ""
 var _os_voice := ""
+## いまの OS の読み上げを始めてからの秒と、長さの見込み（秒）。読み上げていなければ -1
+var _tts_elapsed := -1.0
+var _tts_estimate := 0.0
+## まね：残りの秒（never_end なら止めるまで終わらない）
+var _sim_left := 0.0
 
 
 func _ready() -> void:
@@ -48,6 +69,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_tick_tts(delta)
 	if _current.is_empty():
 		return
 	_elapsed += delta
@@ -59,7 +81,17 @@ func _process(delta: float) -> void:
 			if not _player.playing:
 				_next()
 		"tts":
-			if muted or (_elapsed >= TTS_START_GRACE and not DisplayServer.tts_is_speaking()):
+			if muted:
+				_next()
+			elif not _current.get("started", false):
+				# 前の読み上げ（終わり際で止めなかったもの）が終わるのを待ってから読む
+				if not _tts_speaking():
+					_current["started"] = true
+					_elapsed = 0.0
+					_speak_os(str(_current["text"]))
+				elif _elapsed >= TTS_BUSY_WAIT:
+					_next()
+			elif _elapsed >= TTS_START_GRACE and not _tts_speaking():
 				_next()
 		"voicevox":
 			pass  # HTTP の返事を待つ
@@ -92,8 +124,11 @@ func stop() -> void:
 		_player.stop()
 	if _http != null:
 		_http.cancel_request()
-	if DisplayServer.tts_is_speaking():
-		DisplayServer.tts_stop()
+	if _tts_elapsed >= 0.0 or _tts_speaking():
+		if tts_cuttable():
+			_tts_stop()
+		else:
+			tts_log.append({"op": "hold", "left": _sim_left if not tts_sim.is_empty() else -1.0})
 
 
 ## 自球団の指名の効果音（短いチャイム）
@@ -116,8 +151,8 @@ func plan(parts: Array, backend: String) -> Array[Dictionary]:
 	var dir := str(GameSettings.get_value("voice", "wav_dir"))
 	var pending: Array = []
 	for part: Dictionary in parts:
-		var path := dir.path_join(str(part["key"]) + ".wav")
-		if FileAccess.file_exists(path):
+		var path := wav_path(dir, str(part["key"]))
+		if not path.is_empty():
 			if not pending.is_empty():
 				out.append({"src": "tts", "text": _join(pending), "engine": "os"})
 				pending.clear()
@@ -129,6 +164,19 @@ func plan(parts: Array, backend: String) -> Array[Dictionary]:
 	if not pending.is_empty():
 		out.append({"src": "tts", "text": _join(pending), "engine": "os"})
 	return out
+
+
+## 部品の録音のファイル（無ければ空）。出身は「〜大学」の録音が無ければ「〜大」も探す（録音は「法政大」のように略す。
+## OS の声で読む部品が減れば、OS の音声合成を止める場面も減る）
+static func wav_path(dir: String, key: String) -> String:
+	var keys: Array[String] = [key]
+	if key.begins_with("school_") and key.ends_with("大学"):
+		keys.append(key.trim_suffix("学"))
+	for k in keys:
+		var path := dir.path_join(k + ".wav")
+		if FileAccess.file_exists(path):
+			return path
+	return ""
 
 
 func _join(parts: Array) -> String:
@@ -152,7 +200,7 @@ func _next() -> void:
 				return
 			_play(stream)
 		"tts":
-			_speak_os(str(_current["text"]))
+			_current["started"] = false  # _process で前の読み上げが終わってから読む
 		"voicevox":
 			_voicevox_query(str(_current["text"]))
 
@@ -164,6 +212,11 @@ func _play(stream: AudioStream) -> void:
 
 
 func _speak_os(text: String) -> void:
+	if not tts_sim.is_empty():
+		_tts_begin(text)
+		_sim_left = INF if tts_sim.get("never_end", false) else text.length() * float(tts_sim.get("sec_per_char", 0.12))
+		tts_log.append({"op": "speak", "left": _sim_left})
+		return
 	if _os_voice.is_empty():
 		var voices := DisplayServer.tts_get_voices_for_language("ja")
 		if voices.is_empty():
@@ -172,8 +225,48 @@ func _speak_os(text: String) -> void:
 			_queue.clear()
 			return
 		_os_voice = voices[0]
+	_tts_begin(text)
 	DisplayServer.tts_speak(text, _os_voice, int(GameSettings.get_value("voice", "volume")), 1.0,
 		float(GameSettings.get_value("voice", "rate")))
+
+
+# --- OS の音声合成（終わり際に止めない。作業42） ---------------------------------------------
+
+## 止めてよいか：読み始めてからの秒が長さの見込みより TTS_CUT_MARGIN 以上手前か、まだ話し始めていない（頼んだ直後）とき
+func tts_cuttable() -> bool:
+	if _tts_elapsed < 0.0:
+		return false
+	return _tts_elapsed < _tts_estimate - TTS_CUT_MARGIN 		or (_tts_elapsed < TTS_START_GRACE and not _tts_speaking())
+
+
+func _tts_begin(text: String) -> void:
+	_tts_elapsed = 0.0
+	_tts_estimate = text.length() * TTS_SEC_PER_CHAR / maxf(0.5, float(GameSettings.get_value("voice", "rate")))
+
+
+func _tick_tts(delta: float) -> void:
+	if _tts_elapsed < 0.0:
+		return
+	_tts_elapsed += delta
+	if not tts_sim.is_empty():
+		_sim_left -= delta
+	if _tts_elapsed >= TTS_START_GRACE and not _tts_speaking():
+		_tts_elapsed = -1.0
+
+
+func _tts_speaking() -> bool:
+	if not tts_sim.is_empty():
+		return _tts_elapsed >= 0.0 and _sim_left > 0.0
+	return DisplayServer.tts_is_speaking()
+
+
+func _tts_stop() -> void:
+	tts_log.append({"op": "stop", "left": _sim_left if not tts_sim.is_empty() else -1.0})
+	_tts_elapsed = -1.0
+	if not tts_sim.is_empty():
+		_sim_left = 0.0
+		return
+	DisplayServer.tts_stop()
 
 
 # --- VOICEVOX 互換の HTTP API ---------------------------------------------------------------
@@ -218,13 +311,11 @@ func _voicevox_failed() -> void:
 	voicevox_down = true
 	push_warning("VOICEVOX 互換のエンジン（%s）につながらないので、OS の音声合成で読みます" % _voicevox_url())
 	var text := str(_current.get("text", ""))
-	_current = {"src": "tts", "text": text, "engine": "os"}
+	_current = {"src": "tts", "text": text, "engine": "os", "started": false}
 	for item in last_plan:
 		if item.get("engine", "") == "voicevox":
 			item["engine"] = "os"
 	_elapsed = 0.0
-	if not muted:
-		_speak_os(text)
 
 
 func _voicevox_url() -> String:
