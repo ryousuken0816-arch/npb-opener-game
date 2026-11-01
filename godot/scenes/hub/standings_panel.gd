@@ -4,12 +4,13 @@ extends PanelContainer
 ## 勝敗・ゲーム差・順位が前回から変わった行は数字を軽く弾ませる。
 
 const LEAGUES := ["C", "P"]
-const ROW_HEIGHT := 44
+const ROW_HEIGHT := 40
 
 var _page := 0
 var _palette: UiTheme.Palette
 var _header := PanelContainer.new()
 var _title := Label.new()
+var _col_header: Control
 var _rows := VBoxContainer.new()
 var _arrows: Array[Button] = []
 ## 球団 → 前回表示した「順位|勝敗|ゲーム差」（変わった数字を弾ませる）
@@ -18,7 +19,7 @@ var _last := {}
 
 func _ready() -> void:
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	vbox.add_theme_constant_override("separation", 4)
 	add_child(vbox)
 
 	var bar := HBoxContainer.new()
@@ -32,7 +33,10 @@ func _ready() -> void:
 	_header.add_child(bar)
 	vbox.add_child(_header)
 
-	_rows.add_theme_constant_override("separation", 4)
+	_col_header = _make_col_headers()
+	vbox.add_child(_col_header)
+
+	_rows.add_theme_constant_override("separation", 3)
 	vbox.add_child(_rows)
 
 
@@ -81,11 +85,52 @@ func _make_arrow(text: String, delta: int) -> Button:
 	return button
 
 
+func _make_col_headers() -> Control:
+	var container := PanelContainer.new()
+	var bg := StyleBoxEmpty.new()
+	bg.content_margin_top = 1
+	bg.content_margin_bottom = 1
+	bg.content_margin_left = 6
+	bg.content_margin_right = 8
+	container.add_theme_stylebox_override("panel", bg)
+
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 10)
+	container.add_child(hbox)
+
+	var rank_hdr := _label("順", 12, UiTheme.TEXT_SUB, 700)
+	rank_hdr.custom_minimum_size.x = 28
+	rank_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hbox.add_child(rank_hdr)
+
+	var team_hdr := _label("球団", 12, UiTheme.TEXT_SUB, 700)
+	team_hdr.custom_minimum_size.x = 122
+	team_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hbox.add_child(team_hdr)
+
+	var rec_hdr := _label("勝 - 敗 - 分", 12, UiTheme.TEXT_SUB, 700)
+	rec_hdr.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rec_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hbox.add_child(rec_hdr)
+
+	var gb_hdr := _label("差", 12, UiTheme.TEXT_SUB, 700)
+	gb_hdr.custom_minimum_size.x = 52
+	gb_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	hbox.add_child(gb_hdr)
+
+	return container
+
+
 func _make_row(row: Dictionary, is_top: bool) -> Control:
 	var team: String = row["team"]
 	var own := team == GameState.team
 	var container := PanelContainer.new()
-	var bg := UiTheme.box(_palette.tint if own else Color(0, 0, 0, 0), 6)
+	var bg: StyleBoxFlat
+	if own:
+		bg = UiTheme.box(_palette.tint, 6, _palette.main, 1)
+		bg.border_width_left = 5
+	else:
+		bg = UiTheme.box(Color(0, 0, 0, 0), 6)
 	bg.content_margin_top = 2
 	bg.content_margin_bottom = 2
 	bg.content_margin_left = 6
@@ -97,18 +142,19 @@ func _make_row(row: Dictionary, is_top: bool) -> Control:
 	hbox.add_theme_constant_override("separation", 10)
 	container.add_child(hbox)
 
-	var rank := _label(str(row["rank"]), 26, UiTheme.TEXT, 800)
+	var rank := _label(str(row["rank"]), 24, UiTheme.TEXT, 800)
 	rank.custom_minimum_size.x = 28
 	rank.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hbox.add_child(rank)
 	hbox.add_child(_team_badge(team))
 
-	var record := _label("%d-%d-%d" % [row["wins"], row["losses"], row["draws"]], 15, UiTheme.TEXT_SUB)
+	var record := _label("%d-%d-%d" % [row["wins"], row["losses"], row["draws"]], 15, UiTheme.TEXT, 700)
 	record.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	record.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hbox.add_child(record)
 
 	var gb := "−" if is_top else "%.1f" % row["games_behind"]
-	var gb_label := _label(gb, 24, _palette.ink, 800)
+	var gb_label := _label(gb, 22, _palette.ink, 800)
 	gb_label.custom_minimum_size.x = 52
 	gb_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	gb_label.add_theme_color_override("font_outline_color", Color.WHITE)

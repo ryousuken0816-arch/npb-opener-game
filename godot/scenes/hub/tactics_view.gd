@@ -346,17 +346,20 @@ func _tag_block(title: String, sub: String, members: Array[SimPlayer],
 	row.add_theme_constant_override("separation", 12)
 	var head := VBoxContainer.new()
 	head.custom_minimum_size = Vector2(96, 0)
+	head.add_theme_constant_override("separation", 4)
 	var badge := PanelContainer.new()
-	var badge_style := UiTheme.gloss(_palette.main, 8, 2, 4)
+	var is_first_tier := title == "1軍"
+	var badge_color := _palette.main if is_first_tier else Color("546e7a")
+	var badge_style := UiTheme.gloss(badge_color, 8, 2, 4)
 	badge.add_theme_stylebox_override("panel", badge_style)
 	var label := Label.new()
 	label.text = title
-	var outline := UiTheme.outline_for(_palette.on_main, _palette.main)
-	UiTheme.heading(label, 30, _palette.on_main, outline, 7)
+	var outline := UiTheme.outline_for(Color.WHITE, badge_color)
+	UiTheme.heading(label, 28, Color.WHITE, outline, 6)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	badge.add_child(label)
 	head.add_child(badge)
-	var sub_label := UiTheme.small_label(sub, 13)
+	var sub_label := UiTheme.small_label(sub, 13, UiTheme.TEXT, 700)
 	sub_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	head.add_child(sub_label)
 	row.add_child(head)

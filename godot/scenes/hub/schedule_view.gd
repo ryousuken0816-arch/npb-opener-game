@@ -55,6 +55,16 @@ func setup(p: UiTheme.Palette) -> void:
 	_status_bar.add_theme_stylebox_override("panel", bar_style)
 	UiTheme.heading(_status_label, 20, p.on_main, UiTheme.outline_for(p.on_main, p.main), 6, false)
 	_standings.setup(p, GameData.league_of(GameState.team))
+
+	UiTheme.style_button(_one_day_button, p.main, p.on_main, 8, 3)
+	_one_day_button.custom_minimum_size = Vector2(140, 38)
+	UiTheme.style_button(_one_week_button, p.main.darkened(0.12), p.on_main, 8, 3)
+	_one_week_button.custom_minimum_size = Vector2(160, 38)
+	UiTheme.style_button(_to_date_button, Color("ff8f00"), Color.WHITE, 8, 3)
+	_to_date_button.custom_minimum_size = Vector2(0, 38)
+	for b: Button in [_prev_button, _next_button]:
+		UiTheme.style_button(b, p.main.lerp(Color.WHITE, 0.3), p.ink, 6, 2)
+		b.custom_minimum_size = Vector2(36, 32)
 	for b: Button in [_prev_button, _next_button, _one_day_button, _one_week_button, _to_date_button]:
 		b.add_theme_font_override("font", UiTheme.font(700))
 	# 早送り中止は目立つ白地のボタン（参考画像の右上）
@@ -486,7 +496,7 @@ func _make_game_tile(g: Dictionary) -> PanelContainer:
 	var tile := PanelContainer.new()
 	var style: GlossBox
 	if finished:
-		style = UiTheme.gloss(Color("454c56"), 8, 1, 0, Color("2c3137"))
+		style = UiTheme.gloss(Color("374151"), 8, 1, 0, Color("1f2937"))
 		style.gloss = 0.3
 	elif canceled:
 		style = UiTheme.gloss(Color("e3e6ea"), 8, 1, 0, Color("d5dae0"))
@@ -500,10 +510,12 @@ func _make_game_tile(g: Dictionary) -> PanelContainer:
 	if is_own_game:
 		style.border_color = _palette.main
 		style.set_border_width_all(3)
-	style.content_margin_left = 2
-	style.content_margin_right = 2
-	style.content_margin_top = 1
-	style.content_margin_bottom = 0
+		style.shadow_color = Color(_palette.main, 0.35)
+		style.shadow_size = 4
+	style.content_margin_left = 3
+	style.content_margin_right = 3
+	style.content_margin_top = 2
+	style.content_margin_bottom = 2
 	tile.add_theme_stylebox_override("panel", style)
 	tile.mouse_filter = Control.MOUSE_FILTER_PASS
 	if finished:
@@ -511,7 +523,7 @@ func _make_game_tile(g: Dictionary) -> PanelContainer:
 
 	# 縦積み（アウェイ→中央→ホーム）にして、列を細くしても読めるようにする
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 0)
+	box.add_theme_constant_override("separation", 1)
 	box.mouse_filter = Control.MOUSE_FILTER_PASS
 	tile.add_child(box)
 	box.add_child(_make_team_chip(away))
@@ -519,11 +531,13 @@ func _make_game_tile(g: Dictionary) -> PanelContainer:
 	var mid_label := Label.new()
 	mid_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	mid_label.clip_text = true
-	mid_label.add_theme_font_size_override("font_size", 12)
+	mid_label.add_theme_font_size_override("font_size", 13)
 	mid_label.add_theme_font_override("font", UiTheme.font(800))
 	if finished:
 		mid_label.text = "%d－%d" % [result["away_score"], result["home_score"]]
 		mid_label.add_theme_color_override("font_color", Color.WHITE)
+		mid_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.6))
+		mid_label.add_theme_constant_override("outline_size", 4)
 	elif canceled:
 		mid_label.text = "中止"
 		mid_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
@@ -537,7 +551,7 @@ func _make_game_tile(g: Dictionary) -> PanelContainer:
 	stadium_label.text = g["venue"] if not str(g["venue"]).is_empty() else "-"
 	stadium_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stadium_label.clip_text = true
-	stadium_label.add_theme_font_size_override("font_size", 9)
+	stadium_label.add_theme_font_size_override("font_size", 10)
 	stadium_label.add_theme_color_override(
 			"font_color", Color(1, 1, 1, 0.75) if finished else UiTheme.TEXT_SUB)
 	box.add_child(stadium_label)

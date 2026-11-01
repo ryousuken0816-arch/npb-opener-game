@@ -51,7 +51,9 @@ func setup(p: UiTheme.Palette) -> void:
 	left.add_child(_no_dh_button)
 	var auto := Button.new()
 	auto.text = "自動で組む"
+	auto.custom_minimum_size = Vector2(0, 42)
 	auto.tooltip_text = "1軍の野手から能力と実績でスタメン・打順を組み直します"
+	UiTheme.style_button(auto, Color("1e88e5"), Color.WHITE, 8, 3)
 	auto.pressed.connect(_on_auto)
 	left.add_child(auto)
 	var hint := UiTheme.small_label(
@@ -194,7 +196,10 @@ func _render_lineup() -> void:
 		var pos: String = order[i][1]
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 6)
-		var num := UiTheme.small_label(str(i + 1), 24, _palette.ink, 800)
+		var num_color := _palette.ink
+		if i in [2, 3, 4]:
+			num_color = Color("e65100")
+		var num := UiTheme.small_label(str(i + 1), 24, num_color, 800)
 		num.custom_minimum_size = Vector2(28, 0)
 		num.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		row.add_child(num)
