@@ -111,6 +111,15 @@ var _desk: NewsDesk = null
 var _history: HistoryCompare = null
 ## 春季キャンプで「史実との比較」に使う、いま終わったオフのドラフト
 var _last_draft: Draft = null
+## アマ球界のニュース（作業21）で載せ終えた段階（"<年>-<段階>" → true）
+var amateur_news_done := {}
+var _amateur: AmateurNews = null
+## 架空のドラフト候補（作業22・32）の設定：当たりの頻度（FictionalDraft.HIT_MODES）・転生選手を出すか。セーブに残る
+var fictional_hits := "historical"
+var reincarnation_on := true
+## 転生した選手（元の選手ID → 転生した年のドラフト）。同じ選手は一度だけ
+var reincarnated := {}
+var _fictional: FictionalDraft = null
 
 ## 表彰の履歴（年の文字列 → Awards.compute() の結果）。シーズン終了・表彰の段階に入ったときに足す
 var awards_history := {}
@@ -154,6 +163,12 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	phase = Phase.SEASON
 	GameData.synthetic.clear()
+	GameData.clear_draft_classes()
+	amateur_news_done = {}
+	_amateur = null
+	fictional_hits = "historical"
+	reincarnation_on = true
+	reincarnated = {}
 	GameData.debut_extra = {}
 	GameData.load_ratings(year, "pre")
 	league = LeagueRoster.new()
@@ -770,6 +785,7 @@ func _advance_one_day() -> void:
 	_apply_trades(Season.date_of_day(day))
 	var old_month := month
 	day += 1
+	_amateur_news(Season.date_of_day(day))
 	if day > season_last_day():
 		_publish(desk().monthly_issue(day, true))
 		_enter(next_phase())
@@ -962,6 +978,9 @@ func _prepare_future_year() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
 	var extra: Array = future_newcomers.call(next_year, league) if future_newcomers.is_valid() else []
+	# 今年の秋の架空のドラフト候補（作業22・32。球団なしで入れ、ドラフトで行き先が決まる）
+	for p: Dictionary in draft_class(year):
+		extra.append(p.duplicate(true))
 	GameData.synthetic[next_year] = FutureYear.new().build(year, league, season, base, rng, extra)
 	for y: int in GameData.synthetic.keys():
 		if y < year:
@@ -979,6 +998,7 @@ func _enter(new_phase: Phase) -> void:
 		Phase.POSTSEASON:
 			_start_postseason()
 		Phase.AWARDS:
+			_amateur_news("%d-10-31" % year)  # ドラフトの前に、まだ載せていない段階のアマ球界のニュース
 			# シーズン後の能力値に更新（当年までの成績で再計算したもの）
 			GameData.load_ratings(year, "post")
 			_archive_season()
@@ -1171,6 +1191,89 @@ func pennant_status(lg: String) -> Dictionary:
 
 
 # --- ニュース（作業25） ---------------------------------------------------------------------
+
+## アマ球界のニュース（作業21）：date までに来た段階（AmateurNews.STAGES）の記事を1回ずつ載せる
+func _amateur_news(date: String) -> void:
+	if news == null:
+		news = News.new()
+	if _amateur == null:
+		_amateur = AmateurNews.new(self)
+	for stage: Dictionary in AmateurNews.STAGES:
+		var key := "%d-%s" % [year, stage["key"]]
+		if amateur_news_done.has(key) or date < "%d-%s" % [year, stage["date"]]:
+			continue
+		amateur_news_done[key] = true
+		_amateur.post_stage(year, stage)
+
+
+# --- 架空のドラフト候補（作業22・32） ------------------------------------------------------
+
+## draft_year 年秋の架空のドラフト候補（史実もアマ選手のデータも無い年＝FictionalDraft.FIRST_YEAR〜）。
+## 初めて要るとき（その年の春のアマ球界のニュースか、オフの来季の準備）に作り、GameData.draft_classes に置く（セーブに残る）。
+## 転生選手（設定がオンのとき）：引退した名選手のうち、まだ転生していない選手から
+func draft_class(draft_year: int) -> Array:
+	if draft_year < FictionalDraft.FIRST_YEAR or GameData.read_data("amateur/%d.json" % draft_year) != null:
+		return []
+	if GameData.draft_classes.has(draft_year):
+		return GameData.draft_classes[draft_year]
+	if _fictional == null:
+		_fictional = FictionalDraft.new()
+	if not _fictional.is_ready():
+		return []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("fictional:%d:%d:%s" % [draft_year, first_year, team])
+	var taken := {}
+	for y: int in GameData.draft_classes:
+		for p: Dictionary in GameData.draft_classes[y]:
+			taken[LeagueRoster.norm_name(p["name"])] = true
+	var players := _fictional.generate_year(draft_year, rng, {"hits": fictional_hits,
+		"legends": reincarnation_pool() if reincarnation_on else [], "taken_names": taken})
+	for p: Dictionary in players:
+		var rei := FictionalDraft.reincarnation_of(p)
+		if not rei.is_empty():
+			reincarnated[str(rei["id"])] = draft_year
+	GameData.set_draft_class(draft_year, players)
+	for y: int in GameData.draft_classes.keys():
+		if y < draft_year - 1:
+			GameData.set_draft_class(y, [])
+	return players
+
+
+## 転生のもとにできる選手（ひな形の legends のうち、ゲーム内で引退していて＝今どの球団にもいない、まだ転生していない選手）
+func reincarnation_pool() -> Array:
+	if _fictional == null:
+		_fictional = FictionalDraft.new()
+	var out: Array = []
+	for legend: Dictionary in _fictional.data.get("legends", []):
+		var id: String = legend["id"]
+		if reincarnated.has(id) or league.team_of.has(id):
+			continue
+		if league.retired.has(id) or int(legend.get("last_year", 0)) < first_year:
+			out.append(legend)
+	return out
+
+
+## 当たりの頻度の設定（"historical"＝史実どおり／"dream"＝夢多め）。これから作る年の候補から効く
+func set_fictional_hits(mode: String) -> void:
+	if FictionalDraft.HIT_MODES.has(mode):
+		fictional_hits = mode
+
+
+## 転生選手の設定。オフにすると、まだ来季の能力値に入っていない年の候補から転生選手を除く
+func set_reincarnation(on: bool) -> void:
+	reincarnation_on = on
+	if on:
+		return
+	for y: int in GameData.draft_classes.keys():
+		if GameData.synthetic.has(y + 1):
+			continue
+		var kept: Array = []
+		for p: Dictionary in GameData.draft_classes[y]:
+			if FictionalDraft.reincarnation_of(p).is_empty():
+				kept.append(p)
+			else:
+				reincarnated.erase(str(FictionalDraft.reincarnation_of(p)["id"]))
+		GameData.set_draft_class(y, kept)
 
 ## 史実との比較（作業24）
 func history() -> HistoryCompare:
@@ -1408,7 +1511,17 @@ func to_save() -> Dictionary:
 		"league": league.to_save() if league != null else null,
 		"season": season.to_save() if season != null else null,
 		"synthetic": _synthetic_save(),
+		"draft_classes": _draft_classes_save(), "fictional_hits": fictional_hits,
+		"reincarnation_on": reincarnation_on, "reincarnated": reincarnated, "amateur_news_done": amateur_news_done,
 	}
+
+
+func _draft_classes_save() -> Dictionary:
+	var out := {}
+	for y: int in GameData.draft_classes:
+		if y >= year - 1:
+			out[str(y)] = GameData.draft_classes[y]
+	return out
 
 
 ## 成長で作った能力値（今年と来季の分。GameData.synthetic）
@@ -1444,6 +1557,16 @@ func load_state(d: Dictionary) -> void:
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	for key: String in d.get("tactics", {}):
 		tactics[key] = int(d["tactics"][key])
+	GameData.clear_draft_classes()
+	var classes: Variant = d.get("draft_classes")
+	if classes is Dictionary:
+		for key: String in classes:
+			GameData.set_draft_class(int(key), classes[key])
+	fictional_hits = str(d.get("fictional_hits", "historical"))
+	reincarnation_on = bool(d.get("reincarnation_on", true))
+	reincarnated = d.get("reincarnated", {})
+	amateur_news_done = d.get("amateur_news_done", {})
+	_amateur = null
 	GameData.synthetic.clear()
 	var syn: Variant = d.get("synthetic")
 	if syn is Dictionary:

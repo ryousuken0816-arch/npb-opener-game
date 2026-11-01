@@ -64,6 +64,19 @@ func _build() -> void:
 		grid.add_child(value)
 	body.add_child(UiTheme.small_label("出身校〜経歴", 16, _palette.ink, 800))
 	body.add_child(_career_chain())
+	var rei := FictionalDraft.reincarnation_of(_data)
+	if not rei.is_empty():
+		# 転生選手（作業32）：元の選手と全盛期の球団
+		var note := UiTheme.small_label("転生選手：%sの生まれ変わり（全盛期 %d年・%s%s）" % [rei["name"],
+			int(rei["peak_year"]), GameData.short_name(str(rei["peak_team"])),
+			"、元の出身 %s" % rei["school"] if not str(rei.get("school", "")).is_empty() else ""], 16,
+			Color("8e24aa"), 800)
+		note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		note.custom_minimum_size = Vector2(560, 0)
+		body.add_child(note)
+	elif FictionalDraft.is_fictional_amateur(_data):
+		body.add_child(UiTheme.small_label("架空の選手（%d年のドラフト候補。出身校は実在）" % int(_data["amateur"]["draft_year"]),
+			15, UiTheme.TEXT_SUB, 700))
 	body.add_child(UiTheme.small_label("受賞歴（ゲーム内の表彰）", 16, _palette.ink, 800))
 	body.add_child(_awards_flow())
 

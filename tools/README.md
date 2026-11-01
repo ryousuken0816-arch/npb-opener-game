@@ -215,3 +215,16 @@ python tools/draft_future.py                                 # 将来性の元�
 
 出力の選手には `amateur`（intro・grade・type・projected・fictional など）が付き、ドラフト画面の紹介文に使う。
 2028_pre の候補は球団が空（`team: ""`）で、ゲームのドラフトで行き先が決まる。
+
+## fictional_draft.py — 架空のドラフト候補・転生選手のひな形（docs/AUTORUN.md 作業22・32）
+
+```
+python tools/fictional_draft.py   # → generated/fictional_draft.json（Godot の FictionalDraft が読む。godot/README.md「架空のドラフト候補・転生選手」）
+```
+
+- ひな形（`templates`、990人）：2008〜2020年の指名選手で翌年の `<年+1>_pre` にいる選手。区分（出身校から 高校・大学・社会人・独立）・順位の帯（1／2〜3／4〜5／6〜／育成）・守備位置、
+  入団時の能力（`<年+1>_pre` の選手データ、detail は除く）、ピーク（指名の翌年以降の `<年>_post` で実力＝`Salary.ability` の z＋0.6×出場量 がいちばん高い年の能力、球速は最速）・ピークの年齢・点（`draft_future.py` と同じ式。一度も出てこない選手は −1.2）
+- 史実の割合（流したときの表示）：将来性S（点1.6以上）は年1.8人、A以上は年4.9人、6位以下・育成から A以上は年0.5人
+- 学校（`schools`、777校）：2008〜2026年の指名の出身校・所属と人数（「〇〇大学」は「〇〇大」にそろえる）。1年の人数（`class_sizes`）：2016〜2025年の本指名・育成の人数
+- 転生のもと（`legends`、132人）：2008〜2026年の `_post` の日本人選手（ドラフト歴あり）で実力のピークが1.1以上。ピークの年の能力・球速（最速）・守備の記録・投打・体格・球団・出身校
+- `generated/ratings/` を作り直したら流し直す

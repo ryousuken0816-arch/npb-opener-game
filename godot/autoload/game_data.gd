@@ -94,6 +94,10 @@ var ratings: Dictionary = {}
 ## 史実の能力値ファイルが無い年（Growth.FIRST_YEAR〜）に、オフに成長させて作った来季の能力値（年 → ファイルと同じ形）。
 ## その年の pre・post の両方として使い、ファイルより優先する。GameState がセーブに残す（docs/AUTORUN.md 作業27）
 var synthetic: Dictionary = {}
+## 史実の無い年の架空のドラフト候補（ドラフトの年 → 選手の配列。GameState.draft_class が作り、セーブに残す。作業22・32）。
+## ドラフトの前でも選手詳細を開けるよう player() で引ける
+var draft_classes: Dictionary = {}
+var _prospects: Dictionary = {}
 ## 名簿（data/<年>/rosters.json）の無い年の1軍初出場の年に足す 選手ID → 年（ゲーム内で入った選手。LeagueRoster.joined）
 var debut_extra: Dictionary = {}
 var _players_by_team: Dictionary = {}
@@ -466,7 +470,26 @@ func _read_repo_json(relative: String) -> Variant:
 
 ## 選手IDから能力値ファイルの選手データを引く（今のファイルに無ければ来季のファイル。無ければ空）
 func player(id: String) -> Dictionary:
-	return _players_by_id.get(id, _supplement.get(id, {}))
+	return _players_by_id.get(id, _supplement.get(id, _prospects.get(id, {})))
+
+
+## 架空のドラフト候補を置く（draft_year 年の分。空の配列なら消す）。ドラフト会議の一覧のキャッシュも作り直す
+func set_draft_class(draft_year: int, players: Array) -> void:
+	if players.is_empty():
+		draft_classes.erase(draft_year)
+	else:
+		draft_classes[draft_year] = players
+	_drafts_cache.erase(draft_year)
+	_prospects.clear()
+	for y: int in draft_classes:
+		for p: Dictionary in draft_classes[y]:
+			_prospects[p["id"]] = p
+
+
+func clear_draft_classes() -> void:
+	draft_classes.clear()
+	_prospects.clear()
+	_drafts_cache.clear()
 
 
 func has_ratings() -> bool:

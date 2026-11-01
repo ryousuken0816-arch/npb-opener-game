@@ -69,6 +69,7 @@ const DONE_COLOR := Color("8a9199")
 const MINE_COLOR := Color("ff6d00")
 const BID_COLOR := Color("e53935")
 const MLB_COLOR := Color("0d47a1")
+const REINCARNATION_COLOR := Color("8e24aa")
 
 var _palette: UiTheme.Palette
 var _tab := "info"
@@ -647,6 +648,12 @@ func _mark_label(d: Draft, c: Dictionary) -> Control:
 		label.text = "入札"
 		label.add_theme_color_override("font_color", Color.WHITE)
 		label.add_theme_stylebox_override("normal", UiTheme.gloss(BID_COLOR, 6, 1, 1))
+	elif not c.get("reincarnation", {}).is_empty():
+		label.text = "転生"
+		label.tooltip_text = "転生選手：%sの生まれ変わり（全盛期 %d年・%s）" % [c["reincarnation"]["name"],
+			int(c["reincarnation"]["peak_year"]), GameData.short_name(str(c["reincarnation"]["peak_team"]))]
+		label.mouse_filter = Control.MOUSE_FILTER_PASS
+		label.add_theme_color_override("font_color", REINCARNATION_COLOR)
 	elif c.get("mlb_intent", false):
 		label.text = "米志望"
 		label.tooltip_text = "メジャー志望を表明（指名したら説得の交渉。成功率は低め）"
@@ -857,7 +864,10 @@ func _hint_text(d: Draft) -> String:
 			% d.year)
 	if d.year + 1 == Draft.IN_PROGRESS_YEAR:
 		lines.append("※%d年秋の新人の1年目（%d年）はシーズン途中のデータです。" % [d.year, d.year + 1])
-	if d.year > Draft.LAST_HISTORY_YEAR:
+	if d.year >= FictionalDraft.FIRST_YEAR and not d.candidates.is_empty() and d.candidates[0].get("fictional", false):
+		lines.append("※%d年は史実のドラフトがありません。候補は架空の選手（出身校・所属は実在）で、" % d.year
+			+ "当時の評価・将来性は実在の選手と同じ見え方です。「転生」は引退した名選手の生まれ変わり。")
+	elif d.year > Draft.LAST_HISTORY_YEAR:
 		lines.append("※%d年は史実のドラフトがありません。候補は実在のアマ選手（報道での評価が当時の評価）で、" % d.year 			+ "将来性は当てになりません。")
 	return "\n".join(lines)
 
@@ -911,7 +921,11 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 		state = "済：%s %s" % [GameData.short_name(c["picked_by"]), c["pick_label"]]
 	else:
 		state = "未指名"
-	if c.get("amateur", false):
+	if not c.get("reincarnation", {}).is_empty():
+		var rei: Dictionary = c["reincarnation"]
+		state += "　（転生選手：%sの生まれ変わり。全盛期 %d年・%s）" % [rei["name"], int(rei["peak_year"]),
+			GameData.short_name(str(rei["peak_team"]))]
+	elif c.get("amateur", false):
 		state += "　（%s）" % ("架空の選手" if c.get("fictional", false) else "実在のアマ選手・報道の評価から推定")
 	else:
 		state += "　（史実：%s %s）" % [GameData.short_name(c["hist_team"]), c["hist_label"]]

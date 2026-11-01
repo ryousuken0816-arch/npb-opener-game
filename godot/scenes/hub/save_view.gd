@@ -24,6 +24,10 @@ var _pending := ""
 var _mode_row: HBoxContainer
 var _mode_buttons := {}
 var _fullscreen_button: Button
+## ゲームの設定（セーブに残る。作業22・32）：架空のドラフト候補の当たりの頻度・転生選手
+var _game_row: HBoxContainer
+var _hits_button: Button
+var _reincarnation_button: Button
 var _slot_buttons := {}
 var _status_label: Label
 var _confirm_panel: PanelContainer
@@ -72,6 +76,25 @@ func setup(p: UiTheme.Palette, only_load := false) -> void:
 	_sync_fullscreen_button(UiInput.fullscreen)
 	_mode_row.visible = not only_load
 	add_child(_mode_row)
+	_game_row = HBoxContainer.new()
+	_game_row.add_theme_constant_override("separation", 8)
+	_game_row.add_child(UiTheme.small_label("2028年以降のドラフト", 17, UiTheme.TEXT, 800))
+	_hits_button = _setting_button("架空の候補の当たりの頻度。史実どおり＝史実の指名選手と同じ割合、夢多め＝S級の大物が年に2〜3人増える"
+		+ "（これから作る年の候補から）")
+	_hits_button.pressed.connect(func() -> void:
+		GameState.set_fictional_hits("dream" if GameState.fictional_hits == "historical" else "historical")
+		_sync_game_settings())
+	_game_row.add_child(_hits_button)
+	_reincarnation_button = _setting_button("引退した名選手の「生まれ変わり」がドラフト候補にときどき混ざる（年に0〜2人）。"
+		+ "オフにすると出なくなる（すでに来季の能力値に入った年の候補を除く）")
+	_reincarnation_button.toggle_mode = true
+	_reincarnation_button.toggled.connect(func(on: bool) -> void:
+		GameState.set_reincarnation(on)
+		_sync_game_settings())
+	_game_row.add_child(_reincarnation_button)
+	_game_row.visible = not only_load
+	add_child(_game_row)
+	_sync_game_settings()
 	for slot in SaveGame.all_slots():
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(0, SLOT_HEIGHT)
@@ -121,6 +144,25 @@ func _sync_fullscreen_button(on: bool) -> void:
 	_fullscreen_button.text = "フルスクリーン：%s" % ("オン" if on else "オフ")
 
 
+func _setting_button(tip: String) -> Button:
+	var b := Button.new()
+	b.custom_minimum_size = Vector2(250, 40)
+	b.add_theme_font_size_override("font_size", 18)
+	b.add_theme_font_override("font", UiTheme.font(800))
+	b.tooltip_text = tip
+	UiTheme.style_toggle(b, UiTheme.TEXT_SUB)
+	return b
+
+
+## ゲームの設定の表示を GameState に合わせる（ロードしたあとも）
+func _sync_game_settings() -> void:
+	if _hits_button == null:
+		return
+	_hits_button.text = "当たりの頻度：%s" % FictionalDraft.HIT_MODES.get(GameState.fictional_hits, "史実どおり")
+	_reincarnation_button.set_pressed_no_signal(GameState.reincarnation_on)
+	_reincarnation_button.text = "転生選手：%s" % ("オン" if GameState.reincarnation_on else "オフ")
+
+
 func _small_button(text: String, color: Color) -> Button:
 	var b := Button.new()
 	b.text = text
@@ -136,6 +178,7 @@ func open() -> void:
 	_pending = ""
 	_confirm_panel.visible = false
 	_set_status(_default_status())
+	_sync_game_settings()
 	refresh()
 	focus_first()
 
@@ -162,6 +205,7 @@ func set_mode(mode: String) -> void:
 	_pending = ""
 	_confirm_panel.visible = false
 	_set_status(_default_status())
+	_sync_game_settings()
 	refresh()
 	focus_first()
 
@@ -187,6 +231,7 @@ func focus_first() -> void:
 
 
 func refresh() -> void:
+	_sync_game_settings()
 	for key: String in _mode_buttons:
 		_mode_buttons[key].set_pressed_no_signal(key == _mode)
 	var can_save := GameState.can_save()

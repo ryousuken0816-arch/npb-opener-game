@@ -73,4 +73,9 @@ static func intents(draft_year: int) -> Dictionary:
 			if mi is Dictionary and bool(mi.get("stated", false)):
 				result[LeagueRoster.norm_name(str(a["name"]))] = {"overseas": a.get("category") == "その他",
 					"hist_team": "", "hist_result": null, "note": str(mi.get("note", ""))}
+	for p: Dictionary in GameData.draft_classes.get(draft_year, []):
+		var mi: Variant = p["amateur"].get("mlb_intent")
+		if mi is Dictionary and bool(mi.get("stated", false)):
+			result[LeagueRoster.norm_name(str(p["name"]))] = {"overseas": false, "hist_team": "", "hist_result": null,
+				"note": str(mi.get("note", ""))}
 	return result

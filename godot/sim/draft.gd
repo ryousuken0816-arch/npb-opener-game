@@ -202,6 +202,11 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 			c["hist_round"] = 0
 			c["bids"] = 0
 			c["hyouka"] = grade_value(c["grade"])
+			if d.has("as_round"):
+				# 架空の候補（作業22）：ひな形の史実の指名順位・競合数が当時の評価
+				c["bids"] = int(d["bids"]) if int(d["as_round"]) == 1 and not bool(d["as_ikusei"]) else 0
+				c["hyouka"] = hyouka_value(int(d["as_round"]), bool(d["as_ikusei"]), maxi(1, int(d["bids"])), false)
+			c["reincarnation"] = d.get("reincarnation", {})
 		elif scout_grades.has(key):
 			c["grade"] = str(scout_grades[key])
 			c["hyouka"] = lerpf(c["hyouka"], grade_value(c["grade"]), SCOUT_HYOUKA_WEIGHT)
@@ -211,6 +216,8 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 			c["mlb_overseas"] = bool(mlb[key].get("overseas", false))
 			c["mlb_note"] = str(mlb[key].get("note", ""))
 		c["future"] = _future_value(future.get(key, {}), c["hyouka"])
+		if d.has("future_score"):
+			c["future"] = float(d["future_score"])  # 架空の候補：隠れたピーク（難易度のノイズは下で足す）
 		c["future_seen"] = c["future"] + _rng.randfn(0.0, DIFFICULTY_NOISE[DIFFICULTY])
 		c["future_rank"] = rank_of(c["future_seen"], FUTURE_RANKS)
 		if quota.has(hist):
@@ -795,7 +802,9 @@ func _fill_profile(c: Dictionary, p: Dictionary) -> void:
 ## ratings（キー → 値）, velocity, partial（入団年がシーズン途中のデータ）}
 func _fill_first_years() -> void:
 	var path := GameData.find_ratings_path(year + 1, "post")
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if not path.is_empty() else null
+	# 史実の無い年（成長で作った能力値 "synthetic:<年>"）は1年目の答えが無い（下で「未来」にする）
+	var readable := not path.is_empty() and not path.begins_with("synthetic:") and year + 1 <= LAST_HISTORY_YEAR
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if readable else null
 	var by_id_post := {}
 	var by_name_post := {}
 	if parsed is Dictionary:
@@ -997,13 +1006,36 @@ static func amateur_rows(draft_year: int) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	var parsed: Variant = GameData.read_data("amateur/%d.json" % draft_year)
 	if not parsed is Dictionary:
-		return result
+		return fictional_rows(draft_year)
 	for a: Dictionary in parsed.get("players", []):
 		var scout: Dictionary = a.get("scout", {}) if a.get("scout") is Dictionary else {}
 		result.append({"draft_year": draft_year, "name": a["name"], "pos": a.get("pos", ""),
 			"school": a.get("school", ""), "code": "", "round": "", "ikusei": false, "amateur": true,
 			"grade": str(scout.get("grade", a.get("eval_rank", "C"))), "fictional": bool(a.get("fictional", false))})
 	return result
+
+
+## 架空のドラフト候補（作業22・32。GameData.draft_classes の選手）を drafts.json の行の形にしたもの。
+## amateur_rows の形に、as_round・as_ikusei・bids（当時の評価の順位・競合数）・future_score（将来性の点）・
+## reincarnation（転生のもと）が付く
+static func fictional_rows(draft_year: int) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for p: Dictionary in GameData.draft_classes.get(draft_year, []):
+		var am: Dictionary = p["amateur"]
+		result.append({"draft_year": draft_year, "name": p["name"], "pos": _pos_of(p), "school": am["school"],
+			"code": "", "round": "", "ikusei": false, "amateur": true, "grade": str(am["grade"]), "fictional": true,
+			"as_round": int(am["as_round"]), "as_ikusei": bool(am["as_ikusei"]), "bids": int(am.get("bids", 1)),
+			"future_score": float(am["future_score"]), "reincarnation": am.get("reincarnation", {})})
+	return result
+
+
+static func _pos_of(p: Dictionary) -> String:
+	if p.get("is_pitcher", false):
+		return "投手"
+	var pos := str(p.get("primary_pos", ""))
+	if pos == "捕手":
+		return "捕手"
+	return "外野手" if pos.contains("外野") or pos in ["左翼手", "中堅手", "右翼手"] else "内野手"
 
 
 ## 1巡目の競合数（名前 → {bids, wave}）
