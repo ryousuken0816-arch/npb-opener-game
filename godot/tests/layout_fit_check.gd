@@ -407,7 +407,7 @@ func _check_fa_room(when: String) -> void:
 	await _check_screen("%s：FA 印を付けた表" % when)
 	if view.confirm().is_empty():
 		for i in view.marked_ids().size():
-			await _check_screen("%s：FA 交渉の部屋 %d人目" % [when, i + 1], 0.0)
+			await _check_screen("%s：FA 交渉の部屋 %d人目" % [when, i + 1])
 			view.switch_tab(1)
 	while view.back():
 		pass

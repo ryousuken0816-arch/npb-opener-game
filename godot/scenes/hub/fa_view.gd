@@ -1241,7 +1241,6 @@ func _step_room(delta: int) -> void:
 	_load_offer(GameState.fa(), room_id())
 	refresh()
 	focus_first()
-	UiFx.slide_in(_room_page, Vector2(28 * delta, 0))
 
 
 ## 交渉の部屋の提示の初期値（提示済みならその条件、なければ希望どおり）
