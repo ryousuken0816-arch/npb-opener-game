@@ -210,6 +210,7 @@ func _settings_view() -> void:
 	preset.pressed.emit()
 	_check(_gs.news_stop_preset() == "none" and preset.text == "止めない", "押すと 止めない")
 	await process_frame
+	await process_frame
 	_check(_fits(sv), "設定の行が枠に収まる")
 	var detail: Button = sv.get("_stop_detail_button")
 	detail.button_pressed = true
@@ -219,6 +220,7 @@ func _settings_view() -> void:
 		"種類ごと：7種類のボタン（枠の札は隠す）")
 	buttons["amateur"].button_pressed = true
 	buttons["series"].button_pressed = true
+	await process_frame
 	await process_frame
 	_check(_gs.news_stop_kinds["amateur"] and _gs.news_stop_kinds["series"] and not _gs.news_stop_kinds["mine"]
 		and preset.text == "種類ごと", "種類ごとにオン：%s" % preset.text)
@@ -232,14 +234,20 @@ func _settings_view() -> void:
 	_hub.call("_close_sub_screen")
 
 
-## 見えている Control がサブ画面の枠に収まる
+## 見えている Control がサブ画面の枠に収まる（中身がスクロールにならない。layout_fit_check と同じ物差し）
 func _fits(view: Control) -> bool:
 	var frame: Rect2 = (_hub.get("_sub_screen") as Control).get_global_rect().grow(1.0)
-	var ok := true
+	var fit: ScrollContainer = (_hub.get("_sub_screen") as Control).get_node("Fit")
+	var ok := not fit.get_v_scroll_bar().visible and not fit.get_h_scroll_bar().visible
+	if not ok:
+		print("    スクロールになる：中身の最小 %s" % (fit.get_child(0) as Control).get_combined_minimum_size())
 	for c: Node in view.find_children("*", "Control", true, false):
 		var ctl := c as Control
-		if ctl.is_visible_in_tree() and not frame.encloses(ctl.get_global_rect()):
-			print("    はみ出し：%s %s" % [ctl.name, ctl.get_global_rect()])
+		# 配置の枠（フォーカスの演出で少し拡大した分は数えない）
+		var parent := ctl.get_parent() as Control
+		var r := Rect2(parent.global_position + ctl.position, ctl.size) if parent != null else ctl.get_global_rect()
+		if ctl.is_visible_in_tree() and not frame.encloses(r):
+			print("    はみ出し：%s %s" % [ctl.name, r])
 			ok = false
 	return ok
 

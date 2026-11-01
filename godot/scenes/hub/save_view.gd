@@ -47,7 +47,7 @@ func setup(p: UiTheme.Palette, only_load := false) -> void:
 	_palette = p
 	load_only = only_load
 	_mode = "load" if only_load else "save"
-	add_theme_constant_override("separation", 8)
+	add_theme_constant_override("separation", 4)
 	_mode_row = HBoxContainer.new()
 	_mode_row.add_theme_constant_override("separation", 8)
 	_mode_row.add_child(UiTheme.small_label("◀ LB", 18, UiTheme.TEXT, 800))
@@ -134,6 +134,9 @@ func setup(p: UiTheme.Palette, only_load := false) -> void:
 	_no_button = _small_button("いいえ", Color("8a9199"))
 	_no_button.pressed.connect(cancel_confirm)
 	row.add_child(_no_button)
+	# 左右はこの2つの間だけ（行間が狭く、自動の判定だと←で上の枠の札へ飛ぶことがある）
+	_yes_button.focus_neighbor_right = _yes_button.get_path_to(_no_button)
+	_no_button.focus_neighbor_left = _no_button.get_path_to(_yes_button)
 	_confirm_panel.visible = false
 	add_child(_confirm_panel)
 	# ハブでは案内を下の帯（message_changed）に出すので、この画面の案内の行はタイトルの「続きから」のときだけ
@@ -153,7 +156,7 @@ func _sync_fullscreen_button(on: bool) -> void:
 
 func _setting_button(tip: String) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(250, 40)
+	b.custom_minimum_size = Vector2(250, 36)
 	b.add_theme_font_size_override("font_size", 18)
 	b.add_theme_font_override("font", UiTheme.font(800))
 	b.tooltip_text = tip
@@ -191,7 +194,7 @@ func _build_stop_settings() -> void:
 	_stop_kinds_box.add_theme_constant_override("v_separation", 8)
 	for kind: String in GameState.NEWS_STOP_KINDS:
 		var b := _setting_button("早送りの途中でこの種類のニュースが出たら止める")
-		b.custom_minimum_size = Vector2(190, 40)
+		b.custom_minimum_size = Vector2(190, 36)
 		b.add_theme_font_size_override("font_size", 16)
 		b.toggle_mode = true
 		b.toggled.connect(func(on: bool) -> void:
