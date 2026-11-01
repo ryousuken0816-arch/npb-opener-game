@@ -460,8 +460,17 @@
      全テスト35本をヘッドレスで1回：layout_fit_check 1953画面 ALL OK ほか全て OK。NG だったのは release_check（上の期待値の変更前）・roster_year_check（福盛の復帰先。new_game の乱数の種が毎回違い CPU の戦力外・移籍しだい）・
      draft_check の既知の「2025年に指名選手が試合に出た」（自球団の1位が抽選で投手になると下位の野手を1軍に上げて出場0のことがある。main のままでも同じ）→ どれも流し直して OK。
      そのあと担当B2・H・I（作業34〜36）を取り込み、補強ポイントに作業34の今季の位置別の戦力（得失点）を足して、全テスト37本をもう1回：全て OK（layout_fit_check・news_stop_check・position_value_check を含む）
-4.47 ~~2027年以降の日本人のメジャー移籍と帰国~~ → 完了（2026-11-01、担当 Antigravity）。docs/AUTORUN.md の作業41
-   - メジャー移籍：`godot/sim/league_roster.gd` の `depart_mlb` で、2027年以降は能力（実力z 0.75以上）・年齢（25〜34歳）・在籍年数（海外FA 9年、ポスティング 3〜8年かつ実力z 1.0以上）から年1〜3人が退団（史実の2008〜2025年の分布に近似）。ニュース「〇〇、メジャー挑戦を表明」。自球団選手なら `FreeAgency`（`FaView`）で引き留め可能
+4.47 ~~守備能力値の再構築（npbbasement データ統合）~~ → 完了（2026-11-01、ブランチ `antigravity/defense-ratings`）。詳細レポートは `docs/reports/defense_ratings.md`
+   - 背景：npb.jp の刺殺・補殺・失策から計算していた旧方式による評判とのズレ（牧の二塁守備F、中山礼都の肩A、近藤の守備C、岡林・辰己の過剰インフレ等）を是正。
+   - 指標取得：`https://npbbasement.com/` から2020〜2026年（1軍・2軍）の守備指標（RngR, ARM, ErrR, DPR, Framing, Blocking）を取得（`tools/fetch_basement.py`、`.gitignore` でリポジトリ外）。
+   - 計算仕様：`tools/compute_ratings.py`。直近3年加重平均（1.0 / 0.8 / 0.6、2軍は重み0.5）、規定イニングによる少サンプル縮約（守備位置平均 0.0 へのブレンド）。内野は RngR+ErrR+DPR、外野は守備 RngR+ErrR・肩 ARM、捕手は総合守備得点（Framing+Blocking+ErrR+ARM）・肩 ARM、三塁・遊撃の肩は外野ARMまたは補殺/試合。
+   - 年代間接続：2008〜2019年の旧方式と2020年以降の新方式の目盛りを合わせ（平均 63+17z）、2019年と2020年の境目で段差が生じないよう設計。
+   - 再生成：全年代の ratings、ドラフト、成長係数、外国人、架空ドラフトを一括再生成（`tools/rebuild_all_ratings.py`）。
+   - 検証：2025年 DELTA 守備アワード各部門1位（坂本誠志郎 S91、増田陸 A89、吉川尚輝 A80、泉口友汰 B79、周東佑京 A81、万波中正 B74、西川史礁 B71 等）が能力値でも上位に来ることを確認。牧秀悟が C61、中山礼都の肩が A83、近藤健介が A84/A85 に適正化。
+   - main への取り込み（2026-11-01、担当：守備取り込み）：origin/main（ドラフト作戦会議など）を取り込み、HANDOFF.md は両方残して番号を 4.47 に、`docs/reports/2026_defense_war.md` は defense_war_check の出力で作り直した。能力値ファイル（generated/）は main 側の変更がなく、このブランチのものをそのまま使った。2020→2021年の境で守備が大きく動く選手が多め（110人。普通の年は50人前後）なのは、ユーザーの了承済み
+   - 確認：Godot 4.7.2 ヘッドレスで読み込みエラー0件。season_check（2008年：打率 .265／本塁打 1490／防御率 3.75、史実 .265／1480／3.83）、defense_war_check、growth_check、foreign_check、fictional_draft_check、tactics_check、records_check、layout_fit_check（2108画面 ALL OK）ほか全37本を1回流した。NG は3本（draft_check の既知の「2025年に指名選手が試合に出た」、future_year_check の「アマ出身の野手のミートの変化」（平均 -3.1、しきい値 -3.0 でぎりぎり。守備と無関係の乱数）、mlb_draftee_check の「佐々木麟太郎を1位で獲得できない（抽選に4回外れた）」）で、どれも流し直して OK
+4.48 ~~2027年以降の日本人のメジャー移籍と帰国~~ → 完了（2026-11-01、担当 Antigravity）。docs/AUTORUN.md の作業41
+   - メジャー移籍：`godot/sim/league_roster.gd` の `depart_mlb` で、2027年以降は能力（実力z 0.70以上）・年齢（25〜35歳）・在籍年数（海外FA 9年、ポスティング 3〜8年かつ実力z 0.85以上）から年1〜3人が退団（史実の2008〜2025年の分布に近似）。ニュース「〇〇、メジャー挑戦を表明」。自球団選手なら `FreeAgency`（`FaView`）で引き留め可能
    - メジャー滞在中の成長・衰え：`godot/sim/future_year.gd` の `build()` で `in_mlb` の日本人選手を `Growth.grow()` で年越しさせ、`synthetic[next_year]["mlb_players"]` に格納（2026年時点でメジャーにいた16選手は `2026_post` の `mlb_players` から開始）。41歳以上または38歳以上で能力大幅低下の未帰国選手はメジャーで引退
    - メジャーからの帰国：`LeagueRoster.decide_mlb_returns` で30代半ば中心（33〜37歳ピーク）に確率で年1〜2人が帰国表明。帰国選手は `FutureYear.build()` で来季の `players` に加え、`FreeAgency.open` で FA 市場に出る（古巣球団が `from` となり入札・残留交渉で有利、好みに古巣・地元）。入札なしなら古巣へ復帰。補償はなし。ニュース「〇〇が古巣に復帰」「〇〇が〇〇に入団」
    - 確認：`godot/tests/mlb_future_check.gd`（新、ヘッドレス）。2027年から10年進めて毎年1〜3人移籍・1〜2人帰国、引き留め、帰国選手のFA契約・翌季所属・試合出場、ニュース、セーブ／ロードで一致

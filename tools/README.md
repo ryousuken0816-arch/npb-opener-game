@@ -37,8 +37,8 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 | パワー | ISO（塁打−安打）/打数 |
 | 選球眼 | BB%（四球/打席） |
 | 走力 | 盗塁企図率 0.45 ＋ 盗塁成功率 0.15 ＋ 三塁打率 0.4 |
-| 肩力 | 守備位置別の 補殺/試合（捕手・三塁・遊撃・外野）※捕手は盗塁阻止率の暫定代替 |
-| 守備力 | 守備位置別の失策率 ＋ ゴールデングラブ（当年+1.2σ, 1年前+0.9σ, 2年前+0.6σ, 3年前+0.3σ） |
+| 肩力 | 守備位置別の 補殺/試合（捕手・三塁・遊撃・外野）※2020年以降は外野・捕手は npbbasement の ARM、三塁・遊撃は外野ARMまたは補殺/試合 |
+| 守備力 | 守備位置別の失策率 ＋ ゴールデングラブ。※2020年以降は npbbasement の守備得点（内野: RngR+ErrR+DPR、外野: RngR+ErrR、捕手: Framing+Blocking+ErrR+ARM） |
 | 投手 総合力 | FIP（定数 = 年ごとのリーグ防御率 − 素のFIP）。**先発・救援で別々に正規化** |
 | 投手 スタミナ | 1登板あたりアウト数（12以上で先発扱い。先発数がデータにないため）。先発・救援共通で正規化 |
 | 投手 K/9・BB/9・HR/9 | 先発・救援で別々に正規化 |
@@ -146,6 +146,22 @@ FA・ポスティングでメジャーへ行く選手を引き留めたときに
 - 2005〜2007年のチーム成績・表彰（data/2005〜2007）を取得済みのため、2008年 pre のフォールバックは解消（players.json・drafts.json が無い年はスキップして読み込む）
 - 球速・弾道の指標と代用ロジックは上記のとおり確定（係数は `tools/compute_ratings.py` 冒頭の `VELOCITY_*` / `TRAJECTORY_*` 定数で調整可能）
 - 新人の初期能力はドラフト順位＋出身区分ベースで確定（係数は `ROOKIE_*` 定数）。2軍成績が出れば既存の少サンプル補正でそのまま実績側に寄っていく
+
+## fetch_basement.py — basement守備データ取得
+
+```
+python tools/fetch_basement.py   # → data/basement/<年>_<1g|2g>.json（リポジトリ外・.gitignore）
+```
+
+https://npbbasement.com/ から 2020〜2026年（1軍・2軍）の守備指標データ（RngR, ErrR, DPR, ARM, Framing, Blocking）を取得・保存する。取得した JSON は git 管理外。
+
+## rebuild_all_ratings.py — 全能力値・派生ファイルの一括再生成
+
+```
+python tools/rebuild_all_ratings.py
+```
+
+2008〜2026年の全 ratings（pre/post）および 2027_pre、アマチュア新人・継続データ、将来性、成長係数（growth.json）、外国人（foreign.json）、架空ドラフト（fictional_draft.json）を一括で順番通りに再生成するパイプラインスクリプト。
 
 ## growth_coefficients.py — 成長・衰え・引退の係数（docs/AUTORUN.md 作業27）
 
