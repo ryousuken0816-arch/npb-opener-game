@@ -964,6 +964,12 @@ func _stats_page() -> Control:
 	if StatTable.total(other[2], "pa" if is_pitcher else "g") > 0:
 		box.add_child(UiTheme.small_label(other[0], 16, _palette.ink, 800))
 		box.add_child(StatTable.build(other[1], other[2], false, _palette))
+	# ゲーム内の年度別の WAR・守備得点（記録室と同じ計算）
+	var war_rows := StatTable.war_rows(player_id, is_pitcher)
+	if not war_rows.is_empty():
+		box.add_child(UiTheme.small_label("ゲーム内の年度別 WAR・守備得点（%s）" % (
+			"投手の WAR は FIP から" if is_pitcher else "守備得点は同じ守備位置のリーグ平均との差（点）"), 16, _palette.ink, 800))
+		box.add_child(StatTable.build_war(war_rows, is_pitcher, _palette))
 	return box
 
 

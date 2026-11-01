@@ -288,6 +288,14 @@ func _check_records(when: String) -> void:
 					"規定以上" if mode[1] else "全員"], 0.0)
 			view.set("_career", false)
 			view.set("_qualified", true)
+			if t[0] == "bat":
+				# 守備ランキング（作業33）：内野・捕手・外野で列が違う
+				for pos: String in ["遊撃手", "捕手", "中堅手"]:
+					view.set("_fld_pos", pos)
+					view.refresh()
+					await _check_screen("%s：記録室 守備ランキング（%s）" % [when, pos], 0.0)
+				view.set("_fld_pos", "")
+				view.refresh()
 		elif t[0] == "depth":
 			for team: String in root.get_node("GameData").teams():
 				view.set_team(team)
