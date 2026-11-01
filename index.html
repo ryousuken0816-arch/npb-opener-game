@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+		<title>NPBオーペナゲーム</title>
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
+		<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+		<style>
+html, body, #canvas {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	touch-action: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+body {
+	color: #e6edf3;
+	background-color: #070d18;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+#canvas {
+	display: block;
+	outline: none;
+}
+
+#status, #status-splash, #status-progress {
+	position: absolute;
+	left: 0;
+	right: 0;
+}
+
+#status, #status-splash {
+	top: 0;
+	bottom: 0;
+}
+
+#status {
+	background-color: #070d18;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+	z-index: 50;
+}
+
+#status-splash {
+	max-height: 100%;
+	max-width: 100%;
+	margin: auto;
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+}
+
+#status-progress, #status-notice {
+	display: none;
+}
+
+#status-progress {
+	bottom: 12%;
+	width: 65%;
+	max-width: 360px;
+	margin: 0 auto;
+	height: 14px;
+	border-radius: 7px;
+	overflow: hidden;
+	background: #141f33;
+	border: 1px solid #294066;
+}
+
+#status-progress::-webkit-progress-bar {
+	background-color: #141f33;
+}
+#status-progress::-webkit-progress-value {
+	background: linear-gradient(90deg, #1f6feb, #38ef7d);
+}
+#status-progress::-moz-progress-bar {
+	background: linear-gradient(90deg, #1f6feb, #38ef7d);
+}
+
+#status-notice {
+	background-color: #5b3943;
+	border-radius: 0.5rem;
+	border: 1px solid #9b3943;
+	color: #e0e0e0;
+	line-height: 1.4;
+	margin: 0 2rem;
+	overflow: hidden;
+	padding: 1rem;
+	text-align: center;
+	z-index: 60;
+}
+
+#gatekeeper {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: radial-gradient(circle at 50% 30%, #152238 0%, #070d18 80%);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	padding: 20px;
+	box-sizing: border-box;
+	transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+#gatekeeper.hidden {
+	opacity: 0;
+	pointer-events: none;
+	transform: scale(1.05);
+}
+
+.lock-card {
+	background: rgba(16, 26, 44, 0.88);
+	border: 1px solid #294066;
+	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(31, 111, 235, 0.2);
+	border-radius: 16px;
+	padding: 28px 24px;
+	width: 100%;
+	max-width: 380px;
+	text-align: center;
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+.lock-icon {
+	font-size: 42px;
+	margin-bottom: 8px;
+	display: inline-block;
+}
+
+.lock-title {
+	font-size: 20px;
+	font-weight: 700;
+	color: #ffffff;
+	margin: 0 0 6px 0;
+	letter-spacing: 0.5px;
+}
+
+.lock-subtitle {
+	font-size: 13px;
+	color: #8b9bb4;
+	margin: 0 0 22px 0;
+	line-height: 1.5;
+}
+
+.lock-form {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.lock-input {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 14px 16px;
+	border-radius: 10px;
+	border: 1px solid #334d77;
+	background: #0b1424;
+	color: #ffffff;
+	font-size: 16px;
+	outline: none;
+	text-align: center;
+	letter-spacing: 2px;
+}
+
+.lock-remember {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	font-size: 13px;
+	color: #a2b4cd;
+	cursor: pointer;
+}
+
+.lock-btn {
+	background: linear-gradient(135deg, #1f6feb 0%, #1158c7 100%);
+	color: #ffffff;
+	border: none;
+	border-radius: 10px;
+	padding: 14px 20px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: 0 4px 14px rgba(31, 111, 235, 0.4);
+}
+
+.lock-error {
+	font-size: 13px;
+	color: #ff7b72;
+	min-height: 18px;
+	margin-top: 4px;
+}
+
+.lock-footer {
+	margin-top: 18px;
+	font-size: 11px;
+	color: #657795;
+}
+		</style>
+		<script>
+window.addEventListener('touchstart', function unlockAudio() {
+	try {
+		var AudioCtx = window.AudioContext || window.webkitAudioContext;
+		if (AudioCtx) {
+			var ctx = new AudioCtx();
+			ctx.resume().then(function() { ctx.close(); });
+		}
+	} catch(e) {}
+	window.removeEventListener('touchstart', unlockAudio);
+}, { once: true });
+
+if (navigator.storage && navigator.storage.persist) {
+	navigator.storage.persist().then(function(persistent) {
+		console.log('Storage persistent:', persistent);
+	});
+}
+		</script>
+	</head>
+	<body>
+		<canvas id="canvas">
+			Your browser does not support the canvas tag.
+		</canvas>
+
+		<div id="status">
+			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.png" alt="">
+			<progress id="status-progress"></progress>
+			<div id="status-notice"></div>
+		</div>
+
+		<div id="gatekeeper">
+			<div class="lock-card" id="lock-card">
+				<div class="lock-icon">🔒</div>
+				<h1 class="lock-title">NPBオーペナ</h1>
+				<p class="lock-subtitle">管理者専用アクセス<br>パスコードを入力してください</p>
+				<form class="lock-form" id="lock-form" onsubmit="handleAuth(event)">
+					<input type="password" id="pass-input" class="lock-input" placeholder="パスコード" autofocus autocomplete="current-password" />
+					<label class="lock-remember">
+						<input type="checkbox" id="remember-device" checked>
+						この端末を記憶する（次回自動起動）
+					</label>
+					<button type="submit" class="lock-btn" id="lock-btn">ゲームを開始</button>
+					<div class="lock-error" id="lock-error"></div>
+				</form>
+				<div class="lock-footer">
+					※ 認証が完了するとゲームデータのダウンロードが始まります
+				</div>
+			</div>
+		</div>
+
+		<script>
+const VALID_HASHES = [
+	'6336fe5db32a323ad1d5e65958aff1eacf2053e39152a510e192528135178b18', // 0816
+	'ba1e25e73c01d29669e05463d144a2113bd4767e2d420458c395893947ebba01'  // npb0816
+];
+
+const STORAGE_KEY = 'npb_opener_auth_token';
+
+async function sha256(str) {
+	const utf8 = new TextEncoder().encode(str);
+	const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function handleAuth(e) {
+	if (e) e.preventDefault();
+	const passInput = document.getElementById('pass-input');
+	const errorEl = document.getElementById('lock-error');
+	const rememberEl = document.getElementById('remember-device');
+
+	const rawPass = (passInput.value || '').trim();
+	if (!rawPass) {
+		errorEl.textContent = 'パスコードを入力してください';
+		return;
+	}
+
+	const hash = await sha256(rawPass);
+	if (VALID_HASHES.includes(hash)) {
+		if (rememberEl.checked) {
+			localStorage.setItem(STORAGE_KEY, hash);
+		}
+		unlockAndLaunch();
+	} else {
+		errorEl.textContent = 'パスコードが正しくありません';
+		passInput.value = '';
+		passInput.focus();
+	}
+}
+
+async function checkExistingAuth() {
+	const urlParams = new URLSearchParams(window.location.search);
+	const keyParam = urlParams.get('key');
+	if (keyParam) {
+		const keyHash = await sha256(keyParam.trim());
+		if (VALID_HASHES.includes(keyHash)) {
+			localStorage.setItem(STORAGE_KEY, keyHash);
+			unlockAndLaunch();
+			return;
+		}
+	}
+
+	const savedHash = localStorage.getItem(STORAGE_KEY);
+	if (savedHash && VALID_HASHES.includes(savedHash)) {
+		unlockAndLaunch();
+		return;
+	}
+
+	document.getElementById('gatekeeper').style.display = 'flex';
+}
+
+let gameLaunched = false;
+function unlockAndLaunch() {
+	if (gameLaunched) return;
+	gameLaunched = true;
+
+	const gatekeeper = document.getElementById('gatekeeper');
+	gatekeeper.classList.add('hidden');
+	setTimeout(() => {
+		gatekeeper.style.display = 'none';
+	}, 400);
+
+	const script = document.createElement('script');
+	script.src = 'index.js';
+	script.onload = () => {
+		initGodotEngine();
+	};
+	script.onerror = (err) => {
+		console.error('Failed to load engine script:', err);
+		alert('ゲームエンジンの読み込みに失敗しました。再読み込みしてください。');
+	};
+	document.body.appendChild(script);
+}
+
+function initGodotEngine() {
+	const GODOT_CONFIG = {
+		"args": [],
+		"canvasResizePolicy": 2,
+		"emscriptenPoolSize": 8,
+		"ensureCrossOriginIsolationHeaders": false,
+		"executable": "index",
+		"experimentalVK": false,
+		"fileSizes": {
+			"index.pck": 57650748,
+			"index.wasm": 39514754
+		},
+		"focusCanvas": true,
+		"gdextensionLibs": [],
+		"godotPoolSize": 4
+	};
+	const GODOT_THREADS_ENABLED = false;
+	const engine = new Engine(GODOT_CONFIG);
+
+	const statusOverlay = document.getElementById('status');
+	const statusProgress = document.getElementById('status-progress');
+	const statusNotice = document.getElementById('status-notice');
+
+	let initializing = true;
+	let statusMode = '';
+
+	function setStatusMode(mode) {
+		if (statusMode === mode || !initializing) {
+			return;
+		}
+		if (mode === 'hidden') {
+			statusOverlay.remove();
+			initializing = false;
+			return;
+		}
+		statusOverlay.style.visibility = 'visible';
+		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
+		statusMode = mode;
+	}
+
+	function setStatusNotice(text) {
+		while (statusNotice.lastChild) {
+			statusNotice.removeChild(statusNotice.lastChild);
+		}
+		const lines = text.split('\n');
+		lines.forEach((line) => {
+			statusNotice.appendChild(document.createTextNode(line));
+			statusNotice.appendChild(document.createElement('br'));
+		});
+	}
+
+	function displayFailureNotice(err) {
+		console.error(err);
+		if (err instanceof Error) {
+			setStatusNotice(err.message);
+		} else if (typeof err === 'string') {
+			setStatusNotice(err);
+		} else {
+			setStatusNotice('エラーが発生しました。ブラウザの再読み込みをお試しください。');
+		}
+		setStatusMode('notice');
+		initializing = false;
+	}
+
+	const missing = Engine.getMissingFeatures({
+		threads: GODOT_THREADS_ENABLED,
+	});
+
+	if (missing.length !== 0) {
+		const missingMsg = 'お使いのブラウザでは以下のWeb機能が不足しています:\n';
+		displayFailureNotice(missingMsg + missing.join('\n'));
+	} else {
+		setStatusMode('progress');
+		engine.startGame({
+			'onProgress': function (current, total) {
+				if (current > 0 && total > 0) {
+					statusProgress.value = current;
+					statusProgress.max = total;
+				} else {
+					statusProgress.removeAttribute('value');
+					statusProgress.removeAttribute('max');
+				}
+			},
+		}).then(() => {
+			setStatusMode('hidden');
+		}, displayFailureNotice);
+	}
+}
+
+checkExistingAuth();
+		</script>
+	</body>
+</html>
