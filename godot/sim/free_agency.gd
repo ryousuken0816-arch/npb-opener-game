@@ -99,7 +99,9 @@ var _league_ref: WeakRef = null
 
 
 ## FA宣言とメジャー移籍の一覧を作る。leaving: LeagueRoster.depart_mlb() の戻り値 [{id, from, route}]
-func open(league: LeagueRoster, season_year: int, leaving: Array[Dictionary], seed_value: int) -> void:
+## mlb_returns: メジャーから帰国してFA市場に出る日本人選手（docs/AUTORUN.md 作業41）
+func open(league: LeagueRoster, season_year: int, leaving: Array[Dictionary], seed_value: int,
+		mlb_returns: Array[String] = []) -> void:
 	year = season_year
 	_league_ref = weakref(league)
 	_rng.seed = seed_value
@@ -117,6 +119,37 @@ func open(league: LeagueRoster, season_year: int, leaving: Array[Dictionary], se
 		mlb.append(id)
 		mlb_info[id] = {"from": mv["from"], "route": mv["route"], "asking": asking(league, id),
 			"status": "leave", "chance": 0.0, "amount": 0, "years": 0}
+	for id: String in mlb_returns:
+		if id in declared:
+			continue
+		var m: Dictionary = league.in_mlb.get(id, {})
+		var from_team := GameData.resolve_team(str(m.get("npb_team_before", "")), year)
+		var p := GameData.mlb_player(id)
+		if p.is_empty():
+			p = GameData.player(id)
+		if p.is_empty():
+			continue
+		declared.append(id)
+		var age := age_of(p, year)
+		var npb_years := league.years_in_npb(id, year + 1)
+		var mkt_salary := Salary.initial(p, npb_years, false, year + 1)
+		var ask := Salary.round_amount(mkt_salary * ASKING_RATE)
+		var want_years := want_years_for(age)
+		var prefs := make_prefs(id, p, from_team)
+		# 古巣が有利（作業36の好み「地元・古巣」）
+		var has_home := false
+		for pr: Dictionary in prefs:
+			if pr.get("kind") == "home":
+				has_home = true
+				break
+		if not has_home:
+			var reg := region_of_team(from_team)
+			if not reg.is_empty():
+				prefs.append({"kind": "home", "value": reg})
+		info[id] = {"from": from_team, "asking": ask, "age": age,
+			"kind": kind_of(p), "salary": mkt_salary, "want_years": want_years,
+			"prefs": prefs, "mlb_return": true}
+		cpu_bids[id] = _cpu_bids(league, id)
 
 
 ## 国内FAの資格：在籍年数・前回の行使からの年数・複数年契約中でない・外国人枠でない
@@ -297,7 +330,7 @@ func resolve(league: LeagueRoster) -> void:
 		if league.team_of.has(id):
 			ranks[id] = FaCompensation.rank_of(league, id, info[id]["from"], year, debut)
 	for id in declared:
-		if not league.team_of.has(id):
+		if not league.team_of.has(id) and not bool(info[id].get("mlb_return", false)):
 			continue
 		var from: String = info[id]["from"]
 		var bids: Array = cpu_bids.get(id, []).duplicate()
@@ -312,7 +345,8 @@ func resolve(league: LeagueRoster) -> void:
 				best_score = s
 				best = b
 		if best.is_empty():
-			best = {"team": from, "amount": league.salary_of(id), "years": 1}
+			var default_amount: int = int(info[id]["salary"]) if bool(info[id].get("mlb_return", false)) else league.salary_of(id)
+			best = {"team": from, "amount": default_amount, "years": 1}
 		league.sign_fa(id, from, best["team"], best["amount"], best["years"], year + 1, bids.size())
 		results.append({"id": id, "from": from, "to": best["team"], "amount": best["amount"],
 			"years": best["years"], "bidders": bids.size(), "user_bid": user_bids.has(id),
@@ -469,9 +503,11 @@ func bidder_teams(id: String) -> Array[String]:
 ## CPU球団の入札：戦力の必要度（同じ種類で何人目に入るか）・能力・年俸で決める
 func _cpu_bids(league: LeagueRoster, id: String) -> Array[Dictionary]:
 	var p := GameData.player(id)
-	var z := float(Salary.ability(p)[0])
+	if p.is_empty():
+		p = GameData.mlb_player(id)
+	var z := float(Salary.ability(p)[0]) if not p.is_empty() else 0.0
 	var kind := kind_of(p)
-	var from: String = league.team_of[id]
+	var from: String = info[id]["from"] if info.has(id) else league.team_of.get(id, "")
 	var base: int = info[id]["asking"]
 	var r := base_range(id)
 	var teams := {}

@@ -470,7 +470,10 @@ func _read_repo_json(relative: String) -> Variant:
 
 ## 選手IDから能力値ファイルの選手データを引く（今のファイルに無ければ来季のファイル。無ければ空）
 func player(id: String) -> Dictionary:
-	return _players_by_id.get(id, _supplement.get(id, _prospects.get(id, {})))
+	var p: Dictionary = _players_by_id.get(id, _supplement.get(id, _prospects.get(id, {})))
+	if p.is_empty():
+		return _mlb_by_id.get(id, {})
+	return p
 
 
 ## 架空のドラフト候補を置く（draft_year 年の分。空の配列なら消す）。ドラフト会議の一覧のキャッシュも作り直す

@@ -48,6 +48,14 @@ const RELEASE_SIGN_PER_ROUND := 1
 const RELEASE_ASKING_RATE := 0.7
 ## 戦力外にした選手の出来事の種類（今オフに加わった選手＝戦力外にしない、の判定に使う）
 const JOINED_KINDS := ["mlb_return", "fa_move", "fa_stay", "mlb_keep", "foreign_sign", "release_sign", "trade"]
+
+## 2027年以降の日本人のメジャー移籍と帰国（docs/AUTORUN.md 作業41）
+const MLB_FUTURE_START_YEAR := 2027
+const MLB_DEPART_MIN_AGE := 25
+const MLB_DEPART_MAX_AGE := 35
+const MLB_DEPART_MIN_ABILITY := 0.70  ## トップクラスの実力z
+const MLB_RETURN_MIN_AGE := 30
+const MLB_RETURN_PEAK_AGE := 35
 ## 育成から支配下に登録した選手 → {year, date, team}（この年から支配下。docs/AUTORUN.md 作業19）
 var promoted := {}
 ## 能力値ファイルにいないドラフトの新人（仮の選手）を何シーズン置いておくか（その間にファイルに出てこなければ引退）
@@ -159,6 +167,8 @@ func start(start_year: int, ratings: Dictionary, opening_date: String, user: Str
 		var amount := Salary.rookie(draft, start_year) if not draft.is_empty() else Salary.initial(
 				p, years_in_npb(id, start_year), foreign, start_year)
 		_set_salary(id, amount, start_year)
+	if start_year >= MLB_FUTURE_START_YEAR:
+		_sync_historical_mlb_players(start_year)
 
 
 # --- トレード -------------------------------------------------------------------------
@@ -277,13 +287,144 @@ func depart_mlb(season_year: int) -> Array[Dictionary]:
 		_log("", "mlb_leave", id, names.get(id, id), from, "",
 				"%s：%s → メジャー（ポスティング。入団時の約束）" % [names.get(id, id), GameData.short_name(from)])
 		leaving.append({"id": id, "from": from, "route": "ポスティング"})
+	# 2027年以降の架空メジャー移籍（作業41）
+	if season_year >= MLB_FUTURE_START_YEAR:
+		_sync_historical_mlb_players(season_year)
+		var future_leaving := _decide_future_mlb_departures(season_year)
+		leaving.append_array(future_leaving)
 	return leaving
 
 
+## 2027年以降の架空メジャー進行のために、過去の史実メジャー在籍選手を in_mlb に同期する（作業41）
+func _sync_historical_mlb_players(season_year: int) -> void:
+	for id: String in _moves_by_id:
+		var m: Dictionary = _moves_by_id[id]
+		var left: int = int(m.get("left_after", 9999))
+		var ret = m.get("returned")
+		var is_returned := (ret != null and int(ret) <= season_year)
+		if left <= season_year and not is_returned and not team_of.has(id) and not retired.has(id):
+			if not in_mlb.has(id):
+				var copy: Dictionary = m.duplicate(true)
+				copy["npb_team_before"] = GameData.resolve_team(str(copy.get("npb_team_before", "")), season_year)
+				in_mlb[id] = copy
+			if not names.has(id):
+				names[id] = str(m.get("name", id))
+
+
+## 2027年以降の架空メジャー移籍の判定（作業41）
+func _decide_future_mlb_departures(season_year: int) -> Array[Dictionary]:
+	var debut := GameData.load_debut_years(season_year)
+	var candidates: Array[Dictionary] = []
+	var ids: Array = team_of.keys()
+	ids.sort()
+	for id: String in ids:
+		if id.begins_with("tmp:") or int(contract_until.get(id, 0)) > season_year:
+			continue
+		var p := GameData.player(id)
+		if p.is_empty() or RosterRules.is_foreign(p, season_year, debut.get(id)):
+			continue
+		var age := FreeAgency.age_of(p, season_year)
+		if age < MLB_DEPART_MIN_AGE or age > MLB_DEPART_MAX_AGE:
+			continue
+		var a: Array = Salary.ability(p)
+		var z: float = a[0]
+		var play: float = a[1]
+		if z < MLB_DEPART_MIN_ABILITY or play < 0.4:
+			continue
+		var years := years_in_npb(id, season_year)
+		var is_overseas_fa := (years >= 9)
+		var is_posting := (years >= 3 and years < 9 and z >= 0.85)
+		if not is_overseas_fa and not is_posting:
+			continue
+		var score := (z - 0.7) * 2.0 + (1.0 - absf(float(age) - 28.5) * 0.1)
+		if is_overseas_fa:
+			score += 0.5
+		candidates.append({"id": id, "from": team_of[id], "years": years,
+			"route": "海外FA" if is_overseas_fa else "ポスティング",
+			"score": score * _rng.randf_range(0.85, 1.15)})
+	candidates.sort_custom(func(x: Dictionary, y: Dictionary) -> bool:
+		return x["score"] > y["score"])
+	# 年1〜3人（史実の2008〜2025年：平均約2人）
+	var count := _rng.randi_range(1, 3)
+	if candidates.size() < count:
+		count = candidates.size()
+	var chosen: Array[Dictionary] = []
+	for i in count:
+		var c: Dictionary = candidates[i]
+		var id: String = c["id"]
+		var from: String = c["from"]
+		var route: String = c["route"]
+		team_of.erase(id)
+		var p := GameData.player(id)
+		in_mlb[id] = {"player_id": id, "name": names.get(id, id), "left_after": season_year, "route": route,
+			"npb_team_before": from, "returned": null, "fictional": true, "birth": p.get("birth", "")}
+		_log("", "mlb_leave", id, names.get(id, id), from, "",
+				"%s：%s → メジャー（%s）" % [names.get(id, id), GameData.short_name(from), route])
+		chosen.append({"id": id, "from": from, "route": route})
+	return chosen
+
+
+## 2027年以降のメジャーからの帰国判定（作業41）
+func decide_mlb_returns(season_year: int) -> Array[String]:
+	if season_year < MLB_FUTURE_START_YEAR:
+		return []
+	var candidates: Array[Dictionary] = []
+	var ids: Array = in_mlb.keys()
+	ids.sort()
+	for id: String in ids:
+		var m: Dictionary = in_mlb[id]
+		# 今オフ移籍したばかりの選手、またはすでに帰国/引退した選手は除く
+		if int(m.get("left_after", 0)) >= season_year or m.get("returned") != null or retired.has(id):
+			continue
+		var p := GameData.mlb_player(id)
+		if p.is_empty():
+			p = GameData.player(id)
+		if p.is_empty():
+			continue
+		var age := FreeAgency.age_of(p, season_year)
+		var mlb_years := season_year - int(m.get("left_after", season_year - 1))
+		var a: Array = Salary.ability(p)
+		var z: float = a[0]
+		# 30代半ば中心の確率
+		var base_p := 0.05
+		if age <= 29:
+			base_p = 0.02
+		elif age <= 31:
+			base_p = 0.10
+		elif age <= 33:
+			base_p = 0.22
+		elif age <= 35:
+			base_p = 0.40
+		elif age <= 37:
+			base_p = 0.50
+		else:
+			base_p = 0.45
+		if mlb_years >= 3:
+			base_p += 0.10
+		if z < 0.2:
+			base_p += 0.15
+		var weight := base_p * _rng.randf_range(0.8, 1.2)
+		if _rng.randf() < base_p:
+			candidates.append({"id": id, "weight": weight})
+	candidates.sort_custom(func(x: Dictionary, y: Dictionary) -> bool:
+		return x["weight"] > y["weight"])
+	# 年1〜2人
+	var max_returns := _rng.randi_range(1, 2)
+	var returns: Array[String] = []
+	for i in mini(max_returns, candidates.size()):
+		var id: String = candidates[i]["id"]
+		returns.append(id)
+		var m: Dictionary = in_mlb[id]
+		var from_team: String = m.get("npb_team_before", "")
+		_log("", "mlb_declare_return", id, names.get(id, id), "", from_team,
+				"%sが日本球界への復帰を表明" % names.get(id, id))
+	return returns
+
+
 ## FA・ポスティングの段階を始める（depart_mlb・prepare_next_year のあと）。自球団の入札・引き留めは fa で行う
-func open_fa(season_year: int, leaving: Array[Dictionary]) -> FreeAgency:
+func open_fa(season_year: int, leaving: Array[Dictionary], mlb_returns: Array[String] = []) -> FreeAgency:
 	fa = FreeAgency.new()
-	fa.open(self, season_year, leaving, _rng.randi())
+	fa.open(self, season_year, leaving, _rng.randi(), mlb_returns)
 	return fa
 
 
@@ -295,12 +436,22 @@ func plan_retirements() -> Array:
 ## FAの移籍・残留を決める（FreeAgency.resolve から）。bidders: 入札した球団の数
 func sign_fa(id: String, from: String, to: String, amount: int, years: int, next_year: int,
 		bidders: int) -> void:
+	var was_in_mlb := in_mlb.has(id)
+	if was_in_mlb:
+		in_mlb.erase(id)
 	team_of[id] = to
 	_set_salary(id, amount, next_year)
 	contract_until[id] = next_year + years - 1
 	fa_year[id] = next_year - 1
 	var name: String = names.get(id, id)
-	if to == from:
+	if was_in_mlb:
+		if to == from:
+			_log("", "mlb_return", id, name, "", to, "%s：%sに復帰（メジャーから復帰、%s・%d年）" % [
+				name, GameData.short_name(to), Salary.text(amount), years])
+		else:
+			_log("", "mlb_return", id, name, "", to, "%s：メジャー → %s（復帰、%s・%d年、%d球団が入札）" % [
+				name, GameData.short_name(to), Salary.text(amount), years, bidders])
+	elif to == from:
 		_log("", "fa_stay", id, name, from, to, "%s：%sに残留（FA、%s・%d年）" % [
 			name, GameData.short_name(to), Salary.text(amount), years])
 	else:
@@ -390,7 +541,9 @@ func prepare_next_year(season_year: int, next: Dictionary, next_post: Dictionary
 		elif _is_draftee(p, season_year):
 			draftees.append(id)
 		else:
-			newcomers.append(id)
+			var target_team: String = p.get("hist_team", p.get("team", ""))
+			if not target_team.is_empty():
+				newcomers.append(id)
 	if fictional > 0:
 		_fictional_demand(next, retire, next_year, debut, fictional)
 	_plan = {"year": next_year, "entries": entries, "renames": renames, "retire": retire,
@@ -623,6 +776,8 @@ func apply_newcomers() -> void:
 	for id: String in _plan.get("newcomers", []):
 		var p: Dictionary = _plan["entries"][id]
 		var team := _current_name(p.get("hist_team", p["team"]))
+		if team.is_empty() or (team_of.has(id) and not team_of[id].is_empty()):
+			continue
 		team_of[id] = team
 		names[id] = p["name"]
 		retired.erase(id)

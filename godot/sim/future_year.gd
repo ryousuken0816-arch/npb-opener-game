@@ -24,8 +24,9 @@ func _init(growth_model: Growth = null, foreign_model: ForeignPlayers = null) ->
 ## season_year のオフに、来季（season_year + 1）の開幕時点の能力値（能力値ファイルと同じ形）を作る。
 ## base：来季のファイル（無ければ空）。season：今季の Season（無ければ null）。
 ## extra：ほかに加える選手（GameState.future_newcomers。hist_team のある選手はその球団の新加入、空ならドラフト候補）
+## mlb_returns：メジャーから復帰してFA市場に出る日本人選手（作業41）
 func build(season_year: int, league: LeagueRoster, season: Season, base: Dictionary,
-		rng: RandomNumberGenerator, extra: Array = []) -> Dictionary:
+		rng: RandomNumberGenerator, extra: Array = [], mlb_returns: Array = []) -> Dictionary:
 	var next_year := season_year + 1
 	var debut := GameData.load_debut_years(season_year)
 	var keep: Array = []
@@ -58,6 +59,24 @@ func build(season_year: int, league: LeagueRoster, season: Season, base: Diction
 		keep.append(p)
 		fresh[id] = true
 		newcomer_team[id] = str(p.get("hist_team", p.get("team", "")))
+	# メジャーから復帰する選手を来季の players に追加（作業41）
+	for id: String in mlb_returns:
+		if league.team_of.has(id) or fresh.has(id):
+			continue
+		var p := _find_mlb_player(id, season_year, base)
+		if p.is_empty():
+			continue
+		var q: Dictionary = p.duplicate(true)
+		var side := Growth._side(q)
+		if not side.is_empty():
+			var dummy_stats := {"outs_1": 450.0, "outs_2": 0.0} if side == "P" else {"pa_1": 500.0, "pa_2": 0.0}
+			Growth._update_sample(q, side, dummy_stats)
+			q = growth.grow(q, next_year, rng)
+		q["team"] = ""
+		q["hist_team"] = ""
+		q["year"] = next_year
+		keep.append(q)
+		fresh[id] = true
 	var imports := foreign.generate_year(next_year, rng)
 	for p: Dictionary in imports:
 		keep.append(p)
@@ -72,13 +91,67 @@ func build(season_year: int, league: LeagueRoster, season: Season, base: Diction
 		q["hist_team"] = team
 		if team.is_empty() and ForeignPlayers.is_fictional_foreign(q):
 			q["league"] = null
+	var mlb_players := _grow_mlb_players(season_year, next_year, league, base, rng, mlb_returns)
 	return {
 		"schema_version": base.get("schema_version", 4), "year": next_year, "phase": "pre", "synthetic": true,
-		"players": players, "mlb_players": [],
+		"players": players, "mlb_players": mlb_players,
 		"foreign_target": float(foreign.data.get("per_team_foreigners", 7.0)),
 		"foreign_pitcher_share": foreign.pitcher_share(),
-		"growth_note": {"retired": retired, "imports": imports.size(), "candidates": fresh.size() - imports.size()},
+		"growth_note": {"retired": retired, "imports": imports.size(), "candidates": fresh.size() - imports.size(),
+			"mlb": mlb_players.size(), "mlb_returns": mlb_returns.size()},
 	}
+
+
+## メジャーにいる日本人選手の能力値を年越し（成長・衰え）させる（docs/AUTORUN.md 作業41）
+func _grow_mlb_players(season_year: int, next_year: int, league: LeagueRoster, base: Dictionary,
+		rng: RandomNumberGenerator, mlb_returns: Array = []) -> Array:
+	var result: Array = []
+	var ids: Array = league.in_mlb.keys()
+	ids.sort()
+	for id: String in ids:
+		if mlb_returns.has(id):
+			continue
+		var m: Dictionary = league.in_mlb[id]
+		if m.get("returned") != null or league.retired.has(id):
+			continue
+		var p := _find_mlb_player(id, season_year, base)
+		if p.is_empty():
+			continue
+		var age := Growth.age_at(p, next_year)
+		# 高齢または能力大幅低下の未帰国選手はメジャーで引退
+		if age >= 41 or (age >= 38 and Salary.ability(p)[0] < -0.8):
+			league.retired[id] = season_year
+			league.in_mlb.erase(id)
+			continue
+		var q: Dictionary = p.duplicate(true)
+		var side := Growth._side(q)
+		if not side.is_empty():
+			var dummy_stats := {"outs_1": 450.0, "outs_2": 0.0} if side == "P" else {"pa_1": 500.0, "pa_2": 0.0}
+			Growth._update_sample(q, side, dummy_stats)
+			q = growth.grow(q, next_year, rng)
+		q["team"] = null
+		q["hist_team"] = null
+		q["year"] = next_year
+		result.append(q)
+	return result
+
+
+## メジャーにいる選手の直近の能力値を探す
+static func _find_mlb_player(id: String, season_year: int, base: Dictionary) -> Dictionary:
+	for p: Dictionary in base.get("mlb_players", []):
+		if str(p.get("id", "")) == id:
+			return p
+	var cur: Dictionary = GameData.mlb_player(id)
+	if not cur.is_empty():
+		return cur
+	var p26: Dictionary = GameData.peek_ratings(2026, "post")
+	for p: Dictionary in p26.get("mlb_players", []):
+		if str(p.get("id", "")) == id:
+			return p
+	var direct: Dictionary = GameData.player(id)
+	if not direct.is_empty():
+		return direct
+	return {}
 
 
 ## 今季のゲーム内の1軍の成績（Growth.grow の season の形）。投手は投球のアウト数、野手は打席
