@@ -5,7 +5,9 @@ extends VBoxContainer
 ##
 ## タブ（LB/RB＝Q/E でも）：
 ## - 打撃成績／投手成績：個人成績のランキング（年度別・通算、規定到達者のみ／全員、セ・パ・両リーグ）。列の見出しで並び替え。
-##   セイバー指標（wOBA・wRC+・OPS+・ISO・BB%・K%・BABIP／FIP・WHIP・K/9・BB/9・K-BB%、簡易 WAR）は Records で計算
+##   セイバー指標（wOBA・wRC+・OPS+・ISO・BB%・K%・BABIP／FIP・WHIP・K/9・BB/9・K-BB%、守備得点、簡易 WAR）は Records で計算。
+##   打撃成績の2段目で守備位置を選ぶと、その位置の守備ランキング（守備イニング・範囲・失策・肩・守備得点。捕手は盗塁阻止・
+##   暴投捕逸。年度別のみ）
 ## - チームのデプス：守備位置ごとにスタメン（正選手）と控え（2軍も）を並べ、現在の能力と将来性のランク（Depth）・年齢。
 ##   若手の有望株（将来性が現在より2段以上高い25歳以下）は緑の枠と「有望」。並び替え（現在の能力／将来性／年齢）、層の厚さ
 ## - 守備位置ランク：12球団×守備位置のチームとしてのランク（現在→将来性）。球団名でその球団のデプスへ
@@ -36,6 +38,27 @@ const CHAMPION_COLOR := Color("b8860b")
 ## チーム成績の推移の各球団の列の幅（年＋12球団。縦のスクロールバーが出ても広げたサブ画面に収まる幅）
 const TEAM_CELL_WIDTH := 84
 const DEPTH_SORTS := [["now", "現在の能力順"], ["future", "将来性順"], ["age", "年齢順"]]
+## 守備ランキングの守備位置（打撃成績の2段目）と、規定（チームの試合数×この回数の守備イニング）
+const FIELD_POSITIONS := ["捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "左翼手", "中堅手", "右翼手"]
+const FIELD_MIN_INNINGS_PER_GAME := 4.0
+## 守備ランキングの列：[キー, 見出し, 種類（Records.format）, 小さいほど良いか]
+const FLD_COLUMNS_IF := [
+	["g", "試合", "int", false], ["outs", "守備回", "ip", false], ["ch", "打球", "int", false],
+	["e", "失策", "int", true], ["rng", "範囲", "runs", false], ["err", "失策点", "runs", false],
+	["total", "守備得点", "runs", false], ["per1000", "/1000回", "runs", false],
+]
+const FLD_COLUMNS_OF := [
+	["g", "試合", "int", false], ["outs", "守備回", "ip", false], ["ch", "打球", "int", false],
+	["e", "失策", "int", true], ["kills", "補殺", "int", false], ["rng", "範囲", "runs", false],
+	["err", "失策点", "runs", false], ["arm", "肩", "runs", false], ["total", "守備得点", "runs", false],
+	["per1000", "/1000回", "runs", false],
+]
+const FLD_COLUMNS_C := [
+	["g", "試合", "int", false], ["outs", "守備回", "ip", false], ["sba", "企図", "int", false],
+	["cs_n", "盗塁刺", "int", false], ["cs_pct", "阻止率", "pct", false], ["wp_n", "暴投捕逸", "int", true],
+	["cs", "阻止", "runs", false], ["wp", "暴投捕逸点", "runs", false], ["total", "守備得点", "runs", false],
+	["per1000", "/1000回", "runs", false],
+]
 
 var _palette: UiTheme.Palette
 var _tab := "bat"
@@ -45,11 +68,14 @@ var _awards_year := 0
 var _career := false
 var _qualified := true
 var _league := ""
-var _sort := {"bat": ["avg", true], "pit": ["era", false]}
+var _sort := {"bat": ["avg", true], "pit": ["era", false], "fld": ["total", true]}
+## 打撃成績で見ている守備ランキングの守備位置（空なら打撃のランキング）
+var _fld_pos := ""
 var _team := ""
 var _depth_sort := "now"
 var _tab_buttons := {}
 var _options: HBoxContainer
+var _sub_options: HBoxContainer
 var _scroll: ScrollContainer
 var _body: VBoxContainer
 var _awards_view: AwardsView
@@ -82,6 +108,9 @@ func setup(p: UiTheme.Palette) -> void:
 	_options = HBoxContainer.new()
 	_options.add_theme_constant_override("separation", 6)
 	add_child(_options)
+	_sub_options = HBoxContainer.new()
+	_sub_options.add_theme_constant_override("separation", 6)
+	add_child(_sub_options)
 	_scroll = ScrollContainer.new()
 	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -155,7 +184,7 @@ func focus_first() -> void:
 	for c in UiInput.focusables(_body):
 		if UiInput.grab(c):
 			return
-	for c in UiInput.focusables(_options):
+	for c in UiInput.focusables(_options) + UiInput.focusables(_sub_options):
 		if UiInput.grab(c):
 			return
 	UiInput.grab(_tab_buttons[_tab])
@@ -165,6 +194,7 @@ func refresh() -> void:
 	for key: String in _tab_buttons:
 		_tab_buttons[key].set_pressed_no_signal(key == _tab)
 	_clear(_options)
+	_clear(_sub_options)
 	_clear(_body)
 	_ids = []
 	_scroll.visible = _tab != "awards"
@@ -183,6 +213,7 @@ func refresh() -> void:
 			_build_awards()
 		"history":
 			_build_history()
+	_sub_options.visible = _sub_options.get_child_count() > 0
 
 
 static func _clear(node: Node) -> void:
@@ -210,7 +241,7 @@ func _option_button(text: String, pressed: bool, action: Callable, width := 0) -
 
 
 func _find_option(text: String) -> Control:
-	for c in _options.get_children():
+	for c in _options.get_children() + _sub_options.get_children():
 		if c is Button and (c as Button).text == text:
 			return c
 	return _tab_buttons[_tab]
@@ -298,7 +329,9 @@ func _section(text: String, color: Color) -> void:
 func _build_ranking(pitching: bool) -> void:
 	var tab := "pit" if pitching else "bat"
 	_options.add_child(_option_button("年度別", not _career, func() -> void: _career = false))
-	_options.add_child(_option_button("通算", _career, func() -> void: _career = true))
+	_options.add_child(_option_button("通算", _career, func() -> void:
+		_career = true
+		_fld_pos = ""))
 	if not _career:
 		_year_stepper()
 	_options.add_child(_option_button("規定到達", _qualified, func() -> void: _qualified = true))
@@ -306,8 +339,30 @@ func _build_ranking(pitching: bool) -> void:
 	for lg: Array in [["", "両リーグ"], ["C", "セ"], ["P", "パ"]]:
 		var key: String = lg[0]
 		_options.add_child(_option_button(lg[1], _league == key, func() -> void: _league = key))
+	if not pitching:
+		# 2段目：打撃のランキング／守備位置ごとの守備ランキング
+		_sub_options.add_child(UiTheme.small_label("守備ランキング：", 15, UiTheme.TEXT_SUB, 800))
+		_sub_options.add_child(_option_button("打撃", _fld_pos.is_empty(), func() -> void: _fld_pos = "", 64))
+		for pos: String in FIELD_POSITIONS:
+			_sub_options.add_child(_option_button(pos.left(2), _fld_pos == pos, func() -> void:
+				_fld_pos = pos
+				_career = false, 64))
+		if not _fld_pos.is_empty():
+			_build_fielding()
+			return
 	var rows := _ranking_rows(pitching)
 	var columns: Array = Records.PIT_COLUMNS if pitching else Records.BAT_COLUMNS
+	_ranking_table(tab, columns, rows, false)
+	var scope := "通算" if _career else "%d年" % _year
+	message_changed.emit("%s・%s・%s：%d人（上位%d人まで表示）。列の見出しで並び替え。%s" % [
+		scope, "規定到達" if _qualified else "全員", {"": "両リーグ", "C": "セ・リーグ", "P": "パ・リーグ"}[_league],
+		rows.size(), RANKING_ROWS,
+		"通算はゲーム開始前の史実の1軍成績を含む（規定は%d打席・%d投球回）" % [CAREER_MIN_PA, CAREER_MIN_OUTS / 3]
+			if _career else "規定は試合数×3.1打席・×1.0投球回"])
+
+
+## ランキングの表（見出しで並び替え）。rows は [{id, name, team, row, rank?}]、with_rank なら守備の能力のランクの列
+func _ranking_table(tab: String, columns: Array, rows: Array, with_rank: bool) -> void:
 	var sort: Array = _sort[tab]
 	var key: String = sort[0]
 	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
@@ -316,14 +371,18 @@ func _build_ranking(pitching: bool) -> void:
 		if va == vb:
 			return str(a["id"]) < str(b["id"])
 		return va > vb if sort[1] else va < vb)
-	# 列の幅：画面の中の幅（RANKING_WIDTH）から #・選手・球団と間隔を引いて等分
-	var width := (RANKING_WIDTH - 30.0 - 124.0 - 60.0 - 4.0 * (columns.size() + 3)) / columns.size()
+	# 列の幅：画面の中の幅（RANKING_WIDTH）から #・選手・球団（・能力）と間隔を引いて等分
+	var fixed := 30.0 + 124.0 + 60.0 + (40.0 if with_rank else 0.0)
+	var n_fixed := 4 if with_rank else 3
+	var width := (RANKING_WIDTH - fixed - 4.0 * (columns.size() + n_fixed)) / columns.size()
 	# 見出し（押すと並び替え。もう一度押すと逆順）
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 4)
 	header.add_child(_cell("#", 30, UiTheme.TEXT_SUB))
 	header.add_child(_cell("選手", 124, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_CENTER))
 	header.add_child(_cell("球団", 60, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_LEFT))
+	if with_rank:
+		header.add_child(_cell("能力", 40, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_CENTER))
 	for col: Array in columns:
 		var b := Button.new()
 		var ck: String = col[0]
@@ -351,15 +410,79 @@ func _build_ranking(pitching: bool) -> void:
 		row.add_child(_cell(str(i + 1), 26, UiTheme.TEXT_SUB))
 		row.add_child(_tag(r["id"], r["name"]))
 		row.add_child(_cell(GameData.short_name(r["team"]), 60, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_LEFT))
+		if with_rank:
+			var rank_box := CenterContainer.new()
+			rank_box.custom_minimum_size = Vector2(40, 0)
+			rank_box.add_child(_rank(r["rank"]) if not str(r["rank"]).is_empty() else _cell("-", 22))
+			row.add_child(rank_box)
 		for col: Array in columns:
 			row.add_child(_cell(Records.format(col[2], r["row"].get(col[0], 0)), width,
 				_palette.ink if col[0] == key else UiTheme.TEXT))
-	var scope := "通算" if _career else "%d年" % _year
-	message_changed.emit("%s・%s・%s：%d人（上位%d人まで表示）。列の見出しで並び替え。%s" % [
-		scope, "規定到達" if _qualified else "全員", {"": "両リーグ", "C": "セ・リーグ", "P": "パ・リーグ"}[_league],
-		rows.size(), RANKING_ROWS,
-		"通算はゲーム開始前の史実の1軍成績を含む（規定は%d打席・%d投球回）" % [CAREER_MIN_PA, CAREER_MIN_OUTS / 3]
-			if _career else "規定は試合数×3.1打席・×1.0投球回"])
+
+
+## 守備ランキング（_fld_pos の守備位置、年度別）
+func _build_fielding() -> void:
+	var columns: Array = FLD_COLUMNS_C if _fld_pos == "捕手" \
+		else FLD_COLUMNS_OF if _fld_pos in Records.OUTFIELD else FLD_COLUMNS_IF
+	var has_key := false
+	for col: Array in columns:
+		has_key = has_key or col[0] == _sort["fld"][0]
+	if not has_key:
+		_sort["fld"] = ["total", true]
+	var rows := fielding_rows(_fld_pos)
+	_ranking_table("fld", columns, rows, true)
+	message_changed.emit("%d年・%s・%s・%s：%d人（上位%d人まで表示）。守備得点は同じ守備位置のリーグ平均との差（点）、能力は守備力のランク。%s" % [
+		_year, _fld_pos, "規定到達" if _qualified else "全員",
+		{"": "両リーグ", "C": "セ・リーグ", "P": "パ・リーグ"}[_league], rows.size(), RANKING_ROWS,
+		"規定は試合数×%d回の守備イニング" % int(FIELD_MIN_INNINGS_PER_GAME)])
+
+
+## 守備ランキングの行 [{id, name, team, rank, row}]（テストからも使う）
+func fielding_rows(pos: String) -> Array:
+	var result: Array = []
+	var st := GameState.season_stats(_year)
+	var c := _coef(_year, "")
+	if st.is_empty() or c.is_empty():
+		return result
+	for id: String in st["batting"]:
+		var b: Dictionary = st["batting"][id]
+		var fld: Dictionary = b.get("fld", {})
+		if not fld.has(pos):
+			continue
+		var team: String = st["players"].get(id, {}).get("team", "")
+		if not _league.is_empty() and st["leagues"].get(team, "") != _league:
+			continue
+		var line: Dictionary = fld[pos]
+		var outs := int(line.get("outs", 0))
+		var rec: Dictionary = st["records"].get(team, {})
+		var games := int(rec.get("w", 0)) + int(rec.get("l", 0)) + int(rec.get("d", 0))
+		if outs <= 0 or (_qualified and outs < games * FIELD_MIN_INNINGS_PER_GAME * 3.0):
+			continue
+		var fr: Dictionary = Records.fielding_runs({"fld": {pos: line}}, c["fielding"])["pos"][pos]
+		var row := fr.duplicate()
+		row["g"] = int(b.get("pos_g", {}).get(pos, 0))
+		row["ch"] = int(line.get("gb", 0)) + int(line.get("ln", 0))
+		row["e"] = int(line.get("gbe", 0)) + int(line.get("lne", 0))
+		row["kills"] = int(line.get("ahk", 0)) + int(line.get("a3k", 0))
+		row["sba"] = int(line.get("sba", 0))
+		row["cs_n"] = int(line.get("cs", 0))
+		row["cs_pct"] = float(row["cs_n"]) / row["sba"] if row["sba"] > 0 else 0.0
+		row["wp_n"] = int(line.get("wp", 0))
+		row["per1000"] = float(fr["total"]) / (outs / 3.0) * 1000.0
+		result.append({"id": id, "name": st["players"].get(id, {}).get("name", _name_of(id)), "team": team,
+			"rank": defense_rank(id, pos), "row": row})
+	return result
+
+
+## 守備の能力（今の能力値の守備力）のランク。その位置の能力値が無ければ空
+static func defense_rank(id: String, pos: String) -> String:
+	var fielding: Variant = GameData.player(id).get("fielding")
+	if not fielding is Dictionary:
+		return ""
+	var f: Variant = fielding.get(SimTeam.field_key(pos))
+	if not f is Dictionary or not f.get("defense") is Dictionary:
+		return ""
+	return str(f["defense"].get("rank", ""))
 
 
 ## ランキングの行 [{id, name, team, row}]

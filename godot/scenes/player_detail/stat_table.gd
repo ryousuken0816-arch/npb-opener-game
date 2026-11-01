@@ -60,6 +60,100 @@ static func total(rows: Array, key: String) -> int:
 	return sum
 
 
+## ゲーム内の年度別の WAR・守備得点の列 [見出し, 幅, キー]
+const WAR_BATTING_COLUMNS := [
+	["年度", 50, "year"], ["球団", 100, "team"], ["打席", 46, "pa"], ["wRC+", 50, "wrc_plus"],
+	["主な守備", 70, "pos"], ["守備回", 62, "inn"], ["守備得点", 66, "fld"], ["WAR", 50, "war"],
+]
+const WAR_PITCHING_COLUMNS := [
+	["年度", 50, "year"], ["球団", 100, "team"], ["投球回", 62, "ip"], ["FIP", 50, "fip"], ["WAR", 50, "war"],
+]
+## 年度別の WAR の表で一度に見える行数（それより多いとスクロール）
+const WAR_VISIBLE_ROWS := 4
+
+
+## ゲーム内の各年（記録室の年）の WAR・守備得点 [{year, team, pa, wrc_plus, pos, inn, fld, war}]（数は表示用の文字）。
+## 係数はその年・その選手のリーグ（Records.coefficients）
+static func war_rows(id: String, is_pitcher: bool) -> Array:
+	var rows: Array = []
+	for y: int in GameState.records_years():
+		var st := GameState.season_stats(y)
+		var kind := "pitching" if is_pitcher else "batting"
+		var s: Dictionary = st.get(kind, {}).get(id, {})
+		if int(s.get("outs" if is_pitcher else "pa", 0)) <= 0:
+			continue
+		var team: String = st["players"].get(id, {}).get("team", "")
+		var league_of := func(pid: String) -> String:
+			return st["leagues"].get(st["players"].get(pid, {}).get("team", ""), "")
+		var c := Records.coefficients(st["batting"], st["pitching"], league_of, st["leagues"].get(team, ""))
+		var row := {"year": y, "team": GameData.short_name(team)}
+		if is_pitcher:
+			var r := Records.pitching_row(s, c)
+			row.merge({"ip": ip_text(int(s.get("outs", 0))), "fip": Records.format("rate2", r["fip"]),
+				"war_value": float(r["war"]), "outs": int(s.get("outs", 0))})
+		else:
+			var r := Records.batting_row(s, c)
+			var fr := Records.fielding_runs(s, c["fielding"])
+			var main_pos := ""
+			for pos: String in fr["pos"]:
+				if main_pos.is_empty() or int(fr["pos"][pos]["outs"]) > int(fr["pos"][main_pos]["outs"]):
+					main_pos = pos
+			row.merge({"pa": int(s.get("pa", 0)), "wrc_plus": Records.format("plus", r["wrc_plus"]),
+				"pos": main_pos if not main_pos.is_empty() else "指名打者", "inn": ip_text(int(fr["outs"])),
+				"outs": int(fr["outs"]), "fld_value": float(r["fld"]), "war_value": float(r["war"])})
+			row["fld"] = Records.format("runs", r["fld"])
+		row["war"] = Records.format("war", row["war_value"])
+		rows.append(row)
+	return rows
+
+
+## 年度別の WAR の表（見出し・各年（多ければスクロール）・通算）
+static func build_war(rows: Array, is_pitcher: bool, palette: UiTheme.Palette) -> Control:
+	var columns: Array = WAR_PITCHING_COLUMNS if is_pitcher else WAR_BATTING_COLUMNS
+	var table := VBoxContainer.new()
+	table.add_theme_constant_override("separation", 1)
+	var header: Array = []
+	for col: Array in columns:
+		header.append(col[0])
+	table.add_child(_row(columns, header, palette.main, palette.on_main, true))
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 1)
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var scroll := ScrollContainer.new()
+	scroll.name = "WarHistory"
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.custom_minimum_size = Vector2(0, 23 * mini(rows.size(), WAR_VISIBLE_ROWS))
+	scroll.add_child(box)
+	table.add_child(scroll)
+	var sum := {"year": "通算", "team": "%d年" % rows.size(), "pa": 0, "outs": 0, "fld_value": 0.0, "war_value": 0.0}
+	for i in rows.size():
+		var row: Dictionary = rows[i]
+		var current: bool = row["year"] == GameState.year
+		var bg := Color("fff4c2") if current else Color.WHITE if i % 2 == 0 else Color("f3f6f9")
+		box.add_child(_row(columns, _cells(columns, row), bg, UiTheme.TEXT, false))
+		for key: String in ["pa", "outs", "fld_value", "war_value"]:
+			sum[key] += row.get(key, 0)
+	sum["ip"] = ip_text(int(sum["outs"]))
+	sum["inn"] = sum["ip"]
+	sum["fld"] = Records.format("runs", sum["fld_value"])
+	sum["war"] = Records.format("war", sum["war_value"])
+	table.add_child(_row(columns, _cells(columns, sum), palette.main.lerp(Color.WHITE, 0.75), UiTheme.TEXT, true))
+	if rows.size() > WAR_VISIBLE_ROWS:
+		_scroll_war_to_end(scroll)
+	return table
+
+
+static func _scroll_war_to_end(scroll: ScrollContainer) -> void:
+	if not scroll.is_inside_tree():
+		await scroll.tree_entered
+	for i in 2:
+		if not is_instance_valid(scroll) or not scroll.is_inside_tree():
+			return
+		await scroll.get_tree().process_frame
+	if is_instance_valid(scroll):
+		scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
+
+
 ## 成績表。見出し・今季・通算の行は固定し、史実の年度別の行（with_history）はその間でスクロールする
 ## （スクロールは "History" という名前の ScrollContainer）
 static func build(columns: Array, rows: Array, with_history: bool,
