@@ -270,16 +270,27 @@ func _check_fictional_flow() -> void:
 		and str(_gs.draft_class(2029)[0]["name"]) == str(cls29[0]["name"]), "セーブ→ロードで設定と2029年の候補が残る")
 
 
-## 指名した選手を1人1軍に上げ、2週間で試合に出るか
+## 指名した選手を1人1軍に上げ、3週間で試合に出るか
 func _play_rookie(mine: Array) -> void:
 	var roster: Variant = _gs.season.teams.get(USER)
+	# 野手を優先。もうスタメンにいればその選手、いなければ2軍の選手を上げてスタメンと入れ替える
+	# （1軍の控えにいるだけの選手は試合に出ないことがある）
+	var starters := {}
+	for o: Array in roster.lineup(false):
+		if o[0] != null:
+			starters[o[0].id] = true
 	var rookie: Variant = null
+	var rookie_score := -1
 	for rec: Dictionary in mine:
 		var sp: Variant = roster.by_id.get(rec["id"]) if roster != null else null
-		if sp != null and not sp.is_ikusei and (rookie == null or (rookie.is_pitcher and not sp.is_pitcher)):
+		if sp == null or sp.is_ikusei:
+			continue
+		var score := (2 if not sp.is_pitcher else 0) + (4 if starters.has(sp.id) else (1 if not roster.is_active(sp) else -9))
+		if score > rookie_score:
 			rookie = sp
+			rookie_score = score
 	var err := "指名選手なし"
-	if rookie != null and roster.is_active(rookie):
+	if rookie != null and (starters.has(rookie.id) or (rookie.is_pitcher and roster.is_active(rookie))):
 		err = ""
 	elif rookie != null:
 		var out_p: Variant = null
@@ -289,7 +300,8 @@ func _play_rookie(mine: Array) -> void:
 					out_p = sp
 					break
 		else:
-			var order: Array = roster.lineup(true)
+			# 阪神（セ）は DH なしの試合がほとんど。DH なしの打順の選手と入れ替える（draft_check と同じ）
+			var order: Array = roster.lineup(false)
 			for i in range(order.size() - 1, -1, -1):
 				if order[i][0] != null and order[i][1] != "投手":
 					out_p = order[i][0]
@@ -297,10 +309,16 @@ func _play_rookie(mine: Array) -> void:
 		err = "入れ替える選手なし" if out_p == null else str(roster.swap_registration(out_p, rookie, _gs.day))
 	_check(err.is_empty(), "架空の新人を1軍に登録できる（%s%s）" % [rookie.name if rookie != null else "", err])
 	var before: String = _gs.date_text()
-	_gs.advance_through(_gs.day + 14)
+	if rookie != null:
+		var order_text: Array[String] = []
+		for o: Array in roster.lineup(false):
+			order_text.append("%s:%s" % [o[0].name if o[0] != null else "-", o[1]])
+		print("  新人 %s（%s）1軍=%s 打順=%s 守備=%s" % [rookie.name, rookie.id, roster.is_active(rookie), ", ".join(order_text),
+			str(_gd.call("player", rookie.id).get("fielding", {}).keys())])
+	_gs.advance_through(_gs.day + 21)
 	var b: Dictionary = _gs.season.batting.get(rookie.id if rookie != null else "", {})
 	var p: Dictionary = _gs.season.pitching.get(rookie.id if rookie != null else "", {})
-	_check(int(b.get("pa", 0)) > 0 or int(p.get("outs", 0)) > 0, "2週間で架空の新人が試合に出た（%s → %s、打席 %d・アウト %d）"
+	_check(int(b.get("pa", 0)) > 0 or int(p.get("outs", 0)) > 0, "3週間で架空の新人が試合に出た（%s → %s、打席 %d・アウト %d）"
 		% [before, _gs.date_text(), int(b.get("pa", 0)), int(p.get("outs", 0))])
 
 

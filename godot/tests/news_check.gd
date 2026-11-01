@@ -44,16 +44,16 @@ func _run() -> void:
 	# 公式戦：試合へで1か月ずつ
 	var guard := 0
 	while _gs.phase == _gs.Phase.SEASON and guard < 12:
-		var before_issues: int = news.issues.size()
+		var before_issues: int = _monthly_count(news)
 		_hub.call("_on_menu_chosen", "advance")
 		await process_frame
 		guard += 1
 		if _gs.phase != _gs.Phase.SEASON:
 			break
-		if news.issues.size() == before_issues:
+		if _monthly_count(news) == before_issues:
 			print("    （%s：号なし＝翌月とまとめる）" % _gs.date_text())
 			continue
-		var issue: Dictionary = news.issues[-1]
+		var issue: Dictionary = _last_monthly(news)
 		var items: Array = news.of_issue(issue["key"])
 		var kinds := {}
 		for a: Dictionary in items:
@@ -179,3 +179,19 @@ func _check(ok: bool, label: String) -> void:
 	if not ok:
 		_failures += 1
 	print(("OK  " if ok else "NG  ") + label)
+
+
+## 月ごとの新聞の号（アマ球界の号＝作業21 "<年>-amateur-<段階>" は数えない）
+func _monthly_count(news: Object) -> int:
+	var n := 0
+	for issue: Dictionary in news.issues:
+		if not "amateur" in str(issue["key"]):
+			n += 1
+	return n
+
+
+func _last_monthly(news: Object) -> Dictionary:
+	for i in range(news.issues.size() - 1, -1, -1):
+		if not "amateur" in str(news.issues[i]["key"]):
+			return news.issues[i]
+	return {}

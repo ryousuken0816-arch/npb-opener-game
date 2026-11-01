@@ -154,6 +154,12 @@ func _setting_button(tip: String) -> Button:
 	return b
 
 
+## ゲームの設定の行は、確認を出している間は隠す（枠の高さに収めるため）
+func _sync_game_row() -> void:
+	if _game_row != null:
+		_game_row.visible = not load_only and not _confirm_panel.visible
+
+
 ## ゲームの設定の表示を GameState に合わせる（ロードしたあとも）
 func _sync_game_settings() -> void:
 	if _hits_button == null:
@@ -177,6 +183,7 @@ func _small_button(text: String, color: Color) -> Button:
 func open() -> void:
 	_pending = ""
 	_confirm_panel.visible = false
+	_sync_game_row()
 	_set_status(_default_status())
 	_sync_game_settings()
 	refresh()
@@ -204,6 +211,7 @@ func set_mode(mode: String) -> void:
 	_mode = mode
 	_pending = ""
 	_confirm_panel.visible = false
+	_sync_game_row()
 	_set_status(_default_status())
 	_sync_game_settings()
 	refresh()
@@ -281,6 +289,7 @@ func cancel_confirm() -> void:
 	var slot := _pending
 	_pending = ""
 	_confirm_panel.visible = false
+	_sync_game_row()
 	_set_status(_default_status())
 	if _slot_buttons.has(slot) and UiInput.grab(_slot_buttons[slot]):
 		return
@@ -293,6 +302,7 @@ func _ask(slot: String, text: String) -> void:
 	_pending = slot
 	_confirm_label.text = text
 	_confirm_panel.visible = true
+	_sync_game_row()
 	_set_status("はい：上書きセーブ（前のセーブは消えます）　いいえ／Ⓑ：やめる" if _mode == "save"
 		else "はい：ロード（セーブしていない今の進行は失われます）　いいえ／Ⓑ：やめる")
 	UiInput.grab(_no_button)
@@ -302,6 +312,7 @@ func _confirm_yes() -> void:
 	var slot := _pending
 	_pending = ""
 	_confirm_panel.visible = false
+	_sync_game_row()
 	if slot.is_empty():
 		return
 	if _mode == "save":
