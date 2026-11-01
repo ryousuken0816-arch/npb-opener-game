@@ -21,6 +21,9 @@ var _debug_row: Control
 var _continue_button: Button
 var _continue_panel: PanelContainer
 var _save_view: SaveView
+var _mode_button: Button
+var _mobile_tabs: HBoxContainer
+var _selected_mobile_league: String = "C"
 
 @onready var _title_label: Label = %TitleLabel
 @onready var _sub_label: Label = %SubLabel
@@ -30,10 +33,7 @@ var _save_view: SaveView
 func _ready() -> void:
 	var palette := UiTheme.neutral_palette()
 	theme = UiTheme.build(palette)
-	UiTheme.heading(_title_label, 52, palette.ink, Color.WHITE, 14)
-	_title_label.label_settings.shadow_color = Color(palette.ink.darkened(0.4), 0.45)
-	_title_label.label_settings.shadow_offset = Vector2(3, 5)
-	UiTheme.heading(_sub_label, 20, UiTheme.TEXT, Color.WHITE, 6, false)
+	_update_title_typography(palette)
 	var guide := PadGuide.new()
 	guide.set_items([["A", "決定"], ["LB/RB", "開始年"]])
 	add_child(guide)
@@ -43,12 +43,91 @@ func _ready() -> void:
 	_debug_row = _make_debug_row()
 	$Center/VBox.add_child(_debug_row)
 	_make_continue(palette)
+	_make_mobile_tabs(palette)
+	_make_mode_toggle_button()
+	if not UiLayout.layout_changed.is_connected(_on_layout_changed):
+		UiLayout.layout_changed.connect(_on_layout_changed)
+	_apply_layout(UiLayout.is_portrait, UiLayout.is_mobile)
 	_build_teams()
 	if _continue_button.visible:
 		_continue_button.grab_focus()
 	else:
 		UiInput.focus_first(_leagues)
 	UiFx.fade_in($Center/VBox)
+
+
+func _update_title_typography(palette: UiTheme.Palette) -> void:
+	var title_size := 34 if UiLayout.is_portrait else 52
+	UiTheme.heading(_title_label, title_size, palette.ink, Color.WHITE, 12 if UiLayout.is_portrait else 14)
+	_title_label.label_settings.shadow_color = Color(palette.ink.darkened(0.4), 0.45)
+	_title_label.label_settings.shadow_offset = Vector2(2, 4)
+	UiTheme.heading(_sub_label, 16 if UiLayout.is_portrait else 20, UiTheme.TEXT, Color.WHITE, 5, false)
+
+
+func _make_mode_toggle_button() -> void:
+	_mode_button = Button.new()
+	_mode_button.custom_minimum_size = Vector2(44, 38)
+	_mode_button.focus_mode = Control.FOCUS_NONE
+	_mode_button.tooltip_text = "画面表示切替（PC横画面 / スマホ縦画面）"
+	_update_mode_button_text()
+	UiTheme.style_button(_mode_button, Color("455a64"), Color.WHITE, 6, 2)
+	_mode_button.pressed.connect(func() -> void:
+		UiLayout.toggle_mode())
+	add_child(_mode_button)
+	_update_mode_button_position()
+	resized.connect(_update_mode_button_position)
+
+
+func _update_mode_button_position() -> void:
+	if _mode_button != null and is_instance_valid(_mode_button):
+		_mode_button.position = Vector2(size.x - _mode_button.size.x - 12, UiLayout.safe_area_top + 10)
+
+
+func _update_mode_button_text() -> void:
+	if _mode_button != null:
+		_mode_button.text = "💻 PC" if UiLayout.is_portrait else "📱 スマホ"
+
+
+func _make_mobile_tabs(palette: UiTheme.Palette) -> void:
+	_mobile_tabs = HBoxContainer.new()
+	_mobile_tabs.alignment = BoxContainer.ALIGNMENT_CENTER
+	_mobile_tabs.add_theme_constant_override("separation", 12)
+	_mobile_tabs.visible = false
+	var vbox: VBoxContainer = $Center/VBox
+	vbox.add_child(_mobile_tabs)
+	vbox.move_child(_mobile_tabs, _leagues.get_index())
+	for league: String in GameData.LEAGUE_NAMES:
+		var btn := Button.new()
+		btn.text = GameData.LEAGUE_NAMES[league]
+		btn.custom_minimum_size = Vector2(140, 44)
+		btn.add_theme_font_size_override("font_size", 18)
+		btn.add_theme_font_override("font", UiTheme.font(800))
+		btn.pressed.connect(func() -> void:
+			_selected_mobile_league = league
+			_build_teams())
+		_mobile_tabs.add_child(btn)
+
+
+func _on_layout_changed(is_portrait: bool, is_mobile: bool) -> void:
+	_update_mode_button_text()
+	_update_mode_button_position()
+	var palette := UiTheme.neutral_palette()
+	_update_title_typography(palette)
+	_apply_layout(is_portrait, is_mobile)
+	_build_teams()
+
+
+func _apply_layout(is_portrait: bool, _is_mobile: bool) -> void:
+	var center: Control = $Center
+	if is_portrait:
+		center.offset_top = UiLayout.safe_area_top + 10
+		center.offset_bottom = -UiLayout.safe_area_bottom - 10
+		_leagues.alignment = BoxContainer.ALIGNMENT_CENTER
+		_mobile_tabs.visible = true
+	else:
+		center.offset_top = 0
+		center.offset_bottom = 0
+		_mobile_tabs.visible = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -85,8 +164,32 @@ func _build_teams() -> void:
 		_sub_label.text = "能力値ファイル（generated/ratings/%d_pre.json）が見つかりません" % start_year
 		return
 	_sub_label.text = "%d年開幕：担当する球団を選んでください" % start_year
+
+	if UiLayout.is_portrait:
+		# スマホ縦画面：タブで選ばれたリーグのみ表示
+		_sync_mobile_tabs()
+		_leagues.add_child(_make_league_column(_selected_mobile_league))
+	else:
+		# PC横画面：セ・パ横並び
+		for league: String in GameData.LEAGUE_NAMES:
+			_leagues.add_child(_make_league_column(league))
+
+
+func _sync_mobile_tabs() -> void:
+	if _mobile_tabs == null or not is_instance_valid(_mobile_tabs):
+		return
+	var idx := 0
 	for league: String in GameData.LEAGUE_NAMES:
-		_leagues.add_child(_make_league_column(league))
+		if idx < _mobile_tabs.get_child_count():
+			var btn := _mobile_tabs.get_child(idx) as Button
+			if btn != null:
+				var is_sel := (league == _selected_mobile_league)
+				var color := (Color("1e88e5") if league == "C" else Color("2e7d32"))
+				if is_sel:
+					UiTheme.style_button(btn, color, Color.WHITE, 8, 3)
+				else:
+					UiTheme.style_button(btn, color.darkened(0.4), Color(1, 1, 1, 0.7), 8, 1)
+		idx += 1
 
 
 ## 「続きから」のボタンと、セーブの枠の一覧（最初は隠しておく）

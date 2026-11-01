@@ -152,7 +152,73 @@ static func _write(file_path: String, text: String) -> String:
 	if FileAccess.file_exists(file_path):
 		DirAccess.remove_absolute(file_path)
 	var err := DirAccess.rename_absolute(tmp, file_path)
+	if err == OK:
+		_sync_web_fs()
 	return "" if err == OK else "保存できませんでした（%s）" % error_string(err)
+
+
+## ブラウザの IndexedDB に即時フラッシュ同期
+static func _sync_web_fs() -> void:
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval(
+			"""
+			if (typeof FS !== 'undefined' && FS.syncfs) {
+				FS.syncfs(false, function(err) {
+					if (err) console.error('IndexedDB sync error:', err);
+				});
+			}
+			"""
+		)
+
+
+## 指定枠のセーブデータ（JSON文字列）を取得（エクスポート用）
+static func export_json(slot: String) -> String:
+	if not exists(slot):
+		return ""
+	return FileAccess.get_file_as_string(path(slot))
+
+
+## 外部JSON文字列を検証し、指定枠に保存（インポート用）。成功なら空文字、失敗ならエラー文
+static func import_json(slot: String, json_text: String) -> String:
+	var parsed: Variant = JSON.parse_string(json_text)
+	if not parsed is Dictionary or not parsed.get("state") is Dictionary:
+		return "セーブデータの形式が正しくありません"
+	var ver: int = int(parsed.get("version", 0))
+	if ver > VERSION:
+		return "新しいバージョンのセーブデータ（v%d）のため読み込めません" % ver
+	var header := {
+		"version": ver,
+		"slot": slot,
+		"saved_at": parsed.get("saved_at", Time.get_datetime_string_from_system(false, true)),
+		"summary": parsed.get("summary", {})
+	}
+	DirAccess.make_dir_recursive_absolute(save_dir())
+	var err := _write(path(slot), JSON.stringify(parsed, "", false, true))
+	if err.is_empty():
+		err = _write(info_path(slot), JSON.stringify(header, "", false, true))
+	return err
+
+
+## セーブデータをファイルとして端末にダウンロード保存（Web/PC両対応）
+static func download_save_file(slot: String) -> String:
+	var content := export_json(slot)
+	if content.is_empty():
+		return "エクスポートするセーブデータがありません"
+	var filename := "npb_save_%s_%s.json" % [slot, Time.get_date_string_from_system().replace("-", "")]
+	if OS.has_feature("web"):
+		JavaScriptBridge.download_buffer(content.to_utf8_buffer(), filename, "application/json")
+		return ""
+	else:
+		var export_dir := "user://exports"
+		DirAccess.make_dir_recursive_absolute(export_dir)
+		var target_path := export_dir.path_join(filename)
+		var f := FileAccess.open(target_path, FileAccess.WRITE)
+		if f == null:
+			return "書き出しに失敗しました"
+		f.store_string(content)
+		f.close()
+		OS.shell_open(ProjectSettings.globalize_path(export_dir))
+		return ""
 
 
 static func _read(file_path: String) -> Variant:

@@ -49,6 +49,9 @@ var _menu_buttons := {}
 var _names := {}
 
 var _content: Control
+var _menu_panel: Control
+var _mobile_menu_bar: ScrollContainer
+var _mobile_tab_box: HBoxContainer
 var _home: VBoxContainer
 var _register_pitchers: RegisterPage
 var _register_fielders: RegisterPage
@@ -62,7 +65,9 @@ var _placeholder: Label
 func setup(p: UiTheme.Palette) -> void:
 	_palette = p
 	add_theme_constant_override("separation", 14)
-	add_child(_build_menu())
+	_menu_panel = _build_menu()
+	add_child(_menu_panel)
+	_build_mobile_bar()
 	_content = Control.new()
 	_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -88,6 +93,42 @@ func setup(p: UiTheme.Palette) -> void:
 		page.set_anchors_preset(Control.PRESET_FULL_RECT)
 		page.visible = false
 		_content.add_child(page)
+
+	UiLayout.layout_changed.connect(_on_layout_changed)
+	_apply_layout(UiLayout.is_portrait)
+
+
+func _build_mobile_bar() -> void:
+	_mobile_menu_bar = ScrollContainer.new()
+	_mobile_menu_bar.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_mobile_menu_bar.custom_minimum_size = Vector2(0, 48)
+	_mobile_tab_box = HBoxContainer.new()
+	_mobile_tab_box.add_theme_constant_override("separation", 8)
+	_mobile_menu_bar.add_child(_mobile_tab_box)
+	_mobile_menu_bar.visible = false
+	# モバイルバーは _home などの上部に表示できるようにする
+	for menu: Array in MENUS:
+		if not menu[3]:
+			continue
+		var btn := Button.new()
+		btn.text = menu[1]
+		btn.custom_minimum_size = Vector2(100, 38)
+		btn.add_theme_font_size_override("font_size", 16)
+		btn.add_theme_font_override("font", UiTheme.font(700))
+		UiTheme.style_button(btn, Color("1d4f73"), Color.WHITE, 6, 2)
+		btn.pressed.connect(_show_page.bind(menu[0], true))
+		_mobile_tab_box.add_child(btn)
+
+
+func _on_layout_changed(is_portrait: bool, _is_mobile: bool) -> void:
+	_apply_layout(is_portrait)
+
+
+func _apply_layout(is_portrait: bool) -> void:
+	if _menu_panel != null:
+		_menu_panel.visible = not is_portrait
+	if _mobile_menu_bar != null:
+		_mobile_menu_bar.visible = is_portrait
 
 
 ## ハブから開かれたとき：サブメニューの一覧（1軍・2軍の名前札）から始める
@@ -306,6 +347,28 @@ func _render_home() -> void:
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	box.add_theme_constant_override("separation", 10)
 	scroll.add_child(box)
+
+	if UiLayout.is_portrait:
+		# スマホ縦画面時：クイックアクセスメニューを上部に配置
+		var quick_grid := GridContainer.new()
+		quick_grid.columns = 2
+		quick_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		quick_grid.add_theme_constant_override("h_separation", 8)
+		quick_grid.add_theme_constant_override("v_separation", 8)
+		box.add_child(quick_grid)
+		for menu: Array in MENUS:
+			if not menu[3]:
+				continue
+			var btn := Button.new()
+			btn.text = menu[1]
+			btn.custom_minimum_size = Vector2(0, 46)
+			btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			btn.add_theme_font_size_override("font_size", 17)
+			btn.add_theme_font_override("font", UiTheme.font(800))
+			UiTheme.style_button(btn, Color("1d4f73"), Color.WHITE, 8, 3)
+			btn.pressed.connect(_show_page.bind(menu[0], true))
+			quick_grid.add_child(btn)
+
 	if team == null:
 		box.add_child(UiTheme.small_label("日程データのない年は1軍・2軍の編成がありません。「選手一覧」で所属選手を見られます。",
 				18, UiTheme.TEXT))

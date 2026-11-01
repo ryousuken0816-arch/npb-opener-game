@@ -64,6 +64,14 @@ var _pending_issue := ""
 var _stop := {}
 var _stop_return := ""
 
+## スマホ縦画面対応用コンポーネント
+var _mode_button: Button
+var _mobile_scroll: ScrollContainer
+var _mobile_advance_button: Button
+var _mobile_menu_buttons := {}
+var _mobile_header_label: Label
+var _mobile_team_label: Label
+
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
 @onready var _menu_box: VBoxContainer = %MenuBox
@@ -206,6 +214,11 @@ func _ready() -> void:
 	_tactics_view.description_changed.connect(func(text: String) -> void:
 		_description_label.text = text)
 	%BackButton.pressed.connect(_on_back)
+	_build_mobile_dashboard()
+	_make_mode_toggle_button()
+	if not UiLayout.layout_changed.is_connected(_on_layout_changed):
+		UiLayout.layout_changed.connect(_on_layout_changed)
+	_apply_layout(UiLayout.is_portrait, UiLayout.is_mobile)
 	GameState.changed.connect(_refresh)
 	_refresh()
 	_buttons["advance"].grab_button_focus()
@@ -390,6 +403,7 @@ func _refresh() -> void:
 	elif _open_key == "news":
 		_news_view.refresh()
 	_refresh_news_card()
+	_refresh_mobile_dashboard()
 
 
 func _summary_text() -> String:
@@ -478,7 +492,14 @@ func _on_menu_chosen(key: String) -> void:
 			_open_sub_screen("meeting")
 			return
 		_pending_issue = ""
+		_buttons["advance"].disabled = true
+		if _mobile_advance_button != null:
+			_mobile_advance_button.disabled = true
+		await get_tree().process_frame
 		GameState.advance()
+		_buttons["advance"].disabled = false
+		if _mobile_advance_button != null:
+			_mobile_advance_button.disabled = false
 		_after_advance()
 		return
 	_open_sub_screen(key)
@@ -546,9 +567,22 @@ func _on_stop_chosen(resume: bool) -> void:
 func _open_sub_screen(key: String) -> void:
 	_open_key = key
 	_sub_screen.visible = true
-	_center_area.visible = false
-	_standings.visible = false
-	_news_card.visible = false
+	if UiLayout.is_portrait:
+		if _mobile_scroll != null:
+			_mobile_scroll.visible = false
+		_center_area.visible = false
+		_standings.visible = false
+		_news_card.visible = false
+		_bottom_bar.visible = false
+		_guide.visible = false
+		%BackButton.text = "← 戻る"
+		%BackButton.custom_minimum_size = Vector2(100, 44)
+	else:
+		_center_area.visible = false
+		_standings.visible = false
+		_news_card.visible = false
+		%BackButton.text = "戻る (Esc)"
+		%BackButton.custom_minimum_size = Vector2(120, 40)
 	for menu: Array in MENUS:
 		if menu[0] == key:
 			_sub_title_label.text = menu[1]
@@ -665,13 +699,23 @@ func _on_back() -> void:
 ## （演出の途中の位置が余白に残ると、開く・閉じるのたびに右へずれて画面の外へはみ出していった。作業11）
 func _set_wide(wide: bool) -> void:
 	UiFx.stop_slide(_sub_screen)
-	_sub_screen.offset_left = WIDE_LEFT if wide else SUB_SCREEN_LEFT
-	_sub_screen.offset_top = WIDE_TOP if wide else SUB_SCREEN_TOP
-	_sub_screen.offset_right = -SUB_SCREEN_RIGHT
-	_sub_screen.offset_bottom = -SUB_SCREEN_BOTTOM
-	_menu_box.visible = not wide
-	_event_label.visible = not wide
-	_move_guide(wide)
+	if UiLayout.is_portrait:
+		_sub_screen.offset_left = 6.0
+		_sub_screen.offset_top = UiLayout.safe_area_top + 4.0
+		_sub_screen.offset_right = -6.0
+		_sub_screen.offset_bottom = -UiLayout.safe_area_bottom - 6.0
+		_menu_box.visible = false
+		_event_label.visible = false
+		_guide.visible = false
+	else:
+		_sub_screen.offset_left = WIDE_LEFT if wide else SUB_SCREEN_LEFT
+		_sub_screen.offset_top = WIDE_TOP if wide else SUB_SCREEN_TOP
+		_sub_screen.offset_right = -SUB_SCREEN_RIGHT
+		_sub_screen.offset_bottom = -SUB_SCREEN_BOTTOM
+		_menu_box.visible = not wide
+		_event_label.visible = not wide
+		_guide.visible = true
+		_move_guide(wide)
 
 
 func _close_sub_screen() -> void:
@@ -682,12 +726,23 @@ func _close_sub_screen() -> void:
 	var key := _open_key
 	_open_key = ""
 	_sub_screen.visible = false
-	_center_area.visible = true
-	_standings.visible = true
-	_news_card.visible = true
-	if not key.is_empty():
-		UiFx.fade_in(_center_area)
-		UiFx.fade_in(_standings)
+	if UiLayout.is_portrait:
+		if _mobile_scroll != null:
+			_mobile_scroll.visible = true
+		_center_area.visible = false
+		_standings.visible = false
+		_news_card.visible = false
+		_bottom_bar.visible = false
+		_guide.visible = false
+	else:
+		_center_area.visible = true
+		_standings.visible = true
+		_news_card.visible = true
+		_bottom_bar.visible = true
+		_guide.visible = true
+		if not key.is_empty():
+			UiFx.fade_in(_center_area)
+			UiFx.fade_in(_standings)
 	_description_label.text = _description(_focused_key)
 	if _buttons.has(key):
 		_buttons[key].grab_button_focus()
@@ -786,3 +841,178 @@ func _on_celebrate(kind: String, team_name: String, title: String) -> void:
 		if is_instance_valid(owner_focus) and owner_focus.is_visible_in_tree():
 			owner_focus.grab_focus())
 	add_child(fx)
+
+
+# --- スマホ縦画面レイアウト -------------------------------------------------------------
+
+func _make_mode_toggle_button() -> void:
+	_mode_button = Button.new()
+	_mode_button.custom_minimum_size = Vector2(44, 38)
+	_mode_button.focus_mode = Control.FOCUS_NONE
+	_mode_button.tooltip_text = "画面表示切替（PC横画面 / スマホ縦画面）"
+	_update_mode_button_text()
+	UiTheme.style_button(_mode_button, Color("455a64"), Color.WHITE, 6, 2)
+	_mode_button.pressed.connect(func() -> void:
+		UiLayout.toggle_mode())
+	add_child(_mode_button)
+	_update_mode_button_position()
+	resized.connect(_update_mode_button_position)
+
+
+func _update_mode_button_position() -> void:
+	if _mode_button != null and is_instance_valid(_mode_button):
+		_mode_button.position = Vector2(size.x - _mode_button.size.x - 12, UiLayout.safe_area_top + 6)
+
+
+func _update_mode_button_text() -> void:
+	if _mode_button != null:
+		_mode_button.text = "💻 PC" if UiLayout.is_portrait else "📱 スマホ"
+
+
+func _on_layout_changed(is_portrait: bool, is_mobile: bool) -> void:
+	_update_mode_button_text()
+	_update_mode_button_position()
+	_apply_layout(is_portrait, is_mobile)
+	_refresh()
+
+
+func _apply_layout(is_portrait: bool, _is_mobile: bool) -> void:
+	if is_portrait:
+		_menu_box.visible = false
+		_center_area.visible = false
+		_standings.visible = false
+		_news_card.visible = false
+		_bottom_bar.visible = false
+		_event_label.visible = false
+		_guide.visible = false
+
+		if _open_key.is_empty():
+			if _mobile_scroll != null:
+				_mobile_scroll.visible = true
+				_mobile_scroll.offset_top = UiLayout.safe_area_top + 48.0
+				_mobile_scroll.offset_bottom = -UiLayout.safe_area_bottom - 8.0
+			_sub_screen.visible = false
+		else:
+			if _mobile_scroll != null:
+				_mobile_scroll.visible = false
+			_set_wide(true)
+			_sub_screen.visible = true
+			%BackButton.text = "← 戻る"
+			%BackButton.custom_minimum_size = Vector2(100, 44)
+	else:
+		if _mobile_scroll != null:
+			_mobile_scroll.visible = false
+		_guide.visible = true
+		%BackButton.text = "戻る (Esc)"
+		%BackButton.custom_minimum_size = Vector2(120, 40)
+		if _open_key.is_empty():
+			_menu_box.visible = true
+			_center_area.visible = true
+			_standings.visible = true
+			_news_card.visible = true
+			_bottom_bar.visible = true
+			_event_label.visible = true
+			_sub_screen.visible = false
+		else:
+			var wide := _open_key in ["tactics", "fa", "trade", "comp", "contract", "release", "draft", "meeting", "awards", "records", "postseason", "news"]
+			_set_wide(wide)
+			_sub_screen.visible = true
+
+
+func _build_mobile_dashboard() -> void:
+	_mobile_scroll = ScrollContainer.new()
+	_mobile_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_mobile_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_mobile_scroll.visible = false
+	add_child(_mobile_scroll)
+
+	var margin := MarginContainer.new()
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_theme_constant_override("margin_left", 14)
+	margin.add_theme_constant_override("margin_right", 14)
+	margin.add_theme_constant_override("margin_top", 8)
+	margin.add_theme_constant_override("margin_bottom", 20)
+	_mobile_scroll.add_child(margin)
+
+	var vbox := VBoxContainer.new()
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.add_theme_constant_override("separation", 12)
+	margin.add_child(vbox)
+
+	# 1. ヘッダーカード
+	var header_panel := PanelContainer.new()
+	var h_style := UiTheme.card(_palette.main, 10, 2, 0.95)
+	h_style.set_content_margin_all(10)
+	header_panel.add_theme_stylebox_override("panel", h_style)
+	var hvbox := VBoxContainer.new()
+	hvbox.add_theme_constant_override("separation", 4)
+	header_panel.add_child(hvbox)
+
+	_mobile_header_label = Label.new()
+	_mobile_header_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.heading(_mobile_header_label, 20, _palette.ink, Color.WHITE, 5)
+	hvbox.add_child(_mobile_header_label)
+
+	_mobile_team_label = Label.new()
+	_mobile_team_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.heading(_mobile_team_label, 16, UiTheme.TEXT, Color.WHITE, 4, false)
+	hvbox.add_child(_mobile_team_label)
+	vbox.add_child(header_panel)
+
+	# 2. メインアクション巨大ボタン（「試合へ」等）
+	_mobile_advance_button = Button.new()
+	_mobile_advance_button.custom_minimum_size = Vector2(0, 58)
+	_mobile_advance_button.add_theme_font_size_override("font_size", 22)
+	_mobile_advance_button.add_theme_font_override("font", UiTheme.font(800))
+	UiTheme.style_button(_mobile_advance_button, Color("e53935"), Color.WHITE, 10, 4)
+	_mobile_advance_button.pressed.connect(func() -> void: _on_menu_chosen("advance"))
+	vbox.add_child(_mobile_advance_button)
+
+	# 3. メニューグリッド（采配・日程表・新戦力・記録室・システム）
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
+	vbox.add_child(grid)
+
+	for menu: Array in MENUS:
+		var key: String = menu[0]
+		if key == "advance":
+			continue
+		var btn := Button.new()
+		btn.text = menu[1]
+		btn.custom_minimum_size = Vector2(0, 50)
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.add_theme_font_size_override("font_size", 18)
+		btn.add_theme_font_override("font", UiTheme.font(800))
+		var color: Color = menu[3]
+		UiTheme.style_button(btn, color, Color.WHITE, 8, 3)
+		var icon: Texture2D = load(ICON_DIR.path_join(menu[2] + ".svg"))
+		if icon != null:
+			btn.icon = icon
+			btn.expand_icon = true
+		btn.pressed.connect(func() -> void: _on_menu_chosen(key))
+		grid.add_child(btn)
+		_mobile_menu_buttons[key] = btn
+
+	# 4. 最新ニュースカード
+	var news_btn := Button.new()
+	news_btn.custom_minimum_size = Vector2(0, 60)
+	news_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UiTheme.style_button(news_btn, Color.WHITE, _palette.ink, 8, 2)
+	news_btn.text = "📰 最新ニュース・速報を見る"
+	news_btn.add_theme_font_size_override("font_size", 17)
+	news_btn.add_theme_font_override("font", UiTheme.font(700))
+	news_btn.pressed.connect(func() -> void: open_news())
+	vbox.add_child(news_btn)
+
+
+func _refresh_mobile_dashboard() -> void:
+	if _mobile_advance_button != null and is_instance_valid(_mobile_advance_button):
+		_mobile_advance_button.text = "▶ %s" % GameState.button_text()
+	if _mobile_header_label != null and is_instance_valid(_mobile_header_label):
+		_mobile_header_label.text = "%s年 %s　%s" % [GameState.year_text(), GameState.month_text(), GameState.event_text()]
+	if _mobile_team_label != null and is_instance_valid(_mobile_team_label):
+		_mobile_team_label.text = "%s （%s）" % [GameState.team, _summary_text()]

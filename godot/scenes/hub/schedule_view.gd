@@ -45,6 +45,23 @@ var _focus_day_before_ff := -1
 
 func _ready() -> void:
 	_build_layout()
+	UiLayout.layout_changed.connect(_on_layout_changed)
+	_apply_layout(UiLayout.is_portrait)
+
+
+func _on_layout_changed(is_portrait: bool, _is_mobile: bool) -> void:
+	_apply_layout(is_portrait)
+
+
+func _apply_layout(is_portrait: bool) -> void:
+	if _standings != null and is_instance_valid(_standings):
+		_standings.visible = not is_portrait
+	if _one_day_button != null:
+		_one_day_button.custom_minimum_size = Vector2(0, 44 if is_portrait else 38)
+	if _one_week_button != null:
+		_one_week_button.custom_minimum_size = Vector2(0, 44 if is_portrait else 38)
+	if _to_date_button != null:
+		_to_date_button.custom_minimum_size = Vector2(0, 44 if is_portrait else 38)
 
 
 func setup(p: UiTheme.Palette) -> void:

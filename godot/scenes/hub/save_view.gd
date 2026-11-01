@@ -139,11 +139,41 @@ func setup(p: UiTheme.Palette, only_load := false) -> void:
 	_no_button.focus_neighbor_left = _no_button.get_path_to(_yes_button)
 	_confirm_panel.visible = false
 	add_child(_confirm_panel)
+	_build_backup_row(p)
 	# ハブでは案内を下の帯（message_changed）に出すので、この画面の案内の行はタイトルの「続きから」のときだけ
 	_status_label = UiTheme.small_label("", 17, UiTheme.TEXT, 700)
 	_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status_label.visible = only_load
 	add_child(_status_label)
+
+
+var _backup_row: HBoxContainer
+var _download_button: Button
+var _selected_slot: String = "slot1"
+
+
+func _build_backup_row(p: UiTheme.Palette) -> void:
+	_backup_row = HBoxContainer.new()
+	_backup_row.add_theme_constant_override("separation", 10)
+	var label := UiTheme.small_label("セーブのバックアップ（端末保存）", 16, UiTheme.TEXT, 700)
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_backup_row.add_child(label)
+
+	_download_button = Button.new()
+	_download_button.text = "📥 選択枠を端末に保存"
+	_download_button.custom_minimum_size = Vector2(200, 40)
+	_download_button.add_theme_font_size_override("font_size", 16)
+	_download_button.add_theme_font_override("font", UiTheme.font(700))
+	UiTheme.style_button(_download_button, Color("0288d1"), Color.WHITE, 8, 2)
+	_download_button.tooltip_text = "ブラウザのデータ消去対策に、セーブデータをJSONファイルとして端末へダウンロード保存します"
+	_download_button.pressed.connect(func() -> void:
+		var err := SaveGame.download_save_file(_selected_slot)
+		if err.is_empty():
+			_set_status("%s を端末へダウンロード保存しました" % SaveGame.SLOT_NAMES.get(_selected_slot, _selected_slot))
+		else:
+			_set_status("保存エラー: " + err))
+	_backup_row.add_child(_download_button)
+	add_child(_backup_row)
 
 
 ## システムの設定「フルスクリーン」の表示を UiInput の状態に合わせる（F11 での切り替えにも追従）
@@ -335,6 +365,9 @@ func refresh() -> void:
 
 ## 枠を選んだ：セーブ（上書きは確認）／ロード（ハブからは確認、タイトルからはすぐ）
 func choose(slot: String) -> void:
+	_selected_slot = slot
+	if _download_button != null:
+		_download_button.text = "📥 %s を端末に保存" % SaveGame.SLOT_NAMES.get(slot, slot)
 	var slot_name: String = SaveGame.SLOT_NAMES.get(slot, slot)
 	if _mode == "save":
 		if slot == SaveGame.AUTO:

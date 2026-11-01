@@ -156,6 +156,20 @@ func setup(p: UiTheme.Palette) -> void:
 	_build_overlay()
 	_voice = DraftVoice.new()
 	add_child(_voice)
+	UiLayout.layout_changed.connect(_on_layout_changed)
+	_apply_layout(UiLayout.is_portrait)
+
+
+func _on_layout_changed(is_portrait: bool, _is_mobile: bool) -> void:
+	_apply_layout(is_portrait)
+
+
+func _apply_layout(is_portrait: bool) -> void:
+	if _right_panel != null and is_instance_valid(_right_panel):
+		if is_portrait:
+			_right_panel.custom_minimum_size = Vector2(0, 180)
+		else:
+			_right_panel.custom_minimum_size = Vector2(RIGHT_WIDTH, 0)
 
 
 # --- 外から ------------------------------------------------------------------------------

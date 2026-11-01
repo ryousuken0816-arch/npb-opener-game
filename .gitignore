@@ -11,3 +11,5 @@ data/basement/
 
 .env
 scratch/
+build/
+*.uid

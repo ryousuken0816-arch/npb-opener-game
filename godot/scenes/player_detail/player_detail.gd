@@ -129,8 +129,14 @@ func _ready() -> void:
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_frame = PanelContainer.new()
 	add_child(_frame)
-	_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE,
-		MARGIN)
+	var margin_top := (UiLayout.safe_area_top + 6.0) if UiLayout.is_portrait else float(MARGIN)
+	var margin_side := 4.0 if UiLayout.is_portrait else float(MARGIN)
+	var margin_bottom := (UiLayout.safe_area_bottom + 6.0) if UiLayout.is_portrait else float(MARGIN)
+	_frame.offset_left = margin_side
+	_frame.offset_top = margin_top
+	_frame.offset_right = -margin_side
+	_frame.offset_bottom = -margin_bottom
+	_frame.set_anchors_preset(Control.PRESET_FULL_RECT)
 	# 中身が枠より大きくなっても、枠を画面の外へ広げずにスクロールさせる（ハブのサブ画面と同じ）
 	_fit = ScrollContainer.new()
 	_frame.add_child(_fit)
@@ -266,37 +272,42 @@ func data_year() -> int:
 
 func _build_top_bar() -> Control:
 	var bar := HBoxContainer.new()
-	bar.add_theme_constant_override("separation", 6)
-	bar.add_child(_arrow_button("◀ LB", func() -> void: switch_tab(-1), "前のタブ（LB / Q）"))
+	bar.add_theme_constant_override("separation", 4 if UiLayout.is_portrait else 6)
+	if not UiLayout.is_portrait:
+		bar.add_child(_arrow_button("◀ LB", func() -> void: switch_tab(-1), "前のタブ（LB / Q）"))
+	var tab_w := 68 if UiLayout.is_portrait else 104
+	var tab_font := 17 if UiLayout.is_portrait else 22
 	for i in TABS.size():
 		var b := Button.new()
 		b.text = TABS[i][1]
-		b.custom_minimum_size = Vector2(104, 44)
+		b.custom_minimum_size = Vector2(tab_w, 40)
 		b.focus_mode = Control.FOCUS_NONE
 		b.add_theme_font_override("font", UiTheme.font(800))
-		b.add_theme_font_size_override("font_size", 22)
+		b.add_theme_font_size_override("font_size", tab_font)
 		b.pressed.connect(show_tab.bind(i))
 		bar.add_child(b)
 		_tab_buttons.append(b)
-	bar.add_child(_arrow_button("RB ▶", func() -> void: switch_tab(1), "次のタブ（RB / E）"))
+	if not UiLayout.is_portrait:
+		bar.add_child(_arrow_button("RB ▶", func() -> void: switch_tab(1), "次のタブ（RB / E）"))
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bar.add_child(spacer)
-	bar.add_child(_arrow_button("▲ 前", func() -> void: step(-1), "前の選手（十字キー ↑←）"))
-	_counter = UiTheme.small_label("", 17, UiTheme.TEXT, 800)
-	_counter.custom_minimum_size = Vector2(70, 0)
+	bar.add_child(_arrow_button("▲", func() -> void: step(-1), "前の選手"))
+	_counter = UiTheme.small_label("", 15 if UiLayout.is_portrait else 17, UiTheme.TEXT, 800)
+	_counter.custom_minimum_size = Vector2(50 if UiLayout.is_portrait else 70, 0)
 	_counter.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bar.add_child(_counter)
-	bar.add_child(_arrow_button("次 ▼", func() -> void: step(1), "次の選手（十字キー ↓→）"))
-	var guide := PadGuide.new()
-	guide.set_items([["十字", "選手"], ["LB/RB", "タブ"], ["B", "閉じる"]])
-	guide.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	bar.add_child(guide)
+	bar.add_child(_arrow_button("▼", func() -> void: step(1), "次の選手"))
+	if not UiLayout.is_portrait:
+		var guide := PadGuide.new()
+		guide.set_items([["十字", "選手"], ["LB/RB", "タブ"], ["B", "閉じる"]])
+		guide.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		bar.add_child(guide)
 	var close_button := Button.new()
-	close_button.text = "✕ 閉じる"
+	close_button.text = "✕" if UiLayout.is_portrait else "✕ 閉じる"
 	close_button.focus_mode = Control.FOCUS_NONE
-	close_button.custom_minimum_size = Vector2(0, 40)
-	UiTheme.style_button(close_button, Color("5f6670"), Color.WHITE, 10, 5)
+	close_button.custom_minimum_size = Vector2(40 if UiLayout.is_portrait else 0, 40)
+	UiTheme.style_button(close_button, Color("5f6670"), Color.WHITE, 8, 4)
 	close_button.pressed.connect(close)
 	bar.add_child(close_button)
 	return bar
