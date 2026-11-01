@@ -179,6 +179,7 @@ func _ready() -> void:
 	_contract_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "contract":
 			_description_label.text = text)
+	_fa_view.close_requested.connect(_close_sub_screen)
 	_fa_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "fa":
 			_description_label.text = text)
