@@ -4,8 +4,8 @@ extends VBoxContainer
 ## ドラフト前の作戦会議（docs/AUTORUN.md 作業37）と有識者の指名予想（作業38）の画面。
 ## 新戦力の「ドラフト候補」タブ（シーズン中・オフ）と、戦力外・引退を締めたあとの可変ボタン「作戦会議」から開く（広げて表示）。
 ##
-## - 左：自球団の補強ポイント（記録室のデプスの守備位置ランクを12球団と比べ、手薄・将来が弱い・正選手が高齢の位置の上位3つ。
-##   押すとその守備位置で絞り込み）と、印を付けた人数
+## - 左：自球団の補強ポイント（記録室のデプスの守備位置ランクを12球団と比べ、手薄・将来が弱い・正選手が高齢の位置に、
+##   今季の位置別の戦力（作業34、TeamValue の得失点）を足した上位3つ。押すとその守備位置で絞り込み）と、印を付けた人数
 ## - 中央：候補の一覧（ドラフト画面と同じ列・並び替え・絞り込み。タブ：情報／投手能力／野手能力）か、有識者の予想（タブ）
 ## - 右：選んだ候補の要約・印（◎本命・○上位候補・△中位・☆掘り出し物・✕回避）・メモ、1位入札の本命の順番（◎を▲▼で並べ替え。
 ##   外れ1位の順にもなる）
@@ -44,6 +44,13 @@ const NEED_AGE_FROM := 30.0
 const NEED_AGE_WEIGHT := 0.07
 const NEED_THIN := 0.15
 const NEED_COUNT := 3
+## 位置別の戦力（得失点）：1点のマイナスあたりの点と、満額で効かせる今季の試合数（それより少なければ割合で弱める）
+const NEED_RUNS_WEIGHT := 0.015
+const NEED_RUNS_FULL_GAMES := 72.0
+## デプスの守備位置 → 位置別の戦力の列（外野手は3つの和、抑えは救援の半分）
+const NEED_RUNS_COLUMNS := {"捕手": ["捕手"], "一塁手": ["一塁手"], "二塁手": ["二塁手"], "三塁手": ["三塁手"],
+	"遊撃手": ["遊撃手"], "外野手": ["左翼手", "中堅手", "右翼手"], "先発": ["先発"], "中継ぎ": ["救援"], "抑え": ["救援"]}
+const NEED_RUNS_SHARE := {"抑え": 0.5}
 ## シーズン中は春のアマ球界のニュース（センバツ号）の日から候補が出そろう
 const OPEN_DATE := "03-31"
 
@@ -378,8 +385,8 @@ func _build_left() -> Control:
 	_needs_box = VBoxContainer.new()
 	_needs_box.add_theme_constant_override("separation", 4)
 	box.add_child(_needs_box)
-	var hint := UiTheme.small_label("押すとその守備位置で絞り込み。将来は12球団での順位、年齢は正選手の平均", 12,
-		UiTheme.TEXT_SUB, 700)
+	var hint := UiTheme.small_label("押すとその守備位置で絞り込み。将来は12球団での順位、年齢は正選手の平均、" \
+		+ "今季は位置別の戦力（得失点）", 12, UiTheme.TEXT_SUB, 700)
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint.custom_minimum_size = Vector2(LEFT_WIDTH - 20, 0)
 	box.add_child(hint)
@@ -430,6 +437,8 @@ static func compute_needs(team: String) -> Array:
 	if not all.has(team):
 		return []
 	var depth := GameState.depth_of(team)
+	var values := _team_values(team)
+	var runs_share := clampf(float(GameState.games_played()) / NEED_RUNS_FULL_GAMES, 0.0, 1.0)
 	var result: Array = []
 	for pos: String in Depth.POSITIONS:
 		var now_sum := 0.0
@@ -447,6 +456,13 @@ static func compute_needs(team: String) -> Array:
 		score += NEED_AGE_WEIGHT * maxf(0.0, age - NEED_AGE_FROM)
 		if int(mine["thick"]) == 0:
 			score += NEED_THIN
+		var runs := NAN
+		if not values.is_empty():
+			runs = 0.0
+			for col: String in NEED_RUNS_COLUMNS[pos]:
+				runs += float(values.get(col, {}).get("total", 0.0))
+			runs *= float(NEED_RUNS_SHARE.get(pos, 1.0))
+			score += NEED_RUNS_WEIGHT * runs_share * -runs
 		fut_order.sort()
 		fut_order.reverse()
 		var rank := fut_order.find(float(mine["future"])) + 1
@@ -455,9 +471,22 @@ static func compute_needs(team: String) -> Array:
 			why += "・%.0f歳" % age
 		if int(mine["thick"]) == 0:
 			why += "・%s以上なし" % Depth.THICK_RANK
+		if not is_nan(runs) and runs_share > 0.0:
+			why += "・今季%+d点" % roundi(runs)
 		result.append({"pos": pos, "score": score, "why": why})
 	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["score"] > b["score"])
 	return result.slice(0, NEED_COUNT)
+
+
+## 今季の自球団の位置別の戦力（TeamValue.from_stats の {位置: {total}}）。今季の成績が無ければ空
+static func _team_values(team: String) -> Dictionary:
+	var st := GameState.season_stats(GameState.year)
+	if st.is_empty():
+		return {}
+	var all := TeamValue.from_stats(st, func(id: String) -> String:
+		var pos: Variant = GameData.player(id).get("primary_pos")
+		return str(pos) if pos != null else "")
+	return all.get(team, {})
 
 
 ## 正選手（編成どおり。いなければ今の能力の上位）の平均年齢（不明は0）

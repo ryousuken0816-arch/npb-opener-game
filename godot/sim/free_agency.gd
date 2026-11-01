@@ -12,6 +12,10 @@ extends RefCounted
 ##   成功したら来季からはメジャーにいた年の能力値（GameData.mlb_player）、無ければ直前のNPBの能力値を使う
 ##
 ## 年俸は来季の額として決まり、契約年数のあいだは契約更改で変わらない（LeagueRoster.contract_until）。
+##
+## 選手の好み（作業36）：宣言した選手は「行きたいリーグ」「優勝争い（球団の強さ）」「地元（出身校の地域）」
+## 「出場機会（その位置の層の薄さ）」のうち1〜2個を持ち（prefs）、満たす球団ほど点数が上がる（fit・_score）。
+## 希望の年数（want_years）より長い年数は半分しか効かない。CPU球団の入札の判断は変えない
 
 const DOMESTIC_FA_YEARS := 8
 const OVERSEAS_FA_YEARS := 9
@@ -35,6 +39,38 @@ const YEARS_MAX := 5
 const YEAR_BONUS := 0.08
 const HOME_BONUS := 1.15
 const CHOICE_NOISE := 0.1
+## 好み1つを満たしたときの点数の上積み（好みは1〜2個。2個目を持つ確率 PREF_TWO_CHANCE）
+const PREF_BONUS := 0.08
+const PREF_TWO_CHANCE := 0.4
+## 好みを満たすとみなす度合い（画面の「行きたがっている球団」の色）
+const PREF_WANT := 0.6
+const PREF_WORDS := {"league": "%sでプレーしたい", "contend": "優勝争いをしたい",
+	"home": "地元（%s）に近い球団がいい", "playing": "出場機会がほしい"}
+## 球団の地域（球団名に含まれる言葉 → 地域）
+const TEAM_REGION := {"日本ハム": "北海道", "楽天": "東北", "読売": "関東", "ヤクルト": "関東", "横浜": "関東",
+	"西武": "関東", "ロッテ": "関東", "中日": "中部", "阪神": "関西", "オリックス": "関西", "広島": "中国・四国",
+	"ソフトバンク": "九州"}
+## 出身校の名前に含まれる言葉 → 地域（都道府県名・主な地名・よく知られた学校。分からなければ地元の好みは無し）
+const REGION_WORDS := {
+	"北海道": ["北海道", "札幌", "旭川", "苫小牧", "函館", "帯広", "釧路", "北照", "北海高"],
+	"東北": ["青森", "岩手", "宮城", "秋田", "山形", "福島", "仙台", "東北", "八戸", "盛岡", "花巻", "光星", "聖光学院", "酒田", "鶴岡",
+		"一関", "弘前", "相馬", "北上"],
+	"関東": ["茨城", "栃木", "群馬", "埼玉", "千葉", "東京", "神奈川", "山梨", "横浜", "相模", "川崎", "浦和", "春日部", "花咲徳栄",
+		"習志野", "銚子", "木更津", "拓大紅陵", "水戸", "常総", "取手", "宇都宮", "作新", "前橋", "高崎", "桐生", "甲府", "早稲田", "日大三",
+		"帝京", "二松学舎", "関東一", "修徳", "桐光", "日大藤沢", "桐蔭学園", "慶應", "慶応", "法政", "明治", "立教", "浦学", "八王子",
+		"国士舘", "駒大", "船橋", "大宮", "久我山", "国学院", "創価", "堀越", "日大豊山", "中央学院", "暁星国際", "土浦", "藤代", "成田",
+		"八千代", "鷲宮", "太田", "望洋", "都留"],
+	"中部": ["新潟", "富山", "石川", "福井", "長野", "岐阜", "静岡", "愛知", "三重", "名古屋", "中京", "享栄", "東邦", "名電", "浜松",
+		"金沢", "星稜", "敦賀", "松本", "常葉", "四日市", "豊橋", "岡崎", "大垣", "豊川", "高岡", "鯖江", "菰野", "杜若", "明野", "遊学館",
+		"新発田", "宇治山田"],
+	"関西": ["滋賀", "京都", "大阪", "兵庫", "奈良", "和歌山", "神戸", "姫路", "尼崎", "西宮", "報徳", "育英", "PL学園", "ＰＬ学園",
+		"履正社", "上宮", "天理", "智弁", "近江", "平安", "浪速", "関西", "近畿", "立命館", "同志社", "関大", "関学", "龍谷", "浪商",
+		"近大", "仰星", "大産大", "星林", "新宮"],
+	"中国・四国": ["鳥取", "島根", "岡山", "広島", "山口", "徳島", "香川", "愛媛", "高知", "広陵", "倉敷", "下関", "松山", "宇和島",
+		"鳴門", "明徳", "尽誠", "米子", "松江", "福山", "宇部", "多度津", "開星", "如水館"],
+	"九州": ["福岡", "佐賀", "長崎", "熊本", "大分", "宮崎", "鹿児島", "沖縄", "九州", "博多", "久留米", "西日本短大", "柳川", "佐世保",
+		"延岡", "興南", "樟南", "尚学", "明豊", "日南", "柳ヶ浦", "津久見", "糸島", "清峰", "八重山", "沖学園", "筑陽"],
+}
 ## CPU球団の入札：同じ種類（先発・救援・野手）で何人目に入るか（枠の数）で必要度を出す
 const SLOTS := {"sp": 6, "rp": 7, "b": 9}
 const CPU_BIDDERS_MAX := 4
@@ -45,13 +81,15 @@ const MLB_KEEP_YEAR := 0.01
 
 var year: int                          ## このオフのシーズンの年
 var declared: Array[String] = []       ## FA宣言した選手
-var info := {}                         ## 選手ID → {from, asking, age, kind, salary}
-var cpu_bids := {}                     ## 選手ID → [{team, amount, years}]（締め切りまで画面には出さない）
+var info := {}                         ## 選手ID → {from, asking, age, kind, salary, want_years, prefs}
+var cpu_bids := {}                     ## 選手ID → [{team, amount, years}]（締め切りまで額は出さない。球団は表の「交」）
 var user_bids := {}                    ## 選手ID → {amount, years}（自球団の提示。自球団の選手なら引き留め）
 var mlb: Array[String] = []            ## このオフにメジャーへ移籍する選手
 var mlb_info := {}                     ## 選手ID → {from, route, asking, status: leave/kept/failed, chance, amount, years}
 var results: Array[Dictionary] = []    ## 締め切りの結果 {id, from, to, amount, years, bidders, user_bid}
 var resolved := false
+## 球団 → 今季の勝率（優勝争いの好みに使う。GameState が open のあとに入れる。無ければ全球団五分）
+var strength := {}
 ## テスト用：0以上なら乱数の代わりにこの値で判定する（引き留め・宣言）
 var force_roll := -1.0
 
@@ -114,8 +152,10 @@ func declare(league: LeagueRoster, id: String) -> void:
 		return
 	var p := GameData.player(id)
 	declared.append(id)
-	info[id] = {"from": league.team_of[id], "asking": asking(league, id), "age": age_of(p, year),
-		"kind": kind_of(p), "salary": league.salary_of(id)}
+	var age := age_of(p, year)
+	info[id] = {"from": league.team_of[id], "asking": asking(league, id), "age": age,
+		"kind": kind_of(p), "salary": league.salary_of(id), "want_years": want_years_for(age),
+		"prefs": make_prefs(id, p, league.team_of[id])}
 	cpu_bids[id] = _cpu_bids(league, id)
 	league.log_event("fa_declare", id, league.team_of[id], "", "%s（%s）がFA宣言" % [
 		league.names.get(id, id), GameData.short_name(league.team_of[id])])
@@ -279,9 +319,151 @@ func resolve(league: LeagueRoster) -> void:
 			"rank": ranks.get(id, "C")})
 
 
+## 選手が球団を選ぶ点数（年俸・年数・元の球団・好み）
 func _score(id: String, team: String, amount: int, years: int) -> float:
-	var s := float(amount) * (1.0 + YEAR_BONUS * (years - 1))
-	return s * (HOME_BONUS if team == info.get(id, {}).get("from", "") else 1.0)
+	var want := want_years_of(id)
+	var counted := mini(years, want) - 1 + 0.5 * maxi(0, years - want)
+	var s := float(amount) * (1.0 + YEAR_BONUS * counted)
+	s *= HOME_BONUS if team == info.get(id, {}).get("from", "") else 1.0
+	var league := _league()
+	return s * (1.0 + PREF_BONUS * fit(league, id, team)) if league != null else s
+
+
+# --- 選手の好み（作業36） -------------------------------------------------------------------
+
+## 希望の年数（年齢から）
+static func want_years_for(age: int) -> int:
+	if age <= 29:
+		return 4
+	if age <= 32:
+		return 3
+	return 2 if age <= 34 else 1
+
+
+func want_years_of(id: String) -> int:
+	var i: Dictionary = info.get(id, {})
+	return int(i.get("want_years", want_years_for(int(i.get("age", 30)))))
+
+
+## 好みを1〜2個決める。乱数は選手と年から決まる別の乱数（宣言・入札の乱数の流れを変えない）。
+## [{kind: league/contend/home/playing, value}]（league は "C"/"P"、home は地域）
+func make_prefs(id: String, p: Dictionary, from: String) -> Array:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%s:%d:prefs" % [id, year])
+	var kinds: Array = ["league", "contend", "playing"]
+	var region := region_of_career(str(p.get("career", "")))
+	if not region.is_empty() and region != region_of_team(from):
+		kinds.append("home")
+	var prefs: Array = []
+	var count := 2 if rng.randf() < PREF_TWO_CHANCE else 1
+	for i in count:
+		var kind: String = kinds[rng.randi_range(0, kinds.size() - 1)]
+		kinds.erase(kind)
+		var value := ""
+		match kind:
+			"league":
+				# 今と違うリーグを選びやすい（6割）
+				var own := GameData.league_of(from)
+				var other := "P" if own == "C" else "C"
+				value = other if own.is_empty() or rng.randf() < 0.6 else own
+			"home":
+				value = region
+		prefs.append({"kind": kind, "value": value})
+	return prefs
+
+
+func prefs_of(id: String) -> Array:
+	return info.get(id, {}).get("prefs", [])
+
+
+## 好みの度合いの合計（好み1つにつき 0〜1）
+func fit(league: LeagueRoster, id: String, team: String) -> float:
+	var total := 0.0
+	for pref: Dictionary in prefs_of(id):
+		total += pref_fit(league, id, team, pref)
+	return total
+
+
+## 好み1つの度合い（0〜1）
+func pref_fit(league: LeagueRoster, id: String, team: String, pref: Dictionary) -> float:
+	match pref.get("kind", ""):
+		"league":
+			return 1.0 if GameData.league_of(team) == pref.get("value", "") else 0.0
+		"contend":
+			return _strength_rate(team)
+		"home":
+			return 1.0 if region_of_team(team) == pref.get("value", "") else 0.0
+		"playing":
+			if league == null:
+				return 0.0
+			var p := GameData.player(id)
+			if p.is_empty():
+				return 0.0
+			return need_of(league, team, kind_of(p), float(Salary.ability(p)[0]), id)
+	return 0.0
+
+
+## 好みを満たしている球団か（画面で「行きたがっている球団」の色を付ける）
+func wants(league: LeagueRoster, id: String, team: String) -> bool:
+	for pref: Dictionary in prefs_of(id):
+		if pref_fit(league, id, team, pref) >= PREF_WANT:
+			return true
+	return false
+
+
+## 好みのひとこと（「セ・リーグでプレーしたい」など）
+func pref_words(id: String) -> Array[String]:
+	var words: Array[String] = []
+	for pref: Dictionary in prefs_of(id):
+		var kind: String = pref.get("kind", "")
+		var text: String = PREF_WORDS.get(kind, "")
+		match kind:
+			"league":
+				text = text % ("セ・リーグ" if pref.get("value", "") == "C" else "パ・リーグ")
+			"home":
+				text = text % pref.get("value", "")
+		if not text.is_empty():
+			words.append(text)
+	return words
+
+
+## 球団の強さ（0〜1）：今季の勝率を12球団の最低〜最高で 0〜1 にする
+func _strength_rate(team: String) -> float:
+	if not strength.has(team):
+		return 0.5
+	var low := INF
+	var high := -INF
+	for t: String in strength:
+		low = minf(low, float(strength[t]))
+		high = maxf(high, float(strength[t]))
+	return clampf((float(strength[team]) - low) / (high - low), 0.0, 1.0) if high > low else 0.5
+
+
+static func region_of_team(team: String) -> String:
+	for word: String in TEAM_REGION:
+		if team.contains(word):
+			return TEAM_REGION[word]
+	return ""
+
+
+## 出身校（経歴の最初の学校）の地域。分からなければ空
+static func region_of_career(career: String) -> String:
+	var school := career.split(" - ")[0].strip_edges() if not career.is_empty() else ""
+	if school.is_empty():
+		return ""
+	for region: String in REGION_WORDS:
+		for word: String in REGION_WORDS[region]:
+			if school.contains(word):
+				return region
+	return ""
+
+
+## 入札・交渉している CPU 球団（締め切るまで額は出さない）
+func bidder_teams(id: String) -> Array[String]:
+	var teams: Array[String] = []
+	for b: Dictionary in cpu_bids.get(id, []):
+		teams.append(b["team"])
+	return teams
 
 
 ## CPU球団の入札：戦力の必要度（同じ種類で何人目に入るか）・能力・年俸で決める
@@ -368,7 +550,7 @@ static func age_of(p: Dictionary, at_year: int) -> int:
 
 func to_save() -> Dictionary:
 	return {"year": year, "declared": declared, "info": info, "cpu_bids": cpu_bids, "user_bids": user_bids,
-		"mlb": mlb, "mlb_info": mlb_info, "results": results, "resolved": resolved,
+		"mlb": mlb, "mlb_info": mlb_info, "results": results, "resolved": resolved, "strength": strength,
 		"rng": SaveUtil.rng_state(_rng)}
 
 
@@ -384,5 +566,6 @@ static func from_save(d: Dictionary, league: LeagueRoster) -> FreeAgency:
 	f.mlb_info = d.get("mlb_info", {})
 	f.results.assign(d.get("results", []))
 	f.resolved = bool(d.get("resolved", false))
+	f.strength = d.get("strength", {})
 	SaveUtil.set_rng_state(f._rng, d.get("rng", ""))
 	return f

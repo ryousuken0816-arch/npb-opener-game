@@ -143,7 +143,11 @@ func _check_amateur_draft(d: RefCounted) -> void:
 	_check(best.get("hyouka_rank", "") == "S", "報道の目玉は当時の評価 S（%s %s）" % [best.get("name", ""),
 		best.get("hyouka_rank", "")])
 	for t: String in d.teams:
-		_check(int(d.quota[t]["reg"]) == _ds.AMATEUR_QUOTA["reg"], "%s：指名人数は定数どおり" % _gd.short_name(t))
+		# FAの補償で指名権が動いた球団（2027年オフから。作業18）はその分だけ増減する
+		var want: int = _ds.AMATEUR_QUOTA["reg"]
+		for m: Dictionary in d.pick_moves:
+			want += (1 if m["to"] == t else 0) - (1 if m["from"] == t else 0)
+		_check(int(d.quota[t]["reg"]) == want, "%s：指名人数は定数どおり（補償の指名権を含めて%d人）" % [_gd.short_name(t), want])
 		break
 
 

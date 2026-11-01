@@ -5,8 +5,10 @@ extends SceneTree
 ##    - 自球団の入札（上限の額・5年）で他球団の選手を獲得できる
 ##    - 自球団の選手のFA宣言（無ければ資格のある選手に宣言させる）を引き留められる。決まった年俸は契約年数のあいだ据え置き
 ##    - オフの日付表示（「YYYY年 オフ」）と、翌年の開幕で年・日付が進む
+##    - 選手の好み（作業36）：1〜2個で、ひとことが出る。出身校の地域。好み（リーグ・地元）を満たす球団が同じ条件なら選ばれる
 ## 2) 2011年オフ、日本ハムを自球団にしてダルビッシュ（ポスティング）を引き留める操作を、ハブ → 可変ボタン →
-##    FA・ポスティングの画面（RB でメジャー移籍タブ、札を選ぶ、もう一度で選手詳細、「引き留める」）でキーボード・マウスで行う。
+##    FA・ポスティングの画面（作業36：(1) 選手×球団の表で LB/RB のセ・パ、マスの「交」「残」「✕」「米」、Ⓐで印、名前札で
+##    選手詳細、「OK」で (2) 交渉の部屋、「変更する」→ 年俸の札で ◀▶、「引き留める」、Ⓑで表へ）でキーボード・マウスで行う。
 ##    成功（乱数を固定）：日本ハムに残り、2012年はメジャーにいた年の能力値（mlb_players）で編成に入る。史実の復帰・引退が
 ##    二重に起きず、2013年の開幕にも日本ハムにいる。失敗：メジャーへ行き、2012年の開幕にはいない
 ##
@@ -21,6 +23,7 @@ var _out := ""
 var _failures := 0
 var _gs: Node
 var _gd: Node
+var _pref_target := ""
 
 
 func _initialize() -> void:
@@ -69,6 +72,7 @@ func _check_offseasons() -> void:
 		for id: String in f.declared:
 			names.append("%s(%s)" % [league.names.get(id, id), _gd.short_name(f.info[id]["from"])])
 		print("%d年オフ FA宣言 %d人：%s" % [y, f.declared.size(), "、".join(names)])
+		_check_prefs(f, league, y)
 		# 自球団の入札：他球団の宣言選手のうち一番能力の高い選手に上限の額・5年
 		var target := _best_other(f, league)
 		if not target.is_empty():
@@ -93,6 +97,10 @@ func _check_offseasons() -> void:
 				"%d年オフ：締め切ると次は契約更改（%s）" % [y, _gs.button_text()])
 		_check(not _gs.fa_offer(target if not target.is_empty() else own, 1000, 1).is_empty(),
 				"締め切ったあとは提示できない")
+		if not _pref_target.is_empty():
+			_check(league.team_of.get(_pref_target, "") == "阪神タイガース",
+					"同じ条件なら好みを満たす阪神を選ぶ（%s）" % _gd.short_name(league.team_of.get(_pref_target, "")))
+			_pref_target = ""
 		var moved_to := {}
 		for res: Dictionary in f.results:
 			print("  %s：%s → %s %s・%d年（入札%d球団%s）" % [league.names[res["id"]], _gd.short_name(res["from"]),
@@ -144,6 +152,47 @@ func _check_offseasons() -> void:
 		if e["kind"] in ["fa_move", "fa_stay", "fa_declare"]:
 			fa_logs += 1
 	_check(fa_logs > 0, "FAの出来事が記録される（%d件）" % fa_logs)
+
+
+## 選手の好み（作業36）：全員1〜2個・ひとことが出る。好み（セ・リーグ＋地元の関西）を持たせた選手に阪神と楽天が
+## 同じ条件で入札すると阪神を選ぶ（好み2つで +16%、相性の揺れは最大 +10%）
+func _check_prefs(f: Variant, league: Variant, y: int) -> void:
+	var ok := true
+	var kinds := {}
+	for id: String in f.declared:
+		var prefs: Array = f.prefs_of(id)
+		var words: Array = f.pref_words(id)
+		if prefs.size() < 1 or prefs.size() > 2 or words.size() != prefs.size():
+			ok = false
+		for pref: Dictionary in prefs:
+			kinds[pref["kind"]] = int(kinds.get(pref["kind"], 0)) + 1
+		if f.want_years_of(id) < 1 or f.want_years_of(id) > 4:
+			ok = false
+	_check(ok, "%d年オフ：宣言した選手の好みは1〜2個でひとことが出る（%s）" % [y, str(kinds)])
+	if y != 2008:
+		return
+	_check(f.region_of_career("智弁和歌山高") == "関西" and f.region_of_career("東北高 - 東北福祉大") == "東北"
+			and f.region_of_career("横浜高 - 明治大") == "関東" and f.region_of_career("仙台育英高") == "東北"
+			and f.region_of_career("PL学園高") == "関西" and f.region_of_career("安田学園高 - 中央大") == "",
+			"出身校の地域（分からなければ空）")
+	var hanshin := "阪神タイガース"
+	var rakuten := "東北楽天ゴールデンイーグルス"
+	var target := ""
+	for id: String in f.declared:
+		if f.info[id]["from"] not in [hanshin, rakuten, USER_TEAM] and id != _best_other(f, league):
+			target = id
+			break
+	if target.is_empty():
+		_check(false, "好みの確認に使う選手がいる")
+		return
+	var amount: int = f.info[target]["asking"]
+	f.info[target]["prefs"] = [{"kind": "league", "value": "C"}, {"kind": "home", "value": "関西"}]
+	f.cpu_bids[target] = [{"team": rakuten, "amount": amount, "years": 2, "need": 0.5},
+		{"team": hanshin, "amount": amount, "years": 2, "need": 0.5}]
+	_check(f.wants(league, target, hanshin) and not f.wants(league, target, rakuten),
+			"%s：好み（セ・リーグ・地元の関西）で行きたい球団は阪神、楽天ではない" % league.names[target])
+	_check(f.pref_words(target) == ["セ・リーグでプレーしたい", "地元（関西）に近い球団がいい"], "好みのひとこと（%s）" % str(f.pref_words(target)))
+	_pref_target = target
 
 
 func _best_other(f: Variant, league: Variant) -> String:
@@ -205,34 +254,93 @@ func _check_darvish(success: bool) -> void:
 	var f: Variant = _gs.fa()
 	_check(DARVISH in f.mlb and f.mlb_info[DARVISH]["from"] == NIPPON_HAM and not league.team_of.has(DARVISH),
 			"ダルビッシュはメジャー移籍の一覧にいる（いったん退団）")
-	if success and not view.list_ids().is_empty():
-		var first: String = view.list_ids()[0]
+	# (1) 選手×球団の表：最初は自球団のリーグ（パ）。行＝FA宣言した選手のあとにメジャー移籍の選手
+	_check(view.get("_league") == "P" and not view.in_room(), "表は自球団のリーグ（パ・リーグ）の列から")
+	var ids: Array = view.list_ids()
+	_check(DARVISH in ids and ids.find(DARVISH) >= f.declared.size(),
+			"ダルビッシュはFA宣言の選手のあとの行（%d行目）" % (ids.find(DARVISH) + 1))
+	_check(view.cell(DARVISH, NIPPON_HAM) != null and view.cell(DARVISH, NIPPON_HAM).text == "米", "ダルビッシュの日本ハムのマスは「米」")
+	var bad := []
+	for id: String in f.declared:
+		for team: String in _gd.teams("P"):
+			var text: String = view.cell(id, team).text
+			var bid: bool = team in f.bidder_teams(id)
+			var want := ""
+			if team == f.info[id]["from"]:
+				want = "残" if bid or (team == NIPPON_HAM and f.user_bids.has(id)) else "✕"
+			elif team == NIPPON_HAM:
+				want = "交" if f.user_bids.has(id) else ""
+			else:
+				want = "交" if bid else "✕"
+			if text != want:
+				bad.append("%s/%s=%s（%s）" % [league.names[id], _gd.short_name(team), text, want])
+	_check(bad.is_empty(), "表のマスが入札・残留交渉どおり（%d人×6球団）%s" % [f.declared.size(), str(bad.slice(0, 4))])
+	if success and not f.declared.is_empty():
+		var first: String = ids[0]
+		_check(_focused() == view.cell(first, NIPPON_HAM), "先頭の行の自球団のマスにフォーカス")
+		await _key(KEY_E)
+		_check(view.get("_league") == "C" and view.cell(first, "読売ジャイアンツ") != null, "E（RB）でセ・リーグの列")
+		await _key(KEY_Q)
+		_check(view.get("_league") == "P" and view.cell(first, NIPPON_HAM) != null, "Q（LB）でパ・リーグに戻る")
+		UiInput_grab(view.cell(first, NIPPON_HAM))
 		await _key(KEY_ENTER)
-		_check(view.selected_id() == first, "FA宣言の先頭の札を Enter で選ぶ")
-		await _shot("fa1_declared")
-		await _key(KEY_ESCAPE)
-		_check(view.selected_id().is_empty() and hub.get("_open_key") == "fa", "Esc で選択だけ取り消す")
-	await _key(KEY_E)
-	_check(view.get("_tab") == "mlb", "E（RB）でメジャー移籍タブ")
-	_check(view.list_ids().size() > 0 and view.list_ids()[0] == DARVISH, "自球団のダルビッシュが先頭")
+		_check(first in view.marked_ids(), "マスでEnter：%sに印" % league.names[first])
+		await _key(KEY_ENTER)
+		_check(first not in view.marked_ids(), "もう一度Enterで印を外す")
+	var own_cell: Button = view.cell(DARVISH, NIPPON_HAM)
+	UiInput_grab(own_cell)
+	await _frames(3)  # 表のスクロールがフォーカスに追従してからクリックする
+	if success:
+		await _key(KEY_ENTER)
+	else:
+		await _click(own_cell)
+	_check(DARVISH in view.marked_ids() and view.selected_id() == DARVISH,
+			"ダルビッシュのマスで印（%s）" % ("Enter" if success else "クリック"))
+	# 名前札で選手詳細（Esc で閉じる）
+	await _frames(3)  # 印で表が作り直されたあと、スクロールが落ち着いてから
 	var tag: Control = view.get("_tags").get(DARVISH)
 	if success:
-		_check(_focused() == tag, "先頭の札にフォーカス")
+		UiInput_grab(tag)
 		await _key(KEY_ENTER)
 	else:
 		await _click(tag)
-	_check(view.selected_id() == DARVISH, "札を選ぶ（%s）" % ("Enter" if success else "クリック"))
-	# もう一度で選手詳細（Esc で閉じる）
+	_check(_detail() != null, "名前札で選手詳細が開く")
+	await _key(KEY_ESCAPE)
+	_check(_detail() == null and not view.in_room() and hub.get("_open_key") == "fa", "Esc で選手詳細を閉じる（表のまま）")
 	if success:
+		# 他球団の選手のマス（メジャー移籍）に印は付けられない
+		for id: String in f.mlb:
+			if f.mlb_info[id]["from"] != NIPPON_HAM:
+				view.toggle_mark(id)
+				_check(id not in view.marked_ids(), "他球団のメジャー移籍の選手には印を付けられない")
+				break
+		await _shot("fa1_list")
+	# OK で交渉の部屋へ
+	if success:
+		UiInput_grab(view.get("_ok_button"))
 		await _key(KEY_ENTER)
 	else:
-		await _click(view.get("_tags").get(DARVISH))
-	var detail := _detail()
-	_check(detail != null, "同じ札をもう一度で選手詳細が開く")
-	await _key(KEY_ESCAPE)
-	_check(_detail() == null and view.selected_id() == DARVISH, "Esc で選手詳細を閉じる（選択はそのまま）")
+		await _click(view.get("_ok_button"))
+	_check(view.in_room() and view.room_id() == DARVISH, "「OK」で交渉の部屋（%s）" % view.room_id())
+	var change: Button = view.get("_change_button")
+	var bar: Button = view.get("_amount_bar")
+	if success:
+		_check(_focused() == change, "交渉の部屋では「変更する」にフォーカス")
+		await _key(KEY_ENTER)
+		_check(_focused() == bar, "「変更する」で年俸の札へ")
+		var before: int = view.get("_amount")
+		await _key(KEY_RIGHT)
+		_check(view.get("_amount") > before and _focused() == bar, "→で年俸が上がる（%s）" % Salary.text(view.get("_amount")))
+		await _key(KEY_LEFT)
+		_check(view.get("_amount") == before, "←で年俸が戻る")
+	else:
+		var before: int = view.get("_amount")
+		var plus: Button = bar.get_parent().get_child(3)
+		await _click(plus)
+		_check(view.get("_amount") > before, "▶のクリックで年俸が上がる")
 	# 年俸を上限まで上げて、年数5年
 	var r: Array = f.bid_range(DARVISH)
+	var star_low: String = view.get("_stars_label").text
 	for i in 80:
 		view.call("_step_amount", 1)
 	for i in 5:
@@ -240,8 +348,11 @@ func _check_darvish(success: bool) -> void:
 	_check(view.get("_amount") == r[1] and view.get("_years") == 5, "◀▶で年俸を上限（%s）・5年に" % Salary.text(r[1]))
 	var chance: float = f.keep_chance(DARVISH, r[1], 5)
 	_check(chance >= 0.05 and chance <= 0.2, "成功率は5〜20%%（%d%%）" % roundi(chance * 100))
+	_check(view.get("_stars_label").text != star_low
+			and view.get("_odds_label").text == "成功率：%d%%" % roundi(chance * 100),
+			"提示を変えると★と成功率が変わる（%s → %s）" % [star_low, view.get("_stars_label").text])
 	if success:
-		await _shot("fa2_mlb_keep")
+		await _shot("fa2_room")
 	f.force_roll = 0.0 if success else 0.999
 	var button: Button = view.get("_action_button")
 	_check(button.text == "引き留める" and not button.disabled, "「引き留める」を押せる")
@@ -250,7 +361,6 @@ func _check_darvish(success: bool) -> void:
 	var status: String = f.mlb_info[DARVISH]["status"]
 	_check(status == ("kept" if success else "failed"), "引き留めの結果：%s" % status)
 	if success:
-		await _shot("fa3_mlb_kept")
 		_check(league.team_of.get(DARVISH, "") == NIPPON_HAM and not league.in_mlb.has(DARVISH)
 				and league.kept_mlb.has(DARVISH), "成功：日本ハムに残留（メジャーにいない）")
 		_check(league.salary_of(DARVISH) == r[1] and int(league.contract_until[DARVISH]) == 2016,
@@ -260,18 +370,25 @@ func _check_darvish(success: bool) -> void:
 	_check(button.disabled, "引き留めは1回だけ（ボタンが押せない）")
 	var again: Dictionary = _gs.mlb_keep(DARVISH, r[1], 5)
 	_check(not again["ok"], "2回目の引き留めはできない")
-	# Esc で選択の取り消し → ハブへ。可変ボタンはまだ FA の交渉（締め切っていない）
+	# Esc で表へ（マスは「残」／「米」） → ハブへ。可変ボタンはまだ FA の交渉（締め切っていない）
 	await _key(KEY_ESCAPE)
-	_check(view.selected_id().is_empty() and hub.get("_open_key") == "fa", "Esc で選択の取り消し")
+	_check(not view.in_room() and hub.get("_open_key") == "fa", "Esc で交渉の部屋から表へ")
+	var after: String = view.cell(DARVISH, NIPPON_HAM).text
+	_check(after == ("残" if success else "米"), "表のマスが引き留めの結果（%s）" % after)
 	await _key(KEY_ESCAPE)
 	_check(hub.get("_open_key") == "" and _gs.button_text() == "FA・移籍交渉", "Esc でハブへ（ボタン=%s）" % _gs.button_text())
 	await _key(KEY_ENTER)
 	_check(hub.get("_open_key") == "fa" and _gs.phase == _gs.Phase.FA_TRADE, "可変ボタンで FA の画面に戻る（段階は進まない）")
 	UiInput_grab(view.get("_close_button"))
 	await _key(KEY_ENTER)
-	_check(f.resolved and view.get("_tab") == "result", "「締め切って結果を見る」で結果タブ")
-	if success:
-		await _shot("fa4_result")
+	_check(f.resolved and not view.in_room(), "「締め切る」で結果を表に出す")
+	var wrong := []
+	for res: Dictionary in f.results:
+		var text: String = view.call("_cell_state", f, res["id"], res["to"])[0]
+		if text != ("残" if res["to"] == res["from"] else "決"):
+			wrong.append(league.names[res["id"]])
+	_check(wrong.is_empty(), "締め切ったあとは移籍先のマスが「決」（残留は「残」）%s" % str(wrong))
+	_check(view.get("_close_button").disabled and view.get("_mark_button").disabled, "締め切ったあとは印・締め切りはできない")
 	await _key(KEY_ESCAPE)
 	if _gs.comp_open():
 		_gs.comp_resolve()  # 自球団が関わるFAの補償はおまかせ（作業18）

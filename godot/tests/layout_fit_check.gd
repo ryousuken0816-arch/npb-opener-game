@@ -4,7 +4,7 @@ extends SceneTree
 ## 右端・下端（左端・上端も）が画面（1280x720）の内側か調べる。はみ出したものを列挙して NG にする。
 ## - 毎年の開幕・7月：ハブ、日程表、采配の一覧と全サブ画面（1軍登録は全選手を1人ずつ選ぶ）、新戦力、トレード交渉（両側3人＋金銭・全タブ）、システム、選手詳細の4タブ
 ## - 毎年のオフの各段階：ハブ、采配（オフは「見るだけ」の文言が出る）、FA・契約更改・戦力外の画面（全タブ・選手を選ぶ）、
-##   ドラフト（開幕の演出・候補を選んで入札・抽選（3Dの演出の途中と結果の場面）・指名一覧）、新戦力、トレード交渉
+##   FAは印を付けた表と交渉の部屋（全員。作業36）、ドラフト（開幕の演出・候補を選んで入札・抽選（3Dの演出の途中と結果の場面）・指名一覧）、新戦力、トレード交渉
 ## - ドラフトの作戦会議（作業37・38）の全タブ・候補を選んで印：毎年の7月とオフのドラフトの段階
 ## - 記録室の全タブ（打撃・投手は今季／通算・規定の切り替え、デプスは全球団・全並び順）：毎年の開幕・7月・オフの表彰の段階
 ## - 表彰の画面の全タブ（作業9）：毎年のオフの表彰の段階
@@ -299,6 +299,16 @@ func _check_records(when: String) -> void:
 					await _check_screen("%s：記録室 守備ランキング（%s）" % [when, pos], 0.0)
 				view.set("_fld_pos", "")
 				view.refresh()
+		elif t[0] == "pos_rank":
+			# 位置別の戦力（作業34）：棒グラフ・12球団の一覧・能力ランク、今季／昨季
+			for last: bool in [false, true]:
+				for mode: String in ["chart", "list", "ability"]:
+					view.set("_pv_last", last)
+					view.set("_pv_mode", mode)
+					view.refresh()
+					await _check_screen("%s：記録室 位置別の戦力（%s・%s）" % [when, mode, "昨季" if last else "今季"], 0.0)
+			view.set("_pv_mode", "chart")
+			view.set("_pv_last", false)
 		elif t[0] == "depth":
 			for team: String in root.get_node("GameData").teams():
 				view.set_team(team)
@@ -350,6 +360,7 @@ func _check_offseason(y: int) -> void:
 		await _check_records(when)
 	if _gs.fa_open():
 		await _check_phase_view("fa", "_fa_view", when)
+		await _check_fa_room(when)
 		await _check_comp(when)
 	elif _gs.contract_open():
 		await _check_phase_view("contract", "_contract_view", when)
@@ -417,6 +428,23 @@ func _check_phase_view(key: String, prop: String, when: String) -> void:
 			await _check_screen("%s：%s タブ%d 選択" % [when, key, i + 1], 0.0)
 		view.switch_tab(1)
 		await _check_screen("%s：%s タブ%d" % [when, key, i + 2], 0.0)
+	while view.back():
+		pass
+	_hub.call("_close_sub_screen")
+
+
+## FAの交渉の部屋（作業36）：交渉できる選手すべてに印を付けて「OK」、LB/RB で全員を見る
+func _check_fa_room(when: String) -> void:
+	await _open("fa")
+	var view: Node = _hub.get("_fa_view")
+	for id: String in view.list_ids():
+		if id not in view.marked_ids():
+			view.toggle_mark(id)
+	await _check_screen("%s：FA 印を付けた表" % when)
+	if view.confirm().is_empty():
+		for i in view.marked_ids().size():
+			await _check_screen("%s：FA 交渉の部屋 %d人目" % [when, i + 1])
+			view.switch_tab(1)
 	while view.back():
 		pass
 	_hub.call("_close_sub_screen")
