@@ -37,21 +37,27 @@ func setup(team_name: String, title: String) -> void:
 		if e is InputEventMouseButton and e.pressed:
 			close())
 	add_child(_stage)
+	# 文字の帯の幅（スマホの縦は画面の幅に合わせて文字も小さくする）
+	var view := (Engine.get_main_loop() as SceneTree).root.get_visible_rect().size
+	var width := minf(800.0, view.x - 24.0)
+	var k := width / 800.0
 	var box := VBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	box.position = Vector2(-400, 24)
-	box.custom_minimum_size = Vector2(800, 0)
+	box.offset_left = -width / 2.0
+	box.offset_right = width / 2.0
+	box.offset_top = 24
+	box.custom_minimum_size = Vector2(width, 0)
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_stage.add_child(box)
 	var team_label := Label.new()
 	team_label.text = team_name
 	team_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.heading(team_label, 40, Color.WHITE, _colors[0].darkened(0.4), 10)
+	UiTheme.heading(team_label, int(40 * maxf(k, 0.7)), Color.WHITE, _colors[0].darkened(0.4), 10)
 	box.add_child(team_label)
 	var title_label := Label.new()
 	title_label.text = title + "！"
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.heading(title_label, 84, Color("ffd400"), Color("7a3d00"), 16)
+	UiTheme.heading(title_label, int(84 * k), Color("ffd400"), Color("7a3d00"), 16)
 	box.add_child(title_label)
 	var hint_panel := PanelContainer.new()
 	hint_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -61,13 +67,13 @@ func setup(team_name: String, title: String) -> void:
 	h_style.content_margin_top = 4
 	h_style.content_margin_bottom = 4
 	hint_panel.add_theme_stylebox_override("panel", h_style)
-	var hint := UiTheme.small_label("Ⓐ / Ⓑ で閉じる", 18, Color.WHITE, 800)
+	var hint := UiTheme.small_label("タップで閉じる" if UiLayout.is_mobile else "Ⓐ / Ⓑ で閉じる", 18, Color.WHITE, 800)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint_panel.add_child(hint)
 	box.add_child(hint_panel)
 	for i in CONFETTI:
 		_confetti.append(_new_piece(true))
-	title_label.pivot_offset = Vector2(400, 50)
+	title_label.pivot_offset = Vector2(width / 2.0, 50 * k)
 	title_label.scale = Vector2(0.3, 0.3)
 	create_tween().tween_property(title_label, "scale", Vector2.ONE, 0.35) \
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -113,6 +119,8 @@ func close() -> void:
 
 func _draw_stage() -> void:
 	var size := _stage.size
+	if size.x <= 0.0 or size.y <= 0.0:
+		return
 	# 背景：球団カラーの夜空と照明
 	_stage.draw_rect(Rect2(Vector2.ZERO, size), Color(_colors[0].darkened(0.55), 0.9))
 	for i in 4:

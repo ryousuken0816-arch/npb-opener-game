@@ -76,7 +76,7 @@ const FAST_FORWARD_INTERVAL := 0.18
 const NEWS_STOP_KINDS := {
 	"amateur": "アマ球界の号", "mine": "自球団の速報", "magic": "マジック点灯", "pennant": "優勝決定",
 	"series": "CSの勝ち抜け", "champion": "日本一", "monthly": "月ごとの新聞",
-	"injury": "他球団の主力の長期離脱",
+	"injury": "他球団の長期離脱",
 }
 ## 早送りを止めるニュースのまとめた選び方（"important" が初期値）
 const NEWS_STOP_PRESETS := {
@@ -1404,7 +1404,8 @@ func _health_after_games(date: String) -> void:
 func injured_on_first() -> Array[SimPlayer]:
 	var t := my_team()
 	if t == null or not is_daily_phase():
-		return []
+		var none: Array[SimPlayer] = []
+		return none
 	return t.injured_active()
 
 

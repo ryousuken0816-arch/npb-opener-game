@@ -16,14 +16,24 @@ func _run() -> void:
 
 	var layout: Node = root.get_node("UiLayout")
 
-	# 1. UiLayout の動作検証
+	# 1. UiLayout の動作検証（iPhone の縦 390x844 の大きさにしてからスマホ表示にする）
 	print("--- 1. UiLayout モード切り替えテスト ---")
+	root.size = Vector2i(390, 844)
+	await process_frame
 	layout.call("set_force_mode", "mobile")
 	assert(bool(layout.get("is_portrait")) == true, "mobile mode should be portrait")
 	assert(bool(layout.get("is_mobile")) == true, "mobile mode should be mobile")
 	assert(float(layout.get("safe_area_top")) > 0, "safe_area_top should be set in mobile mode")
 	assert(float(layout.get("safe_area_bottom")) > 0, "safe_area_bottom should be set in mobile mode")
 	print("  OK: UiLayout モード切り替え（mobile: portrait=true, safe_area 有効）")
+
+	root.size = Vector2i(844, 390)
+	await process_frame
+	assert(bool(layout.get("is_portrait")) == false, "landscape phone should not be portrait")
+	assert(bool(layout.get("is_mobile")) == true, "landscape phone should stay mobile")
+	print("  OK: UiLayout 横向きのスマホ（mobile: portrait=false）")
+	root.size = Vector2i(390, 844)
+	await process_frame
 
 	layout.call("set_force_mode", "pc")
 	assert(bool(layout.get("is_portrait")) == false, "pc mode should not be portrait")
@@ -86,8 +96,10 @@ func _run() -> void:
 	UiFx.stop_slide(sub_screen)
 	assert(sub_screen.offset_left == 6.0, "SubScreen should expand to mobile full width (6.0)")
 	var back_btn: Button = hub_node.get_node("%BackButton")
-	assert(back_btn.text == "← 戻る", "Back button text should be '← 戻る' on mobile")
-	print("  OK: 采配画面オープン時の全画面展開＆「← 戻る」ボタン表示確認")
+	assert(not back_btn.visible, "header Back button should be hidden on mobile (the nav bar has it)")
+	var nav: CanvasLayer = hub_node.get("_nav")
+	assert(nav != null and nav.visible, "mobile nav bar should be visible")
+	print("  OK: 采配画面オープン時の全画面展開＆下の帯（「← 戻る」）表示確認")
 
 	# 戻る操作の確認
 	hub_node.call("_on_back")
@@ -112,12 +124,15 @@ func _run() -> void:
 	# 5. PCモードへの復帰検証
 	print("--- 5. PCモード復帰検証 ---")
 	layout.call("set_force_mode", "pc")
+	root.size = Vector2i(1280, 720)
+	await process_frame
 	var hub_pc: Control = hub_packed.instantiate()
 	root.add_child(hub_pc)
 	var pc_menu: VBoxContainer = hub_pc.get_node("%MenuBox")
 	assert(pc_menu.visible == true, "MenuBox should be visible in PC mode")
 	var pc_scroll: ScrollContainer = hub_pc.get("_mobile_scroll")
 	assert(pc_scroll.visible == false, "mobile scroll should be hidden in PC mode")
+	assert(not (hub_pc.get("_nav") as CanvasLayer).visible, "mobile nav bar should be hidden in PC mode")
 	print("  OK: PCモードでのPCレイアウト復元確認")
 	hub_pc.queue_free()
 
