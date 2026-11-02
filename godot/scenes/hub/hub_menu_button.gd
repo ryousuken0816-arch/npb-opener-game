@@ -69,7 +69,7 @@ func _on_focus_changed(selected: bool) -> void:
 	if _tween:
 		_tween.kill()
 	_tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	var current := inverse_lerp(HEIGHT, HEIGHT_SELECTED, _button.custom_minimum_size.y)
+	var current := inverse_lerp(_height(), _height() + HEIGHT_SELECTED - HEIGHT, _button.custom_minimum_size.y)
 	_tween.tween_method(_apply, current, 1.0 if selected else 0.0, ANIM_SEC)
 	set_process(selected)
 	if selected:
@@ -89,7 +89,7 @@ func _process(delta: float) -> void:
 ## t: 0=通常 〜 1=選択中
 func _apply(t: float) -> void:
 	add_theme_constant_override("margin_left", int(INDENT_SELECTED * t))
-	_button.custom_minimum_size = Vector2(WIDTH + WIDTH_GROW * t, lerpf(HEIGHT, HEIGHT_SELECTED, t))
+	_button.custom_minimum_size = Vector2(WIDTH + WIDTH_GROW * t, lerpf(_height(), _height() + HEIGHT_SELECTED - HEIGHT, t))
 	_button.add_theme_font_size_override("font_size", int(lerpf(FONT_SIZE, FONT_SIZE_SELECTED, t)))
 	_button.add_theme_constant_override("icon_max_width", int(lerpf(ICON_SIZE, ICON_SIZE_SELECTED, t)))
 	var style := _style_selected if t > 0.5 else _style_normal
@@ -101,6 +101,11 @@ func _apply(t: float) -> void:
 
 
 ## 右上がりの平行四辺形。縦グラデーション＋ツヤ、下辺に厚み。選択中は黄色い縁＋光（明滅は _process）
+## 選んでいないときの高さ（スマホは指で押しやすい大きさ以上）
+func _height() -> float:
+	return maxf(HEIGHT, UiLayout.touch_units())
+
+
 func _make_style(color: Color, selected: bool, glow: Color) -> GlossBox:
 	var s := UiTheme.gloss(color, 7, 3, 5)
 	s.skew = Vector2(0.3, 0)
