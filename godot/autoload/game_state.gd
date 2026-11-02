@@ -2117,4 +2117,7 @@ func load_state(d: Dictionary) -> void:
 	wins = int(d.get("wins", 0))
 	losses = int(d.get("losses", 0))
 	draws = int(d.get("draws", 0))
+	# 作業46より前のセーブ：シーズン中・春季キャンプなら今年の目標をここで決める
+	if phase in [Phase.SEASON, Phase.CAMP]:
+		_owner_set_goals()
 	changed.emit()
