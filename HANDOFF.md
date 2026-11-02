@@ -597,6 +597,15 @@
    - `GameData.load_debut_years`・`debut_extra` は外国人枠・FA の在籍年数用にそのまま（育成の判定には使わない）
    - 確認：`godot/tests/ikusei_roster_check.gd`（新、約1分半、quick に入れた）ALL OK。`draft_check`・`ikusei_check`・`release_check`＋quick を流した（full は流していない）
 
+4.59 ~~オフの順番の変更と、契約更改・戦力外をひとつにまとめる~~ → 完了（2026-11-02、担当U）。docs/AUTORUN.md の作業54
+   - **今のオフの順番**：表彰 → 契約更改・戦力外（`Phase.CONTRACT`、ひとつの段階）→ ドラフト → FA・トレード・ポスティング（補償を含む）→ 現役ドラフト（2022年オフ〜）→ 春季キャンプ。`GameState.next_phase()` で決める（`Phase` の番号はセーブに入るので並びは変えていない。`Phase.RELEASE` は古いセーブだけで使う）
+   - 契約更改の段階に入るとき（`_open_offseason`）：メジャー移籍・復帰を決め（`_off_leaving`・`_off_returns`、セーブに入る。FA の段階で `open_fa` に渡す）、来季の能力値と編成の見込み（`prepare_next_year`）→ 契約更改（`renew_contracts`）→ 史実の引退と戦力外の段階（`_open_releases`：`apply_retirements`・`open_releases`。CPU球団の戦力外もここ）。史実のトレード（12月31日まで）は FA の段階で入れる
+   - 画面：契約更改の画面（`ContractView`）で戦力外も決める（`GameState.contract_with_release()` のとき）。選んだ選手に「戦力外にする／やめる」、「戦力外をおまかせ」。上に「支配下 ◯/70人　年俸／予算」、下に戦力外の人数・ドラフトで本指名できる人数の見込み（`draft_room`＋選んだ戦力外）。「契約更改・戦力外を確定」で両方締める（70人を超えていると1回目は確認、2回目で足りない分をおまかせ）。戦力外の画面（`ReleaseView`）は古いセーブの戦力外の段階だけで使う
+   - 戦力外の「あと何人」は今までどおり ドラフトの見込み（史実でその球団が本指名した人数）＋ドラフト以外の新加入＋CPU の外国人の予定 を足して数える
+   - トレード：オフは FA の段階から（契約更改・戦力外とドラフトの段階はできない）。FA で支配下が70人を超える CPU 球団は開幕前に整理（`trim_to_limit`）、自球団は空きが無いと FA・獲得ができない（今までどおり）
+   - 古いセーブ（`offseason_order` が無い）：オフの途中ならそのオフだけ前の順番（現役ドラフト → FA → 契約更改 → 戦力外 → ドラフト）で進み、春季キャンプから新しい順番
+   - テスト：contract_check・release_check・fa_check・save_check・start_year_check・trade_check の期待値を新しい順番に直した
+
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。

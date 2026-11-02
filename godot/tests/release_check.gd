@@ -49,23 +49,22 @@ func _check_years() -> void:
 	while true:
 		var y: int = _gs.year
 		_gs.advance_through(_gs.season_last_day())
-		while _gs.phase != _gs.Phase.CONTRACT:
-			_gs.advance()
-		_check(_gs.button_text() == "契約更改", "%d年オフ：契約更改の段階" % y)
-		_gs.contract_resolve()
-		_check(_gs.button_text() == "戦力外・引退へ", "%d年オフ：次は戦力外・引退（%s）" % [y, _gs.button_text()])
-		if y == 2010 or y == LAST_OFF:
-			_inject(12)
+		# オフの順番（作業54）：表彰 → 契約更改・戦力外（ひとつの段階）→ ドラフト → FA
+		_gs.awards_pending = false
+		_check(_gs.phase == _gs.Phase.AWARDS and _gs.button_text() == "契約更改・戦力外へ",
+				"%d年オフ：表彰の次は契約更改・戦力外（%s）" % [y, _gs.button_text()])
 		if y == LAST_OFF:
 			await _check_ui(y)
 			_check_opening(y + 1)
 			break
 		_gs.advance()
-		_check(_gs.phase == _gs.Phase.RELEASE and _gs.release_open() and _gs.button_text() == "戦力外・引退",
-				"%d年オフ：戦力外・引退の段階（ボタン=%s）" % [y, _gs.button_text()])
+		_check(_gs.phase == _gs.Phase.CONTRACT and _gs.release_open() and _gs.button_text() == "契約更改・戦力外",
+				"%d年オフ：契約更改・戦力外の段階（ボタン=%s）" % [y, _gs.button_text()])
+		if y == 2010:
+			_inject(12)
 		_check_stage(y)
 		_choose_user(y)
-		_gs.release_resolve()
+		_gs.contract_resolve()
 		# 締めると次はドラフトの段階。その前に可変ボタンが一度だけ「作戦会議」（作業37）
 		_check(not _gs.release_open() and _gs.button_text() == "作戦会議", "%d年オフ：締めると次はドラフト（作戦会議 %s）" % [
 			y, _gs.button_text()])
@@ -267,7 +266,7 @@ func _check_opening(y: int) -> void:
 # --- 2) 画面の操作 -------------------------------------------------------------------------
 
 func _check_ui(y: int) -> void:
-	print("\n== %d年オフ：戦力外・引退の画面 ==" % y)
+	print("\n== %d年オフ：契約更改・戦力外の画面 ==" % y)
 	var league: Variant = _gs.league
 	change_scene_to_file("res://scenes/hub/hub.tscn")
 	await _frames(6)
@@ -275,39 +274,35 @@ func _check_ui(y: int) -> void:
 	_check(hub.get("_year_label").text == str(y) and hub.get("_month_label").text == "オフ", "ハブ：%d年 オフ" % y)
 	_check(_focus_key() == "advance", "ハブ：可変ボタンにフォーカス（%s）" % _focus_key())
 	await _key(KEY_ENTER)
-	_check(_gs.phase == _gs.Phase.RELEASE and hub.get("_open_key") == "release",
-			"可変ボタン「戦力外・引退へ」で戦力外・引退の画面（%s / %s）" % [_gs.phase_name(), hub.get("_open_key")])
+	_check(_gs.phase == _gs.Phase.CONTRACT and hub.get("_open_key") == "contract",
+			"可変ボタン「契約更改・戦力外へ」で契約更改・戦力外の画面（%s / %s）" % [_gs.phase_name(), hub.get("_open_key")])
 	_check(str(hub.get("_sub_title_label").text).contains("%d年オフ" % y), "見出しが %d年オフ" % y)
-	var view: Node = hub.get("_release_view")
+	_inject(12)
+	var view: Node = hub.get("_contract_view")
+	view.refresh()
+	await _frames(2)
 	var r: Variant = _gs.releases()
-	_check(view.get("_tab") == "p" and view.list_ids().size() > 0, "投手タブに自球団の投手（%d人）" % view.list_ids().size())
-	var first: String = view.list_ids()[0]
-	_check(_focused() == view.get("_tags").get(first), "先頭の札にフォーカス")
-	await _shot("r1_list")
-	await _key(KEY_ENTER)
-	_check(view.selected_id() == first, "Enter で札を選ぶ")
-	await _key(KEY_ENTER)
-	_check(_detail() != null, "もう一度 Enter で選手詳細")
-	await _key(KEY_ESCAPE)
-	_check(_detail() == null and view.selected_id() == first, "Esc で選手詳細を閉じる")
-	# 戦力外にする（キーボード：十字キー↑で上のボタンへ → Enter）
-	var target := first
-	if r.protected.has(first) or r.ikusei.has(first):
-		target = ""
-		for id: String in view.list_ids():
-			if not r.protected.has(id) and not r.ikusei.has(id):
-				target = id
-				break
-		await _click(view.get("_tags").get(target))
+	_check(r != null and view.get("_tab") == "p" and view.list_ids().size() > 0,
+		"投手タブに自球団の投手（%d人）" % view.list_ids().size())
+	var count_text := str(view.get("_count_label").text)
+	_check(count_text.contains("支配下") and count_text.contains("/70") and count_text.contains("予算"),
+		"上に支配下の人数と予算（%s）" % count_text)
+	_check(str(view.get("_status_label").text).contains("ドラフトの本指名は"), "下にドラフトで獲れる人数の見込み（%s）" %
+		view.get("_status_label").text)
+	var target := ""
+	for id: String in view.list_ids():
+		if not r.protected.has(id) and not r.ikusei.has(id):
+			target = id
+			break
+	await _click(view.get("_tags").get(target))
 	_check(view.selected_id() == target, "戦力外にする選手を選ぶ（%s）" % league.names.get(target, target))
 	var need_before: int = _gs.release_need()
 	_check(need_before >= 2, "上限を超えている（あと%d人）" % need_before)
-	view.get("_toggle_button").grab_focus()
-	await _key(KEY_ENTER)
+	await _click(view.get("_release_button"))
 	_check(r.marked.has(target), "「戦力外にする」で印が付く（%s）" % league.names[target])
 	_check(_gs.release_need() == maxi(0, need_before - 1), "あと何人の表示が減る（%d → %d）" % [need_before, _gs.release_need()])
+	_check(view.get("_step_buttons")[1].disabled, "戦力外にした選手は年俸を変えられない")
 	await _shot("r2_marked")
-	# マウスで別の選手（野手タブ）
 	await _key(KEY_E)
 	_check(view.get("_tab") == "b", "E（RB）で野手タブ")
 	var fielder := ""
@@ -316,38 +311,31 @@ func _check_ui(y: int) -> void:
 			fielder = id
 			break
 	await _click(view.get("_tags").get(fielder))
-	await _click(view.get("_toggle_button"))
+	await _click(view.get("_release_button"))
 	_check(r.marked.has(fielder), "クリックで野手（%s）を戦力外に" % league.names[fielder])
-	await _click(view.get("_toggle_button"))
+	await _click(view.get("_release_button"))
 	_check(not r.marked.has(fielder), "もう一度クリックで取り消し")
-	await _key(KEY_E)
-	_check(view.get("_tab") == "retire" and view.list_ids().size() == r.retired_rows.size(),
-			"E で引退（史実）タブ（%s：%d人／引退%d人）" % [view.get("_tab"), view.list_ids().size(), r.retired_rows.size()])
-	await _shot("r3_retire")
-	await _key(KEY_E)
-	_check(view.get("_tab") == "cpu" and view.list_ids().size() == r.cpu_rows.size(),
-			"E で他球団の戦力外（%d人）" % view.list_ids().size())
-	await _shot("r4_cpu")
 	await _key(KEY_ESCAPE)
-	_check(hub.get("_open_key") == "" and _gs.button_text() == "戦力外・引退", "Esc でハブへ（ボタン=%s）" % _gs.button_text())
+	await _key(KEY_ESCAPE)
+	_check(hub.get("_open_key") == "" and _gs.button_text() == "契約更改・戦力外", "Esc でハブへ（ボタン=%s）" % _gs.button_text())
 	await _key(KEY_ENTER)
-	_check(hub.get("_open_key") == "release" and _gs.phase == _gs.Phase.RELEASE, "可変ボタンで戦力外・引退の画面に戻る")
+	_check(hub.get("_open_key") == "contract" and _gs.phase == _gs.Phase.CONTRACT, "可変ボタンで契約更改・戦力外の画面に戻る")
 	# 確定：足りないときは1回目で確認、2回目で残りを自動で選んで締める
 	var close: Button = view.get("_close_button")
 	_check(_gs.release_need() > 0, "まだ上限を超えている（あと%d人）" % _gs.release_need())
 	await _click(close)
-	_check(not r.resolved and str(view.get("_status_label").text).contains("自動"), "足りないときは確認を出す（%s）" %
+	_check(not r.resolved and str(view.get("_status_label").text).contains("おまかせ"), "足りないときは確認を出す（%s）" %
 		view.get("_status_label").text)
 	await _shot("r5_confirm")
 	await _key(KEY_ESCAPE)
-	_check(not r.resolved and hub.get("_open_key") == "release" and not view.get("_confirm_pending"),
+	_check(not r.resolved and hub.get("_open_key") == "contract" and not view.get("_confirm_pending"),
 			"Esc で確認をやめる（画面はそのまま）")
 	var marked_before: int = r.marked.size()
 	await _click(view.get("_auto_button"))
-	_check(_gs.release_need() == 0 and r.marked.size() > marked_before, "「おまかせで選ぶ」で残り %d人を選ぶ" % [
+	_check(_gs.release_need() == 0 and r.marked.size() > marked_before, "「戦力外をおまかせ」で残り %d人を選ぶ" % [
 		r.marked.size() - marked_before])
 	await _click(close)
-	_check(r.resolved and _gs.release_need() == 0, "「戦力外を確定」で締める")
+	_check(r.resolved and _gs.release_need() == 0 and _gs.contracts().resolved, "「契約更改・戦力外を確定」で締める")
 	_check(not league.team_of.has(target) or league.team_of[target] != USER_TEAM, "選んだ選手（%s）が自球団からいなくなる" %
 		league.names[target])
 	for row: Dictionary in r.user_rows:

@@ -41,7 +41,7 @@ const PHASE_NAMES := {
 	Phase.AWARDS: "シーズン終了・表彰",
 	Phase.ACTIVE_DRAFT: "現役ドラフト",
 	Phase.FA_TRADE: "FA・トレード・ポスティング",
-	Phase.CONTRACT: "契約更改",
+	Phase.CONTRACT: "契約更改・戦力外",
 	Phase.RELEASE: "戦力外・引退",
 	Phase.DRAFT: "ドラフト",
 	Phase.CAMP: "春季キャンプ",
@@ -55,7 +55,7 @@ const PHASE_BUTTON := {
 	Phase.AWARDS: "表彰へ",
 	Phase.ACTIVE_DRAFT: "現役ドラフトへ",
 	Phase.FA_TRADE: "FA/トレードへ",
-	Phase.CONTRACT: "契約更改へ",
+	Phase.CONTRACT: "契約更改・戦力外へ",
 	Phase.RELEASE: "戦力外・引退へ",
 	Phase.DRAFT: "ドラフトへ",
 	Phase.CAMP: "春季キャンプへ",
@@ -70,6 +70,9 @@ const DEBUG_LAST_YEAR := 2027
 const DEFAULT_SEASON_START := "04-01"
 const DEFAULT_SEASON_END := "10-31"
 const ACTIVE_DRAFT_START_YEAR := 2022
+## オフの順番の版（作業54）。2＝表彰 → 契約更改・戦力外（ひとつの段階）→ ドラフト → FA → 現役ドラフト → キャンプ。
+## 1＝前の順番（表彰 → 現役ドラフト → FA → 契約更改 → 戦力外 → ドラフト → キャンプ）。古いセーブはそのオフだけ前の順番で進む
+const OFFSEASON_ORDER := 2
 ## 早送りで1日進める間隔（秒）。将来はシステム設定の「早送り速度」で変える
 const FAST_FORWARD_INTERVAL := 0.18
 ## 早送りを止めるニュースの種類（作業35）→ システムの設定に出す名前
@@ -155,6 +158,11 @@ var awards_history := {}
 ## シーズン終了時に Season から写す（新人王の資格・記録室の通算成績に使う）
 var stats_history := {}
 ## このゲームを始めた年（これより前の成績は史実の1軍成績を使う）
+## このオフの順番の版（OFFSEASON_ORDER。古いセーブを読んだときだけ 1、春季キャンプで 2 に戻る）
+var offseason_order := OFFSEASON_ORDER
+## このオフにメジャーへ移る選手 [{id, from, route}] と、メジャーから戻る選手（契約更改の段階で決め、FA の段階で使う）
+var _off_leaving: Array[Dictionary] = []
+var _off_returns: Array[String] = []
 var first_year: int = START_YEAR
 ## 表彰をまだ画面で見ていない（シーズン終了・表彰の段階で、可変ボタンがまず表彰の画面を開く）
 var awards_pending := false
@@ -202,6 +210,9 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	set_news_stop_preset("important")
 	news_stop = {}
 	GameData.debut_extra = {}
+	offseason_order = OFFSEASON_ORDER
+	_off_leaving = []
+	_off_returns = []
 	GameData.load_ratings(year, "pre")
 	league = LeagueRoster.new()
 	league.start(year, GameData.ratings, _opening_date(), team, randi() + 1)
@@ -248,7 +259,7 @@ func advance() -> void:
 		comp_resolve()
 	if phase == Phase.CONTRACT:
 		contract_resolve()
-	if phase == Phase.RELEASE:
+	if phase == Phase.CONTRACT or phase == Phase.RELEASE:
 		release_resolve()
 	if phase == Phase.DRAFT:
 		draft_resolve()
@@ -472,8 +483,14 @@ func trade_block_reason() -> String:
 				return "8月1日からシーズン終了までは交渉できません（移籍期限は7月31日）"
 		Phase.POSTSEASON:
 			return "8月1日からシーズン終了までは交渉できません（移籍期限は7月31日）"
-		Phase.AWARDS, Phase.ACTIVE_DRAFT:
+		Phase.AWARDS:
 			return "オフのトレード交渉は「FA・トレード・ポスティング」の段階から行えます"
+		Phase.ACTIVE_DRAFT:
+			if offseason_order < 2:
+				return "オフのトレード交渉は「FA・トレード・ポスティング」の段階から行えます"
+		Phase.CONTRACT, Phase.RELEASE, Phase.DRAFT:
+			if offseason_order >= 2:
+				return "オフのトレード交渉は「FA・トレード・ポスティング」の段階から行えます（契約更改・ドラフトのあと）"
 	if contract_open():
 		return "契約更改を締めてから交渉できます"
 	if release_open():
@@ -682,7 +699,7 @@ func contracts() -> ContractRenewal:
 ## 契約更改の提示が残っている（契約更改の段階で、まだ締めていない）
 func contract_open() -> bool:
 	var c := contracts()
-	return c != null and not c.resolved
+	return c != null and (not c.resolved or (contract_with_release() and release_open()))
 
 
 ## 自球団の選手の来季の年俸（提示額）を変える。だめなら理由の文
@@ -702,12 +719,14 @@ func contract_resolve() -> void:
 	if c == null or c.resolved:
 		return
 	c.resolved = true
+	if contract_with_release():
+		release_resolve()  # 契約更改・戦力外がひとつの段階なら戦力外も一緒に締める（足りなければ自動で選ぶ）
 	changed.emit()
 
 
 ## このオフの戦力外・引退（戦力外・引退の段階のみ。それ以外は null）
 func releases() -> Releases:
-	if phase != Phase.RELEASE or league == null:
+	if (phase != Phase.RELEASE and not contract_with_release()) or league == null:
 		return null
 	return league.releases
 
@@ -1014,12 +1033,28 @@ func next_phase() -> Phase:
 			return Phase.POSTSEASON if season != null and not season.games.is_empty() else Phase.AWARDS
 		Phase.POSTSEASON:
 			return Phase.AWARDS
-		Phase.AWARDS:
-			return Phase.ACTIVE_DRAFT if year >= ACTIVE_DRAFT_START_YEAR else Phase.FA_TRADE
 		Phase.CAMP:
 			return Phase.SEASON
-		_:
-			return (phase + 1) as Phase
+	if offseason_order < 2:
+		# 前の順番（古いセーブのそのオフだけ）
+		if phase == Phase.AWARDS:
+			return Phase.ACTIVE_DRAFT if year >= ACTIVE_DRAFT_START_YEAR else Phase.FA_TRADE
+		return (phase + 1) as Phase
+	match phase:
+		Phase.AWARDS:
+			return Phase.CONTRACT
+		Phase.CONTRACT, Phase.RELEASE:
+			return Phase.DRAFT
+		Phase.DRAFT:
+			return Phase.FA_TRADE
+		Phase.FA_TRADE:
+			return Phase.ACTIVE_DRAFT if year >= ACTIVE_DRAFT_START_YEAR else Phase.CAMP
+	return Phase.CAMP
+
+
+## 契約更改と戦力外がひとつの段階（新しいオフの順番の契約更改の段階）
+func contract_with_release() -> bool:
+	return phase == Phase.CONTRACT and offseason_order >= 2
 
 
 func button_text() -> String:
@@ -1032,7 +1067,7 @@ func button_text() -> String:
 	if comp_open():
 		return "FAの補償"
 	if contract_open():
-		return "契約更改"
+		return "契約更改・戦力外" if contract_with_release() else "契約更改"
 	if release_open():
 		return "戦力外・引退"
 	if draft_open():
@@ -1153,6 +1188,47 @@ func _prepare_future_year(mlb_returns: Array = []) -> void:
 			GameData.synthetic.erase(y)
 
 
+## オフの始まり（新しい順番は契約更改の段階、前の順番は FA の段階）：メジャーへの移籍・メジャーからの復帰を決め、
+## 来季の能力値（史実の無い年は作る）と来季の編成の見込み（引退・新加入）を用意する
+func _open_offseason() -> void:
+	_off_leaving = league.depart_mlb(year)
+	for mv: Dictionary in _off_leaving:
+		if year >= LeagueRoster.MLB_FUTURE_START_YEAR:
+			var p_name: String = league.names.get(mv["id"], mv["id"])
+			var team_name: String = GameData.short_name(mv["from"])
+			post_news(News.article("%d-11-05" % year, "mlb",
+				"%s、メジャー挑戦を表明" % p_name,
+				"%sの%sが、%sによるメジャーリーグ移籍を表明した。" % [team_name, p_name, mv["route"]],
+				[mv["id"]], [mv["from"]]), open_off_issue(), true)
+	_off_returns = []
+	if year >= LeagueRoster.MLB_FUTURE_START_YEAR:
+		_off_returns = league.decide_mlb_returns(year)
+		for ret_id: String in _off_returns:
+			var p_name: String = league.names.get(ret_id, ret_id)
+			var m: Dictionary = league.in_mlb.get(ret_id, {})
+			var from_team: String = m.get("npb_team_before", "")
+			post_news(News.article("%d-11-06" % year, "mlb",
+				"%sが日本球界への復帰を表明" % p_name,
+				"メジャーリーグで活躍した%sが、来季からの日本球界復帰を決断。FA市場で各球団による交渉が行われる。" % p_name,
+				[ret_id], [from_team] if not from_team.is_empty() else []), open_off_issue(), true)
+	if offseason_order < 2:
+		_apply_trades("%d-12-31" % year)
+	_prepare_future_year(_off_returns)
+	var next := GameData.peek_ratings(year + 1, "pre")
+	if not next.is_empty():
+		GameData.set_supplement(next)
+		league.prepare_next_year(year, next, GameData.peek_ratings(year + 1, "post"))
+		league.apply_returns()
+
+
+## 戦力外・引退を始める（史実の引退を反映し、CPU球団の戦力外を決める）
+func _open_releases() -> void:
+	league.apply_retirements()
+	league.cpu_market_round()
+	_sync_roster()
+	league.open_releases(year)
+
+
 ## フェーズに入ったときの処理。年越しの史実の出来事（LeagueRoster）はここで起こす：
 ## FA・トレード・ポスティング＝メジャー移籍・年内のトレード・来季の準備（復帰・外国人市場）、契約更改＝年俸、
 ## 戦力外・引退＝引退と戦力外（Releases。CPU球団はここで決め、自球団は画面で選ぶ）、ドラフト＝ドラフト以外の新加入
@@ -1172,46 +1248,23 @@ func _enter(new_phase: Phase) -> void:
 			desk().awards_article(year, open_off_issue(), "%d-11-01" % year)
 			history().titles_decided(year, open_off_issue(), "%d-11-01" % year)
 		Phase.FA_TRADE:
-			var leaving := league.depart_mlb(year)
-			for mv: Dictionary in leaving:
-				if year >= LeagueRoster.MLB_FUTURE_START_YEAR:
-					var p_name: String = league.names.get(mv["id"], mv["id"])
-					var team_name: String = GameData.short_name(mv["from"])
-					post_news(News.article("%d-11-05" % year, "mlb",
-						"%s、メジャー挑戦を表明" % p_name,
-						"%sの%sが、%sによるメジャーリーグ移籍を表明した。" % [team_name, p_name, mv["route"]],
-						[mv["id"]], [mv["from"]]), open_off_issue(), true)
-			var mlb_returns: Array[String] = []
-			if year >= LeagueRoster.MLB_FUTURE_START_YEAR:
-				mlb_returns = league.decide_mlb_returns(year)
-				for ret_id: String in mlb_returns:
-					var p_name: String = league.names.get(ret_id, ret_id)
-					var m: Dictionary = league.in_mlb.get(ret_id, {})
-					var from_team: String = m.get("npb_team_before", "")
-					post_news(News.article("%d-11-06" % year, "mlb",
-						"%sが日本球界への復帰を表明" % p_name,
-						"メジャーリーグで活躍した%sが、来季からの日本球界復帰を決断。FA市場で各球団による交渉が行われる。" % p_name,
-						[ret_id], [from_team] if not from_team.is_empty() else []), open_off_issue(), true)
+			if offseason_order < 2:
+				_open_offseason()
 			_apply_trades("%d-12-31" % year)
-			_prepare_future_year(mlb_returns)
-			var next := GameData.peek_ratings(year + 1, "pre")
-			if not next.is_empty():
-				GameData.set_supplement(next)
-				league.prepare_next_year(year, next, GameData.peek_ratings(year + 1, "post"))
-				league.apply_returns()
-			league.open_fa(year, leaving, mlb_returns)
+			league.open_fa(year, _off_leaving, _off_returns)
 			# 選手の好み「優勝争い」に使う今季の勝率（作業36）
 			for lg in ["C", "P"]:
 				for row in standings(lg):
 					league.fa.strength[row["team"]] = win_pct(row)
 		Phase.CONTRACT:
+			if offseason_order >= 2:
+				_open_offseason()
 			league.renew_contracts(year, season)
 			league.cpu_market_round()
+			if offseason_order >= 2:
+				_open_releases()
 		Phase.RELEASE:
-			league.apply_retirements()
-			league.cpu_market_round()
-			_sync_roster()
-			league.open_releases(year)
+			_open_releases()
 		Phase.DRAFT:
 			league.apply_newcomers()
 			_sync_roster()
@@ -1223,6 +1276,7 @@ func _enter(new_phase: Phase) -> void:
 			league.cpu_market_round()
 			league.cpu_release_round()
 		Phase.CAMP:
+			offseason_order = OFFSEASON_ORDER  # 古いセーブも次のオフからは新しい順番（作業54）
 			# 神宮大会・冬開催の都市対抗はドラフト前に結果を出さず、年越し前のオフに届ける。
 			_amateur_news("%d-12-31" % year)
 			_last_draft = league.draft
@@ -1744,6 +1798,7 @@ func save_summary() -> Dictionary:
 func to_save() -> Dictionary:
 	return {
 		"year": year, "day": day, "phase": phase, "team": team, "tactics": tactics,
+		"offseason_order": offseason_order, "off_leaving": _off_leaving, "off_returns": _off_returns,
 		"wins": wins, "losses": losses, "draws": draws,
 		"first_year": first_year, "awards_history": awards_history, "stats_history": stats_history,
 		"awards_pending": awards_pending,
@@ -1788,6 +1843,16 @@ func load_state(d: Dictionary) -> void:
 	year = int(d["year"])
 	day = int(d.get("day", 0))
 	phase = int(d.get("phase", Phase.SEASON)) as Phase
+	# オフの順番の版が無いのは作業54より前のセーブ：オフの途中ならそのオフだけ前の順番で進む
+	offseason_order = int(d.get("offseason_order", 1 if phase in [Phase.ACTIVE_DRAFT, Phase.FA_TRADE, Phase.CONTRACT,
+		Phase.RELEASE, Phase.DRAFT] else OFFSEASON_ORDER))
+	_off_leaving = []
+	for mv: Variant in d.get("off_leaving", []):
+		if mv is Dictionary:
+			_off_leaving.append(mv)
+	_off_returns = []
+	for id: Variant in d.get("off_returns", []):
+		_off_returns.append(str(id))
 	team = str(d["team"])
 	first_year = int(d.get("first_year", year))
 	_depth = null
@@ -1832,7 +1897,7 @@ func load_state(d: Dictionary) -> void:
 	GameData.set_kept_players({})
 	GameData.set_extra_players({})
 	var next := {}
-	if phase in [Phase.FA_TRADE, Phase.CONTRACT, Phase.RELEASE, Phase.DRAFT]:
+	if phase in [Phase.FA_TRADE, Phase.CONTRACT, Phase.RELEASE, Phase.DRAFT] 			or (phase == Phase.ACTIVE_DRAFT and offseason_order >= 2):
 		next = GameData.peek_ratings(year + 1, "pre")
 	GameData.set_supplement(next)
 	league = LeagueRoster.new()

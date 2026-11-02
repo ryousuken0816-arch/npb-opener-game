@@ -8,6 +8,9 @@ extends VBoxContainer
 ## 操作：札をⒶ／クリックで選び、同じ札をもう一度Ⓐ／クリック（または右クリック）で選手詳細。十字キーで
 ## 上の ◀▶ と「査定額に戻す」へ。LB/RB（Q/E）でタブ、Ⓑはまず選択の取り消し→ハブへ戻る。
 ## 「契約更改を終える」で締める（可変ボタンで次へ進んでも締まる）。
+## 新しいオフの順番（作業54）では戦力外も同じ画面で決める：選んだ選手を「戦力外にする」、上に支配下の人数（◯/70）・
+## 来季の年俸総額と予算、下にドラフトで本指名できる人数の見込み。「契約更改・戦力外を確定」で両方締める
+## （70人を超えていたら確認してから、足りない分はおまかせで選ぶ。仕組みは Releases）。
 
 signal message_changed(text: String)
 
@@ -19,6 +22,7 @@ const DEAL_HEIGHT := 200
 const UP_COLOR := Color("e8413c")
 const DOWN_COLOR := Color("1e63c8")
 const SAME_COLOR := Color("8a9199")
+const CUT_COLOR := Color("5b3a8c")
 
 var _palette: UiTheme.Palette
 var _tab := "p"
@@ -42,6 +46,9 @@ var _range_label: Label
 var _step_buttons: Array[Button] = []
 var _status_label: Label
 var _close_button: Button
+var _release_button: Button
+var _auto_button: Button
+var _confirm_pending := false
 var _ids: Array[String] = []
 var _tags := {}
 
@@ -90,6 +97,7 @@ func setup(p: UiTheme.Palette) -> void:
 func open() -> void:
 	_selected = ""
 	_message = ""
+	_confirm_pending = false
 	_shown_key = ""
 	var c := GameState.contracts()
 	_tab = "teams" if c != null and c.resolved else "p"
@@ -99,6 +107,12 @@ func open() -> void:
 
 ## 戻る：選択中なら取り消す（true）。何も選んでいなければ false（ハブへ戻る）
 func back() -> bool:
+	if _confirm_pending:
+		_confirm_pending = false
+		_message = ""
+		_shown_key = ""
+		refresh()
+		return true
 	if _selected.is_empty():
 		return false
 	_selected = ""
@@ -127,8 +141,11 @@ func focus_first() -> void:
 func refresh() -> void:
 	var c := GameState.contracts()
 	var amount: int = c.rows[_selected]["amount"] if c != null and c.rows.has(_selected) else 0
-	var key := "%s|%s|%d|%d|%s|%d|%d" % [_tab, _selected, amount, GameState.roster_version,
-		str(c.resolved) if c != null else "", GameState.year, c.total_change() if c != null else 0]
+	var r := GameState.releases()
+	var key := "%s|%s|%d|%d|%s|%d|%d|%s|%s|%s|%s" % [_tab, _selected, amount, GameState.roster_version,
+		str(c.resolved) if c != null else "", GameState.year, c.total_change() if c != null else 0,
+		str(r.marked.keys()) if r != null else "", str(r.resolved) if r != null else "", str(_confirm_pending),
+		_message]
 	if key == _shown_key:
 		return
 	_shown_key = key
@@ -165,6 +182,16 @@ func select_player(id: String) -> void:
 ## 上の ◀▶ を押す（テスト用）
 func step(delta: int) -> void:
 	_step_amount(delta)
+
+
+## 選んだ選手の「戦力外にする／やめる」を押す（テスト用）
+func toggle_release() -> void:
+	_on_release_pressed()
+
+
+## 「確定」を押す（テスト用。70人を超えていると1回目は確認）
+func press_close() -> void:
+	_on_close_pressed()
 
 
 # --- 提示の枠 ------------------------------------------------------------------------------
@@ -228,6 +255,21 @@ func _build_deal() -> Control:
 	_range_label = UiTheme.small_label("", 15, UiTheme.TEXT, 700)
 	_range_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_right_box.add_child(_range_label)
+	var cut_row := HBoxContainer.new()
+	cut_row.add_theme_constant_override("separation", 10)
+	_right_box.add_child(cut_row)
+	_release_button = Button.new()
+	_release_button.text = "戦力外にする"
+	_release_button.custom_minimum_size = Vector2(200, 42)
+	UiTheme.style_button(_release_button, CUT_COLOR, Color.WHITE, 8, 4)
+	_release_button.pressed.connect(_on_release_pressed)
+	cut_row.add_child(_release_button)
+	_auto_button = Button.new()
+	_auto_button.text = "戦力外をおまかせ"
+	_auto_button.custom_minimum_size = Vector2(200, 42)
+	UiTheme.style_button(_auto_button, Color("ff8a3d"), Color.WHITE, 8, 4)
+	_auto_button.pressed.connect(_on_auto_pressed)
+	cut_row.add_child(_auto_button)
 	return panel
 
 
@@ -281,6 +323,7 @@ func _render_deal(c: ContractRenewal) -> void:
 		_left_box.remove_child(child)
 		child.queue_free()
 	var id := _selected
+	_render_release_buttons(c)
 	if c == null or not c.rows.has(id) or GameData.player(id).is_empty():
 		_left_box.add_child(_band(Label.new(), GameState.team, "選手を選んでください"))
 		var hint := UiTheme.small_label(_hint_text(c), 17, UiTheme.TEXT, 700)
@@ -331,7 +374,7 @@ func _render_deal(c: ContractRenewal) -> void:
 	_diff_label.text = _diff_text(prev, amount)
 	_diff_label.label_settings.font_color = (UP_COLOR if diff > 0 else (DOWN_COLOR if diff < 0 else SAME_COLOR))
 	_amount_label.text = Salary.text(amount)
-	var adjustable := c.can_adjust(id)
+	var adjustable := c.can_adjust(id) and not _is_marked(id)
 	_set_adjust_enabled(adjustable)
 	_reset_button.disabled = not adjustable or amount == int(row["proposed"])
 	if adjustable:
@@ -339,6 +382,8 @@ func _render_deal(c: ContractRenewal) -> void:
 			Salary.text(row["low"]), Salary.text(row["high"]),
 			roundi(100 * (Salary.CUT_LIMIT_HIGH if prev > Salary.CUT_LIMIT_BORDER else Salary.CUT_LIMIT_LOW)),
 			roundi(100 * Salary.ADJUST_FLOOR_RATE)]
+	elif _is_marked(id):
+		_range_label.text = "戦力外にする選手です（来季の契約はしません）"
 	elif c.resolved:
 		_range_label.text = "契約更改は終わりました"
 	else:
@@ -360,11 +405,36 @@ func _set_adjust_enabled(enabled: bool) -> void:
 	_right_box.modulate = Color.WHITE if enabled else Color(1, 1, 1, 0.55)
 
 
+## 戦力外のボタン（契約更改と戦力外がひとつの段階のときだけ出す）
+func _render_release_buttons(c: ContractRenewal) -> void:
+	var r := GameState.releases()
+	var merged := GameState.contract_with_release() and r != null
+	_release_button.visible = merged
+	_auto_button.visible = merged
+	if not merged:
+		return
+	var id := _selected
+	var has_row := c != null and c.rows.has(id)
+	_release_button.text = "戦力外をやめる" if r.marked.has(id) else "戦力外にする"
+	var reason := r.check_mark(id) if has_row and not r.marked.has(id) else ""
+	_release_button.disabled = not has_row or r.resolved or not reason.is_empty()
+	_release_button.tooltip_text = reason
+	_auto_button.disabled = r.resolved or r.need(GameState.league) <= 0
+
+
+func _is_marked(id: String) -> bool:
+	var r := GameState.releases()
+	return r != null and GameState.contract_with_release() and r.marked.has(id)
+
+
 func _hint_text(c: ContractRenewal) -> String:
 	if c == null:
 		return "契約更改は、オフの「契約更改」の段階で行います。"
 	if _tab == "teams":
 		return "12球団の来季の年俸総額と予算上限です。予算の残りはFAの提示の上限にも効きます。"
+	if GameState.contract_with_release():
+		return "今季の成績・能力・在籍年数から査定した来季の年俸です。選手を選ぶと提示額を上げ下げするか、" \
+			+ "戦力外にできます（もう一度Ⓐで選手詳細）。"
 	return "今季の成績・能力・在籍年数から査定した来季の年俸です。選手を選ぶと提示額を上げ下げできます" \
 		+ "（もう一度Ⓐで選手詳細）。"
 
@@ -439,6 +509,20 @@ func _render_tabs(c: ContractRenewal) -> void:
 	var team := GameState.team
 	var total: int = GameState.league.next_payroll(team) if GameState.league != null else 0
 	var budget := ContractRenewal.budget(team)
+	var r := GameState.releases()
+	if GameState.contract_with_release() and r != null:
+		for id: String in r.marked:
+			total -= GameState.league.salary_of(id)
+		var projected := r.projected(GameState.league)
+		_count_label.text = "支配下 %d/%d人　年俸 %s／予算 %s" % [projected, LeagueRoster.ROSTER_LIMIT,
+			_short_amount(total), _short_amount(budget)]
+		_count_label.label_settings.font_color = (UP_COLOR if total > budget or r.need(GameState.league) > 0
+			else UiTheme.TEXT)
+		var done := c == null or (c.resolved and r.resolved)
+		_close_button.disabled = done
+		_close_button.text = "契約更改・戦力外は終わりました" if done else (
+			"もう一度押すと確定" if _confirm_pending else "契約更改・戦力外を確定")
+		return
 	_count_label.text = "年俸総額 %s／予算 %s" % [_short_amount(total), _short_amount(budget)]
 	_count_label.label_settings.font_color = (UP_COLOR if total > budget else UiTheme.TEXT)
 	_close_button.disabled = c == null or c.resolved
@@ -509,7 +593,11 @@ func _tile(c: ContractRenewal, id: String, short_name: String) -> Control:
 	var diff: int = int(row_data["amount"]) - int(row_data["prev"])
 	var badge := Label.new()
 	var color := UP_COLOR if diff > 0 else (DOWN_COLOR if diff < 0 else SAME_COLOR)
-	if not String(row_data["fixed"]).is_empty():
+	if _is_marked(id):
+		badge.text = "戦力外"
+		color = CUT_COLOR
+		tag.modulate = Color(1, 1, 1, 0.55)
+	elif not String(row_data["fixed"]).is_empty():
 		badge.text = "据置"
 		color = SAME_COLOR
 	elif diff == 0:
@@ -597,6 +685,16 @@ func _render_status(c: ContractRenewal) -> void:
 		_status_label.text = "%d年の契約：%d人（アップ%d人・ダウン%d人）、総額の増減 %s%s。%s" % [
 			c.year + 1, c.rows.size(), up, down, "+" if change >= 0 else "−", Salary.text(absi(change)),
 			"可変ボタン「戦力外・引退へ」で次へ進みます。" if c.resolved else "提示が終わったら「契約更改を終える」。"]
+			var r := GameState.releases()
+			if GameState.contract_with_release() and r != null:
+				var league := GameState.league
+				var need := r.need(league)
+				var room := league.draft_room(GameState.team) + r.marked_registered()
+				_status_label.text = "%d年の契約：%d人（アップ%d人・ダウン%d人）。戦力外 %d人%s。ドラフトの本指名は%d人まで。%s" % [
+					c.year + 1, c.rows.size() - r.marked.size(), up, down, r.marked.size(),
+					"（あと%d人。新人の見込み%d人を含む）" % [need, league.incoming(GameState.team)] if need > 0 else "",
+					maxi(0, room), "可変ボタン「ドラフトへ」で次へ進みます。" if c.resolved and r.resolved
+						else "決まったら「契約更改・戦力外を確定」。"]
 	message_changed.emit(_status_label.text)
 
 
@@ -632,7 +730,34 @@ func _on_reset_pressed() -> void:
 	refresh()
 
 
+func _on_release_pressed() -> void:
+	var c := GameState.contracts()
+	if c == null or not c.rows.has(_selected) or not GameState.contract_with_release():
+		return
+	var error := GameState.release_toggle(_selected)
+	_confirm_pending = false
+	_message = error
+	refresh()
+
+
+func _on_auto_pressed() -> void:
+	var n := GameState.release_auto()
+	_confirm_pending = false
+	_message = "おまかせで%d人を戦力外に選びました。" % n if n > 0 else ""
+	refresh()
+
+
 func _on_close_pressed() -> void:
+	var r := GameState.releases()
+	if GameState.contract_with_release() and r != null:
+		var need := r.need(GameState.league)
+		if need > 0 and not _confirm_pending:
+			_confirm_pending = true
+			_message = "支配下が%d人を超える見込みです。あと%d人はおまかせで戦力外にします。もう一度押すと確定します。" % [
+				LeagueRoster.ROSTER_LIMIT, need]
+			refresh()
+			return
+	_confirm_pending = false
 	GameState.contract_resolve()
 	_selected = ""
 	_message = ""

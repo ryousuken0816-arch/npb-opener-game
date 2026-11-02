@@ -63,12 +63,10 @@ func _check_years() -> void:
 		_check(_gs.phase == _gs.Phase.AWARDS and _gs.date_text() == "%d年 オフ" % y, "%d年 シーズン終了（%s）" % [
 			y, _gs.date_text()])
 		var season: Variant = _gs.season
-		while _gs.phase != _gs.Phase.FA_TRADE:
-			_gs.advance()
-		_check_fa_budget(y)
-		_gs.fa_resolve()
-		_gs.comp_resolve()  # 自球団が関わるFAの補償はおまかせ（作業18）
-		_check(_gs.button_text() == "契約更改へ", "%d年オフ：FAを締めると次は契約更改" % y)
+		# オフの順番（作業54）：表彰 → 契約更改・戦力外 → ドラフト → FA
+		_gs.awards_pending = false
+		_check(_gs.next_phase() == _gs.Phase.CONTRACT and _gs.button_text() == "契約更改・戦力外へ",
+				"%d年オフ：表彰の次は契約更改・戦力外（%s）" % [y, _gs.button_text()])
 		var before := {}
 		for id: String in league.team_of:
 			before[id] = league.salary_of(id)
@@ -81,16 +79,19 @@ func _check_years() -> void:
 			means.append(_after_off(y))
 			break
 		_gs.advance()
-		_check(_gs.phase == _gs.Phase.CONTRACT and _gs.contract_open() and _gs.button_text() == "契約更改",
-				"%d年オフ：契約更改の段階（ボタン=%s）" % [y, _gs.button_text()])
+		_check(_gs.phase == _gs.Phase.CONTRACT and _gs.contract_open() and _gs.button_text() == "契約更改・戦力外",
+				"%d年オフ：契約更改・戦力外の段階（ボタン=%s）" % [y, _gs.button_text()])
 		_check_renewals(y, season, before, fixed_before)
 		var expected := _adjust_user(y)
 		_gs.contract_resolve()
-		_check(not _gs.contract_open() and _gs.button_text() == "戦力外・引退へ",
-				"%d年オフ：締めると次は戦力外・引退（%s）" % [y, _gs.button_text()])
+		_check(not _gs.contract_open() and not _gs.release_open() and _gs.button_text() in ["作戦会議", "ドラフトへ"],
+				"%d年オフ：締めると戦力外も締まり、次はドラフト（%s）" % [y, _gs.button_text()])
 		var any: String = expected.keys()[0] if not expected.is_empty() else ""
 		if not any.is_empty():
 			_check(not _gs.contract_set(any, 1000).is_empty(), "締めたあとは提示額を変えられない")
+		while _gs.phase != _gs.Phase.FA_TRADE:
+			_gs.advance()
+		_check_fa_budget(y)
 		while _gs.phase != _gs.Phase.SEASON:
 			_gs.advance()
 		_check(_gs.year == y + 1 and _gs.date_text().begins_with("%d年 " % (y + 1)) and _gs.month_text() != "オフ",
@@ -262,7 +263,7 @@ func _check_ui(y: int) -> void:
 	_check(_focus_key() == "advance", "ハブ：可変ボタンにフォーカス（%s）" % _focus_key())
 	await _key(KEY_ENTER)
 	_check(_gs.phase == _gs.Phase.CONTRACT and hub.get("_open_key") == "contract",
-			"可変ボタン「契約更改へ」で契約更改の画面（%s / %s）" % [_gs.phase_name(), hub.get("_open_key")])
+			"可変ボタン「契約更改・戦力外へ」で契約更改・戦力外の画面（%s / %s）" % [_gs.phase_name(), hub.get("_open_key")])
 	_check(str(hub.get("_sub_title_label").text).contains("%d年オフ" % y), "見出しが %d年オフ" % y)
 	var view: Node = hub.get("_contract_view")
 	var c: Variant = _gs.contracts()
@@ -302,13 +303,15 @@ func _check_ui(y: int) -> void:
 	_check(view.get("_tab") == "teams" and view.get("_grid").get_child_count() == 12, "E で球団別（12球団）")
 	await _shot("c3_teams")
 	await _key(KEY_ESCAPE)
-	_check(hub.get("_open_key") == "" and _gs.button_text() == "契約更改", "Esc でハブへ（ボタン=%s）" % _gs.button_text())
+	_check(hub.get("_open_key") == "" and _gs.button_text() == "契約更改・戦力外", "Esc でハブへ（ボタン=%s）" % _gs.button_text())
 	await _key(KEY_ENTER)
 	_check(hub.get("_open_key") == "contract" and _gs.phase == _gs.Phase.CONTRACT, "可変ボタンで契約更改の画面に戻る")
 	await _click(view.get("_close_button"))
-	_check(c.resolved and view.get("_tab") == "teams", "「契約更改を終える」で締める")
+	if not c.resolved:
+		await _click(view.get("_close_button"))  # 70人を超えていると1回目は確認（作業54）
+	_check(c.resolved and not _gs.release_open() and view.get("_tab") == "teams", "「契約更改・戦力外を確定」で締める")
 	await _key(KEY_ESCAPE)
-	_check(_gs.button_text() == "戦力外・引退へ", "締めると可変ボタンは「戦力外・引退へ」")
+	_check(_gs.button_text() in ["作戦会議", "ドラフトへ"], "締めると可変ボタンはドラフトの前（%s）" % _gs.button_text())
 	while _gs.phase != _gs.Phase.SEASON:
 		_gs.advance()
 	await _frames(3)

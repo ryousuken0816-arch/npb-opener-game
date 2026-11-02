@@ -178,7 +178,14 @@ func _check_offseason() -> void:
 	_gs.advance_through(_gs.season_last_day())
 	_check(_gs.phase == _gs.Phase.AWARDS and not _gs.trade_block_reason().is_empty(),
 		"表彰の段階は交渉できない（%s）" % _gs.trade_block_reason())
+	# オフの順番（作業54）：表彰 → 契約更改・戦力外 → ドラフト → FA。FA より前は交渉できない
 	_gs.advance()
+	_check(_gs.phase == _gs.Phase.CONTRACT and _gs.trade_block_reason().contains("契約更改"),
+		"契約更改・戦力外の途中は交渉できない（%s）" % _gs.trade_block_reason())
+	_gs.contract_resolve()
+	_check(not _gs.trade_block_reason().is_empty(), "契約更改を締めても FA の前は交渉できない（%s）" % _gs.trade_block_reason())
+	while _gs.phase != _gs.Phase.FA_TRADE:
+		_gs.advance()
 	_check(_gs.phase == _gs.Phase.FA_TRADE and _gs.trade_block_reason().is_empty(),
 		"FA・トレード・ポスティングの段階は交渉できる（%s）" % _gs.phase_name())
 	var f: RefCounted = _gs.fa()
@@ -191,11 +198,6 @@ func _check_offseason() -> void:
 		var err: String = _gs.trade_request(team, [], [id], 0)["text"]
 		_check(err.contains("FA宣言中"), "FA宣言中の選手は獲れない（%s）" % err)
 		break
-	_gs.advance()
-	_check(_gs.phase == _gs.Phase.CONTRACT and _gs.trade_block_reason().contains("契約更改"),
-		"契約更改の途中は交渉できない（%s）" % _gs.trade_block_reason())
-	_gs.contract_resolve()
-	_check(_gs.trade_block_reason().is_empty(), "契約更改を締めたら交渉できる")
 	# オフの成立：自球団の主力1人と相手の控え2人（支配下の人数が1人増える）
 	var league: RefCounted = _gs.league
 	var mine: Array = []

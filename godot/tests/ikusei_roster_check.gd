@@ -53,9 +53,9 @@ func _run() -> void:
 	_check_counts("2026年の開幕")
 	for i in _years:
 		var y: int = _gs.year
-		_gs.skip_to_phase(_gs.Phase.RELEASE)
+		_gs.skip_to_phase(_gs.Phase.CONTRACT)
 		var need: int = _gs.release_need()
-		_check(_gs.phase == _gs.Phase.RELEASE and need <= RELEASE_NEED_MAX,
+		_check(_gs.phase == _gs.Phase.CONTRACT and need <= RELEASE_NEED_MAX,
 			"%d年オフ：自球団が戦力外にする人数 %d人（%d人以下）・支配下 %d人・育成 %d人" % [y, need, RELEASE_NEED_MAX,
 				_gs.league.registered_count(USER), _gs.league.ikusei_of(USER).size()])
 		if i == 1:

@@ -445,8 +445,8 @@ func _render_top(d: Draft) -> void:
 		_title_label.text += "　%d人" % d.candidates.size()
 		if GameState.draft() == null:
 			_title_label.text += "（ドラフト会議の前）"
-	_draft_button.visible = GameState.draft_open() or (GameState.phase == GameState.Phase.RELEASE \
-		and not GameState.release_open() and GameState.next_phase() == GameState.Phase.DRAFT)
+	_draft_button.visible = GameState.draft_open() or (GameState.phase in [GameState.Phase.CONTRACT, GameState.Phase.RELEASE] \
+		and not GameState.contract_open() and not GameState.release_open() and GameState.next_phase() == GameState.Phase.DRAFT)
 	for key: String in _tab_buttons:
 		var b: Button = _tab_buttons[key]
 		b.set_pressed_no_signal(key == _tab)

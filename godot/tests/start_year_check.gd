@@ -4,7 +4,7 @@ extends SceneTree
 ##   - 2008〜2027年のどの年でも、その年の能力値・日程で開幕日から始まる（12球団・試合あり）
 ##   - タイトルで2024年・「すぐドラフトへ」を選んで巨人を選ぶ → シーズンを消化して2024年オフのドラフトの段階のハブ
 ##   - 2025年開始で skip_to_phase(DRAFT) → 春季キャンプ（2026年）へ進める
-##   - 2023年開始で skip_to_phase(ACTIVE_DRAFT)、2010年は現役ドラフトが無いのでドラフトの段階で止まる
+##   - 2023年開始で skip_to_phase(FA_TRADE) → ACTIVE_DRAFT、2010年は現役ドラフトが無いのでFAの段階で止まる
 ##
 ##   godot --headless --path godot --script res://tests/start_year_check.gd -- [スクショの出力先]
 ##
@@ -114,22 +114,23 @@ func _run() -> void:
 	_gs.new_game("北海道日本ハムファイターズ", 2025)
 	var ok25: bool = _gs.skip_to_phase(_gs.Phase.DRAFT)
 	_check("2025年開始：ドラフトの段階へ飛べる", ok25 and _gs.year == 2025, _gs.phase_name())
-	_gs.advance()
+	while _gs.phase != _gs.Phase.CAMP:  # ドラフト → FA → 現役ドラフト → キャンプ（作業54）
+		_gs.advance()
 	_check("2025年開始：春季キャンプで2026年", _gs.phase == _gs.Phase.CAMP and _gs.year == 2026
 		and _gs.date_text() == "2026年 2月" and _gd.call("players_of", _gs.team).size() >= 50,
 		"%s %d人" % [_gs.date_text(), _gd.call("players_of", _gs.team).size()])
 
 	# --- 指定した段階へ飛ぶ ---
 	_gs.new_game("阪神タイガース", 2023)
-	var ok23: bool = _gs.skip_to_phase(_gs.Phase.ACTIVE_DRAFT)
-	_check("2023年開始：現役ドラフトの段階へ飛べる", ok23 and _gs.phase == _gs.Phase.ACTIVE_DRAFT,
-		_gs.phase_name())
 	var ok_fa: bool = _gs.skip_to_phase(_gs.Phase.FA_TRADE)
-	_check("2023年：続けてFAの段階へ飛べる", ok_fa and _gs.fa() != null, _gs.phase_name())
+	_check("2023年開始：FAの段階へ飛べる", ok_fa and _gs.fa() != null, _gs.phase_name())
+	var ok23: bool = _gs.skip_to_phase(_gs.Phase.ACTIVE_DRAFT)
+	_check("2023年：続けて現役ドラフトの段階へ飛べる（FAのあと。作業54）", ok23 and _gs.phase == _gs.Phase.ACTIVE_DRAFT,
+		_gs.phase_name())
 	_gs.new_game("阪神タイガース", 2010)
 	var ok10: bool = _gs.skip_to_phase(_gs.Phase.ACTIVE_DRAFT)
-	_check("2010年：現役ドラフトは無いのでドラフトの段階で止まる",
-		not ok10 and _gs.phase == _gs.Phase.DRAFT and _gs.year == 2010, _gs.phase_name())
+	_check("2010年：現役ドラフトは無いのでFAの段階で止まる",
+		not ok10 and _gs.phase == _gs.Phase.FA_TRADE and _gs.year == 2010, _gs.phase_name())
 
 	print("ALL OK" if _failures == 0 else "FAILED (%d)" % _failures)
 	quit(1 if _failures > 0 else 0)
