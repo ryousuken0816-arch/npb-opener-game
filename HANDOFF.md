@@ -523,6 +523,7 @@
    - 守備得点を「平均的な野手と比べた見込み」で数える（`game_sim.gd` の `_fld_exp`、`records.gd` の FIELDING_PARTS の5番目）。範囲の係数を 内野 0.18・外野 0.13 に。長打を止めた分は範囲と肩に分けた（近藤の「肩Dなのに肩で+15.7」の原因）
    - 結果（2026年の開幕のオーダー）：近藤＝右翼（中堅は周東）、筒香＝右翼、清宮＝三塁、西川史礁＝右翼で先発、西武の遊撃は滝澤（守備86）で源田（68）は控え。1シーズン回した守備得点：遊撃 滝澤 +15.9（A）〜宗山 −12（D）、中堅 周東 +12.9（A肩）、右翼 近藤 +10.1（肩は +3.9）。守備力と守備得点の相関 0.84（前は 0.3〜0.5）。佐藤輝明は WAR 3位（打撃1位、三塁守備 −3.7）。2008年の season_check：打率 .268／本塁打 1441〜1475／防御率 3.78〜3.82
    - 確認：`godot/tests/lineup_position_check.gd`（新）・`defense_war_check.gd` ALL OK。`docs/reports/2026_defense_war.md` を作り直した
+   - 全テスト（作業43・44と main の修正を含む 7b03dca、41本）：38本 OK。NG は pad_flow_check（user://saves にセーブがあるとき。前からの課題）、growth_check（種27だけ。種28〜31は OK）、fictional_draft_check（転生20年で8人、基準10〜32）。後の2本は作業43の作り直しで乱数の並びがずれただけで、AUTORUN の「あとで確認」に書いた
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。
