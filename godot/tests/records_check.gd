@@ -222,7 +222,11 @@ func _check_ui() -> void:
 	_check(view.get("_awards_view").call("shown_year") == 2008, "表彰の歴代に2008年")
 	view.set("_year", 2008)
 	view.call("set_tab", "history")
-	_check(not view.call("list_ids").is_empty(), "2008年のドラフトの指名が出る")
+	view.set("_dr_year", 2008)
+	view.call("set_tab", "drafts")
+	_check(not view.call("list_ids").is_empty(), "2008年のドラフトの指名が出る（歴代ドラフト）")
+	view.call("set_tab", "members")
+	_check(not view.call("list_ids").is_empty(), "歴代メンバーに今季の選手が出る")
 	await _capture(hub, "records_history_2008")
 	hub.queue_free()
 	await process_frame

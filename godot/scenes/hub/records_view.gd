@@ -15,13 +15,18 @@ extends VBoxContainer
 ##   年なら能力から見込んだ値）。「能力ランク」で今までの12球団×守備位置のランク（現在→将来性。球団名でデプスへ）
 ## - チーム成績の推移：年ごとの順位と勝敗
 ## - 表彰の歴代：AwardsView を年を選んで表示
-## - ドラフト・達成記録：ゲーム内のドラフトの指名結果と、ノーヒットノーラン・サイクル安打
+## - 達成記録：ノーヒットノーラン・サイクル安打と通算記録の節目
+## - 歴代メンバー（作業48）：年×球団の主なスタメン・控え／先発ローテ・中継ぎ・抑え（RecordsHistory）
+## - 歴代ドラフト（作業49）：年×球団の指名と、今の球団・評価・通算成績・現役の印（RecordsHistory）
 ## 名前札は Ⓐ／クリックで選手詳細。Ⓑ はハブへ戻る
 
 signal message_changed(text: String)
 
-const TABS := [["bat", "打撃成績"], ["pit", "投手成績"], ["depth", "チームのデプス"], ["pos_rank", "位置別の戦力"],
-	["teams", "チーム成績の推移"], ["awards", "表彰の歴代"], ["history", "ドラフト・達成記録"]]
+const TABS := [["bat", "打撃成績"], ["pit", "投手成績"], ["depth", "デプス"], ["pos_rank", "位置別の戦力"],
+	["teams", "順位の推移"], ["awards", "表彰の歴代"], ["history", "達成記録"], ["members", "歴代メンバー"],
+	["drafts", "歴代ドラフト"]]
+## タブのボタンの幅（9つと LB/RB の案内が広げたサブ画面の幅に入る）
+const TAB_WIDTH := 118
 ## ランキングに出す人数（多いと重いので上位だけ）
 const RANKING_ROWS := 50
 ## 通算の規定（打席・アウト）
@@ -89,6 +94,12 @@ var _pv_team := ""
 var _pv_cache := {}
 var _team := ""
 var _depth_sort := "now"
+## 歴代メンバー：年（0＝いちばん新しい年）・球団・投手を見ているか。歴代ドラフト：年・球団
+var _mem_year := 0
+var _mem_team := ""
+var _mem_pitch := false
+var _dr_year := 0
+var _dr_team := ""
 var _tab_buttons := {}
 var _options: HBoxContainer
 var _sub_options: HBoxContainer
@@ -112,9 +123,9 @@ func setup(p: UiTheme.Palette) -> void:
 		var b := Button.new()
 		b.text = t[1]
 		b.toggle_mode = true
-		b.custom_minimum_size = Vector2(140, 38)
+		b.custom_minimum_size = Vector2(TAB_WIDTH, 38)
 		b.clip_text = true
-		b.add_theme_font_size_override("font_size", 16)
+		b.add_theme_font_size_override("font_size", 14)
 		b.add_theme_font_override("font", UiTheme.font(800))
 		UiTheme.style_toggle(b, p.ink)
 		var key: String = t[0]
@@ -157,6 +168,10 @@ func open() -> void:
 	var years := GameState.records_years()
 	_year = years[-1] if not years.is_empty() else GameState.year
 	_team = GameState.team
+	_mem_year = 0
+	_mem_team = GameState.team
+	_dr_year = 0
+	_dr_team = GameState.team
 	if _tab.is_empty():
 		_tab = "bat"
 	refresh()
@@ -237,6 +252,10 @@ func refresh() -> void:
 			_build_awards()
 		"history":
 			_build_history()
+		"members":
+			RecordsHistory.build_members(self)
+		"drafts":
+			RecordsHistory.build_drafts(self)
 	_sub_options.visible = _sub_options.get_child_count() > 0
 	_fixed.visible = _fixed.get_child_count() > 0
 
@@ -1112,13 +1131,6 @@ func _build_awards() -> void:
 
 func _build_history() -> void:
 	var years := GameState.records_years()
-	var league: LeagueRoster = GameState.league
-	if league != null:
-		for id: String in league.drafted:
-			var y := int(league.drafted[id]["year"])
-			if y not in years:
-				years.append(y)
-	years.sort()
 	if years.is_empty():
 		_body.add_child(UiTheme.small_label("まだ記録がありません", 16, UiTheme.TEXT, 700))
 		return
@@ -1164,46 +1176,4 @@ func _build_history() -> void:
 		var mark_row := _row_panel(MINE_TINT if a["mine"] else Color(1, 1, 1, 0.5))
 		mark_row.add_child(_cell(News.date_label(a["date"]), 90, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_LEFT))
 		mark_row.add_child(_cell(a["headline"], 760, Color("d84315"), HORIZONTAL_ALIGNMENT_LEFT))
-	_section("ドラフト（%d年秋・ゲーム内の指名）" % _year, _palette.ink)
-	var by_team := {}
-	if league != null:
-		for id: String in league.drafted:
-			var rec: Dictionary = league.drafted[id]
-			if int(rec["year"]) == _year:
-				by_team.get_or_add(rec["team"], []).append([id, rec])
-	if by_team.is_empty():
-		_body.add_child(UiTheme.small_label("この年のドラフトはまだ行っていません", 16, UiTheme.TEXT_SUB, 700))
-	for team: String in GameData.teams():
-		if not by_team.has(team):
-			continue
-		var picks: Array = by_team[team]
-		picks.sort_custom(func(a: Array, b: Array) -> bool:
-			var ia := 1 if a[1]["ikusei"] else 0
-			var ib := 1 if b[1]["ikusei"] else 0
-			return ia < ib if ia != ib else int(a[1]["round"]) < int(b[1]["round"]))
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 6)
-		var team_label := _cell(GameData.short_name(team), 90, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_LEFT)
-		team_label.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-		row.add_child(team_label)
-		var flow := HFlowContainer.new()
-		flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		flow.add_theme_constant_override("h_separation", 4)
-		flow.add_theme_constant_override("v_separation", 4)
-		for pick: Array in picks:
-			var rec: Dictionary = pick[1]
-			var box := HBoxContainer.new()
-			box.add_theme_constant_override("separation", 2)
-			var label := "育成%d" % int(rec["round"]) if rec["ikusei"] else "%d位" % int(rec["round"])
-			box.add_child(UiTheme.small_label(label, 13, UiTheme.TEXT_SUB, 800))
-			box.add_child(_tag(pick[0], _name_of(pick[0]), 104.0))
-			flow.add_child(box)
-		row.add_child(flow)
-		var panel := PanelContainer.new()
-		var style := UiTheme.box(MINE_TINT if team == GameState.team else Color(1, 1, 1, 0.5), 6)
-		style.content_margin_left = 4
-		style.content_margin_right = 4
-		panel.add_theme_stylebox_override("panel", style)
-		panel.add_child(row)
-		_body.add_child(panel)
-	message_changed.emit("%d年の達成記録と、%d年秋のドラフトの指名結果（ゲーム内）。" % [_year, _year])
+	message_changed.emit("%d年の達成記録（ノーヒットノーラン・サイクル安打・通算記録の節目）。ドラフトは「歴代ドラフト」へ。" % _year)
