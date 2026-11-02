@@ -28,6 +28,10 @@ var _selected_mobile_league: String = "C"
 @onready var _title_label: Label = %TitleLabel
 @onready var _sub_label: Label = %SubLabel
 @onready var _leagues: HBoxContainer = %Leagues
+@onready var _center: CenterContainer = $Center
+@onready var _vbox: VBoxContainer = $Center/VBox
+## スマホのときだけ中身を包むスクロール（横向きでは縦に入らないので）
+var _scroll: ScrollContainer
 
 
 func _ready() -> void:
@@ -42,7 +46,7 @@ func _ready() -> void:
 	resized.connect(func() -> void: guide.position = Vector2(size.x - guide.size.x - 24, 5))
 	UiFx.install(self)
 	_debug_row = _make_debug_row()
-	$Center/VBox.add_child(_debug_row)
+	_vbox.add_child(_debug_row)
 	_make_continue(palette)
 	_make_mobile_tabs(palette)
 	_make_mode_toggle_button()
@@ -54,7 +58,7 @@ func _ready() -> void:
 		_continue_button.grab_focus()
 	else:
 		UiInput.focus_first(_leagues)
-	UiFx.fade_in($Center/VBox)
+	UiFx.fade_in(_vbox)
 
 
 func _update_title_typography(palette: UiTheme.Palette) -> void:
@@ -69,7 +73,7 @@ func _make_mode_toggle_button() -> void:
 	_mode_button = Button.new()
 	_mode_button.custom_minimum_size = Vector2(44, 38)
 	_mode_button.focus_mode = Control.FOCUS_NONE
-	_mode_button.tooltip_text = "画面表示切替（PC横画面 / スマホ縦画面）"
+	_mode_button.tooltip_text = "画面表示の切り替え（パソコンの表示 / スマホの表示）"
 	_update_mode_button_text()
 	UiTheme.style_button(_mode_button, Color("455a64"), Color.WHITE, 6, 2)
 	_mode_button.pressed.connect(func() -> void:
@@ -81,12 +85,15 @@ func _make_mode_toggle_button() -> void:
 
 func _update_mode_button_position() -> void:
 	if _mode_button != null and is_instance_valid(_mode_button):
+		# スマホ（とスマホでPC表示にしているとき）だけ出す。パソコンの見た目は変えない
+		_mode_button.visible = UiLayout.on_phone()
+		_mode_button.reset_size()
 		_mode_button.position = Vector2(size.x - _mode_button.size.x - 12, UiLayout.safe_area_top + 10)
 
 
 func _update_mode_button_text() -> void:
 	if _mode_button != null:
-		_mode_button.text = "💻 PC" if UiLayout.is_portrait else "📱 スマホ"
+		_mode_button.text = "PC表示" if UiLayout.is_mobile else "📱 スマホ表示"
 
 
 func _make_mobile_tabs(palette: UiTheme.Palette) -> void:
@@ -94,7 +101,7 @@ func _make_mobile_tabs(palette: UiTheme.Palette) -> void:
 	_mobile_tabs.alignment = BoxContainer.ALIGNMENT_CENTER
 	_mobile_tabs.add_theme_constant_override("separation", 12)
 	_mobile_tabs.visible = false
-	var vbox: VBoxContainer = $Center/VBox
+	var vbox: VBoxContainer = _vbox
 	vbox.add_child(_mobile_tabs)
 	vbox.move_child(_mobile_tabs, _leagues.get_index())
 	for league: String in GameData.LEAGUE_NAMES:
@@ -119,9 +126,10 @@ func _on_layout_changed(is_portrait: bool, is_mobile: bool) -> void:
 
 
 func _apply_layout(is_portrait: bool, _is_mobile: bool) -> void:
-	var center: Control = $Center
+	_wrap_scroll(UiLayout.is_mobile)
+	var center: Control = _scroll if UiLayout.is_mobile else _center
 	if is_portrait:
-		center.offset_top = UiLayout.safe_area_top + 10
+		center.offset_top = UiLayout.safe_area_top + 10 + (UiLayout.touch_units() if UiLayout.on_phone() else 0.0)
 		center.offset_bottom = -UiLayout.safe_area_bottom - 10
 		_leagues.alignment = BoxContainer.ALIGNMENT_CENTER
 		_mobile_tabs.visible = true
@@ -129,6 +137,26 @@ func _apply_layout(is_portrait: bool, _is_mobile: bool) -> void:
 		center.offset_top = 0
 		center.offset_bottom = 0
 		_mobile_tabs.visible = false
+
+
+## スマホ：中央の入れ物をスクロールで包む（パソコンでは包まない＝見た目を変えない）
+func _wrap_scroll(on: bool) -> void:
+	if on and _scroll == null:
+		_scroll = ScrollContainer.new()
+		_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+		_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		_scroll.set_meta("fit_guard", true)
+		add_child(_scroll)
+		move_child(_scroll, _center.get_index())
+		_center.reparent(_scroll, false)
+		_center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_center.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	elif not on and _scroll != null:
+		_center.reparent(self, false)
+		move_child(_center, _scroll.get_index())
+		_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_scroll.queue_free()
+		_scroll = null
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -195,7 +223,7 @@ func _sync_mobile_tabs() -> void:
 
 ## 「続きから」のボタンと、セーブの枠の一覧（最初は隠しておく）
 func _make_continue(palette: UiTheme.Palette) -> void:
-	var vbox: VBoxContainer = $Center/VBox
+	var vbox: VBoxContainer = _vbox
 	_continue_button = Button.new()
 	_continue_button.text = "続きから"
 	_continue_button.custom_minimum_size = Vector2(320, 48)
