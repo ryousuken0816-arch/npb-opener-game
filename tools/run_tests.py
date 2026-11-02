@@ -1,7 +1,7 @@
 """Godot のテストを並列に流す（docs/AUTORUN.md 作業52）。
 
-    python tools/run_tests.py quick                  # 速い組（5分以内。作業中に流す）
-    python tools/run_tests.py full                   # 全部（main に入れる前に1回）
+    python tools/run_tests.py quick                  # 速い組（5分以内。main に入れる前に、関係するテストと一緒に）
+    python tools/run_tests.py full                   # 全部（1日1回まとめてか、Web 版を公開する前だけ）
     python tools/run_tests.py save_check trade_check # 名前を並べて（.gd は付けなくてよい）
     python tools/run_tests.py layout_fit_check:quick # 軽い版（下の VARIANTS）
     python tools/run_tests.py --list                 # 組の中身と見込みの時間
