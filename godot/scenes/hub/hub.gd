@@ -58,6 +58,9 @@ var _records_view := RecordsView.new()
 var _postseason_view := PostseasonView.new()
 var _news_view := NewsView.new()
 var _ticker := NewsTicker.new()
+## 球団の札の下の知らせ（故障者など。スマホの縦はダッシュボードに同じものをもう1つ）
+var _status_card := HubStatusCard.new()
+var _mobile_status_card := HubStatusCard.new()
 ## ハブの右下（順位表の下）のニュースの札。押すと新聞の画面
 var _news_card: Button
 var _news_lines: Array[Label] = []
@@ -107,6 +110,8 @@ func _ready() -> void:
 	theme = UiTheme.build(_palette)
 	_background.set_palette(_palette)
 	_style_labels()
+	_status_card.setup(_palette, 440.0)
+	_summary_label.get_parent().add_child(_status_card)
 	_build_menu()
 	_add_guide()
 	UiFx.install(self)
@@ -411,6 +416,8 @@ func _refresh() -> void:
 	elif _open_key == "news":
 		_news_view.refresh()
 	_refresh_news_card()
+	_status_card.refresh()
+	_mobile_status_card.refresh()
 	_refresh_mobile_dashboard()
 
 
@@ -1003,6 +1010,8 @@ func _build_mobile_dashboard() -> void:
 	UiTheme.heading(_mobile_team_label, 19, UiTheme.TEXT, Color.WHITE, 5, false)
 	hvbox.add_child(_mobile_team_label)
 	vbox.add_child(header_panel)
+	_mobile_status_card.setup(_palette)
+	vbox.add_child(_mobile_status_card)
 
 	# 2. メインアクション巨大ボタン（「試合へ」等）
 	_mobile_advance_button = Button.new()
