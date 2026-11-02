@@ -194,7 +194,7 @@ func _wait_fast_forward() -> void:
 
 func _find_celebration(node: Node) -> Node:
 	for c in node.get_children():
-		if c.has_method("setup") and c is CanvasLayer:
+		if c is CanvasLayer and c.get_script() != null and c.get_script().get_global_name() == "Celebration":
 			return c
 	return null
 

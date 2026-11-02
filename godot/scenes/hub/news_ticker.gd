@@ -63,9 +63,14 @@ func _show_next() -> void:
 	_text.text = a["headline"]
 	_band.visible = true
 	var rect := get_viewport().get_visible_rect().size
-	_band.size = Vector2(BAND_WIDTH, 0)
-	var x := (rect.x - BAND_WIDTH) / 2.0
+	# スマホは画面の幅に入れて、下の操作の帯（MobileNavBar）のすぐ上に出す
+	var width := minf(BAND_WIDTH, rect.x - 16.0)
+	_band.custom_minimum_size.x = width
+	_band.size = Vector2(width, 0)
+	var x := (rect.x - width) / 2.0
 	var shown_y := rect.y - BOTTOM_GAP
+	if UiLayout.is_mobile:
+		shown_y = rect.y - UiLayout.bottom_inset() - _band.get_combined_minimum_size().y - 8.0
 	_band.position = Vector2(x, shown_y + 24)
 	_band.modulate.a = 0.0
 	var tween := create_tween()

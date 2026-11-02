@@ -9,6 +9,7 @@ extends VBoxContainer
 ## 人数の上限・外国人枠・抹消後10日間の再登録制限は SimTeam（RosterRules）が判定し、できないときは理由を表示する。
 ## コントローラー：十字キーで札を選び Ⓐ で選択→相手の札で Ⓐ。入れ替えて作り直しても、フォーカスは同じ位置に残る。
 ## 選んでいる札をもう一度 Ⓐ・クリック（または右クリック、右の「詳細」）で選手詳細。Ⓑ はまず選択を取り消す。
+## 1軍に故障者（作業45）がいれば上に知らせ、「故障者を入れ替える」でまとめて抹消して2軍から代わりを上げる。
 
 signal roster_changed
 
@@ -43,6 +44,7 @@ var _message_error := false
 
 var _count_label: Label
 var _message_label: Label
+var _injury_button: Button
 var _active_title: Label
 var _active_box: VBoxContainer
 var _farm_title: Label
@@ -64,6 +66,14 @@ func setup(p: UiTheme.Palette, is_pitchers: bool) -> void:
 	top.add_child(_count_label)
 	_message_label = UiTheme.fit_label(UiTheme.small_label("", 16, UiTheme.TEXT_SUB, 700))
 	top.add_child(_message_label)
+	_injury_button = Button.new()
+	_injury_button.text = "故障者を入れ替える"
+	_injury_button.tooltip_text = "1軍の故障者を登録抹消し、2軍から代わりの選手を上げます"
+	_injury_button.focus_mode = Control.FOCUS_NONE
+	_injury_button.custom_minimum_size = Vector2(0, 32)
+	UiTheme.style_button(_injury_button, Color("d32f2f"), Color.WHITE, 8, 3)
+	_injury_button.pressed.connect(_swap_injured)
+	top.add_child(_injury_button)
 
 	var body := HBoxContainer.new()
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -156,9 +166,17 @@ func _render_counts() -> void:
 		RosterRules.roster_limit(year), RosterRules.foreign_limit(year),
 		RosterRules.foreign_type_limit(year)]
 	_count_label.mouse_filter = Control.MOUSE_FILTER_PASS
+	var hurt := _injured_here()
+	_injury_button.visible = GameState.can_edit_roster() and not hurt.is_empty()
 	if not GameState.can_edit_roster():
 		_message_label.text = "オフシーズンは編成を変えられません（見るだけ）"
 		_message_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
+	elif _message.is_empty() and not hurt.is_empty():
+		var names: Array[String] = []
+		for p in hurt:
+			names.append("%s（あと%d日）" % [_names.get(p.id, p.name), GameState.health.days_left(p.id, GameState.day)])
+		_message_label.text = "1軍に故障者：%s。試合に出られないので2軍と入れ替えましょう" % "、".join(names)
+		_message_label.add_theme_color_override("font_color", Color("d32f2f"))
 	elif _message.is_empty():
 		_message_label.text = "選手を選んでから、入れ替える相手（1軍⇔2軍）か「あき」をクリック"
 		_message_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
@@ -309,7 +327,10 @@ func _render_summary() -> void:
 		var hint := UiTheme.small_label(
 				"札をクリックすると選手の能力と今季の成績を表示します。\n\n"
 				+ "札の色は守備位置：投手＝赤、捕手＝水色、内野手＝黄、外野手＝緑（右側の色は他に守れる位置）。\n"
-				+ "薄い札は登録抹消から10日たっていない選手です。札の右の「育」は育成選手（支配下に登録すると1軍に上げられます）。", 15)
+				+ "薄い札は登録抹消から10日たっていない選手です。札の右の「育」は育成選手（支配下に登録すると1軍に上げられます）。
+
+"
+				+ "札の右上の矢印は調子（↑絶好調・↗好調・→普通・↘不調・↓絶不調）。左上の「故」は故障中、「調」は2軍で調整中で、どちらも1軍の試合に出られません。", 15)
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		hint.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 		_summary_box.add_child(hint)
@@ -330,6 +351,10 @@ func _render_summary() -> void:
 		line += "　%d歳" % _age(str(data["birth"]))
 	_summary_box.add_child(_summary_line(line, 16, UiTheme.TEXT, 700))
 	_summary_box.add_child(_summary_line(_status_text(p), 15, _palette.ink, 700))
+	if GameState.health != null and GameState.is_daily_phase():
+		var lv := GameState.health.form_level(p.id)
+		_summary_box.add_child(_summary_line("調子：%s %s" % [Health.form_mark(lv), Health.form_name(lv)], 15,
+			Health.form_color(lv).darkened(0.15), 800))
 	if p.is_pitcher:
 		_pitcher_summary(p, data)
 	else:
@@ -444,6 +469,8 @@ func _rank_grid(ratings: Dictionary, columns: Array) -> GridContainer:
 
 
 func _status_text(p: SimPlayer) -> String:
+	if p.injured:
+		return ("1軍・" if _team.is_active(p) else "2軍・") + p.injury
 	if _team.is_active(p):
 		if p.is_pitcher:
 			var role := _team.pitcher_role(p)
@@ -595,6 +622,28 @@ func _demote_selected() -> void:
 		_done("%sを2軍に落としました" % p.name)
 	else:
 		_fail(err)
+
+
+## このページ（投手／野手）の1軍の故障者
+func _injured_here() -> Array[SimPlayer]:
+	var result: Array[SimPlayer] = []
+	for p in _team.injured_active():
+		if p.is_pitcher == pitchers:
+			result.append(p)
+	return result
+
+
+## 「故障者を入れ替える」：このページの1軍の故障者を抹消し、2軍から代わりを上げる
+func _swap_injured() -> void:
+	var lines: Array[String] = []
+	for p in _injured_here():
+		var sub := _team.injury_replacement(p, GameState.day)
+		var err := _team.swap_registration(p, sub, GameState.day) if sub != null else _team.demote(p, GameState.day)
+		if not err.is_empty():
+			_fail(err)
+			return
+		lines.append("%s → %s" % [p.name, sub.name if sub != null else "（代わりなし）"])
+	_done("故障者を入れ替えました：" + "、".join(lines))
 
 
 func _done(message: String) -> void:
