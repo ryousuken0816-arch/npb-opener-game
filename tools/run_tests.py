@@ -12,7 +12,7 @@
 - セーブの場所：テストごとに別のフォルダ（godot/.godot/test_logs/<日時>/saves/<テスト>）を環境変数
   NPB_TEST_SAVE_DIR で渡す（SaveGame.test_dir()）。ユーザーのセーブ（user://saves/）は読まない・触らない
 - 出力はテストごとに godot/.godot/test_logs/<日時>/<テスト>.log。最後に OK/NG の一覧と時間を出す
-- NG のテストは最後にもう一度だけ流す（--retry。乱数しだいの NG を見分けるため。2回目で OK なら「流し直して OK」）
+- NG のテストはその場でもう一度だけ流す（--retry。乱数しだいの NG を見分けるため。2回目で OK なら「流し直して OK」）
 - 時間は godot/.godot/test_times.json に覚え、次から重い順の並びと時間制限に使う（無ければ下の EST_SEC）
 - 終了コード：全部 OK（流し直して OK を含む）なら 0、NG があれば 1
 
@@ -43,6 +43,8 @@ SAVE_DIR_ENV = "NPB_TEST_SAVE_DIR"
 ## 残しておくログの回数
 KEEP_RUNS = 5
 MAX_JOBS = 6
+## ヘッドレスの Godot はフレームの上限が無いと、演出を待つ間も全力でフレームを回して CPU を使い切る
+MAX_FPS = 0
 
 # ---------------------------------------------------------------- 定数
 
@@ -169,8 +171,9 @@ def kill_tree(proc: subprocess.Popen) -> None:
 
 
 class Runner:
-    def __init__(self, godot: str, run_dir: Path, times: dict[str, float], max_timeout: float):
+    def __init__(self, godot: str, run_dir: Path, times: dict[str, float], max_timeout: float, max_fps: int):
         self.godot = godot
+        self.max_fps = max_fps
         self.run_dir = run_dir
         self.times = times
         self.max_timeout = max_timeout
@@ -188,6 +191,8 @@ class Runner:
         env[SAVE_DIR_ENV] = save_dir.as_posix()
         timeout = min(self.max_timeout, max(MIN_TIMEOUT, estimate(item, self.times) * TIMEOUT_FACTOR))
         cmd = [self.godot, "--headless", "--path", str(GODOT_DIR), "-s", f"res://tests/{script}.gd"]
+        if self.max_fps > 0:
+            cmd[1:1] = ["--max-fps", str(self.max_fps)]
         if args:
             cmd += ["--", *args]
         flags = CREATE_NO_WINDOW | BELOW_NORMAL_PRIORITY_CLASS if os.name == "nt" else 0
@@ -235,15 +240,21 @@ def fmt(sec: float) -> str:
     return f"{sec // 60}分{sec % 60:02d}秒"
 
 
-def run_all(runner: Runner, items: list[str], jobs: int, attempt: int) -> list[dict]:
+def run_all(runner: Runner, items: list[str], jobs: int, retry: int) -> list[tuple[dict, dict]]:
+    """各テストの（1回目, 最後の回）。NG はその場で流し直す（最後にまとめると、そのぶん待つ）"""
+    def run_item(item: str) -> tuple[dict, dict]:
+        first = last = runner.run(item, 1)
+        for attempt in range(2, 2 + retry):
+            if last["ok"]:
+                break
+            last = runner.run(item, attempt)
+        return first, last
+
     # 重いものから先に（最後に重いのが1本だけ残って待つのを避ける）
     ordered = sorted(items, key=lambda i: -estimate(i, runner.times))
-    results = []
     with ThreadPoolExecutor(max_workers=jobs) as pool:
-        futures = [pool.submit(runner.run, item, attempt) for item in ordered]
-        for f in as_completed(futures):
-            results.append(f.result())
-    return results
+        futures = [pool.submit(run_item, item) for item in ordered]
+        return [f.result() for f in as_completed(futures)]
 
 
 def cleanup_old_runs() -> None:
@@ -260,6 +271,7 @@ def main() -> int:
     parser.add_argument("-j", "--jobs", type=int, default=0, help=f"同時に流す本数（既定はコア数の半分、最大{MAX_JOBS}）")
     parser.add_argument("--retry", type=int, default=1, help="NG を流し直す回数（既定1）")
     parser.add_argument("--timeout", type=float, default=3600, help="1本の時間制限の上限（秒、既定3600）")
+    parser.add_argument("--max-fps", type=int, default=MAX_FPS, help=f"Godot のフレームの上限（既定{MAX_FPS}。0で上限なし）")
     parser.add_argument("--list", action="store_true", help="組の中身と見込みの時間を出す")
     opts = parser.parse_args()
 
@@ -283,17 +295,14 @@ def main() -> int:
     cleanup_old_runs()
     print(f"{len(items)}本を {jobs}本ずつ並列に流します（ログ：{run_dir.relative_to(ROOT).as_posix()}）", flush=True)
 
-    runner = Runner(godot, run_dir, times, opts.timeout)
-    results = {r["item"]: r for r in run_all(runner, items, jobs, 1)}
-    first_ng = [i for i in items if not results[i]["ok"]]
+    runner = Runner(godot, run_dir, times, opts.timeout, opts.max_fps)
+    results: dict[str, dict] = {}
     retried: dict[str, dict] = {}
-    for attempt in range(2, 2 + opts.retry):
-        again = [i for i in first_ng if not retried.get(i, results[i])["ok"]]
-        if not again:
-            break
-        print(f"\nNG の {len(again)}本を流し直します", flush=True)
-        for r in run_all(runner, again, min(jobs, len(again)), attempt):
-            retried[r["item"]] = r
+    for first, last in run_all(runner, items, jobs, opts.retry):
+        results[first["item"]] = first
+        if last is not first:
+            retried[first["item"]] = last
+    first_ng = [i for i in items if not results[i]["ok"]]
     wall = time.monotonic() - runner.started
 
     # 覚えておく時間（OK だった回。打ち切りは時間が分からないので覚えない）

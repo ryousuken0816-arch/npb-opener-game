@@ -277,6 +277,6 @@ python tools/run_tests.py --list                  # 組の中身と見込みの�
 
 - `godot/tests/` の `*_check.gd`・`*_test.gd` を Godot のヘッドレスで同時に N 本（`-j`。既定はコア数の半分、最大6）流す。重いものから先に。Godot は優先度「通常以下」・ウィンドウなし
 - テストごとにセーブの場所（`godot/.godot/test_logs/<日時>/saves/<テスト>`）を環境変数 `NPB_TEST_SAVE_DIR` で渡す（`SaveGame.test_dir()`）。ユーザーのセーブ（`user://saves/`）は読まない・触らない
-- ログは `godot/.godot/test_logs/<日時>/<テスト>.log`（直近5回分）。NG は終了コードが0でない・時間切れ・`SCRIPT ERROR`／`Parse Error`。エンジンの `ERROR:`（描画など）は NG にせず一覧に「注意」で出す（終了時のリークの報告は数えない）。NG は最後に1回流し直す（`--retry`）
+- ログは `godot/.godot/test_logs/<日時>/<テスト>.log`（直近5回分）。NG は終了コードが0でない・時間切れ・`SCRIPT ERROR`／`Parse Error`。エンジンの `ERROR:`（描画など）は NG にせず一覧に「注意」で出す（終了時のリークの報告は数えない）。NG はその場で1回流し直す（`--retry`）
 - かかった時間は `godot/.godot/test_times.json` に覚えて、次の並び順と時間制限（見込みの4倍、最低3分）に使う
 - 組の中身は冒頭の `QUICK`（速い組）・`VARIANTS`（軽い版）。新しい `*_check.gd` は自動で full に入る
