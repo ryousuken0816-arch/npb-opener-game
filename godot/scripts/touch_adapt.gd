@@ -31,8 +31,10 @@ const PAD_HINTS := ["◀ LB", "RB ▶"]
 const TABLE_CELL_MAX := 80.0
 ## タップで出す説明の表示時間（秒）
 const TAP_TIP_SEC := 2.5
+const REFIT_INTERVAL_MSEC := 100
 
 var _dirty := true
+var _next_refit_msec := 0
 var _was_mobile := false
 
 var _pressing := false
@@ -81,8 +83,10 @@ func _process(_delta: float) -> void:
 	if _tip_until_msec > 0 and Time.get_ticks_msec() > _tip_until_msec:
 		_tip_until_msec = 0
 		UiInput.hide_tip()
-	if _dirty:
+	# 調べ直しは 0.1秒に1回まで（日程表の早送りなどで画面が毎フレーム作り直されるとき、スマホで重くならないように）
+	if _dirty and Time.get_ticks_msec() >= _next_refit_msec:
 		_dirty = false
+		_next_refit_msec = Time.get_ticks_msec() + REFIT_INTERVAL_MSEC
 		refit()
 
 

@@ -500,14 +500,8 @@ func _on_menu_chosen(key: String) -> void:
 			_open_sub_screen("meeting")
 			return
 		_pending_issue = ""
-		_buttons["advance"].disabled = true
-		if _mobile_advance_button != null:
-			_mobile_advance_button.disabled = true
-		await get_tree().process_frame
+		# 押したらすぐ進める（HubMenuButton には disabled が無く、1フレーム待つと押した直後の画面が変わるため。248e36d の前の動きに戻した）
 		GameState.advance()
-		_buttons["advance"].disabled = false
-		if _mobile_advance_button != null:
-			_mobile_advance_button.disabled = false
 		_after_advance()
 		return
 	_open_sub_screen(key)

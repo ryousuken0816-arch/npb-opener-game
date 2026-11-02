@@ -120,6 +120,12 @@ func _apply_content_scale() -> void:
 	var target_scale := PC_SCALE_SIZE
 	if is_mobile:
 		target_scale = PORTRAIT_SCALE_SIZE if is_portrait else LANDSCAPE_SCALE_SIZE
+	# パソコンは 16:9 のまま（横長・縦長のモニターは黒い帯。project.godot の aspect=keep）、スマホは画面いっぱいに広げる
+	var aspect := Window.CONTENT_SCALE_ASPECT_EXPAND if is_mobile else Window.CONTENT_SCALE_ASPECT_KEEP
+	if root_win.content_scale_aspect != aspect:
+		_updating_scale = true
+		root_win.content_scale_aspect = aspect
+		_updating_scale = false
 	if root_win.content_scale_size != target_scale:
 		_updating_scale = true
 		root_win.content_scale_size = target_scale
