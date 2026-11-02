@@ -685,16 +685,16 @@ func _render_status(c: ContractRenewal) -> void:
 		_status_label.text = "%d年の契約：%d人（アップ%d人・ダウン%d人）、総額の増減 %s%s。%s" % [
 			c.year + 1, c.rows.size(), up, down, "+" if change >= 0 else "−", Salary.text(absi(change)),
 			"可変ボタン「戦力外・引退へ」で次へ進みます。" if c.resolved else "提示が終わったら「契約更改を終える」。"]
-			var r := GameState.releases()
-			if GameState.contract_with_release() and r != null:
-				var league := GameState.league
-				var need := r.need(league)
-				var room := league.draft_room(GameState.team) + r.marked_registered()
-				_status_label.text = "%d年の契約：%d人（アップ%d人・ダウン%d人）。戦力外 %d人%s。ドラフトの本指名は%d人まで。%s" % [
-					c.year + 1, c.rows.size() - r.marked.size(), up, down, r.marked.size(),
-					"（あと%d人。新人の見込み%d人を含む）" % [need, league.incoming(GameState.team)] if need > 0 else "",
-					maxi(0, room), "可変ボタン「ドラフトへ」で次へ進みます。" if c.resolved and r.resolved
-						else "決まったら「契約更改・戦力外を確定」。"]
+		var r := GameState.releases()
+		if GameState.contract_with_release() and r != null:
+			var league := GameState.league
+			var need := r.need(league)
+			var room := league.draft_room(GameState.team) + r.marked_registered()
+			_status_label.text = "%d年の契約：%d人（アップ%d人・ダウン%d人）。戦力外 %d人%s。ドラフトの本指名は%d人まで。%s" % [
+				c.year + 1, c.rows.size() - r.marked.size(), up, down, r.marked.size(),
+				"（あと%d人。新人の見込み%d人を含む）" % [need, league.incoming(GameState.team)] if need > 0 else "",
+				maxi(0, room), "可変ボタン「ドラフトへ」で次へ進みます。" if c.resolved and r.resolved
+					else "決まったら「契約更改・戦力外を確定」。"]
 	message_changed.emit(_status_label.text)
 
 
