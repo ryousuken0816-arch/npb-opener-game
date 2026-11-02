@@ -78,6 +78,7 @@ QUICK = [
     "trade_check",           # トレード交渉（オフの段階）
     "fullscreen_check",
     "mobile_layout_check",
+    "mobile_fit_check",      # スマホの縦横で全画面（約2分なので軽い版は作らずそのまま）
     "layout_fit_check:quick",
 ]
 
@@ -152,10 +153,13 @@ def godot_bin() -> str:
 
 
 def ensure_imported(godot: str) -> None:
-    """新しいワークツリーでは先に --import が要る"""
-    if (GODOT_DIR / ".godot" / "global_script_class_cache.cfg").exists():
-        return
-    print("godot/.godot が無いので --import します…", flush=True)
+    """新しいワークツリー・新しい class_name を取り込んだあとは、先に --import が要る（しないと読み込みでエラー）"""
+    cache = GODOT_DIR / ".godot" / "global_script_class_cache.cfg"
+    if cache.exists():
+        cache_time = cache.stat().st_mtime
+        if all(p.stat().st_mtime <= cache_time for p in GODOT_DIR.rglob("*.gd") if ".godot" not in p.parts):
+            return
+    print("スクリプトが新しくなったので --import します…", flush=True)
     subprocess.run([godot, "--headless", "--path", str(GODOT_DIR), "--import"],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=900,
                    creationflags=CREATE_NO_WINDOW if os.name == "nt" else 0)
