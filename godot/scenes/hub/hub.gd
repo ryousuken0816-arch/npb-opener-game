@@ -33,6 +33,9 @@ const WIDE_LEFT := 24.0
 ## 采配を広げたときの上端（操作ガイドは見出しの行の「戻る」の左へ移す）
 const WIDE_TOP := 20.0
 const TITLE_SCENE := "res://scenes/title/title.tscn"
+## 表の多い画面（ドラフトの候補一覧・FAの表・記録室・順位表など）は、スマホの縦向きのとき横向きをすすめる
+## （iOS の Safari は向きを固定できない）
+const ROTATE_HINT_KEYS := ["draft", "meeting", "fa", "records", "schedule", "awards", "comp", "contract", "release"]
 
 var _palette: UiTheme.Palette
 var _buttons := {}
@@ -72,6 +75,9 @@ var _mobile_menu_buttons := {}
 var _mobile_header_label: Label
 var _mobile_team_label: Label
 var _mobile_standings: StandingsPanel
+## スマホ表示の下の操作の帯（戻る・日程表・采配・可変ボタン）と、表の多い画面で縦向きのときの案内
+var _nav := MobileNavBar.new()
+var _rotate_hint: Label
 
 @onready var _background: TeamBackground = %Background
 @onready var _event_label: Label = %EventLabel
@@ -217,6 +223,7 @@ func _ready() -> void:
 	%BackButton.pressed.connect(_on_back)
 	_build_mobile_dashboard()
 	_make_mode_toggle_button()
+	_build_mobile_nav()
 	if not UiLayout.layout_changed.is_connected(_on_layout_changed):
 		UiLayout.layout_changed.connect(_on_layout_changed)
 	_apply_layout(UiLayout.is_portrait, UiLayout.is_mobile)
@@ -493,14 +500,8 @@ func _on_menu_chosen(key: String) -> void:
 			_open_sub_screen("meeting")
 			return
 		_pending_issue = ""
-		_buttons["advance"].disabled = true
-		if _mobile_advance_button != null:
-			_mobile_advance_button.disabled = true
-		await get_tree().process_frame
+		# 押したらすぐ進める（1フレーム待つと、押した直後に開くはずの画面が遅れる。248e36d の前の動きに戻した）
 		GameState.advance()
-		_buttons["advance"].disabled = false
-		if _mobile_advance_button != null:
-			_mobile_advance_button.disabled = false
 		_after_advance()
 		return
 	_open_sub_screen(key)
@@ -569,22 +570,17 @@ func _open_sub_screen(key: String) -> void:
 	_open_key = key
 	UiLayout.set_sub_screen_active(true)
 	_sub_screen.visible = true
-	if UiLayout.is_portrait:
+	_center_area.visible = false
+	_standings.visible = false
+	_news_card.visible = false
+	if UiLayout.is_mobile:
+		# スマホ：戻るは下の帯の大きなボタン。表の多い画面は縦向きのとき横向きをすすめる
 		if _mobile_scroll != null:
 			_mobile_scroll.visible = false
-		_center_area.visible = false
-		_standings.visible = false
-		_news_card.visible = false
 		_bottom_bar.visible = false
 		_guide.visible = false
-		%BackButton.text = "← 戻る"
-		%BackButton.custom_minimum_size = Vector2(100, 44)
-	else:
-		_center_area.visible = false
-		_standings.visible = false
-		_news_card.visible = false
-		%BackButton.text = "戻る (Esc)"
-		%BackButton.custom_minimum_size = Vector2(120, 40)
+	_update_rotate_hint()
+	UiLayout.refit()
 	for menu: Array in MENUS:
 		if menu[0] == key:
 			_sub_title_label.text = menu[1]
@@ -701,23 +697,35 @@ func _on_back() -> void:
 ## （演出の途中の位置が余白に残ると、開く・閉じるのたびに右へずれて画面の外へはみ出していった。作業11）
 func _set_wide(wide: bool) -> void:
 	UiFx.stop_slide(_sub_screen)
-	if UiLayout.is_portrait:
-		_sub_screen.offset_left = 6.0
-		_sub_screen.offset_top = UiLayout.safe_area_top + 4.0
-		_sub_screen.offset_right = -6.0
-		_sub_screen.offset_bottom = -UiLayout.safe_area_bottom - 6.0
-		_menu_box.visible = false
-		_event_label.visible = false
+	if UiLayout.is_mobile:
+		# スマホ：どの画面も広げる（縦は画面いっぱい、横はパソコンの広げた配置）。下は操作の帯の分を空ける
+		var side := 6.0 if UiLayout.is_portrait else WIDE_LEFT
+		_sub_screen.offset_left = side
+		_sub_screen.offset_top = UiLayout.safe_area_top + (4.0 if UiLayout.is_portrait else 8.0)
+		_sub_screen.offset_right = -side
+		_sub_screen.offset_bottom = -UiLayout.bottom_inset() - 4.0
+		_set_fit_side_margin(8.0 if UiLayout.is_portrait else 16.0)
+		_menu_box.visible = not UiLayout.is_portrait and _open_key.is_empty()
+		_event_label.visible = _menu_box.visible
 		_guide.visible = false
 	else:
 		_sub_screen.offset_left = WIDE_LEFT if wide else SUB_SCREEN_LEFT
 		_sub_screen.offset_top = WIDE_TOP if wide else SUB_SCREEN_TOP
 		_sub_screen.offset_right = -SUB_SCREEN_RIGHT
 		_sub_screen.offset_bottom = -SUB_SCREEN_BOTTOM
+		_set_fit_side_margin(16.0)
 		_menu_box.visible = not wide
 		_event_label.visible = not wide
 		_guide.visible = true
 		_move_guide(wide)
+
+
+## サブ画面の内側の左右の余白（スマホの縦は狭くして、名前札を3列並べられるように）
+func _set_fit_side_margin(margin: float) -> void:
+	var style: StyleBox = %Fit.get_theme_stylebox("panel")
+	if style != null and not is_equal_approx(style.content_margin_left, margin):
+		style.content_margin_left = margin
+		style.content_margin_right = margin
 
 
 func _close_sub_screen() -> void:
@@ -729,6 +737,7 @@ func _close_sub_screen() -> void:
 	_open_key = ""
 	UiLayout.set_sub_screen_active(false)
 	_sub_screen.visible = false
+	_update_rotate_hint()
 	if UiLayout.is_portrait:
 		if _mobile_scroll != null:
 			_mobile_scroll.visible = true
@@ -741,8 +750,10 @@ func _close_sub_screen() -> void:
 		_center_area.visible = true
 		_standings.visible = true
 		_news_card.visible = true
-		_bottom_bar.visible = true
-		_guide.visible = true
+		_bottom_bar.visible = not UiLayout.is_mobile
+		_guide.visible = not UiLayout.is_mobile
+		_menu_box.visible = true
+		_event_label.visible = true
 		if not key.is_empty():
 			UiFx.fade_in(_center_area)
 			UiFx.fade_in(_standings)
@@ -848,12 +859,12 @@ func _on_celebrate(kind: String, team_name: String, title: String) -> void:
 
 # --- スマホ縦画面レイアウト -------------------------------------------------------------
 
+## スマホで「PC表示」にしているときだけ右上に出す、スマホ表示へ戻すボタン（スマホ表示では下の帯の「PC表示」）
 func _make_mode_toggle_button() -> void:
 	_mode_button = Button.new()
-	_mode_button.custom_minimum_size = Vector2(44, 38)
+	_mode_button.custom_minimum_size = Vector2(150, 44)
 	_mode_button.focus_mode = Control.FOCUS_NONE
-	_mode_button.tooltip_text = "画面表示切替（PC横画面 / スマホ縦画面）"
-	_update_mode_button_text()
+	_mode_button.text = "📱 スマホ表示"
 	UiTheme.style_button(_mode_button, Color("455a64"), Color.WHITE, 6, 2)
 	_mode_button.pressed.connect(func() -> void:
 		UiLayout.toggle_mode())
@@ -864,68 +875,97 @@ func _make_mode_toggle_button() -> void:
 
 func _update_mode_button_position() -> void:
 	if _mode_button != null and is_instance_valid(_mode_button):
-		_mode_button.position = Vector2(size.x - _mode_button.size.x - 12, UiLayout.safe_area_top + 6)
+		_mode_button.visible = not UiLayout.is_mobile and UiLayout.on_phone()
+		_mode_button.reset_size()
+		_mode_button.position = Vector2(size.x - _mode_button.size.x - 12, 50)
 
 
-func _update_mode_button_text() -> void:
-	if _mode_button != null:
-		_mode_button.text = "💻 PC" if UiLayout.is_portrait else "📱 スマホ"
+func _build_mobile_nav() -> void:
+	_nav.setup(_palette, _description_label,
+		func() -> bool: return not _open_key.is_empty() or PlayerDetail.current() != null,
+		GameState.button_text)
+	add_child(_nav)
+	_nav.chosen.connect(_on_nav)
+	_rotate_hint = UiTheme.small_label("📱 横向きにすると見やすくなります", 15, Color("8a5a00"), 700)
+	_rotate_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_rotate_hint.set_meta("rotate_hint", true)
+	_rotate_hint.visible = false
+	var header: Node = %BackButton.get_parent()
+	header.get_parent().add_child(_rotate_hint)
+	header.get_parent().move_child(_rotate_hint, header.get_index() + 1)
+
+
+func _update_rotate_hint() -> void:
+	if _rotate_hint != null:
+		_rotate_hint.visible = UiLayout.is_portrait and _open_key in ROTATE_HINT_KEYS
+	%BackButton.visible = not UiLayout.is_mobile
+
+
+## スマホの下の帯のボタン
+func _on_nav(key: String) -> void:
+	if key == "mode":
+		UiLayout.toggle_mode()
+		return
+	var detail := PlayerDetail.current()
+	if key == "back":
+		if detail != null:
+			detail.close()
+		elif not _open_key.is_empty():
+			_on_back()
+		return
+	if detail != null:
+		detail.close()
+	if key == "advance":
+		if not _open_key.is_empty():
+			_close_sub_screen()
+		_on_menu_chosen("advance")
+		return
+	if _open_key == key:
+		if key == "tactics":
+			_tactics_view.open()
+		return
+	if not _open_key.is_empty():
+		_close_sub_screen()
+	_open_sub_screen(key)
 
 
 func _on_layout_changed(is_portrait: bool, is_mobile: bool) -> void:
-	_update_mode_button_text()
 	_update_mode_button_position()
 	_apply_layout(is_portrait, is_mobile)
 	_refresh()
 
 
-func _apply_layout(is_portrait: bool, _is_mobile: bool) -> void:
+func _apply_layout(is_portrait: bool, is_mobile: bool) -> void:
 	UiLayout.set_sub_screen_active(not _open_key.is_empty())
-	if is_portrait:
-		_menu_box.visible = false
-		_center_area.visible = false
-		_standings.visible = false
-		_news_card.visible = false
-		_bottom_bar.visible = false
-		_event_label.visible = false
-		_guide.visible = false
-
-		if _open_key.is_empty():
-			if _mobile_scroll != null:
-				_mobile_scroll.visible = true
-				_mobile_scroll.offset_top = UiLayout.safe_area_top + 48.0
-				_mobile_scroll.offset_bottom = -UiLayout.safe_area_bottom - 8.0
-			_sub_screen.visible = false
-		else:
-			if _mobile_scroll != null:
-				_mobile_scroll.visible = false
-			_set_wide(true)
-			_sub_screen.visible = true
-			%BackButton.text = "← 戻る"
-			%BackButton.custom_minimum_size = Vector2(100, 44)
-	else:
-		if _mobile_scroll != null:
-			_mobile_scroll.visible = false
-		_guide.visible = true
-		%BackButton.text = "戻る (Esc)"
-		%BackButton.custom_minimum_size = Vector2(120, 40)
-		if _open_key.is_empty():
-			_menu_box.visible = true
-			_center_area.visible = true
-			_standings.visible = true
-			_news_card.visible = true
-			_bottom_bar.visible = true
-			_event_label.visible = true
-			_sub_screen.visible = false
-		else:
-			var wide := _open_key in ["tactics", "fa", "trade", "comp", "contract", "release", "draft", "meeting", "awards", "records", "postseason", "news"]
-			_set_wide(wide)
-			_sub_screen.visible = true
+	_update_rotate_hint()
+	if _mobile_scroll != null:
+		_mobile_scroll.visible = is_portrait and _open_key.is_empty()
+		_mobile_scroll.offset_top = UiLayout.safe_area_top + 6.0
+		_mobile_scroll.offset_bottom = -UiLayout.bottom_inset() - 4.0
+	var top := _open_key.is_empty()
+	_menu_box.visible = top and not is_portrait
+	_center_area.visible = top and not is_portrait
+	_standings.visible = top and not is_portrait
+	_news_card.visible = top and not is_portrait
+	_event_label.visible = top and not is_portrait
+	_bottom_bar.visible = not is_mobile and (top or not is_portrait)
+	_guide.visible = not is_mobile
+	# スマホの横：パソコンと同じ配置のまま、下の帯の分だけ下端を上げる（ニュースの札・中央の球団の札）
+	var bottom := UiLayout.bottom_inset() + 8.0
+	_news_card.offset_bottom = minf(612.0, get_viewport_rect().size.y - bottom) if is_mobile else 612.0
+	_center_area.offset_bottom = -bottom if is_mobile else -110.0
+	_menu_box.offset_top = 12.0 if is_mobile else 40.0
+	_menu_box.offset_bottom = minf(600.0, get_viewport_rect().size.y - bottom) if is_mobile else 600.0
+	_sub_screen.visible = not top
+	if not top:
+		var wide := _open_key in ["tactics", "fa", "trade", "comp", "contract", "release", "draft", "meeting", "awards", "records", "postseason", "news"]
+		_set_wide(wide)
 
 
 func _build_mobile_dashboard() -> void:
 	_mobile_scroll = ScrollContainer.new()
 	_mobile_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_mobile_scroll.set_meta("fit_guard", true)
 	_mobile_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_mobile_scroll.visible = false
 	add_child(_mobile_scroll)

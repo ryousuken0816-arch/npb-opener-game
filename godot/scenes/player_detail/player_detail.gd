@@ -63,6 +63,8 @@ var _counter: Label
 var _header: HBoxContainer
 var _body: Control
 var _scroll: ScrollContainer = null
+## スマホの縦で表の多いタブ（成績）のときの、横向きをすすめる案内
+var _rotate_hint: Label
 
 
 ## 選手詳細を開く（もう開いていればその選手に切り替える）。ids は十字キーで送る選手IDの並び
@@ -129,9 +131,10 @@ func _ready() -> void:
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_frame = PanelContainer.new()
 	add_child(_frame)
-	var margin_top := (UiLayout.safe_area_top + 6.0) if UiLayout.is_portrait else float(MARGIN)
+	# スマホは下の操作の帯（MobileNavBar。「戻る」で閉じる）の分を空ける
+	var margin_top := (UiLayout.safe_area_top + 6.0) if UiLayout.is_mobile else float(MARGIN)
 	var margin_side := 4.0 if UiLayout.is_portrait else float(MARGIN)
-	var margin_bottom := (UiLayout.safe_area_bottom + 6.0) if UiLayout.is_portrait else float(MARGIN)
+	var margin_bottom := (UiLayout.bottom_inset() + 4.0) if UiLayout.is_mobile else float(MARGIN)
 	_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_frame.offset_left = margin_side
 	_frame.offset_top = margin_top
@@ -217,6 +220,8 @@ func switch_tab(delta: int) -> void:
 
 func show_tab(i: int) -> void:
 	tab = i
+	if _rotate_hint != null:
+		_rotate_hint.visible = TABS[i][0] in ["stats", "career"]
 	_render_body()
 	UiFx.fade_in(_body)
 
@@ -277,6 +282,9 @@ func _build_top_bar() -> Control:
 		bar.add_child(_arrow_button("◀ LB", func() -> void: switch_tab(-1), "前のタブ（LB / Q）"))
 	var tab_w := 68 if UiLayout.is_portrait else 104
 	var tab_font := 17 if UiLayout.is_portrait else 22
+	# スマホの縦：タブを1行目に（幅いっぱいに4つ）、前後の選手と閉じるを2行目に
+	var tab_row := HBoxContainer.new() if UiLayout.is_portrait else bar
+	tab_row.add_theme_constant_override("separation", 4)
 	for i in TABS.size():
 		var b := Button.new()
 		b.text = TABS[i][1]
@@ -285,7 +293,9 @@ func _build_top_bar() -> Control:
 		b.add_theme_font_override("font", UiTheme.font(800))
 		b.add_theme_font_size_override("font_size", tab_font)
 		b.pressed.connect(show_tab.bind(i))
-		bar.add_child(b)
+		if UiLayout.is_portrait:
+			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tab_row.add_child(b)
 		_tab_buttons.append(b)
 	if not UiLayout.is_portrait:
 		bar.add_child(_arrow_button("RB ▶", func() -> void: switch_tab(1), "次のタブ（RB / E）"))
@@ -310,6 +320,17 @@ func _build_top_bar() -> Control:
 	UiTheme.style_button(close_button, Color("5f6670"), Color.WHITE, 8, 4)
 	close_button.pressed.connect(close)
 	bar.add_child(close_button)
+	if UiLayout.is_portrait:
+		var rows := VBoxContainer.new()
+		rows.add_theme_constant_override("separation", 4)
+		rows.add_child(tab_row)
+		rows.add_child(bar)
+		_rotate_hint = UiTheme.small_label("📱 横向きにすると見やすくなります", 15, Color("8a5a00"), 700)
+		_rotate_hint.set_meta("rotate_hint", true)
+		_rotate_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_rotate_hint.visible = false
+		rows.add_child(_rotate_hint)
+		return rows
 	return bar
 
 
