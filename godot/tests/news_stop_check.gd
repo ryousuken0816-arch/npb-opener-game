@@ -217,8 +217,9 @@ func _settings_view() -> void:
 	detail.button_pressed = true
 	await process_frame
 	var buttons: Dictionary = sv.get("_stop_kind_buttons")
-	_check(sv.get("_stop_kinds_box").visible and not sv.get("_slot_buttons")["slot1"].visible and buttons.size() == 7,
-		"種類ごと：7種類のボタン（枠の札は隠す）")
+	var kinds: int = _gs.NEWS_STOP_KINDS.size()
+	_check(sv.get("_stop_kinds_box").visible and not sv.get("_slot_buttons")["slot1"].visible and buttons.size() == kinds,
+		"種類ごと：%d種類のボタン（枠の札は隠す）" % kinds)
 	buttons["amateur"].button_pressed = true
 	buttons["series"].button_pressed = true
 	await process_frame
