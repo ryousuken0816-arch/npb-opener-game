@@ -17,7 +17,7 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 
 ### 算出の流れ
 
-1. **成績の合算**: 1軍（players.json）と2軍（teamstats_linked.json）を直近3年 1.0/0.8/0.6 の加重で合算（Marcel方式）。
+1. **成績の合算**: 1軍（players.json）と2軍（teamstats_linked.json）を直近3年 1.0/0.7/0.5 の加重で合算（Marcel方式を少し直近寄りに。作業40で 1.0/0.8/0.6 から変更）。
    2軍は1軍換算係数（例: 本塁打×0.70）を掛け、サンプル量は半分として数える
 2. **少サンプル補正**: `w = min(1, サンプル / FULL)` で 観測値 と 事前値 を線形ブレンド。
    FULL は指標ごと（打率 400打席、BB% 200打席、FIP 450アウト=150回 など）。
@@ -161,7 +161,17 @@ https://npbbasement.com/ から 2020〜2026年（1軍・2軍）の守備指標�
 python tools/rebuild_all_ratings.py
 ```
 
-2008〜2026年の全 ratings（pre/post）および 2027_pre、アマチュア新人・継続データ、将来性、成長係数（growth.json）、外国人（foreign.json）、架空ドラフト（fictional_draft.json）を一括で順番通りに再生成するパイプラインスクリプト。
+2008〜2026年の全 ratings（pre/post）および 2027_pre、手で決めた能力値の当て直し（`manual_overrides.py`。下記）、アマチュア新人・継続データ、将来性、成長係数（growth.json）、外国人（foreign.json）、架空ドラフト（fictional_draft.json）を一括で順番通りに再生成するパイプラインスクリプト。
+
+## manual_overrides.py — 手で決めた能力値の当て直し
+
+```
+python tools/manual_overrides.py   # rebuild_all_ratings.py が compute_ratings のあとに呼ぶ
+```
+
+`tools/manual_overrides.json` の `files.<年>_<phase>.<選手ID>` の打撃（ミート・パワー・選球眼・走力・弾道）・投球（総合・スタミナ・K/9・BB/9・HR/9・球速）・成長（`growth`）を、
+作り直した `generated/ratings/` に当てる。守備力・肩は当てない（basement から出した値のまま）。今は Antigravity が 2026-11-01 に強化した2024年ドラフトの6人
+（石塚裕惺・金丸夢斗・中村優斗・宗山塁・渡部聖弥・西川史礁。2026_pre・2026_post・2027_pre）だけ。
 
 ## growth_coefficients.py — 成長・衰え・引退の係数（docs/AUTORUN.md 作業27）
 

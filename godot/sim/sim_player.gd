@@ -122,6 +122,15 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 	return s
 
 
+## 能力だけを能力値データから読み直す（シーズン中に能力を史実へ寄せたとき。作業40）。
+## 所属・育成・外国人枠・投手の役割・出場量はそのまま
+func refresh_from(p: Dictionary) -> void:
+	var s := SimPlayer.from_rating(p)
+	for key in ["meet", "power", "eye", "speed", "trajectory", "defense", "arm",
+			"overall", "k9", "bb9", "hr9", "stamina"]:
+		set(key, s.get(key))
+
+
 ## その位置の守備 z 値。記録のない位置は不慣れとして大きく下げる
 func defense_at(pos: String) -> float:
 	if defense.has(pos):

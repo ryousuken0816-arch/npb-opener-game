@@ -506,6 +506,12 @@
    - ~~上の「既知の課題（データ側）」の修正（新加入選手の投手/野手の判定）~~ → 完了（4.24）
    - ~~セーブ/ロード~~ → 完了（4.20）
 
+4.51 ~~シーズン中に能力を史実へ寄せる＋直近の年を重く~~ → 完了（2026-11-02、担当N）。docs/AUTORUN.md の作業40、仕組みは godot/README.md「シーズン中に能力を史実へ寄せる」
+   - A：史実のある年は開幕を `<年>_pre` で始め、月替わりごとに消化した試合の割合だけ `<年>_post` へ寄せる（`godot/sim/season_blend.gd`、`GameData.set_season_blend`、`GameState._blend_ratings`）。リーグ全体の平均の上がり幅は差し引く（あとで確認 [能力40]）。セーブは割合だけ
+   - B：`tools/compute_ratings.py` の3年の重みを 1.0/0.8/0.6 → 1.0/0.7/0.5。z で正規化し直すので、各選手の能力の変化は ±1 前後（佐藤輝明 2026_pre ミート58・パワー98・選球眼69、post 65・100・75）
+   - 全能力値を `tools/rebuild_all_ratings.py` で作り直した。Antigravity が手で強化した2024年ドラフトの6人は手順に無かったので `tools/manual_overrides.json`・`manual_overrides.py` で当て直す（守備力・肩は basement の値。あとで確認 [能力40]）
+   - 結果：2026年を回すと佐藤輝明が 開幕（ミート58・パワー98・選球眼69）→ 7月1日（62・98・71）→ 9月1日（65・98・72）→ シーズン後（65・100・75）。ゲーム内は OPS .957・33本でリーグ1位（作り直す前は .320・28本・WAR 5位）。2008年の season_check（寄せる、シード0）：打率 .268／本塁打 1478／防御率 3.82（史実 .265／1480／3.83）
+   - 確認：`godot/tests/season_blend_check.gd`（新）ALL OK。season_check は月ごとに寄せるようにした（`noblend` で従来どおり）
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。

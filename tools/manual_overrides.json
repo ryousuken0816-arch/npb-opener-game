@@ -1,0 +1,413 @@
+{
+ "_note": "Antigravity が 2026-11-01 に手で強化した2024年ドラフトの6人（commit 179e742）。tools/manual_overrides.py が作り直しのあとに当てる。守備力・肩は当てない（basement から算出した値のまま）",
+ "files": {
+  "2026_pre": {
+   "61165150": {
+    "name": "石塚 裕惺",
+    "growth": {
+     "type": "晩成",
+     "peak_age": 29,
+     "peak": {
+      "meet": 88,
+      "power": 94,
+      "eye": 82,
+      "speed": 76,
+      "defense": 85,
+      "arm": 85
+     }
+    },
+    "batting_ratings": {
+     "meet": 65,
+     "power": 72,
+     "eye": 60,
+     "speed": 68
+    },
+    "trajectory": 2
+   },
+   "61565150": {
+    "name": "金丸 夢斗",
+    "growth": {
+     "type": "普通",
+     "peak_age": 28,
+     "peak": {
+      "overall": 92,
+      "stamina": 82,
+      "k9": 94,
+      "bb9": 96,
+      "hr9": 85,
+      "velocity": 156
+     }
+    },
+    "pitching_ratings": {
+     "overall": 76,
+     "stamina": 78,
+     "k9": 82,
+     "bb9": 85,
+     "hr9": 72
+    },
+    "velocity_kmh": 154
+   },
+   "91695150": {
+    "name": "中村 優斗",
+    "growth": {
+     "type": "普通",
+     "peak_age": 28,
+     "peak": {
+      "overall": 88,
+      "stamina": 74,
+      "k9": 94,
+      "bb9": 86,
+      "hr9": 82,
+      "velocity": 160
+     }
+    },
+    "pitching_ratings": {
+     "overall": 72,
+     "stamina": 66,
+     "k9": 80,
+     "bb9": 72,
+     "hr9": 70
+    },
+    "velocity_kmh": 157
+   },
+   "53155150": {
+    "name": "宗山 塁",
+    "growth": {
+     "type": "普通",
+     "peak_age": 27,
+     "peak": {
+      "meet": 95,
+      "power": 84,
+      "eye": 88,
+      "speed": 75,
+      "defense": 98,
+      "arm": 82
+     }
+    },
+    "batting_ratings": {
+     "meet": 82,
+     "power": 68,
+     "eye": 72,
+     "speed": 68
+    },
+    "trajectory": 2
+   },
+   "83385150": {
+    "name": "渡部 聖弥",
+    "growth": {
+     "type": "普通",
+     "peak_age": 27,
+     "peak": {
+      "meet": 86,
+      "power": 92,
+      "eye": 82,
+      "speed": 75,
+      "defense": 80,
+      "arm": 85
+     }
+    },
+    "batting_ratings": {
+     "meet": 74,
+     "power": 78,
+     "eye": 66,
+     "speed": 70
+    },
+    "trajectory": 3
+   },
+   "21625150": {
+    "name": "西川 史礁",
+    "growth": {
+     "type": "普通",
+     "peak_age": 27,
+     "peak": {
+      "meet": 88,
+      "power": 96,
+      "eye": 80,
+      "speed": 72,
+      "defense": 76,
+      "arm": 82
+     }
+    },
+    "batting_ratings": {
+     "meet": 76,
+     "power": 80,
+     "eye": 65,
+     "speed": 68
+    },
+    "trajectory": 2
+   }
+  },
+  "2026_post": {
+   "61165150": {
+    "name": "石塚 裕惺",
+    "growth": {
+     "type": "晩成",
+     "peak_age": 29,
+     "peak": {
+      "meet": 88,
+      "power": 94,
+      "eye": 82,
+      "speed": 76,
+      "defense": 85,
+      "arm": 85
+     }
+    },
+    "batting_ratings": {
+     "meet": 65,
+     "power": 72,
+     "eye": 60,
+     "speed": 68
+    },
+    "trajectory": 2
+   },
+   "61565150": {
+    "name": "金丸 夢斗",
+    "growth": {
+     "type": "普通",
+     "peak_age": 28,
+     "peak": {
+      "overall": 92,
+      "stamina": 82,
+      "k9": 94,
+      "bb9": 96,
+      "hr9": 85,
+      "velocity": 156
+     }
+    },
+    "pitching_ratings": {
+     "overall": 76,
+     "stamina": 78,
+     "k9": 82,
+     "bb9": 85,
+     "hr9": 72
+    },
+    "velocity_kmh": 154
+   },
+   "91695150": {
+    "name": "中村 優斗",
+    "growth": {
+     "type": "普通",
+     "peak_age": 28,
+     "peak": {
+      "overall": 88,
+      "stamina": 74,
+      "k9": 94,
+      "bb9": 86,
+      "hr9": 82,
+      "velocity": 160
+     }
+    },
+    "pitching_ratings": {
+     "overall": 72,
+     "stamina": 66,
+     "k9": 80,
+     "bb9": 72,
+     "hr9": 70
+    },
+    "velocity_kmh": 157
+   },
+   "53155150": {
+    "name": "宗山 塁",
+    "growth": {
+     "type": "普通",
+     "peak_age": 27,
+     "peak": {
+      "meet": 95,
+      "power": 84,
+      "eye": 88,
+      "speed": 75,
+      "defense": 98,
+      "arm": 82
+     }
+    },
+    "batting_ratings": {
+     "meet": 82,
+     "power": 68,
+     "eye": 72,
+     "speed": 68
+    },
+    "trajectory": 2
+   },
+   "83385150": {
+    "name": "渡部 聖弥",
+    "growth": {
+     "type": "普通",
+     "peak_age": 27,
+     "peak": {
+      "meet": 86,
+      "power": 92,
+      "eye": 82,
+      "speed": 75,
+      "defense": 80,
+      "arm": 85
+     }
+    },
+    "batting_ratings": {
+     "meet": 74,
+     "power": 78,
+     "eye": 66,
+     "speed": 70
+    },
+    "trajectory": 3
+   },
+   "21625150": {
+    "name": "西川 史礁",
+    "growth": {
+     "type": "普通",
+     "peak_age": 27,
+     "peak": {
+      "meet": 88,
+      "power": 96,
+      "eye": 80,
+      "speed": 72,
+      "defense": 76,
+      "arm": 82
+     }
+    },
+    "batting_ratings": {
+     "meet": 76,
+     "power": 80,
+     "eye": 65,
+     "speed": 68
+    },
+    "trajectory": 2
+   }
+  },
+  "2027_pre": {
+   "61165150": {
+    "name": "石塚 裕惺",
+    "growth": {
+     "type": "晩成",
+     "peak_age": 29,
+     "peak": {
+      "meet": 88,
+      "power": 94,
+      "eye": 82,
+      "speed": 76,
+      "defense": 85,
+      "arm": 85
+     }
+    },
+    "batting_ratings": {
+     "meet": 65,
+     "power": 72,
+     "eye": 60,
+     "speed": 68
+    },
+    "trajectory": 2
+   },
+   "61565150": {
+    "name": "金丸 夢斗",
+    "growth": {
+     "type": "普通",
+     "peak_age": 28,
+     "peak": {
+      "overall": 92,
+      "stamina": 82,
+      "k9": 94,
+      "bb9": 96,
+      "hr9": 85,
+      "velocity": 156
+     }
+    },
+    "pitching_ratings": {
+     "overall": 76,
+     "stamina": 78,
+     "k9": 82,
+     "bb9": 85,
+     "hr9": 72
+    },
+    "velocity_kmh": 154
+   },
+   "91695150": {
+    "name": "中村 優斗",
+    "growth": {
+     "type": "普通",
+     "peak_age": 28,
+     "peak": {
+      "overall": 88,
+      "stamina": 74,
+      "k9": 94,
+      "bb9": 86,
+      "hr9": 82,
+      "velocity": 160
+     }
+    },
+    "pitching_ratings": {
+     "overall": 72,
+     "stamina": 66,
+     "k9": 80,
+     "bb9": 72,
+     "hr9": 70
+    },
+    "velocity_kmh": 157
+   },
+   "53155150": {
+    "name": "宗山 塁",
+    "growth": {
+     "type": "普通",
+     "peak_age": 27,
+     "peak": {
+      "meet": 95,
+      "power": 84,
+      "eye": 88,
+      "speed": 75,
+      "defense": 98,
+      "arm": 82
+     }
+    },
+    "batting_ratings": {
+     "meet": 82,
+     "power": 68,
+     "eye": 72,
+     "speed": 68
+    },
+    "trajectory": 2
+   },
+   "83385150": {
+    "name": "渡部 聖弥",
+    "growth": {
+     "type": "普通",
+     "peak_age": 27,
+     "peak": {
+      "meet": 86,
+      "power": 92,
+      "eye": 82,
+      "speed": 75,
+      "defense": 80,
+      "arm": 85
+     }
+    },
+    "batting_ratings": {
+     "meet": 74,
+     "power": 78,
+     "eye": 66,
+     "speed": 70
+    },
+    "trajectory": 3
+   },
+   "21625150": {
+    "name": "西川 史礁",
+    "growth": {
+     "type": "普通",
+     "peak_age": 27,
+     "peak": {
+      "meet": 88,
+      "power": 96,
+      "eye": 80,
+      "speed": 72,
+      "defense": 76,
+      "arm": 82
+     }
+    },
+    "batting_ratings": {
+     "meet": 76,
+     "power": 80,
+     "eye": 65,
+     "speed": 68
+    },
+    "trajectory": 2
+   }
+  }
+ }
+}
