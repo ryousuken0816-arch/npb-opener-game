@@ -7,7 +7,8 @@ extends RefCounted
 ## - 能力値ファイル（generated/ratings）は保存しない。ロード時にその年のファイルを読み直してから所属などを当てる
 ## - JSON にすると整数が小数になる（ints() で戻す）。Dictionary のキーは文字列（ゲームの状態のキーはもともと文字列）。
 ##   乱数の状態（64ビット）は小数にすると桁が落ちるので文字列で持つ
-## - テスト（-s でスクリプトを実行）のときは user://test_saves/ を使い、オートセーブは既定で切る（ユーザーのセーブを消さない）
+## - テスト（-s でスクリプトを実行）のときは user://test_saves/ を使い、オートセーブは既定で切る（ユーザーのセーブを消さない）。
+##   環境変数 NPB_TEST_SAVE_DIR があればそこを使う（tools/run_tests.py がテストごとに別のフォルダを渡す。同時に流してもぶつからない）
 
 const VERSION := 1
 const SLOTS: Array[String] = ["slot1", "slot2", "slot3"]
@@ -17,7 +18,10 @@ const TEST_DIR := "user://test_saves"
 ## 一覧の名前
 const SLOT_NAMES := {"slot1": "スロット1", "slot2": "スロット2", "slot3": "スロット3", "auto": "オートセーブ"}
 
-## 保存先（空なら DIR、テスト中は TEST_DIR）
+## テストのセーブの場所を渡す環境変数（tools/run_tests.py が設定する）
+const TEST_DIR_ENV := "NPB_TEST_SAVE_DIR"
+
+## 保存先（空なら DIR、テスト中は test_dir()）
 static var dir := ""
 ## オートセーブを書くか（null＝既定：テスト中は書かない）
 static var autosave_enabled: Variant = null
@@ -25,8 +29,14 @@ static var autosave_enabled: Variant = null
 
 static func save_dir() -> String:
 	if dir.is_empty():
-		dir = TEST_DIR if _under_test() else DIR
+		dir = test_dir() if _under_test() else DIR
 	return dir
+
+
+## テストのセーブの場所：NPB_TEST_SAVE_DIR があればそこ、無ければ fallback
+static func test_dir(fallback := TEST_DIR) -> String:
+	var env := OS.get_environment(TEST_DIR_ENV)
+	return fallback if env.is_empty() else env
 
 
 static func is_autosave_enabled() -> bool:

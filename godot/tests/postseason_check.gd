@@ -27,7 +27,7 @@ func _initialize() -> void:
 func _run() -> void:
 	_gs = root.get_node("GameState")
 	_sg = load("res://scripts/save_game.gd")
-	_sg.set("dir", "user://test_saves")
+	_sg.set("dir", _sg.call("test_dir"))
 	_sg.set("autosave_enabled", false)
 	await _check_2008()
 	_check_2020()

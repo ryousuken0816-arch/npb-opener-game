@@ -140,6 +140,7 @@ var _line: Array = [[], []]
 var _inning := 1
 var _half := 0
 var _outs := 0
+var _bat_form := 0.0  ## 今の打者の調子の分（z 値）
 var _virtual_outs := 0  ## 失策がなければ取れていたアウトを含む（自責点の判定用）
 var _bases: Array = [null, null, null]  ## 走者 {p: SimPlayer, resp: SimPlayer, earned: bool}
 var _lead_event := {}   ## 最後に勝ち越したときの {side, win, lose}
@@ -158,8 +159,8 @@ func _init(away: SimTeam, home: SimTeam, game_day: int, dh: bool,
 func play() -> Dictionary:
 	for side in 2:
 		var team: SimTeam = teams[side]
-		_order[side] = team.lineup(use_dh).duplicate()
-		_bench[side] = team.bench(use_dh).duplicate()
+		_order[side] = team.game_lineup(use_dh)
+		_bench[side] = team.game_bench(use_dh, _order[side])
 		for entry: Array in _order[side]:
 			if entry[0] != null:
 				_fielders[side][entry[1]] = entry[0]
@@ -252,10 +253,12 @@ func _plate_appearance(batting: int, fielding: int) -> void:
 		_bunt(fielding, batter, line, pline)
 		return
 
-	var fat := _fatigue(fielding)
-	var bb_p := _sig(_logit(BASE_BB) + A_EYE_BB * batter.eye - A_CTL_BB * (pitcher.bb9 - fat))
-	var k_p := _sig(_logit(BASE_K) - A_MEET_K * batter.meet + A_K9_K * (pitcher.k9 - fat))
-	var hr_p := _sig(_logit(BASE_HR) + A_POW_HR * batter.power
+	# 調子（作業45）：投手は疲れの逆向き、打者はミート・パワー・選球眼に同じだけ足す
+	var fat := _fatigue(fielding) - pitcher.form * Health.FORM_Z
+	_bat_form = batter.form * Health.FORM_Z
+	var bb_p := _sig(_logit(BASE_BB) + A_EYE_BB * (batter.eye + _bat_form) - A_CTL_BB * (pitcher.bb9 - fat))
+	var k_p := _sig(_logit(BASE_K) - A_MEET_K * (batter.meet + _bat_form) + A_K9_K * (pitcher.k9 - fat))
+	var hr_p := _sig(_logit(BASE_HR) + A_POW_HR * (batter.power + _bat_form)
 			+ A_TRAJ_HR * (batter.trajectory - 2.5) - A_HR9_HR * (pitcher.hr9 - fat))
 	var r := rng.randf()
 	if r < P_HBP:
@@ -305,8 +308,8 @@ func _fatigue(fielding: int) -> float:
 func _ball_in_play(batting: int, fielding: int, batter: SimPlayer, line: Dictionary,
 		pline: Dictionary, fat: float) -> void:
 	var pitcher: SimPlayer = _pitcher[fielding]
-	var sharp_p := _sig(_logit(BASE_SHARP) + A_MEET_SHARP * batter.meet
-			+ A_POW_SHARP * batter.power - A_OVR_SHARP * (pitcher.overall - fat))
+	var sharp_p := _sig(_logit(BASE_SHARP) + A_MEET_SHARP * (batter.meet + _bat_form)
+			+ A_POW_SHARP * (batter.power + _bat_form) - A_OVR_SHARP * (pitcher.overall - fat))
 	if rng.randf() < sharp_p:
 		_sharp_ball(batting, fielding, batter, line, pline)
 	else:
@@ -700,7 +703,7 @@ func _choose_reliever(fielding: int, lead: int) -> SimPlayer:
 			available.append(p)
 	if available.is_empty():
 		for p in team.bullpen:
-			if not _used_ids[fielding].has(p.id):
+			if not _used_ids[fielding].has(p.id) and not p.injured:
 				available.append(p)
 	if available.is_empty():
 		return null
