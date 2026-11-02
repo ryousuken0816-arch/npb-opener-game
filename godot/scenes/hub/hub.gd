@@ -418,7 +418,18 @@ func _refresh() -> void:
 	_refresh_news_card()
 	_status_card.refresh()
 	_mobile_status_card.refresh()
+	_fit_emblem()
 	_refresh_mobile_dashboard()
+
+
+## 知らせの札（故障者・オーナーの目標）が出ているときは球団のマークを小さくして中央に収める。
+## スマホの横（高さ592）はマークを隠す
+func _fit_emblem() -> void:
+	var side := 220.0
+	if _status_card.visible:
+		side = 0.0 if UiLayout.is_mobile else 170.0
+	_emblem.custom_minimum_size = Vector2(side, side)
+	_emblem.visible = side > 0.0
 
 
 func _summary_text() -> String:
@@ -944,6 +955,7 @@ func _on_layout_changed(is_portrait: bool, is_mobile: bool) -> void:
 
 func _apply_layout(is_portrait: bool, is_mobile: bool) -> void:
 	UiLayout.set_sub_screen_active(not _open_key.is_empty())
+	_fit_emblem()
 	_update_rotate_hint()
 	if _mobile_scroll != null:
 		_mobile_scroll.visible = is_portrait and _open_key.is_empty()
