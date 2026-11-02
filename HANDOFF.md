@@ -560,7 +560,17 @@
    - 確認：`godot/tests/health_check.gd`（新、ヘッドレス約1分半）ALL OK（調子の分布、日付を進めると全治の日数が減る、CPU の1軍に故障者がいない、自球団の故障者は試合に出ない・上げられない・入れ替え、セーブ／ロードで一致して続きも同じ、1年の人数と期間、CPU の主力は治ると1軍に戻る（60／60人）、ニュースと早送りの種類、調子の効き方）
    - スクショ（1280x720、1回。`tests/health_capture.gd`）：ハブの故障者の知らせ、野手・投手の1軍登録（矢印・故・要約）、選手詳細。3日進めて1軍登録を開き直すと「あと18日」→「あと15日」
    - 全テスト（46本、ヘッドレス）：NG は既知の3本（start_year_check＝ユーザーのセーブ、growth_check・fictional_draft_check＝乱数）。tactics_check・news_stop_check・mobile_fit_check は作業45に合わせて直し、流し直して OK
-4.56 ~~架空のドラフト候補の手直し（2028年以降）~~ → 完了（2026-11-02、担当P）。docs/AUTORUN.md の作業50。決めた定数は「あとで確認」の [架空50]
+
+4.56 ~~テストの短縮（並列に流す・速い組と全部に分ける）~~ → 完了（2026-11-02、担当Q）。docs/AUTORUN.md の作業52、使い方は tools/README.md「run_tests.py」
+   - **テストの決まり（新）**：作業中は関係するテスト＋`timeout 600 python tools/run_tests.py quick`、main に入れる前に `timeout 2400 python tools/run_tests.py full` を1回（CLAUDE.md「テストの流し方」）。Bash から流す
+   - `tools/run_tests.py`：Godot をヘッドレス・ウィンドウなし・優先度「通常以下」で同時に4本（`-j`。既定はコア数の半分、最大6）。重いものから先に流し、NG はその場で1回流し直す。ログは `godot/.godot/test_logs/<日時>/`、かかった時間は `godot/.godot/test_times.json` に覚えて次の並び順と時間制限（見込みの4倍）に使う。スクリプトが `.godot` のキャッシュより新しければ先に `--import`
+   - 判定：終了コードが0でない・時間切れ・`SCRIPT ERROR`／`Parse Error` が NG。エンジンの `ERROR:` は「注意」で出すだけ（今は `gloss_box.gd:241` の多角形のエラーがドラフト系の4本で出る）
+   - **セーブの場所**：`SaveGame.test_dir()` が環境変数 `NPB_TEST_SAVE_DIR` を見る。run_tests.py はテストごとに別のフォルダ（`godot/.godot/test_logs/<日時>/saves/<テスト>`）を渡すので、同時に流してもぶつからず、ユーザーのセーブ（`user://saves/`）も前のテストの残りも見ない（pad_flow_check・start_year_check がセーブの残りで落ちる件はこれで出なくなる）。テストの中で場所を決めるときは `_sg.call("test_dir", "user://…")`（ikusei_check・postseason_check をそうした）
+   - 組：quick は11本（pad_flow・tactics・order_page・start_year・draft_rebid・save・trade・fullscreen・mobile_layout・mobile_fit・`layout_fit_check:quick`＝2008年だけ）。full は `*_check.gd`・`*_test.gd` の全部（新しいテストは自動で入る）で、layout_fit_check だけ3つ（2008〜09・2010〜11・2012年）に分けて同時に流す
+   - 時間（この PC、ほかのセッションもテストを流している中）：**quick 約4分半**（3分47秒〜4分29秒、全部 OK）。**full 約28分**（48本。1本ずつの時間の合計は約110分＝今の本数を1本ずつ流すと1時間半以上。分ける前の layout_fit_check は1本で約17分）。
+     NG は既知の growth_check（種27）・fictional_draft_check（転生20年で8人）だけ。4本で CPU が100%になり、6本・フレームの上限（`--max-fps`）では速くならなかった。目標の15分には届いていない（重いテストそのものを軽くするのは別の作業）
+
+4.57 ~~架空のドラフト候補の手直し（2028年以降）~~ → 完了（2026-11-02、担当P）。docs/AUTORUN.md の作業50。決めた定数は「あとで確認」の [架空50]
    - 決まり：報告・資料にはドラフトの時点で見える情報（名前・所属・区分・位置・学年・入団時の能力）と集計の数だけを書く。ピーク・成長の型・ピークの年齢・本当の将来性は書かない
    - 当時の評価：S は年2〜4人、A は年4〜10人（`FictionalDraft.S_EVAL`・`S_COUNT`・`A_EVAL`・`A_COUNT`）。30年の集計で S 年2.9人・A 年6.2人（前は S が年8〜13人）
    - 怪物（`is_monster`）：年0〜2人（30年で平均0.5人）。佐々木朗希のような高校生の化け物は約3年に1人（`HS_PHENOM_RATE`、30年で8人）、大学・社会人の即戦力の怪物は `READY_MONSTER_RATE`。怪物は必ず S・競合3〜6球団
