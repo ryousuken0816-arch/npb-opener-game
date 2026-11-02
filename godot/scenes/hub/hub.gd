@@ -418,6 +418,8 @@ func _refresh() -> void:
 	_refresh_news_card()
 	_status_card.refresh()
 	_mobile_status_card.refresh()
+	# 知らせの札が出ているときは球団のマークを小さくして中央に収める
+	_emblem.custom_minimum_size = Vector2(170, 170) if _status_card.visible else Vector2(220, 220)
 	_refresh_mobile_dashboard()
 
 

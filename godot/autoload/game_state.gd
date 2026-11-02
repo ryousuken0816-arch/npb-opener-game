@@ -1532,15 +1532,18 @@ func _owner_facts(final: bool) -> Dictionary:
 	}
 
 
-## 今年の目標と進み具合 [{text, actual, done, kind}]（ハブに出す。目標が無ければ空）
+## 今年の目標と進み具合 [{text, actual, done, kind, started}]（ハブに出す。目標が無ければ空）。
+## 春季キャンプ（まだ今年の試合が無い）は actual が「開幕前」で started が false
 func owner_progress() -> Array:
 	if owner_goals == null:
 		return []
-	var facts := _owner_facts(phase != Phase.SEASON and phase != Phase.POSTSEASON)
+	var started := phase in [Phase.SEASON, Phase.POSTSEASON, Phase.AWARDS] and season != null and season.year == year
+	var facts := _owner_facts(phase != Phase.SEASON and phase != Phase.POSTSEASON) if started else {}
 	var result: Array = []
 	for g: Dictionary in owner_goals.goals_of(year):
-		var r := OwnerGoals.score_goal(g, facts)
-		result.append({"text": OwnerGoals.goal_text(g), "actual": r["actual"], "done": r["done"], "kind": g["kind"]})
+		var r := OwnerGoals.score_goal(g, facts) if started else {"actual": "開幕前", "done": false}
+		result.append({"text": OwnerGoals.goal_text(g), "actual": r["actual"], "done": r["done"], "kind": g["kind"],
+			"started": started})
 	return result
 
 

@@ -1036,7 +1036,8 @@ func _build_teams() -> void:
 				cell.add_theme_constant_override("outline_size", 6)
 			row.add_child(cell)
 	_build_postseason_history()
-	message_changed.emit("年ごとの順位と勝敗（ゲーム内のペナント）。赤字はリーグ優勝、金色は日本一。下に歴代の優勝・日本一。")
+	_build_owner_history()
+	message_changed.emit("年ごとの順位と勝敗（ゲーム内のペナント）。赤字はリーグ優勝、金色は日本一。下に歴代の優勝・日本一と、オーナーの評価の歴代。")
 
 
 ## その年の日本一（ポストシーズンの記録が無ければ空）
@@ -1068,6 +1069,43 @@ func _build_postseason_history() -> void:
 			if sr.get("key", "") == "JS" and not str(sr.get("mvp", "")).is_empty():
 				mvp = "MVP " + str(GameData.player(sr["mvp"]).get("name", ""))
 		row.add_child(_cell(mvp, 220, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_LEFT))
+
+
+## オーナーの評価の歴代（作業46。OwnerGoals.evals）：年・球団・評価・点・目標ごとの○×・予算の増減・講評
+func _build_owner_history() -> void:
+	_section("オーナーの評価の歴代", _palette.ink)
+	var og: OwnerGoals = GameState.owner_goals
+	var years: Array[int] = og.eval_years() if og != null else []
+	if years.is_empty():
+		_body.add_child(UiTheme.small_label("まだ評価がありません（シーズンの表彰のあとに出ます）", 16, UiTheme.TEXT_SUB, 700))
+		return
+	years.reverse()
+	for y in years:
+		var e: Dictionary = og.eval_of(y)
+		var row := _row_panel(Color(1, 1, 1, 0.5))
+		row.add_child(_cell("%d年" % y, 70, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_CENTER))
+		row.add_child(_cell(GameData.short_name(str(e.get("team", ""))), 90, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_CENTER))
+		var grade := _cell(str(e["grade"]), 40, HubStatusCard.GRADE_COLORS.get(e["grade"], UiTheme.TEXT),
+			HORIZONTAL_ALIGNMENT_CENTER)
+		grade.add_theme_font_size_override("font_size", 22)
+		grade.tooltip_text = "%.2f点" % float(e.get("score", 0.0))
+		grade.mouse_filter = Control.MOUSE_FILTER_PASS
+		row.add_child(grade)
+		var goals: Array[String] = []
+		for r: Dictionary in e.get("results", []):
+			goals.append("%s%s（%s）" % ["○" if r["done"] else "×", r["text"], r["actual"]])
+		var goal_cell := _cell("　".join(goals), 520, UiTheme.TEXT, HORIZONTAL_ALIGNMENT_LEFT)
+		goal_cell.tooltip_text = "
+".join(goals)
+		goal_cell.mouse_filter = Control.MOUSE_FILTER_PASS
+		row.add_child(goal_cell)
+		var delta := int(e.get("budget_delta", 0))
+		row.add_child(_cell("予算 %s" % ("±0" if delta == 0 else "%s%s" % ["+" if delta > 0 else "−",
+			OwnerGoals.money_text(absi(delta))]), 110, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_LEFT))
+		var comment := _cell("「%s」" % e.get("comment", ""), 260, UiTheme.TEXT_SUB, HORIZONTAL_ALIGNMENT_LEFT)
+		comment.tooltip_text = str(e.get("comment", ""))
+		comment.mouse_filter = Control.MOUSE_FILTER_PASS
+		row.add_child(comment)
 
 
 ## 球団名の年による違い（横浜→DeNA）を吸収して、その年の記録の球団名を返す
