@@ -270,8 +270,8 @@ python tools/ratings_audit.py --sims "<出力先>/sim*.json" --out <表>.md [--s
 ## run_tests.py — Godot のテストを並列に流す（docs/AUTORUN.md 作業52）
 
 ```
-python tools/run_tests.py quick                   # 速い組（約5分以内。作業中に関係するテストと一緒に）
-python tools/run_tests.py full                    # 全部（main に入れる前に1回）
+python tools/run_tests.py quick                   # 速い組（約5分以内。main に入れる前に関係するテストと一緒に）
+python tools/run_tests.py full                    # 全部（1日1回まとめてか、Web 版（GitHub Pages）を公開する前だけ。司令塔かユーザーが頼んだときに流す）
 python tools/run_tests.py save_check trade_check  # 名前を並べて
 python tools/run_tests.py layout_fit_check:quick  # 軽い版（2008年だけ）
 python tools/run_tests.py --list                  # 組の中身と見込みの時間

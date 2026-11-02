@@ -562,7 +562,7 @@
    - 全テスト（46本、ヘッドレス）：NG は既知の3本（start_year_check＝ユーザーのセーブ、growth_check・fictional_draft_check＝乱数）。tactics_check・news_stop_check・mobile_fit_check は作業45に合わせて直し、流し直して OK
 
 4.56 ~~テストの短縮（並列に流す・速い組と全部に分ける）~~ → 完了（2026-11-02、担当Q）。docs/AUTORUN.md の作業52、使い方は tools/README.md「run_tests.py」
-   - **テストの決まり（新）**：作業中は関係するテスト＋`timeout 600 python tools/run_tests.py quick`、main に入れる前に `timeout 2400 python tools/run_tests.py full` を1回（CLAUDE.md「テストの流し方」）。Bash から流す
+   - **テストの決まり（新。ユーザー指示 2026-11-02）**：main に入れる前は、関係するテスト＋`timeout 600 python tools/run_tests.py quick`（5分以内）だけ。full（`timeout 2400 python tools/run_tests.py full`）は毎回は流さず、1日1回まとめてか、Web 版（GitHub Pages）を公開する前だけ。司令塔かユーザーが頼んだときに流す。既知の乱数しだいの NG は full の結果で見るだけにして、作業ごとに流し直さない。Bash から流す
    - `tools/run_tests.py`：Godot をヘッドレス・ウィンドウなし・優先度「通常以下」で同時に4本（`-j`。既定はコア数の半分、最大6）。重いものから先に流し、NG はその場で1回流し直す。ログは `godot/.godot/test_logs/<日時>/`、かかった時間は `godot/.godot/test_times.json` に覚えて次の並び順と時間制限（見込みの4倍）に使う。スクリプトが `.godot` のキャッシュより新しければ先に `--import`
    - 判定：終了コードが0でない・時間切れ・`SCRIPT ERROR`／`Parse Error` が NG。エンジンの `ERROR:` は「注意」で出すだけ（今は `gloss_box.gd:241` の多角形のエラーがドラフト系の4本で出る）
    - **セーブの場所**：`SaveGame.test_dir()` が環境変数 `NPB_TEST_SAVE_DIR` を見る。run_tests.py はテストごとに別のフォルダ（`godot/.godot/test_logs/<日時>/saves/<テスト>`）を渡すので、同時に流してもぶつからず、ユーザーのセーブ（`user://saves/`）も前のテストの残りも見ない（pad_flow_check・start_year_check がセーブの残りで落ちる件はこれで出なくなる）。テストの中で場所を決めるときは `_sg.call("test_dir", "user://…")`（ikusei_check・postseason_check をそうした）

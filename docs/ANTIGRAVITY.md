@@ -21,7 +21,7 @@
 
 - `git status` / `git diff` / `git log` / `git fetch` / `git pull` / `git add` / `git commit` / `git switch -c antigravity/<名前>` / `git push origin antigravity/<名前>`
 - Godot のテスト（`tools/run_tests.py` で。ヘッドレスで並列に流し、セーブの場所もテストごとに分ける。必ず `timeout` を付ける）：
-  - `timeout 600 python tools/run_tests.py quick`（速い組、約5分以内）・`timeout 2400 python tools/run_tests.py full`（全部）
+  - `timeout 600 python tools/run_tests.py quick`（速い組、約5分以内）・`timeout 2400 python tools/run_tests.py full`（全部。1日1回まとめてか、Web 版（GitHub Pages）を公開する前だけ。司令塔かユーザーが頼んだときに流す）
   - `timeout 900 python tools/run_tests.py draft_check draft_rebid_check`（名前を並べて）
   - 1本だけ直接流すときは `timeout 900 "C:/Users/user/Downloads/Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe" --headless --path godot -s res://tests/draft_check.gd`
 
@@ -29,7 +29,7 @@
 
 - 作業は `antigravity/<名前>` のブランチで行い、終わったら main を取り込んでからドラフトのテストを流し、main に入れる（または入れる前にユーザーに伝える）
 - **Godot のウィンドウを前面に出さない・マウスカーソルを動かさない**（ユーザーは同じ PC で作業している）。スクショが必要なときだけ、画面の右下の隅に `--position` で小さく置き、起動直後に `DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_NO_FOCUS, true)` を立てて1回だけ撮る
-- テストは、作業中は関係するテスト＋quick、main に入れる前に full を1回（並列。何度も繰り返さない）
+- テストは、main に入れる前に**関係するテスト＋quick（5分以内）だけ**。full は流さない（1日1回まとめてか、Web 版（GitHub Pages）を公開する前だけ。司令塔かユーザーが頼んだときに流す）。既知の乱数しだいの NG は full の結果で見るだけにして、作業ごとに流し直さない
 - 動画から切り出した画像・音声、実在の球団ロゴ・スポンサーの表示・実在の人物の顔は、リポジトリに入れない（見た目を参考に作り直すのはよい）
 - 抽選の結果・指名の順番などの進行は変えない（見せ方だけを変える）。結果がこれまでと同じことはドラフトのテストで確かめる
 - 始める前と終わったあとに、ユーザーに一言伝える（Claude の作業セッションとぶつからないように順番を合わせるため）
@@ -61,7 +61,7 @@
 ## 整理するときの決まり（上の「守ること」に加えて）
 
 - 情報を減らさない（見せ方・並び・大きさ・余白・色・まとめ方を変える）。操作（コントローラー・キーボード・マウス）はこれまでどおり全部できること
-- 1280x720 からはみ出さない。作業中は `python tools/run_tests.py layout_fit_check:quick`（2008年だけ）、最後に full（`layout_fit_check` の全年を含む）で通ること
+- 1280x720 からはみ出さない。作業中は `python tools/run_tests.py layout_fit_check:quick`（2008年だけ）で通ること（全年は full で見る）
 - 変えた画面の既存のテスト（`tactics_check`・`day_progress_check`・`contract_check`・`release_check`・`trade_check` など、`godot/tests/` の該当するもの）も `run_tests.py` に名前を並べて流す
 - 第1段階のブランチは `antigravity/ui-tidy-1`。main に入れる前に main を取り込む
 
@@ -96,7 +96,7 @@ main に入れたら `docs/AUTORUN.md` の表を「完了」にし、`HANDOFF.md
 
 ## Claude がいないときの進め方
 
-- 1つの作業ごとにブランチ（`antigravity/<名前>`）を作る → 実装 → 関係するテスト＋quick → main に入れる前に full を1回 → origin/main を取り込み直す → main にマージして push → `docs/AUTORUN.md`（表と詳細）と `HANDOFF.md` を更新
+- 1つの作業ごとにブランチ（`antigravity/<名前>`）を作る → 実装 → 関係するテスト＋quick → origin/main を取り込み直す → main にマージして push → `docs/AUTORUN.md`（表と詳細）と `HANDOFF.md` を更新
 - 画面を作ったら、`CLAUDE.md` の「完成の条件」どおり Godot を起動してエラー0件とスクショ（右下の隅、フォーカスを奪わず1回だけ）、ゲーム内の日付を進めて表示が追従するか確かめる
 - 新しいワークツリー・フォルダでテストする前は `--headless --path godot --import` で準備する
 - テストは `tools/run_tests.py` で流す（並列でもセーブの場所はテストごとに分かれる。Godot を手で同時に何本も起動しない）。`draft_check` の「2025年に指名選手が試合に出た」と `fa_comp_check` の長野の件は、乱数しだいで落ちる既知の件
