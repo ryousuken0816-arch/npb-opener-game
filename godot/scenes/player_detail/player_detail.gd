@@ -544,6 +544,8 @@ func _status_text() -> String:
 	if sim == null or not sim.by_id.has(player_id):
 		return "-"
 	var p: SimPlayer = sim.by_id[player_id]
+	if p.injured and GameState.is_daily_phase():
+		return "故障 あと%d日" % GameState.health.days_left(player_id, GameState.day)
 	if not sim.is_active(p):
 		return "2軍"
 	if p.is_pitcher:
@@ -573,7 +575,16 @@ func sim_team() -> SimTeam:
 func _season_caption() -> String:
 	if GameState.season == null:
 		return "（%d年は日程データがないため試合なし）" % GameState.year
-	return "%d年 1軍（%s まで）" % [GameState.year, _last_played_label()]
+	var text := "%d年 1軍（%s まで）" % [GameState.year, _last_played_label()]
+	# 調子・故障（作業45）
+	var h: Health = GameState.health
+	if h != null and GameState.is_daily_phase() and h.form_next.has(player_id):
+		var lv := h.form_level(player_id)
+		text += "　調子 %s %s" % [Health.form_mark(lv), Health.form_name(lv)]
+		var inj := h.injury_text(player_id, GameState.day)
+		if not inj.is_empty():
+			text += "　" + inj
+	return text
 
 
 func _last_played_label() -> String:

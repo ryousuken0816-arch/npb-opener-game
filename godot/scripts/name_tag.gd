@@ -6,6 +6,7 @@ extends Button
 ## 選べない選手は薄く表示する。札は GlossBox（縦グラデーション＋ツヤ＋濃い縁＋下側の厚み）で立体的に描く。
 ## 選手の札は右クリックでも選手詳細（PlayerDetail）を開ける。
 ## フォーカス（十字キーの移動先・マウスを乗せた札）は UiFx が拡大・明滅させ、黄色い光の枠を付ける。
+## シーズン中は右上に調子の矢印（Health の色）、故障中は左上に赤い「故」（2軍で調整中は橙の「調」）を付ける（作業45）。
 
 const COLOR_PITCHER := Color("f47a86")
 const COLOR_CATCHER := Color("5cc8f0")
@@ -38,6 +39,10 @@ var dimmed := false:
 		dimmed = value
 		queue_redraw()
 var font_size := 19
+## 調子・故障の印（setup_player が GameState.health から読む。show_form は調子を追っている選手のシーズン中だけ）
+var show_form := false
+var form_level := 0
+var injury_mark := ""
 
 
 var _blink := 0.0
@@ -75,7 +80,28 @@ func setup_player(p: Dictionary, text: String) -> void:
 	player_id = str(p.get("id", ""))
 	colors = colors_for(p)
 	empty_slot = false
+	_read_health()
 	queue_redraw()
+
+
+## 調子・故障の印を読む（オートロードの GameState を名前で探す。テストのスクリプトがこの型を読めるように）
+func _read_health() -> void:
+	show_form = false
+	injury_mark = ""
+	var tree := Engine.get_main_loop() as SceneTree
+	var gs: Node = tree.root.get_node_or_null("GameState") if tree != null else null
+	if gs == null or player_id.is_empty() or gs.get("health") == null or not gs.is_daily_phase():
+		return
+	var h: Health = gs.health
+	if not h.form_next.has(player_id):
+		return
+	show_form = true
+	form_level = h.form_level(player_id)
+	match h.status(player_id, int(gs.day)):
+		"故障":
+			injury_mark = "故"
+		"調整中":
+			injury_mark = "調"
 
 
 func setup_empty(text: String = "あき") -> void:
@@ -198,19 +224,23 @@ func _draw() -> void:
 
 	var font := UiTheme.font(800)
 	var fs := font_size
-	var width := size.x - 10
+	var badge := clampf(face.size.y * 0.62, 16.0, 28.0)
+	var left_pad := badge + 4.0 if not injury_mark.is_empty() else 5.0
+	var right_pad := badge + 3.0 if show_form else 5.0
+	var width := size.x - left_pad - right_pad
 	while fs > MIN_FONT_SIZE \
 			and font.get_string_size(tag_text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > width:
 		fs -= 1
 	var baseline := face.position.y + (face.size.y + font.get_ascent(fs) - font.get_descent(fs)) / 2.0
 	var text_color := UiTheme.TEXT_SUB if empty_slot else UiTheme.TEXT
-	var origin := Vector2(5, baseline)
+	var origin := Vector2(left_pad, baseline)
 	if not empty_slot:
 		draw_string_outline(font, origin + Vector2(0, 1), tag_text, HORIZONTAL_ALIGNMENT_CENTER, width,
 			fs, 5, Color(0, 0, 0, 0.12))
 		draw_string_outline(font, origin, tag_text, HORIZONTAL_ALIGNMENT_CENTER, width, fs, 5,
 			Color(1, 1, 1, 0.92))
 	draw_string(font, origin, tag_text, HORIZONTAL_ALIGNMENT_CENTER, width, fs, text_color)
+	_draw_health(face, badge)
 
 	if dimmed:
 		draw_style_box(UiTheme.box(Color(1, 1, 1, 0.55), RADIUS), rect)
@@ -230,6 +260,27 @@ func _draw() -> void:
 		frame.shadow_color = Color(SELECT_COLOR, 0.45 * wave)
 		frame.shadow_size = int(3 + 5 * wave)
 		draw_style_box(frame, rect.grow(2))
+
+
+## 調子の矢印（右上の丸）と故障の印（左上の角丸）
+func _draw_health(face: Rect2, badge: float) -> void:
+	var font := UiTheme.font(800)
+	var fs := maxi(10, int(badge * 0.78))
+	if show_form:
+		var c := Vector2(face.end.x - badge * 0.5 - 1.0, face.position.y + badge * 0.5 + 1.0)
+		draw_circle(c, badge * 0.5, Health.form_color(form_level))
+		draw_arc(c, badge * 0.5, 0.0, TAU, 20, Color(1, 1, 1, 0.9), 1.5, true)
+		var mark := Health.form_mark(form_level)
+		var w := font.get_string_size(mark, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		draw_string(font, c + Vector2(-w * 0.5, (font.get_ascent(fs) - font.get_descent(fs)) * 0.5), mark,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color.WHITE)
+	if not injury_mark.is_empty():
+		var r := Rect2(face.position + Vector2(1, 1), Vector2(badge, badge))
+		var box := UiTheme.box(Color("d32f2f") if injury_mark == "故" else Color("ef6c00"), 4, Color.WHITE, 1)
+		draw_style_box(box, r)
+		var w := font.get_string_size(injury_mark, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		draw_string(font, r.get_center() + Vector2(-w * 0.5, (font.get_ascent(fs) - font.get_descent(fs)) * 0.5),
+			injury_mark, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color.WHITE)
 
 
 func _style(base: Color) -> GlossBox:
