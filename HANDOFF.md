@@ -588,7 +588,9 @@
      撮ったあと横長で採点表の2段目・ボードの下の行がスクロールの中だったので高さを詰めた（寸法はヘッドレスで測って確認。撮り直しはしていない）
    - 既存テストの変更：layout_fit_check・mobile_fit_check に手帳・ボード・表の画面を足した。draft_rebid_check・trade_check・draft_meeting_check・draft_meeting_capture は表にしてから並び替え・タブ（「1年目」の並び替えは「評価」に）
    - 担当M（スマホ）の変更は作業51のつなぎ込みのあとで main に入った（ドラフト・作戦会議のファイルは触っていなかったので衝突なし）。取り込んでから mobile_fit_check（縦横）ALL OK
-@@TESTS@@
+   - テスト：ドラフト関係（draft_check・draft_rebid_check・draft_meeting_check・draft_announce_check・draft_announce_flow_check・lottery_3d_check・mlb_draftee_check）・layout_fit_check（2158画面）・mobile_fit_check（縦横）はすべて OK。
+     全テストは司令塔の指示（「短縮が終わってから」「full は流さない」）で途中（35本目まで）で止めた：NG は既知の growth_check（35歳以上の衰え）・fictional_draft_check（転生20年で8人）・pad_flow_check（セーブがあると「続きから」）だけ。
+     main に入れる前に担当Qの `tools/run_tests.py` で関係する3本（draft_notebook・draft_announce・draft_meeting）と quick（11本）を流して ALL OK
 
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
