@@ -13,17 +13,26 @@ const TYPE_WORDS := {
 	"P_power": "本格派", "P_control": "技巧派", "P_fast": "剛腕", "P_lefty": "左腕", "P_righty": "右腕",
 	"B_power": "スラッガー", "B_contact": "巧打者", "B_speed": "俊足", "B_defense": "守備の名手", "B_catcher": "強肩捕手",
 }
-## 区分ごとの学年表示
-const GRADE_TEXT := {"高校": "高校3年", "大学": "大学4年"}
+## 区分ごとの学年表示（専門＝専門学校。2年で卒業して入団）
+const GRADE_TEXT := {"高校": "高校3年", "大学": "大学4年", "専門": "専門学校2年"}
 ## 社会人の入社年数（大卒か高卒かで分ける）
 const COMPANY_COLLEGE_SHARE := 0.6
 const COMPANY_COLLEGE_YEARS := [2, 4]
 const COMPANY_HS_YEARS := [3, 5]
 ## 独立リーグの年齢（19〜25歳）
 const INDEPENDENT_AGE := [19, 25]
-## 1位の帯のうち、競合の目玉（格付け S）の割合と競合の球団数
-const S_SHARE := 0.25
+## 当時の評価（作業50）：S＝競合確実の目玉、A＝1位候補。見た目の評価がしきい値以上の人数を [最少, 最多] に収める
+const S_EVAL := 1.40
+const S_COUNT := [2, 4]
+const A_EVAL := 0.98
+const A_COUNT := [4, 10]
+## 競合の球団数（格付け S）
 const S_BIDS := [2, 5]
+## 怪物（is_monster。入団時から主力級で、まだ伸びる）の1年あたりの確率。年に0〜2人
+## 高校生の化け物（佐々木朗希のような。ユーザー了承 2026-11-02）は数年に1人
+const HS_PHENOM_RATE := 0.30
+## 大学・社会人の即戦力の怪物
+const READY_MONSTER_RATE := 0.35
 ## 転生選手の出現確率（人数分布）
 const REINCARNATION_ODDS := [0.65, 0.25, 0.08, 0.02]
 ## 転生選手の高校／大学の割合
@@ -44,21 +53,26 @@ const STRONG_SCHOOL := 8
 const SCHOOL_WEIGHT_POWER := 0.6
 
 const GROWTH_TYPES := {"早熟": 25, "普通": 27, "晩成": 29}
+## 名前はありふれた姓・下の名前だけ（作業50。実在のスター選手に特有の名前や、姓のような下の名前は使わない）。
+## さらに実在の名選手（転生のもと）と同じ姓名は作らない（_unique_name）
 const SURNAMES := [
 	"佐藤", "鈴木", "高橋", "田中", "渡辺", "伊藤", "山本", "中村", "小林", "加藤",
 	"吉田", "山田", "佐々木", "山口", "松本", "井上", "斉藤", "木村", "林", "清水",
 	"山崎", "森", "池田", "橋本", "阿部", "石川", "山下", "中島", "石井", "小川",
 	"前田", "岡田", "長谷川", "藤田", "後藤", "近藤", "村上", "遠藤", "青木", "坂本",
-	"斉藤", "福田", "太田", "西村", "藤井", "岡本", "金子", "藤原", "三浦", "中野",
+	"福田", "太田", "西村", "藤井", "岡本", "金子", "藤原", "三浦", "中野", "松田",
 	"原田", "竹内", "小野", "田村", "柴田", "中山", "和田", "石田", "森田", "上田",
-	"原", "内田", "柴田", "酒井", "横山", "高木", "安藤", "宮崎", "工藤", "島田",
+	"原", "内田", "酒井", "横山", "高木", "安藤", "宮崎", "工藤", "島田", "大野",
+	"野口", "松井", "菅原", "久保", "千葉", "岩崎", "桜井", "野村", "杉山", "平野",
 ]
 const GIVEN_NAMES := [
-	"翔平", "大谷", "由伸", "朗希", "宗佑磨", "宗隆", "輝明", "晃平", "拓也", "健太",
-	"大輝", "拓真", "航平", "蓮", "悠真", "湊", "大翔", "陽翔", "朝陽", "樹",
-	"陸", "颯真", "悠人", "蒼空", "涼太", "優斗", "翼", "翔太", "隼人", "颯太",
+	"拓也", "健太", "大輝", "拓真", "航平", "蓮", "悠真", "湊", "大翔", "陽翔",
+	"樹", "陸", "颯真", "悠人", "涼太", "優斗", "翼", "翔太", "隼人", "颯太",
 	"大樹", "真一", "和也", "雄大", "直樹", "亮", "健司", "哲也", "誠", "剛",
-	"勇気", "慎太郎", "康平", "達也", "龍之介", "健太郎", "祐樹", "裕也", "光", "俊介",
+	"勇気", "康平", "達也", "龍之介", "健太郎", "祐樹", "裕也", "光", "俊介", "海斗",
+	"悠斗", "大和", "蒼", "結翔", "奏太", "瑛太", "匠", "智也", "圭太", "浩二",
+	"一輝", "大地", "将太", "啓太", "春樹", "竜也", "晴人", "優希", "駿", "拓海",
+	"遼", "雅人", "翔吾", "敦也", "陽介", "孝太", "健一", "直人", "亮太", "裕太",
 ]
 
 var data: Dictionary
@@ -69,6 +83,8 @@ var _serial: int = 0
 var _derived: Dictionary = {}
 var _talent: FictionalTalent
 var _last_quality: float = 0.0
+## 実在の名選手の姓名（空白を除く）。架空の候補の名前に使わない
+var _real_names: Dictionary = {}
 
 
 func _init(fictional_data: Dictionary = {}, growth: Growth = null) -> void:
@@ -90,6 +106,8 @@ func _init(fictional_data: Dictionary = {}, growth: Growth = null) -> void:
 	var g := growth if growth != null else Growth.new()
 	_derived = g.coeff.get("pitching", {}).get("derived", {}).get("overall", {})
 	_talent = FictionalTalent.new()
+	for l: Dictionary in data.get("legends", []):
+		_real_names[str(l.get("name", "")).replace(" ", "").replace("　", "")] = true
 
 
 static func load_data() -> Dictionary:
@@ -137,20 +155,37 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 
 	# ひな形から区分・守備位置の構成をサンプリング
 	var picks := _pick_templates(int(size["reg"]), false, rng)
+	var monsters := _monster_slots(picks, rng)
 	picks.append_array(_pick_templates(int(size["ikusei"]), true, rng))
 
 	# 各候補を FictionalTalent で生成
 	var raw_candidates: Array = []
-	for t: Dictionary in picks:
-		var c := _make_v2(t, draft_year, quality, rng, taken)
+	for i in picks.size():
+		var c := _make_v2(picks[i], draft_year, quality, rng, taken, monsters.has(i))
 		raw_candidates.append(c)
 
 	# スカウトの見た目の評価（apparent_eval）順にソートして順位帯（1位、上位、中位、下位、育成）を決定
-	# （真の才能 T が高くても、見た目評価で下位に落ちる「隠れた逸材」が自然発生する）
+	# （真の才能 T が高くても、見た目評価で下位に落ちる「隠れた逸材」が自然発生する）。怪物はいちばん上
 	var reg_count := int(size["reg"])
 	raw_candidates.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		if bool(a["is_monster"]) != bool(b["is_monster"]):
+			return bool(a["is_monster"])
 		return float(a["_apparent_eval"]) > float(b["_apparent_eval"])
 	)
+	# 当時の評価 S・A の人数（しきい値以上の人数を範囲に収める。怪物は必ず S）
+	var s_n := 0
+	var a_n := 0
+	for i in mini(reg_count, raw_candidates.size()):
+		var c: Dictionary = raw_candidates[i]
+		if bool(c["is_monster"]) or float(c["_apparent_eval"]) >= S_EVAL:
+			s_n += 1
+		elif float(c["_apparent_eval"]) >= A_EVAL:
+			a_n += 1
+	s_n = clampi(s_n, S_COUNT[0], S_COUNT[1])
+	for i in raw_candidates.size():
+		if bool(raw_candidates[i]["is_monster"]):
+			s_n = maxi(s_n, i + 1)
+	a_n = clampi(a_n, A_COUNT[0], A_COUNT[1])
 
 	for i in raw_candidates.size():
 		var p: Dictionary = raw_candidates[i]
@@ -169,12 +204,12 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 			projected = "育成枠"
 		elif rank_in_reg <= 12:
 			band = "1"
-			grade = "S" if (float(p["_apparent_eval"]) >= 1.2 or (rank_in_reg <= 3 and rng.randf() < 0.5)) else "A"
+			grade = "S" if rank_in_reg <= s_n else ("A" if rank_in_reg <= s_n + a_n else "B")
 			as_round = 1
 			projected = "1位候補"
 		elif rank_in_reg <= 36:
 			band = "2-3"
-			grade = "B"
+			grade = "A" if rank_in_reg <= s_n + a_n else "B"
 			as_round = rng.randi_range(2, 3)
 			projected = "上位候補"
 		elif rank_in_reg <= 60:
@@ -199,10 +234,9 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 		am["bids"] = bids
 		am["projected"] = projected
 
-		# 即戦力の怪物の強調
+		# 怪物の強調（高校生は「超目玉」、大学・社会人は「超目玉（即戦力）」）
 		if bool(p.get("is_monster", false)) and not is_ikusei:
-			am["grade"] = "S"
-			am["projected"] = "超目玉（即戦力）"
+			am["projected"] = "超目玉" if p["category"] == "高校" else "超目玉（即戦力）"
 			am["bids"] = maxi(am["bids"], rng.randi_range(3, 6))
 
 		# 二刀流の二つ名反映
@@ -242,6 +276,21 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 	return out
 
 
+## 本指名のひな形 picks のうち、怪物にする添字（高校生の化け物・大学／社会人の即戦力の怪物を、それぞれの確率で0〜1人）
+func _monster_slots(picks: Array, rng: RandomNumberGenerator) -> Dictionary:
+	var out := {}
+	for plan: Array in [[HS_PHENOM_RATE, ["高校"]], [READY_MONSTER_RATE, ["大学", "社会人"]]]:
+		if rng.randf() >= float(plan[0]):
+			continue
+		var idx: Array = []
+		for i in picks.size():
+			if str(picks[i]["category"]) in plan[1]:
+				idx.append(i)
+		if not idx.is_empty():
+			out[idx[rng.randi_range(0, idx.size() - 1)]] = true
+	return out
+
+
 func _pick_templates(n: int, ikusei: bool, rng: RandomNumberGenerator) -> Array:
 	var pool: Array = []
 	for t: Dictionary in data.get("templates", []):
@@ -257,14 +306,14 @@ func _pick_templates(n: int, ikusei: bool, rng: RandomNumberGenerator) -> Array:
 
 ## 新世代生成エンジンによる1人の生成
 func _make_v2(t: Dictionary, draft_year: int, quality: float,
-		rng: RandomNumberGenerator, taken: Dictionary) -> Dictionary:
+		rng: RandomNumberGenerator, taken: Dictionary, monster: bool = false) -> Dictionary:
 	_serial += 1
 	var category: String = t["category"]
 	var pos: String = t["pos"]
 	var side: String = t["side"]
 
 	# FictionalTalent で能力とプロファイルを生成
-	var gen: Dictionary = _talent.generate_player(category, pos, side, quality, rng)
+	var gen: Dictionary = _talent.generate_player(category, pos, side, quality, rng, {"monster": monster})
 
 	var p: Dictionary = {}
 	p["id"] = "fic:%d:%03d" % [draft_year, _serial]
@@ -441,7 +490,7 @@ func _mark_mlb_intent(out: Array, rng: RandomNumberGenerator) -> void:
 
 func _entry_of(category: String, rng: RandomNumberGenerator) -> Dictionary:
 	match category:
-		"高校", "大学":
+		"高校", "大学", "専門":
 			return {"age": int(Growth.AMATEUR_ENTRY_AGE[category]), "text": GRADE_TEXT[category]}
 		"社会人":
 			var college := rng.randf() < COMPANY_COLLEGE_SHARE
@@ -497,7 +546,7 @@ func _unique_name(rng: RandomNumberGenerator, taken: Dictionary) -> String:
 	for i in 200:
 		var n := "%s %s" % [SURNAMES[rng.randi_range(0, SURNAMES.size() - 1)],
 			GIVEN_NAMES[rng.randi_range(0, GIVEN_NAMES.size() - 1)]]
-		if not taken.has(n):
+		if not taken.has(n) and not _real_names.has(n.replace(" ", "")):
 			taken[n] = true
 			return n
 	return "架空 %d" % rng.randi_range(1000, 9999)

@@ -29,8 +29,8 @@
 ## テストの流し方（2026-11-02 作業52。ユーザー決定）
 
 - テストは `tools/run_tests.py` で流す（Bash から。ヘッドレスで並列に流し、セーブの場所もテストごとに分ける。ユーザーのセーブには触らない）
-  - `timeout 600 python tools/run_tests.py quick`：速い組（約5分以内）。**作業中は、関係するテスト＋quick**
-  - `timeout 2400 python tools/run_tests.py full`：全部。**main に入れる前に1回**（NG は自動で1回流し直す。2回目で OK なら乱数しだい）
+  - `timeout 600 python tools/run_tests.py quick`：速い組（約5分以内）。**main に入れる前は、関係するテスト（2〜3本）＋quick だけ**（ユーザー指示 2026-11-02「もう十分テストしてない？」「全部速い組だけで入れて」）
+  - `timeout 2400 python tools/run_tests.py full`：全部。**作業ごとには流さない**。1日1回まとめてか、Web 版（GitHub Pages）を公開する前に、司令塔かユーザーが頼んだときだけ（NG は自動で1回流し直す。2回目で OK なら乱数しだい）
   - `python tools/run_tests.py save_check trade_check`：名前を並べて1本ずつ。`--list` で組の中身、`-j` で並列の本数（既定はコア数の半分、最大6）
 - 新しいテスト（`godot/tests/*_check.gd`）は自動で full に入る。数分以内で主な仕組みを見るものは `tools/run_tests.py` の `QUICK` にも足す。重いテストには代表の年・画面だけの軽い版を `VARIANTS` に足す
 - テストの中でセーブの場所を決めるときは `SaveGame.test_dir()` を使う（`user://saves/` は使わない）

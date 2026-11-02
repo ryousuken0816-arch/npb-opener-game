@@ -21,7 +21,7 @@ const KINDS := {
 	"mvp": "月間MVP", "race": "優勝争い", "streak": "連勝・連敗", "milestone": "記録達成", "feat": "快挙",
 	"team": "自球団", "pennant": "優勝", "awards": "表彰", "postseason": "ポストシーズン", "standings": "順位",
 	"divergence": "史実との違い", "history": "史実との比較", "amateur": "アマ球界", "draft": "ドラフト",
-	"mlb": "メジャー", "injury": "故障・復帰", "owner": "オーナー", "misc": "話題",
+	"mlb": "メジャー", "misc": "話題",
 }
 ## 速報の上限（古いものから消す。号に載った記事は消さない）
 const FLASH_LIMIT := 400

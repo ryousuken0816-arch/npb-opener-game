@@ -104,8 +104,8 @@ func _init() -> void:
 	print("・ユニーク能力パターン数: %d 種類 (重複率: %.2f%%)" % [
 		signatures.size(), float(duplicate_count) / float(total_players) * 100.0
 	])
-	print("・即戦力の怪物出現数: %d 人 (出現率: %.2f%%, 目安1.5%%)" % [
-		monster_count, float(monster_count) / float(total_players) * 100.0
+	print("・怪物の出現数: %d 人 (1年あたり %.2f 人, 目安0.65人・年に0〜2人)" % [
+		monster_count, float(monster_count) / 1000.0
 	])
 	print("・二刀流出現数: 本格怪物(A)=%d人 (%.1f年に1人), 投手本職(B)=%d人, 野手本職(C)=%d人, 未完素材(D)=%d人" % [
 		two_way_counts["A"], 1000.0 / float(maxi(1, two_way_counts["A"])),
@@ -153,8 +153,9 @@ func _init() -> void:
 		if sample_30.size() < 30:
 			sample_30.append(p)
 
-	print(String("%-4s | %-8s | %-4s | %-6s | %-16s | %-6s | %-4s | %s") % [
-		"順位帯", "名前", "位置", "区分", "二つ名・タイプ", "将来性", "格付", "主要能力（入団時 / ピーク）"
+	# ドラフトの時点で見える情報だけ（ピーク・将来性の点は出さない。作業50）
+	print(String("%-4s | %-8s | %-4s | %-6s | %-16s | %-4s | %s") % [
+		"順位帯", "名前", "位置", "区分", "二つ名・タイプ", "格付", "主要能力（入団時）"
 	])
 	print("------------------------------------------------------------------------------------------------------------------------")
 
@@ -165,41 +166,36 @@ func _init() -> void:
 		var pos: String = str(p.get("primary_pos", ""))
 		var cat: String = str(am.get("category", ""))
 		var t_word: String = str(am.get("type", ""))
-		var f_score: float = float(am.get("future_score", 0.0))
-		var f_rank := "S" if f_score >= 1.6 else ("A" if f_score >= 1.0 else ("B" if f_score >= 0.3 else ("C" if f_score >= -0.3 else "D")))
 		var grade: String = str(am.get("grade", ""))
 
 		var ability_str := ""
 		if p.get("is_pitcher", false):
 			var pit: Dictionary = p.get("pitching", {})
 			var r: Dictionary = pit.get("ratings", {})
-			var pk: Dictionary = p.get("growth", {}).get("peak", {})
-			var v_ent := int(pit.get("velocity", {}).get("kmh", 140))
-			var v_pk := int(pk.get("velocity", 145))
-			ability_str = "球速%d(%d) 制球%d(%d) 奪三%d(%d) 総%d(%d)" % [
-				v_ent, v_pk,
-				int(r.get("bb9", {}).get("value", 50)), int(pk.get("bb9", 50)),
-				int(r.get("k9", {}).get("value", 50)), int(pk.get("k9", 50)),
-				int(r.get("overall", {}).get("value", 50)), int(pk.get("overall", 50))
+			ability_str = "球速%d 制球%d 奪三%d スタ%d 総%d" % [
+				int(pit.get("velocity", {}).get("kmh", 140)),
+				int(r.get("bb9", {}).get("value", 50)),
+				int(r.get("k9", {}).get("value", 50)),
+				int(r.get("stamina", {}).get("value", 50)),
+				int(r.get("overall", {}).get("value", 50))
 			]
 		else:
 			var bat: Dictionary = p.get("batting", {})
 			var r: Dictionary = bat.get("ratings", {})
-			var pk: Dictionary = p.get("growth", {}).get("peak", {})
-			ability_str = "ミ%d(%d) パ%d(%d) 走%d(%d) 守%d(%d) 肩%d(%d)" % [
-				int(r.get("meet", {}).get("value", 50)), int(pk.get("meet", 50)),
-				int(r.get("power", {}).get("value", 50)), int(pk.get("power", 50)),
-				int(r.get("speed", {}).get("value", 50)), int(pk.get("speed", 50)),
-				int(r.get("defense", {}).get("value", 50)), int(pk.get("defense", 50)),
-				int(r.get("arm", {}).get("value", 50)), int(pk.get("arm", 50))
+			ability_str = "ミ%d パ%d 走%d 守%d 肩%d" % [
+				int(r.get("meet", {}).get("value", 50)),
+				int(r.get("power", {}).get("value", 50)),
+				int(r.get("speed", {}).get("value", 50)),
+				int(r.get("defense", {}).get("value", 50)),
+				int(r.get("arm", {}).get("value", 50))
 			]
 
 		var two_way: Dictionary = p.get("two_way", {})
 		if bool(two_way.get("active", false)):
 			ability_str += " ★二刀流[%s]" % str(two_way.get("type", ""))
 
-		print(String("%-6s | %-8s | %-4s | %-6s | %-16s | %-6s | %-4s | %s") % [
-			band, name, pos, cat, t_word, "%+.2f(%s)" % [f_score, f_rank], grade, ability_str
+		print(String("%-6s | %-8s | %-4s | %-6s | %-16s | %-4s | %s") % [
+			band, name, pos, cat, t_word, grade, ability_str
 		])
 
 	print("\n==================================================")
