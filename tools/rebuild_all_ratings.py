@@ -20,6 +20,9 @@ def main():
         run(f"python tools/compute_ratings.py --year {yr} --phase post")
     run("python tools/compute_ratings.py --year 2027 --phase pre")
 
+    # 1.5 手で決めた能力値（tools/manual_overrides.json：2024年ドラフトの6人の強化）を当て直す
+    run("python tools/manual_overrides.py")
+
     # 2. amateur_ratings rookies --draft-year 2026
     run("python tools/amateur_ratings.py rookies --draft-year 2026")
 

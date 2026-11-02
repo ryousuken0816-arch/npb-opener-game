@@ -506,6 +506,12 @@
    - ~~上の「既知の課題（データ側）」の修正（新加入選手の投手/野手の判定）~~ → 完了（4.24）
    - ~~セーブ/ロード~~ → 完了（4.20）
 
+4.51 ~~シーズン中に能力を史実へ寄せる＋直近の年を重く~~ → 完了（2026-11-02、担当N）。docs/AUTORUN.md の作業40、仕組みは godot/README.md「シーズン中に能力を史実へ寄せる」
+   - A：史実のある年は開幕を `<年>_pre` で始め、月替わりごとに消化した試合の割合だけ `<年>_post` へ寄せる（`godot/sim/season_blend.gd`、`GameData.set_season_blend`、`GameState._blend_ratings`）。リーグ全体の平均の上がり幅は差し引く（あとで確認 [能力40]）。セーブは割合だけ
+   - B：`tools/compute_ratings.py` の3年の重みを 1.0/0.8/0.6 → 1.0/0.7/0.5。z で正規化し直すので、各選手の能力の変化は ±1 前後（佐藤輝明 2026_pre ミート58・パワー98・選球眼69、post 65・100・75）
+   - 全能力値を `tools/rebuild_all_ratings.py` で作り直した。Antigravity が手で強化した2024年ドラフトの6人は手順に無かったので `tools/manual_overrides.json`・`manual_overrides.py` で当て直す（守備力・肩は basement の値。あとで確認 [能力40]）
+   - 結果：2026年を回すと佐藤輝明が 開幕（ミート58・パワー98・選球眼69）→ 7月1日（62・98・71）→ 9月1日（65・98・72）→ シーズン後（65・100・75）。ゲーム内は OPS .957・33本でリーグ1位（作り直す前は .320・28本・WAR 5位）。2008年の season_check（寄せる、シード0）：打率 .268／本塁打 1478／防御率 3.82（史実 .265／1480／3.83）
+   - 確認：`godot/tests/season_blend_check.gd`（新）ALL OK。season_check は月ごとに寄せるようにした（`noblend` で従来どおり）
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。
@@ -561,9 +567,10 @@ Antigravity が入れたスマホ対応（`248e36d`・`ac5c3ec`・`9b1277d`：�
   `-- [自球団] [開始年] [出力先]` で出力先を渡してウィンドウ付きで起動すると、主な画面のスクショを縦横で撮る（作業中のスクショはセッションの scratchpad の `shots/`）
 - `tests/mobile_layout_check.gd`（Antigravity 作）を新しい仕組みに合わせた（強制のスマホ表示でも縦かどうかは画面の向きで決める、見出しの「戻る」→下の帯）
 - **Antigravity の変更の不具合も直した**（パソコンにも出ていたもの）
-  - 可変ボタン（試合へ）を押すとエラーで進まない（`HubMenuButton` に `disabled` が無い）→ 248e36d の前の動き（押したらすぐ進む）に戻した
-  - `project.godot` の stretch aspect が expand になり、パソコンで黒い帯が出なくなっていた（fullscreen_check が NG）→ keep に戻し、スマホのときだけ UiLayout が expand にする
-  - システムの画面の「セーブのバックアップ（端末保存）」の行で、画面が枠に入らなかった（layout_fit_check・save_check が NG）→ Web 版のときだけ出す
+  - 可変ボタン（試合へ）を押すとエラーで進まない（`HubMenuButton` に `disabled` が無い）→ 248e36d の前の動き（押したらすぐ進む）に戻した（ag-check-4 も同じ時期に `disabled` を足して直していた。取り込んだ両方が入っている）
+  - `project.godot` の stretch aspect が expand になり、パソコンで黒い帯が出なくなっていた（fullscreen_check が NG）→ keep に戻し、スマホのときだけ UiLayout が expand にする。
+    ag-check-4 は fullscreen_check を expand に合わせていたが、パソコンの見た目を変えない方針なので keep の確認に戻した
+  - システムの画面の「セーブのバックアップ（端末保存）」の行で、画面が枠に入らなかった（layout_fit_check・save_check が NG）→ Web 版・スマホのときだけ出す（ag-check-4 の直し方を採用）
 - **確認**：全テスト41本をヘッドレスで1回。NG は contract（可変ボタンの不具合）・fullscreen・layout_fit・save・postseason（テストが優勝の演出の代わりに下の帯の層をつかんでいた→テストを直した）・pad_flow。
   直したあと、その5本と mobile_fit・mobile_layout を流し直して全て OK（layout_fit_check は2008〜2012年で ALL OK）。pad_flow_check の「タイトルで最初の球団にフォーカス」は既知のとおりユーザーの実際のセーブ（slot1・auto）があるため（コードの問題ではない）。
   スクショはウィンドウ付き（画面の右下、フォーカスを取らない）で3回撮った（直す前後の確認。最後の分がセッションの scratchpad の `shots/`：縦・横の各9枚）
@@ -586,3 +593,11 @@ HANDOFF に手順が無かったので、今回は調べて書くだけにした
 ## 次にやること（2026-11-01 司令塔より）
 
 Claude の使用量が上限に近いため、続きは Antigravity などが進める前提。**`docs/ANTIGRAVITY.md` の最後の節「Claude が止まったときの引き継ぎ」**に、途中の作業・次の順番・進め方をまとめた。
+
+## 2026-11-02 追記：Antigravity が main に直接入れた8コミットの点検
+
+全 `*_check.gd`（40本）をヘッドレスで1回流し、`godot/data/` が無い状態でも `data/`・`generated/` から読めることを確認した（起動エラー0件）。
+- 直した不具合：ハブの「進める」ボタン（`HubMenuButton`）に `disabled` が無く、押すとエラーで進めなかった（`contract_check` で発覚）→ `hub_menu_button.gd` に追加。システム画面にバックアップ欄が増えて1280x720で高さが足りずスクロールが出た（`layout_fit_check`・`save_check`）→ `save_view.gd` で Web・スマホのときだけ表示。`fullscreen_check` は stretch aspect が意図的に `expand` へ変わったので期待値を更新。
+- 新しいテスト：`tests/order_page_check.gd`（起用設定の▲▼・札どうしの入れ替え・控えを入れる・守備充足インジケーター・DHあり／なし・自動で組む）。
+- 再実行で通った（乱数しだい）：`lottery_3d_check`・`fa_comp_check`（人的補償の選手の件）。`pad_flow_check`・`start_year_check` の「最初の球団にフォーカス（続きから）」は、セーブが残っていると「続きから」にフォーカスが行く仕様のため（他のテストの後に流すと出る。単独・セーブなしなら通る）。
+- Web 書き出し：`tools/bundle_game_data.py` → `--export-release Web` が成功（pck 約58MB）。バンドル後（`godot/data/` あり）でもデスクトップのテストは通る。ただし `godot/data/` が残ったまま `data/` を更新すると、ゲームは古いバンドルを先に読む（`res://data` が優先）。デスクトップで遊ぶ前に `godot/data/` を消すこと。

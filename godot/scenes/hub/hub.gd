@@ -500,7 +500,7 @@ func _on_menu_chosen(key: String) -> void:
 			_open_sub_screen("meeting")
 			return
 		_pending_issue = ""
-		# 押したらすぐ進める（HubMenuButton には disabled が無く、1フレーム待つと押した直後の画面が変わるため。248e36d の前の動きに戻した）
+		# 押したらすぐ進める（1フレーム待つと、押した直後に開くはずの画面が遅れる。248e36d の前の動きに戻した）
 		GameState.advance()
 		_after_advance()
 		return
