@@ -25,7 +25,8 @@ SCHEMA_VERSION = 4
 
 # ---------------------------------------------------------------- 定数
 # 直近シーズンほど重く（Marcel 方式）。キーは「対象年からの遡り年数」
-SEASON_WEIGHTS = {0: 1.0, 1: 0.8, 2: 0.6}
+# 作業40（2026-11-02）：Marcel の 1.0/0.8/0.6 から少し直近寄りに（最新年の割合 42% → 45%）
+SEASON_WEIGHTS = {0: 1.0, 1: 0.7, 2: 0.5}
 
 # 2軍成績の扱い: 1軍換算係数（率に掛ける）と、サンプル数としての重み
 FARM_SAMPLE_WEIGHT = 0.5
@@ -678,7 +679,7 @@ class Calculator:
         nm = norm_name(name)
         pos_acc = defaultdict(lambda: {"inn": 0.0, "runs": 0.0, "arm": 0.0, "rng": 0.0, "err": 0.0,
                                        "dpr": 0.0, "frm": 0.0, "blk": 0.0})
-        # 直近3年の basement データを加重合算（1.0 / 0.8 / 0.6、2軍は重み半分）
+        # 直近3年の basement データを加重合算（SEASON_WEIGHTS、2軍は重み半分）
         for dy in range(3):
             yr = self.through - dy
             if yr < BASEMENT_START_YEAR:

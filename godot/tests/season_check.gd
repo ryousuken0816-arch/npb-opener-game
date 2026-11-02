@@ -1,9 +1,11 @@
 extends SceneTree
 ## 1シーズンを最後までシミュレーションし、リーグ全体の成績を史実（teamstats_linked.json の1軍成績）と比べる。
 ##
-##   godot --headless --path godot --script res://tests/season_check.gd -- [年] [シード]
+##   godot --headless --path godot --script res://tests/season_check.gd -- [年] [シード] [noblend]
 ##
 ## 試合シミュレーションの係数（sim/game_sim.gd 冒頭の定数）を調整するときに使う。
+## ゲームと同じく、月替わりごとに能力を <年>_post へ寄せる（作業40、SeasonBlend。CPU球団と同じく全球団を組み直す）。
+## 3つ目に noblend を渡すと開幕の能力のまま1年回す
 
 const REPO := "res://.."
 
@@ -23,7 +25,32 @@ func _init() -> void:
 		if r.get("player_id") != null and r.get("debut_year") != null:
 			debut_years[r["player_id"]] = r["debut_year"]
 	var season := Season.new(year, ratings, schedule, seed_value, debut_years)
-	var n := season.sim_all()
+	var post: Dictionary = _load_json(root.path_join("generated/ratings/%d_post.json" % year))
+	var blend := not (args.size() > 2 and args[2] == "noblend") and SeasonBlend.applies(ratings, post)
+	var n := 0
+	if blend:
+		var by_id := {}
+		var post_by_id := {}
+		var base := {}
+		for p: Dictionary in ratings["players"]:
+			by_id[p["id"]] = p
+		for q: Dictionary in post["players"]:
+			post_by_id[q["id"]] = q
+		var shift := SeasonBlend.league_shift(ratings["players"], post_by_id)
+		print("リーグ全体のずれ（差し引く）：%s" % shift)
+		for m: int in season.months():
+			n += season.sim_month(m)
+			var t := SeasonBlend.fraction(season.played_count(), season.scheduled_count())
+			for id: String in by_id:
+				if post_by_id.has(id):
+					if not base.has(id):
+						base[id] = SeasonBlend.snapshot(by_id[id])
+					SeasonBlend.blend(by_id[id], base[id], post_by_id[id], t, shift)
+			season.refresh_ratings(func(id: String) -> Dictionary: return by_id.get(id, {}), season.teams.keys())
+		n += season.sim_all()
+	else:
+		n = season.sim_all()
+	print("能力を post へ寄せる：%s" % ("する" if blend else "しない"))
 	print("%d年: %d試合をシミュレーション（%.1f秒）" % [year, n, (Time.get_ticks_msec() - start) / 1000.0])
 
 	for league: String in ["C", "P", ""]:

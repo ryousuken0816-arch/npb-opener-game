@@ -939,12 +939,28 @@ func _advance_one_day() -> void:
 		_enter(next_phase())
 		return
 	if month != old_month:
+		_blend_ratings()
 		_publish(desk().monthly_issue(day))
 		if month in CPU_IKUSEI_MONTHS:
 			_cpu_promote_ikusei()
 		# 月替わりのイベント（故障・トレード、育成コマンド）はここに挟む（未実装）
 		month_started.emit(month)
 		_autosave_pending = true
+
+
+## 月替わり：史実のある年は、リーグ全体の消化した試合の割合だけ能力を <年>_post へ寄せ（GameData.set_season_blend）、
+## 各球団の選手に反映する。CPU球団は1軍・スタメンを組み直す（作業40、SeasonBlend）
+func _blend_ratings() -> void:
+	if phase != Phase.SEASON or season == null:
+		return
+	var t := SeasonBlend.fraction(season.played_count(), season.scheduled_count())
+	if is_equal_approx(t, GameData.season_blend):
+		return
+	GameData.set_season_blend(t)
+	if GameData.season_blend <= 0.0:
+		return
+	var cpu: Array = season.teams.keys().filter(func(n: String) -> bool: return n != team)
+	season.refresh_ratings(GameData.player, cpu)
 
 
 ## シーズンの初日（開幕日）・最終日の通し日数。日程データが無い年は既定の期間
@@ -1740,6 +1756,7 @@ func to_save() -> Dictionary:
 		"amateur_results": amateur_results,
 		"draft_board": draft_board.to_save(year),
 		"news_stop_kinds": news_stop_kinds,
+		"season_blend": GameData.season_blend,
 	}
 
 
@@ -1808,6 +1825,8 @@ func load_state(d: Dictionary) -> void:
 		for key: String in syn:
 			GameData.synthetic[int(key)] = syn[key]
 	GameData.load_ratings(year, "pre" if phase in [Phase.SEASON, Phase.CAMP, Phase.POSTSEASON] else "post")
+	if phase in [Phase.SEASON, Phase.POSTSEASON]:
+		GameData.set_season_blend(float(d.get("season_blend", 0.0)))
 	GameData.set_kept_players({})
 	GameData.set_extra_players({})
 	var next := {}

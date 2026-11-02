@@ -121,10 +121,20 @@ var _pages := {}
 var _roster_cache := {}
 
 
+## シーズン中に今の能力値（<年>_pre）を <年>_post へ混ぜた割合（作業40、SeasonBlend）。0 なら開幕時点のまま
+var season_blend := 0.0
+## 混ぜる前の能力の写し（選手ID → SeasonBlend.snapshot）。今のファイルを読み直したときに戻す
+var _blend_base: Dictionary = {}
+## リーグ全体のずれ（SeasonBlend.league_shift。最初に混ぜたときに開幕時点の値から出す）
+var _blend_shift: Dictionary = {}
+
+
 ## <年>_<phase>.json を読み込む。見つからなければ false を返し、現在のデータを保持する。
+## 読み込むと、シーズン中に混ぜた能力（set_season_blend）は開幕時点に戻る
 func load_ratings(year: int, phase: String) -> bool:
 	var path := find_ratings_path(year, phase)
 	if not path.is_empty() and path == _loaded_file and (not synthetic.has(year) or is_same(ratings, synthetic[year])):
+		set_season_blend(0.0)
 		return true
 	if path.is_empty():
 		push_warning("能力値ファイルがありません: %d_%s.json" % [year, phase])
@@ -132,12 +142,43 @@ func load_ratings(year: int, phase: String) -> bool:
 	var parsed: Dictionary = synthetic[year] if synthetic.has(year) else _parse_ratings(path)
 	if parsed.is_empty():
 		return false
+	set_season_blend(0.0)
+	_blend_base.clear()
+	_blend_shift.clear()
 	ratings = parsed
 	_parsed_cache.erase(path)
 	_loaded_file = path
 	_supplement.clear()
 	_index_players()
 	return true
+
+
+## 今の能力値（<年>_pre）を、その年の <年>_post へ t の割合で混ぜる（作業40。SeasonBlend）。
+## 史実の無い年・シーズン後のファイルを読んでいるときは何もしない（t は 0 のまま）。t = 0 で開幕時点に戻す
+func set_season_blend(t: float) -> void:
+	if t <= 0.0:
+		for p: Dictionary in ratings.get("players", []):
+			if _blend_base.has(p["id"]):
+				SeasonBlend.blend(p, _blend_base[p["id"]], {}, 0.0)
+		season_blend = 0.0
+		return
+	var year := int(ratings.get("year", -1))
+	var post := {} if ratings.get("phase") != "pre" else peek_ratings(year, "post")
+	if not SeasonBlend.applies(ratings, post):
+		return
+	var post_by_id := {}
+	for q: Dictionary in post.get("players", []):
+		post_by_id[q["id"]] = q
+	if _blend_base.is_empty():
+		_blend_shift = SeasonBlend.league_shift(ratings.get("players", []), post_by_id)
+	for p: Dictionary in ratings.get("players", []):
+		var id: String = p["id"]
+		if not post_by_id.has(id):
+			continue
+		if not _blend_base.has(id):
+			_blend_base[id] = SeasonBlend.snapshot(p)
+		SeasonBlend.blend(p, _blend_base[id], post_by_id[id], t, _blend_shift)
+	season_blend = t
 
 
 ## 能力値ファイルを今のデータを変えずに読む（来季の準備用。読んだものは load_ratings() でそのまま使う）

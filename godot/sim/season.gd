@@ -204,6 +204,19 @@ func transfer(p: Dictionary, to_team: String) -> void:
 	players[id] = {"name": p["name"], "team": to_team}
 
 
+## 能力値データを読み直す（作業40：月替わりに能力を史実へ寄せたとき）。player_of: 選手ID → 能力値データ。
+## rebuild_teams の球団は1軍・持ち場・スタメンを自動で組み直す（CPU球団。自球団の編成は変えない）
+func refresh_ratings(player_of: Callable, rebuild_teams: Array) -> void:
+	for team_name: String in teams:
+		var t: SimTeam = teams[team_name]
+		for sp in t.players:
+			var p: Dictionary = player_of.call(sp.id)
+			if not p.is_empty():
+				sp.refresh_from(p)
+		if team_name in rebuild_teams:
+			t.auto_register()
+
+
 func player_name(id: String) -> String:
 	return players.get(id, {}).get("name", "")
 
