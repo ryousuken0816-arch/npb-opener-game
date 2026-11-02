@@ -429,6 +429,20 @@ func is_user_turn() -> bool:
 	return current_team() == user_team and not current_team().is_empty()
 
 
+## 自球団の番まであと何球団か（今の巡の中で。自球団の番なら0、今の巡にもう番が無い・指名を終えたら -1。指名ボードの見出し）
+func teams_before_user() -> int:
+	if current_team().is_empty() or _done_set().has(user_team):
+		return -1
+	var base := _base_order(round)
+	var n := 0
+	for i in range(_turn_index, base.size()):
+		if base[i] == user_team:
+			return n
+		if not _done_set().has(base[i]):
+			n += 1
+	return -1
+
+
 ## CPU球団の番なら1人指名して次へ進める。指名した記録（指名しなかった・自球団の番なら空）
 func cpu_step() -> Dictionary:
 	var team := current_team()
@@ -841,7 +855,8 @@ func _fill_profile(c: Dictionary, p: Dictionary) -> void:
 	c["velocity"] = 0
 	if pit is Dictionary:
 		if pit.get("ratings") is Dictionary:
-			for k: String in ["overall", "stamina", "k9", "bb9"]:
+			# hr9（被本塁打）はスカウトの手帳の採点表だけで使う（作業51）
+			for k: String in ["overall", "stamina", "k9", "bb9", "hr9"]:
 				var r: Variant = pit["ratings"].get(k)
 				if r is Dictionary and r.get("value") != null:
 					ratings[k] = int(r["value"])

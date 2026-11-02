@@ -10,8 +10,10 @@ extends VBoxContainer
 ## - 右：選んだ候補の要約・印（◎本命・○上位候補・△中位・☆掘り出し物・✕回避）・メモ、1位入札の本命の順番（◎を▲▼で並べ替え。
 ##   外れ1位の順にもなる）
 ## 候補：ドラフトの段階は Draft（GameState.draft()）。それより前は来季の能力値ファイル（架空の候補の年は作った候補）から
-## ドラフトと同じ作り方の仮の Draft（将来性のノイズはドラフト当日と少し違う）。印は名前のキーで DraftBoard に残る
+## ドラフトと同じ作り方の仮の Draft（CPU の見立てのノイズはドラフト当日と少し違う）。印は名前のキーで DraftBoard に残る
 ## 操作：札をⒶ／クリックで選び、十字キーで右の印のボタンへ。LB/RB（Q/E）でタブ、Ⓑでハブへ戻る
+## スカウトの手帳（作業51）：最初は中央に候補1人ずつの手帳のページ（ScoutNotebook。ドラフト画面と同じ）。LB/RB・◀▶でめくり、
+## ページの◎○△☆✕とメモで印を付ける。「表に切り替え」で今までの一覧。左右の欄も紙の見た目。1年目・将来性は出さない
 
 signal message_changed(text: String)
 ## 「ドラフト会議へ」を押した（ハブが可変ボタンと同じ処理で進める）
@@ -19,7 +21,7 @@ signal draft_requested
 
 const TABS := [["info", "情報", Color("1e88e5")], ["pitch", "投手能力", Color("e53935")],
 	["bat", "野手能力", Color("2e9b48")], ["experts", "有識者の予想", Color("8a5cc8")]]
-const TAIL_COLUMNS := [["first", "1年目", 38], ["hyouka", "評価", 38], ["future", "将来性", 42], ["yosou", "予想", 36]]
+const TAIL_COLUMNS := [["hyouka", "評価", 46], ["yosou", "予想", 44]]
 const FILTERS := [["all", "全選手"], ["marked", "目星だけ"], ["left", "未指名"], ["投手", "投手"], ["捕手", "捕手"],
 	["内野手", "内野手"], ["外野手", "外野手"]]
 ## 一覧の幅（ドラフト画面より細め：左右に補強ポイントと印の欄があるため）
@@ -86,6 +88,12 @@ var _fav_box: VBoxContainer
 var _status_label: Label
 var _ids: Array[String] = []
 var _tags := {}
+## 画面の形（作業51）："book"＝手帳、"table"＝表（有識者の予想のタブも表のほう）
+var _mode := "book"
+var _mode_buttons := {}
+var _notebook: ScoutNotebook
+var _summary_scroll: ScrollContainer
+var _marks_row: HBoxContainer
 
 
 func setup(p: UiTheme.Palette) -> void:
@@ -98,7 +106,23 @@ func setup(p: UiTheme.Palette) -> void:
 	add_child(body)
 	body.add_child(_build_left())
 	body.add_child(_build_center())
+	_notebook = ScoutNotebook.new()
+	_notebook.flip_requested.connect(flip)
+	_notebook.go_pressed.connect(func() -> void: _on_mark_pressed("◎"))
+	_notebook.mark_requested.connect(_on_mark_pressed)
+	_notebook.memo_changed.connect(_on_memo_changed)
+	_notebook.detail_requested.connect(func() -> void:
+		if not _selected.is_empty() and not GameData.player(_selected).is_empty():
+			PlayerDetail.open(_notebook, _selected, _ids))
+	_notebook.table_requested.connect(func() -> void: set_mode("table"))
+	body.add_child(_notebook)
 	body.add_child(_build_right())
+	UiLayout.layout_changed.connect(func(is_portrait: bool, _m: bool) -> void:
+		_notebook.set_spread(not is_portrait)
+		_shown_key = ""
+		if is_inside_tree():
+			refresh())
+	_notebook.set_spread(not UiLayout.is_portrait)
 	_status_label = UiTheme.small_label("", 15, UiTheme.TEXT, 700)
 	_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(_status_label)
@@ -122,7 +146,7 @@ func open() -> void:
 func refresh() -> void:
 	var d := source()
 	var board := GameState.draft_board
-	var key := "%s|%s|%s|%s|%s|%s|%d|%d|%s" % [_tab, _filter, _sort_key, str(_sort_desc), _selected, _message,
+	var key := "%s|%s|%s|%s|%s|%s|%s|%d|%d|%s" % [_tab, _mode, _filter, _sort_key, str(_sort_desc), _selected, _message,
 		GameState.year, GameState.phase, JSON.stringify(board.marks.get(str(GameState.year), {})) \
 		+ JSON.stringify(board.favorite_list(GameState.year)) + str(d.picks.size() if d != null else -1)]
 	if key == _shown_key:
@@ -136,9 +160,21 @@ func refresh() -> void:
 	_render_top(d)
 	_render_needs()
 	var experts := _tab == "experts"
+	var book := _mode == "book" and not experts
+	_center.visible = not book
+	_notebook.visible = book
+	_summary_scroll.visible = not book
+	_marks_row.visible = not book
+	_memo_edit.visible = not book
+	for mk: String in _mode_buttons:
+		(_mode_buttons[mk] as Button).set_pressed_no_signal(mk == ("book" if book else "table"))
+	for t: Array in TABS:
+		(_tab_buttons[t[0]] as Button).visible = not book or t[0] == "experts"
 	_list_scroll.get_parent().visible = not experts
 	_experts_scroll.visible = experts
-	if experts:
+	if book:
+		_render_book(d)
+	elif experts:
 		_render_experts(d)
 	else:
 		_render_header()
@@ -151,6 +187,9 @@ func refresh() -> void:
 
 
 func focus_first() -> void:
+	if _mode == "book" and _tab != "experts":
+		UiInput.grab(_notebook.go_button() if not _notebook.go_button().disabled else _mode_buttons["book"])
+		return
 	if _tab != "experts" and not _ids.is_empty():
 		var target: Control = _tags.get(_selected, _tags.get(_ids[0]))
 		if target != null:
@@ -160,6 +199,9 @@ func focus_first() -> void:
 
 
 func switch_tab(delta: int) -> void:
+	if _mode == "book" and _tab != "experts":
+		flip(delta)
+		return
 	var keys: Array = []
 	for t: Array in TABS:
 		keys.append(t[0])
@@ -200,7 +242,10 @@ func selected_id() -> String:
 	return _selected
 
 
+## 候補を選ぶ（手帳では選んでいる候補をもう一度選んでも選手詳細は開かない）
 func select_candidate(id: String) -> void:
+	if _mode == "book" and _tab != "experts" and _selected == id:
+		return
 	_on_tag_pressed(id)
 
 
@@ -225,6 +270,64 @@ func needs() -> Array:
 
 func move_favorite(key: String, delta: int) -> void:
 	_on_move_favorite(key, delta)
+
+
+## "book"（手帳）か "table"（表）
+func set_mode(mode: String) -> void:
+	_mode = mode
+	if _tab == "experts" and mode == "book":
+		_tab = "info"
+	_message = ""
+	refresh()
+	focus_first()
+
+
+func mode() -> String:
+	return _mode
+
+
+func notebook() -> ScoutNotebook:
+	return _notebook
+
+
+## 手帳のページをめくる（一覧と同じ絞り込み・並び替えの順）
+func flip(delta: int) -> void:
+	var d := source()
+	if d == null:
+		return
+	var rows := _rows(d)
+	if rows.is_empty():
+		return
+	var i := -1
+	for k in rows.size():
+		if rows[k]["id"] == _selected:
+			i = k
+	_selected = rows[posmod(i + delta, rows.size())]["id"] if i >= 0 else rows[0]["id"]
+	_message = ""
+	refresh()
+
+
+func _render_book(d: Draft) -> void:
+	_tags.clear()
+	_ids.clear()
+	var rows := _rows(d)
+	for c in rows:
+		_ids.append(c["id"])
+	if d == null or rows.is_empty():
+		var text := "候補はいません。"
+		if d == null:
+			text = "%d年の候補は、春のアマ球界のニュース（3月31日）から出そろいます。" % GameState.year \
+				if GameState.phase in [GameState.Phase.SEASON, GameState.Phase.CAMP] else "今年はドラフトの候補がいません。"
+		elif _filter == "marked":
+			text = "まだ印を付けた選手はいません。上の「絞り込み」を「全選手」にして、ページの◎○△☆✕で印を付けます。"
+		_notebook.show_empty(text)
+		return
+	if not _ids.has(_selected):
+		_selected = _ids[0]
+	var c: Dictionary = d.by_id[_selected]
+	_notebook.show_page(d, c, _ids.find(_selected), _ids.size())
+	var fav := GameState.draft_board.mark_of(d.year, DraftBoard.key_of(c)) == "◎"
+	_notebook.set_action("本命から外す" if fav else "◎ 本命にする", true)
 
 
 # --- 候補の元 ----------------------------------------------------------------------------
@@ -285,6 +388,18 @@ func _build_top() -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
 	box.add_child(row)
+	for m: Array in [["book", "手帳"], ["table", "表"]]:
+		var mb := Button.new()
+		mb.text = m[1]
+		mb.toggle_mode = true
+		mb.custom_minimum_size = Vector2(66, 38)
+		mb.add_theme_font_size_override("font_size", 17)
+		mb.add_theme_font_override("font", ScoutNotebook.hand_font(true))
+		UiTheme.style_toggle(mb, ScoutNotebook.RED, 8)
+		var mode_key: String = m[0]
+		mb.pressed.connect(func() -> void: set_mode(mode_key))
+		row.add_child(mb)
+		_mode_buttons[mode_key] = mb
 	row.add_child(UiTheme.small_label("◀ LB", 16, UiTheme.TEXT, 800))
 	for t: Array in TABS:
 		var b := Button.new()
@@ -343,6 +458,8 @@ func _render_top(d: Draft) -> void:
 
 func _show_tab(key: String) -> void:
 	_tab = key
+	if key != "experts":
+		_mode = "table"
 	_message = ""
 	refresh()
 	focus_first()
@@ -360,8 +477,7 @@ func _turn_filter(delta: int) -> void:
 
 func _build_left() -> Control:
 	var panel := PanelContainer.new()
-	var style := UiTheme.card(Color("f0a830"), 10, 3, 0.97)
-	style.bg_color = Color("fff4dc")
+	var style := ScoutNotebook.paper_style()
 	style.content_margin_left = 8
 	style.content_margin_right = 8
 	style.content_margin_top = 6
@@ -648,8 +764,6 @@ func _row(d: Draft, c: Dictionary) -> Control:
 	tag.custom_minimum_size = Vector2(NAME_WIDTH, ROW_HEIGHT - 2)
 	tag.font_size = 17
 	var display_name: String = NameTag.family_name(c["name"])
-	if is_breakout_rookie(c):
-		display_name = "★" + display_name
 	var p := GameData.player(id)
 	if p.is_empty():
 		tag.setup_plain(display_name, NameTag.pos_color(c["pos"]))
@@ -658,10 +772,6 @@ func _row(d: Draft, c: Dictionary) -> Control:
 	tag.selected = id == _selected
 	tag.dimmed = not str(c["picked_by"]).is_empty()
 	var tips: Array[String] = ["%s（%s・%s）" % [c["name"], c["pos"], c["school"]]]
-	if is_breakout_rookie(c):
-		var first: Dictionary = c.get("first", {})
-		tips.append("★【史実1年目ブレイク・即戦力】1年目シーズン後総合: %d（%s）" % [
-			int(first.get("overall", -1)), DraftView.ability_rank(int(first.get("overall", -1)))])
 	for n: Dictionary in _needs:
 		if n.get("pos") == c["pos"] or NEED_GROUP.get(n.get("pos")) == c["pos"]:
 			tips.append("🎯自球団の補強ポイント【%s】に合致します！" % n.get("pos"))
@@ -728,17 +838,6 @@ func _cycle_mark_for(c: Dictionary, delta: int = 1) -> void:
 	refresh()
 
 
-## 史実1年目から活躍した選手判定
-static func is_breakout_rookie(c: Dictionary) -> bool:
-	var first: Dictionary = c.get("first", {})
-	var overall: int = int(first.get("overall", -1))
-	if overall >= 65:
-		return true
-	if first.get("status") == "1軍" and overall >= 55:
-		return true
-	return false
-
-
 ## 印の札（ドラフト画面の一覧でも使う）。memo があれば札に浮かぶ説明に出す
 static func mark_label(mark: String, width: int, height: int, memo := "") -> Label:
 	var label := Label.new()
@@ -759,11 +858,8 @@ static func mark_label(mark: String, width: int, height: int, memo := "") -> Lab
 
 
 func _cell(c: Dictionary, key: String, width: int) -> Control:
-	if key == "first":
-		return _first_cell(c, width)
-	if key in ["hyouka", "future"]:
-		var rank: String = c["hyouka_rank"] if key == "hyouka" else c["future_rank"]
-		var label := UiTheme.rank_label({"rank": rank, "value": 0}, 21)
+	if key == "hyouka":
+		var label := UiTheme.rank_label({"rank": c["hyouka_rank"], "value": 0}, 21)
 		label.custom_minimum_size = Vector2(width, 0)
 		return label
 	if key == "yosou":
@@ -806,31 +902,6 @@ func _cell(c: Dictionary, key: String, width: int) -> Control:
 	return l
 
 
-func _first_cell(c: Dictionary, width: int) -> Control:
-	var first: Dictionary = c.get("first", {})
-	var overall: int = int(first.get("overall", -1))
-	var status: String = str(first.get("status", "なし"))
-	var box := HBoxContainer.new()
-	box.custom_minimum_size = Vector2(width, 0)
-	box.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.add_theme_constant_override("separation", 1)
-	if overall <= 0:
-		var l := UiTheme.small_label("-" if status != "未来" else "未来", 14, UiTheme.TEXT_SUB, 700)
-		l.custom_minimum_size = Vector2(width, 0)
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		return l
-	var rank_val := DraftView.ability_rank(overall)
-	var rank_label := UiTheme.rank_label({"rank": rank_val, "value": overall}, 18)
-	if overall >= 65:
-		rank_label.add_theme_color_override("font_color", Color("e65100"))
-	box.add_child(rank_label)
-	var num_label := UiTheme.small_label(str(overall), 12, UiTheme.TEXT if overall < 65 else Color("e65100"), 700)
-	box.add_child(num_label)
-	box.tooltip_text = "史実1年目のシーズン後能力（総合 %d / %sランク・%s）\n1年目から即戦力として活躍するかどうかの目安です" \
-		% [overall, rank_val, status]
-	return box
-
-
 ## 予想順位の札（ドラフト画面の一覧でも使う）。予想に入っていなければ「-」
 static func yosou_label(c: Dictionary, width: int) -> Label:
 	var rank := int(c.get("yosou", 0))
@@ -865,7 +936,7 @@ func _render_experts(d: Draft) -> void:
 	var names: Dictionary = pred.get("names", {})
 	var by_key := _by_key(d)
 	var head := UiTheme.small_label("評論家3人の予想（%s 時点）。もとは評判（当時の評価）。実際の指名は各球団の補強ポイントや" \
-		% str(pred.get("date", "")) + "将来性の見立てで変わることも多い。名前を押すと右に要約", 14, UiTheme.TEXT, 700)
+		% str(pred.get("date", "")) + "各球団の見立てで変わることも多い。名前を押すと右に要約", 14, UiTheme.TEXT, 700)
 	head.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	head.custom_minimum_size = Vector2(560, 0)
 	_experts_box.add_child(head)
@@ -966,8 +1037,7 @@ func _name_button(text: String, id: String, d: Draft, key: String, hit: bool, mi
 
 func _build_right() -> Control:
 	var panel := PanelContainer.new()
-	var style := UiTheme.card(Color("8ecae6"), 10, 3, 0.97)
-	style.bg_color = Color("dff1fb")
+	var style := ScoutNotebook.paper_style()
 	style.content_margin_left = 8
 	style.content_margin_right = 8
 	style.content_margin_top = 6
@@ -982,6 +1052,7 @@ func _build_right() -> Control:
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_stretch_ratio = 1.6
 	box.add_child(scroll)
+	_summary_scroll = scroll
 	_summary_box = VBoxContainer.new()
 	_summary_box.add_theme_constant_override("separation", 3)
 	_summary_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -989,6 +1060,7 @@ func _build_right() -> Control:
 	var marks := HBoxContainer.new()
 	marks.add_theme_constant_override("separation", 3)
 	box.add_child(marks)
+	_marks_row = marks
 	for mark: String in DraftBoard.MARKS + [""]:
 		var b := Button.new()
 		b.text = mark if not mark.is_empty() else "消す"
@@ -1068,27 +1140,6 @@ func _render_summary(d: Draft) -> void:
 	var age := ("%d歳" % int(c["age"])) if int(c["age"]) > 0 else "年齢不明"
 	_add_text("%s　%s　%s\n%s" % [c["name"], c["career"], age, c["school"]], 15, UiTheme.TEXT)
 
-	# 1年目ブレイク・即戦力選手の見出し
-	if is_breakout_rookie(c):
-		var first: Dictionary = c.get("first", {})
-		var f_ovr: int = int(first.get("overall", -1))
-		var banner := PanelContainer.new()
-		banner.custom_minimum_size = Vector2(RIGHT_WIDTH - 40, 0)
-		var b_style := UiTheme.card(Color("ff9800"), 6, 2, 0.95)
-		b_style.bg_color = Color("fff8e1")
-		banner.add_theme_stylebox_override("panel", b_style)
-		var b_box := VBoxContainer.new()
-		b_box.add_theme_constant_override("separation", 1)
-		var b_title := UiTheme.small_label("★ 史実1年目から即戦力で大活躍！", 13, Color("e65100"), 800)
-		b_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		b_box.add_child(b_title)
-		var b_detail := UiTheme.small_label("1年目総合 %d（%sランク・%s）" % [
-			f_ovr, DraftView.ability_rank(f_ovr), str(first.get("status", "1軍"))], 12, UiTheme.TEXT, 700)
-		b_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		b_box.add_child(b_detail)
-		banner.add_child(b_box)
-		_summary_box.add_child(banner)
-
 	# 補強ポイント合致表示
 	for n: Dictionary in _needs:
 		if n.get("pos") == c["pos"] or NEED_GROUP.get(n.get("pos")) == c["pos"]:
@@ -1102,8 +1153,6 @@ func _render_summary(d: Draft) -> void:
 	ranks.add_theme_constant_override("separation", 4)
 	ranks.add_child(UiTheme.small_label("評価", 15, UiTheme.TEXT, 800))
 	ranks.add_child(UiTheme.rank_label({"rank": c["hyouka_rank"], "value": 0}, 26))
-	ranks.add_child(UiTheme.small_label(" 将来性", 15, UiTheme.TEXT, 800))
-	ranks.add_child(UiTheme.rank_label({"rank": c["future_rank"], "value": 0}, 26))
 	ranks.add_child(UiTheme.small_label(" 予想", 15, UiTheme.TEXT, 800))
 	ranks.add_child(yosou_label(c, 48))
 	_summary_box.add_child(ranks)
@@ -1116,8 +1165,6 @@ func _render_summary(d: Draft) -> void:
 		notes.append("転生選手：%sの生まれ変わり" % c["reincarnation"]["name"])
 	if not str(c["picked_by"]).is_empty():
 		notes.append("済：%s %s" % [GameData.short_name(c["picked_by"]), c["pick_label"]])
-	if GameState.draft() == null:
-		notes.append("※将来性はスカウトの見立て（ドラフト当日に変わることがあります）")
 	if not notes.is_empty():
 		_add_text("\n".join(notes), 13, UiTheme.TEXT_SUB)
 

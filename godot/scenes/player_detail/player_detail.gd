@@ -678,6 +678,13 @@ func _outlook_row() -> Control:
 	var future := tool.future_score(player_id, GameState.year, now)
 	row.add_child(pill("現在の能力", 120, 17))
 	row.add_child(UiTheme.rank_label({"rank": Depth.rank_of(now), "value": 0}, 26))
+	if _is_prospect():
+		# 入団前のドラフト候補は今の能力だけ（作業51。入団して初めて全部が見える）
+		var hidden := note_label("（入団前は今の能力だけ。見極めはスカウトの手帳で）")
+		hidden.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		hidden.clip_text = true
+		row.add_child(hidden)
+		return row
 	row.add_child(pill("将来性", 90, 17))
 	row.add_child(UiTheme.rank_label({"rank": Depth.rank_of(future), "value": 0}, 26))
 	var note := note_label("（実力と出場量。将来性は史実の今後の活躍＋見立てのぶれ）")
@@ -685,6 +692,17 @@ func _outlook_row() -> Control:
 	note.clip_text = true
 	row.add_child(note)
 	return row
+
+
+## まだどこにも入団していないドラフト候補か（ドラフト会議の候補・作戦会議の候補）
+func _is_prospect() -> bool:
+	if GameState.league == null or GameState.league.team_of.has(player_id):
+		return false
+	var d := GameState.draft()
+	if d != null and d.by_id.has(player_id):
+		return true
+	return str(_data.get("draft", "")).begins_with("%d年" % GameState.year) or _data.get("amateur") is Dictionary \
+		or player_id.begins_with("tmp:draft")
 
 
 ## 能力の行：項目名 | ランク | 数値 | 棒 | 実数値

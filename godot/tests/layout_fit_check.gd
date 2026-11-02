@@ -381,6 +381,10 @@ func _check_meeting(when: String) -> void:
 		view.select_candidate(ids[0])
 		view.set_mark("◎")
 		await _check_screen("%s：作戦会議 候補を選んで印" % when, 0.0)
+	view.switch_tab(1)  # 手帳（作業51）をめくる
+	await _check_screen("%s：作戦会議 手帳をめくる" % when, 0.0)
+	view.set_mode("table")
+	await _check_screen("%s：作戦会議 表" % when, 0.0)
 	for i in 3:
 		view.switch_tab(1)
 		await _check_screen("%s：作戦会議 タブ%d" % [when, i + 2], 0.0)
@@ -390,6 +394,7 @@ func _check_meeting(when: String) -> void:
 		view.set_filter(load("res://scenes/hub/draft_meeting_view.gd").NEED_GROUP[needs[0]["pos"]])
 		await _check_screen("%s：作戦会議 補強ポイントで絞り込み" % when, 0.0)
 	view.set_filter("all")
+	view.set_mode("book")
 	_hub.call("_close_sub_screen")
 
 
@@ -455,21 +460,32 @@ func _check_draft(when: String) -> void:
 	var view: Node = _hub.get("_draft_view")
 	await _check_screen("%s：ドラフト 開幕の演出" % when)
 	view.finish_overlays()
-	await _check_screen("%s：ドラフト 候補一覧" % when)
+	# スカウトの手帳（作業51）：最初の画面。札が多い・寸評が長い候補のページも
+	await _check_screen("%s：ドラフト 手帳" % when)
+	view.flip(1)
+	await _check_screen("%s：ドラフト 手帳をめくる" % when, 0.0)
+	var d0: RefCounted = _gs.draft()
+	var notes: GDScript = load("res://sim/scout_notes.gd")
+	var widest := ""
+	var widest_len := -1
+	for id: String in view.list_ids():
+		var n := 0
+		for l: Dictionary in notes.comments(d0, d0.by_id[id]):
+			n += str(l["text"]).length()
+		n += notes.traits(d0, d0.by_id[id]).size() * 6 + str(d0.by_id[id]["school"]).length()
+		if n > widest_len:
+			widest_len = n
+			widest = id
+	if not widest.is_empty() and view.selected_id() != widest:
+		view.select_candidate(widest)
+	await _check_screen("%s：ドラフト 手帳（文の長い候補）" % when, 0.0)
+	view.set_mode("table")
+	await _check_screen("%s：ドラフト 表" % when)
 	for i in 3:
 		view.switch_tab(1)
 		await _check_screen("%s：ドラフト タブ%d" % [when, i + 2], 0.0)
-	# 要約がいちばん長くなる候補（1年目の能力があり、野手は能力の項目が多い）を野手能力のタブで選ぶ（作業13）
 	while view.get("_tab") != "bat":
 		view.switch_tab(1)
-	view.set_sort("first", true)
-	var tall: Array = view.list_ids()
-	for id: String in tall:
-		if not view.call("_first_grid", _gs.draft().by_id[id]).get_child_count() < 2 \
-				and not _gs.draft().by_id[id]["pitcher"]:
-			view.select_candidate(id)
-			break
-	await _check_screen("%s：ドラフト 1年目の能力がある野手を選ぶ" % when, 0.0)
 	view.set_sort("hyouka", true)
 	var ids: Array = view.list_ids()
 	if not ids.is_empty():
@@ -492,6 +508,9 @@ func _check_draft(when: String) -> void:
 			await _check_screen("%s：ドラフト 抽選の3D演出の結果" % when)
 		view.finish_overlays()
 		await _check_screen("%s：ドラフト 入札のあと" % when)
+		view.set_mode("book")
+		await _check_screen("%s：ドラフト 入札のあとの手帳と指名ボード" % when)
+	view.set_mode("book")
 	while view.back():
 		pass
 	_hub.call("_close_sub_screen")
