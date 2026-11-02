@@ -118,6 +118,7 @@ var _drafts_cache: Dictionary = {}
 var _loaded_file := ""
 var _pages_year := -1
 var _pages := {}
+var _page_debut_cache := {}  ## 年 → page_debut_years の結果
 var _roster_cache := {}
 
 
@@ -467,6 +468,37 @@ func load_debut_years(year: int) -> Dictionary:
 	for id: String in debut_extra:
 		if not result.has(id):
 			result[id] = debut_extra[id]
+	return result
+
+
+## 選手ページ（data/<年>/players.json。Web 版は全選手の一覧）の1軍の年度別成績から 選手ID → 1軍初出場の年。
+## 名簿の debut_year は育成出身の選手（周東・牧原大成など）や近年の選手で抜けているので、育成の判定はこちらを使う
+## （LeagueRoster.is_ikusei。作業53）。ページは <年> より後の成績も入っているので、初出場が <年> より後のこともある
+func page_debut_years(year: int) -> Dictionary:
+	if _page_debut_cache.has(year):
+		return _page_debut_cache[year]
+	var pages: Variant = _read_repo_json("%d/players.json" % year)
+	if not pages is Dictionary:
+		_ensure_bundled_players()
+		pages = _all_players_master
+	var result := {}
+	for id: String in pages:
+		var page: Variant = pages[id]
+		if not page is Dictionary:
+			continue
+		var first := 0
+		for part in ["batting", "pitching"]:
+			var rows: Variant = page.get(part)
+			if not rows is Array:
+				continue
+			for row: Variant in rows:
+				var v: Variant = row.get("年度") if row is Dictionary else null
+				var y := int(v) if v is float or v is int else 0
+				if y > 0 and (first == 0 or y < first):
+					first = y
+		if first > 0:
+			result[id] = first
+	_page_debut_cache[year] = result
 	return result
 
 

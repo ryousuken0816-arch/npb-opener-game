@@ -114,7 +114,7 @@ func protectable(league: LeagueRoster, c: Dictionary) -> Array[String]:
 	for id in league.players_of(c["to"]):
 		var p := GameData.player(id)
 		if p.is_empty() or joined_fa.has(id) or RosterRules.is_foreign(p, year + 1, debut.get(id)) \
-				or league.is_ikusei(id, p, year + 1, debut):
+				or league.is_ikusei(id, p, year + 1):
 			continue
 		result.append(id)
 	return result
