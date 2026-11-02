@@ -26,7 +26,7 @@ const TABS := [["bat", "打撃成績"], ["pit", "投手成績"], ["depth", "デ�
 	["teams", "順位の推移"], ["awards", "表彰の歴代"], ["history", "達成記録"], ["members", "歴代メンバー"],
 	["drafts", "歴代ドラフト"]]
 ## タブのボタンの幅（9つと LB/RB の案内が広げたサブ画面の幅に入る）
-const TAB_WIDTH := 118
+const TAB_WIDTH := 114
 ## ランキングに出す人数（多いと重いので上位だけ）
 const RANKING_ROWS := 50
 ## 通算の規定（打席・アウト）
@@ -117,7 +117,7 @@ func setup(p: UiTheme.Palette) -> void:
 	_palette = p
 	add_theme_constant_override("separation", 6)
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 6)
+	row.add_theme_constant_override("separation", 4)
 	row.add_child(UiTheme.small_label("◀ LB", 16, UiTheme.TEXT, 800))
 	for t: Array in TABS:
 		var b := Button.new()
