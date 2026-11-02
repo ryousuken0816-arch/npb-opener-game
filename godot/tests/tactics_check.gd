@@ -97,7 +97,8 @@ func _run() -> void:
 	quit(1 if _failures > 0 else 0)
 
 
-## 1日進め、その日の自球団の試合に出た選手が全員1軍だったかを調べる
+## 1日進め、その日の試合に出た選手が全員1軍だったかを調べる。CPU球団は故障から治った選手をその日の試合の前に
+## 1軍へ戻すので（作業45）、前日の1軍に加えて今の1軍も認める。自球団は前日の1軍だけ
 func _advance_day_checked(season: Season) -> void:
 	var date := Season.date_of_day(_gs.day)
 	var snapshot := {}
@@ -111,7 +112,8 @@ func _advance_day_checked(season: Season) -> void:
 			var team_name: String = g["away"] if side == 0 else g["home"]
 			var ok := true
 			for line: Dictionary in g["result"]["batting"][side] + g["result"]["pitching"][side]:
-				if not snapshot[team_name].has(line["id"]):
+				var now_active: bool = team_name != _gs.team and season.teams[team_name].active.has(line["id"])
+				if not snapshot[team_name].has(line["id"]) and not now_active:
 					ok = false
 					print("    2軍の選手が出場: %s %s" % [team_name, season.player_name(line["id"])])
 			if not ok:
