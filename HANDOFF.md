@@ -561,6 +561,15 @@
    - スクショ（1280x720、1回。`tests/health_capture.gd`）：ハブの故障者の知らせ、野手・投手の1軍登録（矢印・故・要約）、選手詳細。3日進めて1軍登録を開き直すと「あと18日」→「あと15日」
    - 全テスト（46本、ヘッドレス）：NG は既知の3本（start_year_check＝ユーザーのセーブ、growth_check・fictional_draft_check＝乱数）。tactics_check・news_stop_check・mobile_fit_check は作業45に合わせて直し、流し直して OK
 
+4.56 ~~テストの短縮（並列に流す・速い組と全部に分ける）~~ → 完了（2026-11-02、担当Q）。docs/AUTORUN.md の作業52、使い方は tools/README.md「run_tests.py」
+   - **テストの決まり（新。ユーザー指示 2026-11-02）**：main に入れる前は、関係するテスト＋`timeout 600 python tools/run_tests.py quick`（5分以内）だけ。full（`timeout 2400 python tools/run_tests.py full`）は毎回は流さず、1日1回まとめてか、Web 版（GitHub Pages）を公開する前だけ。司令塔かユーザーが頼んだときに流す。既知の乱数しだいの NG は full の結果で見るだけにして、作業ごとに流し直さない。Bash から流す
+   - `tools/run_tests.py`：Godot をヘッドレス・ウィンドウなし・優先度「通常以下」で同時に4本（`-j`。既定はコア数の半分、最大6）。重いものから先に流し、NG はその場で1回流し直す。ログは `godot/.godot/test_logs/<日時>/`、かかった時間は `godot/.godot/test_times.json` に覚えて次の並び順と時間制限（見込みの4倍）に使う。スクリプトが `.godot` のキャッシュより新しければ先に `--import`
+   - 判定：終了コードが0でない・時間切れ・`SCRIPT ERROR`／`Parse Error` が NG。エンジンの `ERROR:` は「注意」で出すだけ（今は `gloss_box.gd:241` の多角形のエラーがドラフト系の4本で出る）
+   - **セーブの場所**：`SaveGame.test_dir()` が環境変数 `NPB_TEST_SAVE_DIR` を見る。run_tests.py はテストごとに別のフォルダ（`godot/.godot/test_logs/<日時>/saves/<テスト>`）を渡すので、同時に流してもぶつからず、ユーザーのセーブ（`user://saves/`）も前のテストの残りも見ない（pad_flow_check・start_year_check がセーブの残りで落ちる件はこれで出なくなる）。テストの中で場所を決めるときは `_sg.call("test_dir", "user://…")`（ikusei_check・postseason_check をそうした）
+   - 組：quick は11本（pad_flow・tactics・order_page・start_year・draft_rebid・save・trade・fullscreen・mobile_layout・mobile_fit・`layout_fit_check:quick`＝2008年だけ）。full は `*_check.gd`・`*_test.gd` の全部（新しいテストは自動で入る）で、layout_fit_check だけ3つ（2008〜09・2010〜11・2012年）に分けて同時に流す
+   - 時間（この PC、ほかのセッションもテストを流している中）：**quick 約4分半**（3分47秒〜4分29秒、全部 OK）。**full 約28分**（48本。1本ずつの時間の合計は約110分＝今の本数を1本ずつ流すと1時間半以上。分ける前の layout_fit_check は1本で約17分）。
+     NG は既知の growth_check（種27）・fictional_draft_check（転生20年で8人）だけ。4本で CPU が100%になり、6本・フレームの上限（`--max-fps`）では速くならなかった。目標の15分には届いていない（重いテストそのものを軽くするのは別の作業）
+
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。
