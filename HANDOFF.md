@@ -579,6 +579,7 @@
    - 名前：ありふれた姓80・下の名前70だけ。スターの下の名前（翔平・朗希・輝明など）と、実在の名選手（転生のもと）と同じ姓名は作らない（30年でスターに似た名前 0人、前は約500人）
    - 所属：`tools/fictional_draft.py` で区分を直し `generated/fictional_draft.json` を作り直した。独立リーグ・くふうハヤテ・オイシックス新潟は「独立」、専門学校は新しい区分「専門」（入団20歳、ドラフト画面の経歴は「専門学校」、`Draft.career_of_row`）。古い社名・校名は今の名前に（`RENAMES`：JX-ENEOS→ENEOS、新日鐵住金→日本製鉄、三菱日立パワーシステムズ→三菱重工East など）
    - 確認：`godot/tests/fictional_draft_check.gd` に `_check_balance`（30年の S・A・怪物・高校生の化け物・高校生の入団時・上位投手のスタミナ・名前・所属）を足して ALL OK。`fictional_diversity_test`（1000年で能力の上がり下がりなし）・`draft_check` OK。転生選手の基準を「20年で4〜20人」に直した（確率の期待値 約9.4人に対して前の下限10は高すぎた）
+   - テスト：`python tools/run_tests.py quick fictional_draft_check`（12本）ALL OK。ユーザーの指示で full は流していない
    - 残り：候補の「タイプ」（ロマン砲など、紹介文に出る）はピークの能力から決めていて、将来を少し匂わせる（未修正、あとで確認）
 
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
