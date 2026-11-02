@@ -313,6 +313,8 @@ func _show_tip() -> void:
 	if not is_instance_valid(c) or not c.is_visible_in_tree() or not c.has_focus() or using_mouse:
 		return
 	_tip_label.text = c.tooltip_text
+	_tip_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_tip_label.custom_minimum_size.x = 0
 	_tip_panel.reset_size()
 	_tip_panel.visible = true
 	var rect := c.get_global_rect()
@@ -322,6 +324,29 @@ func _show_tip() -> void:
 	if pos.y + tip_size.y > view.y:
 		pos.y = rect.position.y - tip_size.y - 6
 	pos.x = clampf(pos.x, 4, view.x - tip_size.x - 4)
+	_tip_panel.position = pos
+
+
+## c の説明を c の下（入らなければ上）に出す（スマホのタップ・長押し。TouchAdapt）
+func show_tip_for(c: Control, text: String) -> void:
+	_tip_timer.stop()
+	_tip_label.text = text
+	_tip_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_tip_label.custom_minimum_size.x = 0
+	_tip_panel.reset_size()
+	var view := get_viewport().get_visible_rect().size
+	if _tip_panel.get_combined_minimum_size().x > view.x - 16:
+		_tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_tip_label.custom_minimum_size.x = view.x - 40
+		_tip_panel.reset_size()
+	_tip_panel.visible = true
+	var rect := c.get_global_rect()
+	var tip_size := _tip_panel.get_combined_minimum_size()
+	var pos := Vector2(rect.position.x + 12, rect.end.y + 6)
+	if pos.y + tip_size.y > view.y:
+		pos.y = rect.position.y - tip_size.y - 6
+	pos.x = clampf(pos.x, 4, maxf(view.x - tip_size.x - 4, 4))
+	pos.y = clampf(pos.y, 4, maxf(view.y - tip_size.y - 4, 4))
 	_tip_panel.position = pos
 
 

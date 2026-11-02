@@ -17,6 +17,10 @@ var items: Array = [["A", "決定"], ["B", "戻る"], ["LB/RB", "切替"]]
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# スマホ表示ではコントローラーのボタンの案内は出さない（大きさも0にして場所を取らない）
+	UiLayout.layout_changed.connect(func(_p: bool, _m: bool) -> void:
+		_update_size()
+		queue_redraw())
 	_update_size()
 
 
@@ -27,7 +31,7 @@ func set_items(new_items: Array) -> void:
 
 
 func _update_size() -> void:
-	custom_minimum_size = Vector2(_content_width() + PAD * 2, ICON + 8)
+	custom_minimum_size = Vector2.ZERO if UiLayout.is_mobile else Vector2(_content_width() + PAD * 2, ICON + 8)
 	size = custom_minimum_size
 
 
@@ -48,6 +52,8 @@ func _icon_width(button: String) -> float:
 
 
 func _draw() -> void:
+	if UiLayout.is_mobile:
+		return
 	var font := UiTheme.font(800)
 	var pill := UiTheme.box(Color(1, 1, 1, 0.88), int(size.y / 2), Color(0, 0, 0, 0.12), 1)
 	pill.shadow_color = Color(0, 0, 0, 0.15)

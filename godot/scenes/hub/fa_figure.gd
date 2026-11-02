@@ -30,6 +30,8 @@ func setup(team: String, plate: String, plate_tint: Color, star_count: int) -> v
 func _draw() -> void:
 	var w := size.x
 	var h := size.y
+	if w < 40.0 or h < 40.0:
+		return  # 並べ方が変わって一瞬小さくなったとき（文字の大きさが0になる）
 	# 壁（腰板の線）と床
 	draw_rect(Rect2(0, 0, w, h), WALL)
 	draw_rect(Rect2(0, h * 0.58, w, 3), WALL_LINE)

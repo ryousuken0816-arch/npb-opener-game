@@ -229,7 +229,17 @@ func _fill(ci: RID, rect: Rect2, area: Rect2, radii: Array, top: Color, bottom: 
 ## 角丸四角形 area を上下グラデーションで塗る。skew_x は StyleBoxFlat の skew と同じ向き（center_y が中心）
 static func paint(ci: RID, area: Rect2, radii: Array, top: Color, bottom: Color, skew_x := 0.0,
 		center_y := NAN) -> void:
-	var points := _rounded_rect(area, radii)
+	if area.size.x < 2.0 or area.size.y < 2.0:
+		return  # 細すぎる（多角形にできない）
+	var points := PackedVector2Array()
+	# 角丸の半径が辺の半分と同じだと、となり合う点が重なって多角形にできない（重なった点は除く）
+	for p: Vector2 in _rounded_rect(area, radii):
+		if points.is_empty() or not p.is_equal_approx(points[points.size() - 1]):
+			points.append(p)
+	if points.size() > 1 and points[0].is_equal_approx(points[points.size() - 1]):
+		points.remove_at(points.size() - 1)
+	if points.size() < 3:
+		return
 	var colors := PackedColorArray()
 	colors.resize(points.size())
 	var cy := center_y if not is_nan(center_y) else area.position.y + area.size.y * 0.5
