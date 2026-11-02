@@ -130,6 +130,35 @@ func _check_corr(calc: Dictionary) -> void:
 	var r_all := _pearson(all_x, all_y)
 	_check(r_all >= 0.3, "守備力が高いほど守備得点が高い（全体の相関 %.2f）" % r_all)
 	_check(positive >= 7, "守備位置ごとの相関が正（%d／8位置）" % positive)
+	_check_fast_cf(calc)
+
+
+## 作業43：足の速い中堅手（走力 75 以上）の守備得点（1000回あたり）の平均が、中堅手全体の平均より上
+func _check_fast_cf(calc: Dictionary) -> void:
+	var fast := []
+	var others := []
+	var names := []
+	for id: String in calc["fld"]:
+		var p: Dictionary = calc["fld"][id]["pos"].get("中堅手", {})
+		if p.is_empty() or int(p["outs"]) < CORR_MIN_INNINGS * 3:
+			continue
+		var rate := float(p["total"]) / (int(p["outs"]) / 3.0) * 1000.0
+		var pl: Dictionary = _gd.player(id)
+		var spd: Variant = pl.get("batting", {}).get("ratings", {}).get("speed")
+		var sv := int(spd["value"]) if spd is Dictionary else 0
+		if sv >= 75:
+			fast.append(rate)
+			names.append("%s（走力%d、%+.1f）" % [pl.get("name", id), sv, p["total"]])
+		else:
+			others.append(rate)
+	var mf := 0.0
+	for x: float in fast:
+		mf += x / maxf(fast.size(), 1)
+	var mo := 0.0
+	for x: float in others:
+		mo += x / maxf(others.size(), 1)
+	print("  中堅手の足の速い選手：%s" % "、".join(names))
+	_check(not fast.is_empty() and mf > mo, "足の速い中堅手の守備得点/1000回が平均より上（%+.1f／ほか %+.1f）" % [mf, mo])
 
 
 func _check_war(st: Dictionary, calc: Dictionary) -> void:
@@ -391,6 +420,11 @@ func _defense_value(id: String, pos: String) -> float:
 	# 捕手の守備得点は盗塁阻止（肩）が主なので、守備力と肩の平均と比べる
 	if pos == "捕手" and f.get("arm") is Dictionary and f["arm"].get("value") != null:
 		return (float(f["defense"]["value"]) + float(f["arm"]["value"])) / 2.0
+	# 外野は試合の守備範囲と同じく走力を混ぜる（作業43、SimPlayer.range_at）
+	var share: float = SimPlayer.RANGE_SPEED_SHARE.get(pos, 0.0)
+	var spd: Variant = _gd.player(id).get("batting", {}).get("ratings", {}).get("speed")
+	if share > 0.0 and spd is Dictionary and spd.get("value") != null:
+		return (1.0 - share) * float(f["defense"]["value"]) + share * float(spd["value"])
 	return float(f["defense"]["value"])
 
 

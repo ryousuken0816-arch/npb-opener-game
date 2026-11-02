@@ -23,6 +23,9 @@ const PITCHER_BAT_SPEED := -1.0
 ## 守備位置（fielding のキー）
 const POSITIONS := ["捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "外野手"]
 
+## 外野の守備範囲に混ぜる走力の割合（作業43。範囲 = (1−割合) × 守備力 + 割合 × 走力。中堅は広く走るので大きめ）
+const RANGE_SPEED_SHARE := {"中堅手": 0.3, "左翼手": 0.1, "右翼手": 0.1}
+
 var id: String
 var name: String
 var team: String
@@ -138,6 +141,14 @@ func defense_at(pos: String) -> float:
 	if pos == "一塁手":
 		return -1.0
 	return -2.5
+
+
+## 守備範囲の z 値（slot はスタメンの位置。中堅手・左翼手・右翼手は守備力に走力を混ぜる。ほかは defense_at と同じ）
+func range_at(slot: String) -> float:
+	var key := "外野手" if RANGE_SPEED_SHARE.has(slot) else slot
+	var d := defense_at(key)
+	var share: float = RANGE_SPEED_SHARE.get(slot, 0.0)
+	return (1.0 - share) * d + share * speed
 
 
 func arm_at(pos: String) -> float:

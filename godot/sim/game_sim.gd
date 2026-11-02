@@ -366,7 +366,7 @@ func _sharp_ball(batting: int, fielding: int, batter: SimPlayer, line: Dictionar
 	var pos := _pick(SHARP_FIELDERS)
 	var fielder := _fielder(fielding, pos)
 	var key := SimTeam.field_key(pos)
-	var def := fielder.defense_at(key)
+	var def := fielder.range_at(pos)
 	var infield := key != "外野手"
 	var hit_p := _sig(_logit(SHARP_HIT) - A_OF_RANGE * def - (0.9 if infield else 0.0))
 	_fld_add(fielding, fielder, pos, "ln")

@@ -560,7 +560,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 58,
+      "value": 55,
       "rank": "D"
      },
      "arm": {
@@ -621,7 +621,7 @@
     "外野手": {
      "games": 25,
      "defense": {
-      "value": 58,
+      "value": 55,
       "rank": "D"
      },
      "gold_glove": false,
@@ -977,8 +977,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 65,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -1600,7 +1600,7 @@
     "外野手": {
      "games": 21,
      "defense": {
-      "value": 56,
+      "value": 50,
       "rank": "D"
      },
      "gold_glove": false,
@@ -1960,8 +1960,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "arm": {
       "value": 73,
@@ -2036,8 +2036,8 @@
     "外野手": {
      "games": 126,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -2262,7 +2262,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 53,
+      "value": 54,
       "rank": "D"
      },
      "arm": {
@@ -2338,7 +2338,7 @@
     "外野手": {
      "games": 4,
      "defense": {
-      "value": 53,
+      "value": 54,
       "rank": "D"
      },
      "gold_glove": false,
@@ -2654,7 +2654,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 59,
+      "value": 55,
       "rank": "D"
      },
      "gold_glove": false,
@@ -3044,8 +3044,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "arm": {
       "value": 69,
@@ -3129,8 +3129,8 @@
     "外野手": {
      "games": 89,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -3923,8 +3923,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "arm": {
       "value": 56,
@@ -3984,8 +3984,8 @@
     "外野手": {
      "games": 81,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -4330,8 +4330,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 65,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "arm": {
       "value": 70,
@@ -4391,8 +4391,8 @@
     "外野手": {
      "games": 19,
      "defense": {
-      "value": 65,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -5537,7 +5537,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 64,
+      "value": 63,
       "rank": "C"
      },
      "gold_glove": false,
@@ -7876,8 +7876,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 91,
-      "rank": "S"
+      "value": 83,
+      "rank": "A"
      },
      "arm": {
       "value": 47,
@@ -7937,8 +7937,8 @@
     "外野手": {
      "games": 141,
      "defense": {
-      "value": 91,
-      "rank": "S"
+      "value": 83,
+      "rank": "A"
      },
      "gold_glove": true,
      "detail": {
@@ -8360,8 +8360,8 @@
     "外野手": {
      "games": 4,
      "defense": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -8418,8 +8418,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 51,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "arm": {
       "value": 90,
@@ -8479,8 +8479,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 51,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -9393,8 +9393,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "arm": {
       "value": 54,
@@ -9454,8 +9454,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -10002,7 +10002,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      },
      "arm": {
@@ -10078,7 +10078,7 @@
     "外野手": {
      "games": 3,
      "defense": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      },
      "gold_glove": false,
@@ -10266,7 +10266,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 79,
+      "value": 73,
       "rank": "B"
      },
      "arm": {
@@ -10327,7 +10327,7 @@
     "外野手": {
      "games": 93,
      "defense": {
-      "value": 79,
+      "value": 73,
       "rank": "B"
      },
      "gold_glove": true,
@@ -10673,8 +10673,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -10827,7 +10827,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 66,
+      "value": 69,
       "rank": "C"
      },
      "gold_glove": false,
@@ -11051,8 +11051,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 60,
@@ -11151,8 +11151,8 @@
     "外野手": {
      "games": 16,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -11344,7 +11344,7 @@
     "外野手": {
      "games": 6,
      "defense": {
-      "value": 64,
+      "value": 65,
       "rank": "C"
      },
      "gold_glove": false,
@@ -11845,7 +11845,7 @@
       "rank": "E"
      },
      "defense": {
-      "value": 59,
+      "value": 52,
       "rank": "D"
      },
      "arm": {
@@ -11906,7 +11906,7 @@
     "外野手": {
      "games": 43,
      "defense": {
-      "value": 59,
+      "value": 52,
       "rank": "D"
      },
      "gold_glove": false,
@@ -12443,7 +12443,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 63,
+      "value": 60,
       "rank": "C"
      },
      "arm": {
@@ -12504,7 +12504,7 @@
     "外野手": {
      "games": 26,
      "defense": {
-      "value": 63,
+      "value": 60,
       "rank": "C"
      },
      "gold_glove": false,
@@ -12634,7 +12634,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 65,
+      "value": 63,
       "rank": "C"
      },
      "gold_glove": false,
@@ -13206,7 +13206,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 51,
+      "value": 54,
       "rank": "D"
      },
      "arm": {
@@ -13267,7 +13267,7 @@
     "外野手": {
      "games": 10,
      "defense": {
-      "value": 51,
+      "value": 54,
       "rank": "D"
      },
      "gold_glove": false,
@@ -13610,7 +13610,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 60,
+      "value": 66,
       "rank": "C"
      },
      "arm": {
@@ -13686,7 +13686,7 @@
     "外野手": {
      "games": 94,
      "defense": {
-      "value": 60,
+      "value": 66,
       "rank": "C"
      },
      "gold_glove": false,
@@ -14029,7 +14029,7 @@
       "rank": "A"
      },
      "defense": {
-      "value": 97,
+      "value": 93,
       "rank": "S"
      },
      "arm": {
@@ -14090,7 +14090,7 @@
     "外野手": {
      "games": 143,
      "defense": {
-      "value": 97,
+      "value": 93,
       "rank": "S"
      },
      "gold_glove": true,
@@ -14742,7 +14742,7 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 63,
+      "value": 66,
       "rank": "C"
      },
      "gold_glove": false,
@@ -15861,7 +15861,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 58,
+      "value": 55,
       "rank": "D"
      },
      "gold_glove": false,
@@ -17560,7 +17560,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 68,
+      "value": 60,
       "rank": "C"
      },
      "arm": {
@@ -17636,7 +17636,7 @@
     "外野手": {
      "games": 24,
      "defense": {
-      "value": 68,
+      "value": 60,
       "rank": "C"
      },
      "gold_glove": false,
@@ -17790,7 +17790,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
+      "value": 53,
       "rank": "D"
      },
      "gold_glove": false,
@@ -17848,7 +17848,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 59,
+      "value": 55,
       "rank": "D"
      },
      "arm": {
@@ -17909,7 +17909,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 59,
+      "value": 55,
       "rank": "D"
      },
      "gold_glove": false,
@@ -18136,7 +18136,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 50,
+      "value": 59,
       "rank": "D"
      },
      "arm": {
@@ -18197,7 +18197,7 @@
     "外野手": {
      "games": 2,
      "defense": {
-      "value": 50,
+      "value": 59,
       "rank": "D"
      },
      "gold_glove": false,
@@ -18730,7 +18730,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 85,
+      "value": 80,
       "rank": "A"
      },
      "arm": {
@@ -18791,7 +18791,7 @@
     "外野手": {
      "games": 94,
      "defense": {
-      "value": 85,
+      "value": 80,
       "rank": "A"
      },
      "gold_glove": true,
@@ -18955,7 +18955,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 68,
+      "value": 64,
       "rank": "C"
      },
      "arm": {
@@ -19016,7 +19016,7 @@
     "外野手": {
      "games": 34,
      "defense": {
-      "value": 68,
+      "value": 64,
       "rank": "C"
      },
      "gold_glove": false,
@@ -19074,7 +19074,7 @@
       "rank": "E"
      },
      "defense": {
-      "value": 68,
+      "value": 60,
       "rank": "C"
      },
      "arm": {
@@ -19174,7 +19174,7 @@
     "外野手": {
      "games": 62,
      "defense": {
-      "value": 68,
+      "value": 60,
       "rank": "C"
      },
      "gold_glove": false,
@@ -20015,8 +20015,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "arm": {
       "value": 79,
@@ -20076,8 +20076,8 @@
     "外野手": {
      "games": 19,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -21238,7 +21238,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "gold_glove": false,
@@ -21534,8 +21534,8 @@
     "外野手": {
      "games": 7,
      "defense": {
-      "value": 52,
-      "rank": "D"
+      "value": 46,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -22600,8 +22600,8 @@
       "rank": "A"
      },
      "defense": {
-      "value": 55,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "arm": {
       "value": 83,
@@ -22661,8 +22661,8 @@
     "外野手": {
      "games": 9,
      "defense": {
-      "value": 55,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -22887,7 +22887,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 60,
+      "value": 68,
       "rank": "C"
      },
      "arm": {
@@ -23026,7 +23026,7 @@
     "外野手": {
      "games": 5,
      "defense": {
-      "value": 60,
+      "value": 68,
       "rank": "C"
      },
      "gold_glove": false,
@@ -23250,7 +23250,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 58,
+      "value": 56,
       "rank": "D"
      },
      "arm": {
@@ -23311,7 +23311,7 @@
     "外野手": {
      "games": 96,
      "defense": {
-      "value": 58,
+      "value": 56,
       "rank": "D"
      },
      "gold_glove": true,
@@ -23701,7 +23701,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 67,
+      "value": 66,
       "rank": "C"
      },
      "arm": {
@@ -23762,7 +23762,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 67,
+      "value": 66,
       "rank": "C"
      },
      "gold_glove": false,
@@ -24621,8 +24621,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 58,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -25335,8 +25335,8 @@
     "外野手": {
      "games": 12,
      "defense": {
-      "value": 56,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -25393,7 +25393,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 61,
+      "value": 67,
       "rank": "C"
      },
      "arm": {
@@ -25454,7 +25454,7 @@
     "外野手": {
      "games": 41,
      "defense": {
-      "value": 61,
+      "value": 67,
       "rank": "C"
      },
      "gold_glove": false,
@@ -25953,7 +25953,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 66,
+      "value": 62,
       "rank": "C"
      },
      "gold_glove": false,
@@ -28126,7 +28126,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 63,
+      "value": 60,
       "rank": "C"
      },
      "arm": {
@@ -28187,7 +28187,7 @@
     "外野手": {
      "games": 3,
      "defense": {
-      "value": 63,
+      "value": 60,
       "rank": "C"
      },
      "gold_glove": false,
@@ -28411,7 +28411,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 61,
+      "value": 69,
       "rank": "C"
      },
      "arm": {
@@ -28472,7 +28472,7 @@
     "外野手": {
      "games": 6,
      "defense": {
-      "value": 61,
+      "value": 69,
       "rank": "C"
      },
      "gold_glove": false,
@@ -28809,8 +28809,8 @@
     "外野手": {
      "games": 3,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -29199,7 +29199,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 65,
+      "value": 64,
       "rank": "C"
      },
      "arm": {
@@ -29260,7 +29260,7 @@
     "外野手": {
      "games": 84,
      "defense": {
-      "value": 65,
+      "value": 64,
       "rank": "C"
      },
      "gold_glove": false,
@@ -29652,8 +29652,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 57,
-      "rank": "D"
+      "value": 65,
+      "rank": "C"
      },
      "arm": {
       "value": 89,
@@ -29713,8 +29713,8 @@
     "外野手": {
      "games": 141,
      "defense": {
-      "value": 57,
-      "rank": "D"
+      "value": 65,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -30095,8 +30095,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 58,
@@ -30171,8 +30171,8 @@
     "外野手": {
      "games": 44,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -30420,8 +30420,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
-      "rank": "D"
+      "value": 49,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -31278,7 +31278,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 58,
+      "value": 53,
       "rank": "D"
      },
      "arm": {
@@ -31339,7 +31339,7 @@
     "外野手": {
      "games": 98,
      "defense": {
-      "value": 58,
+      "value": 53,
       "rank": "D"
      },
      "gold_glove": false,
@@ -32467,8 +32467,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 60,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -33288,8 +33288,8 @@
     "外野手": {
      "games": 11,
      "defense": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -33346,7 +33346,7 @@
       "rank": "E"
      },
      "defense": {
-      "value": 58,
+      "value": 51,
       "rank": "D"
      },
      "arm": {
@@ -33407,7 +33407,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 58,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,
@@ -33631,8 +33631,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 45,
@@ -33692,8 +33692,8 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -34377,7 +34377,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 68,
+      "value": 62,
       "rank": "C"
      },
      "gold_glove": false,
@@ -35176,7 +35176,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "gold_glove": false,
@@ -35734,7 +35734,7 @@
       "rank": "A"
      },
      "defense": {
-      "value": 66,
+      "value": 69,
       "rank": "C"
      },
      "arm": {
@@ -35795,7 +35795,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 66,
+      "value": 69,
       "rank": "C"
      },
      "gold_glove": false,
@@ -36411,8 +36411,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 52,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -36927,7 +36927,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      },
      "arm": {
@@ -37012,7 +37012,7 @@
     "外野手": {
      "games": 12,
      "defense": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      },
      "gold_glove": false,
@@ -37478,7 +37478,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
+      "value": 54,
       "rank": "D"
      },
      "gold_glove": false,
@@ -37536,7 +37536,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 49,
+      "value": 45,
       "rank": "E"
      },
      "arm": {
@@ -37597,7 +37597,7 @@
     "外野手": {
      "games": 42,
      "defense": {
-      "value": 49,
+      "value": 45,
       "rank": "E"
      },
      "gold_glove": false,
@@ -37987,7 +37987,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "arm": {
@@ -38048,7 +38048,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "gold_glove": false,
@@ -38106,7 +38106,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 75,
+      "value": 71,
       "rank": "B"
      },
      "arm": {
@@ -38167,7 +38167,7 @@
     "外野手": {
      "games": 139,
      "defense": {
-      "value": 75,
+      "value": 71,
       "rank": "B"
      },
      "gold_glove": true,
@@ -38364,7 +38364,7 @@
     "外野手": {
      "games": 13,
      "defense": {
-      "value": 50,
+      "value": 58,
       "rank": "D"
      },
      "gold_glove": false,
@@ -38422,7 +38422,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 56,
+      "value": 55,
       "rank": "D"
      },
      "arm": {
@@ -38483,7 +38483,7 @@
     "外野手": {
      "games": 14,
      "defense": {
-      "value": 56,
+      "value": 55,
       "rank": "D"
      },
      "gold_glove": false,
@@ -39158,8 +39158,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 49,
@@ -39219,8 +39219,8 @@
     "外野手": {
      "games": 42,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -39373,8 +39373,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 59,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -40880,7 +40880,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 68,
+      "value": 65,
       "rank": "C"
      },
      "arm": {
@@ -41019,7 +41019,7 @@
     "外野手": {
      "games": 127,
      "defense": {
-      "value": 68,
+      "value": 65,
       "rank": "C"
      },
      "gold_glove": false,
@@ -41243,8 +41243,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "arm": {
       "value": 50,
@@ -41304,8 +41304,8 @@
     "外野手": {
      "games": 109,
      "defense": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -41434,8 +41434,8 @@
     "外野手": {
      "games": 3,
      "defense": {
-      "value": 50,
-      "rank": "D"
+      "value": 45,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -42003,8 +42003,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 64,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -42730,7 +42730,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 54,
+      "value": 50,
       "rank": "D"
      },
      "arm": {
@@ -42806,7 +42806,7 @@
     "外野手": {
      "games": 45,
      "defense": {
-      "value": 54,
+      "value": 50,
       "rank": "D"
      },
      "gold_glove": false,
@@ -44339,8 +44339,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "arm": {
       "value": 68,
@@ -44400,8 +44400,8 @@
     "外野手": {
      "games": 128,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -44458,7 +44458,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 59,
+      "value": 56,
       "rank": "D"
      },
      "arm": {
@@ -44597,7 +44597,7 @@
     "外野手": {
      "games": 19,
      "defense": {
-      "value": 59,
+      "value": 56,
       "rank": "D"
      },
      "gold_glove": false,
@@ -45642,7 +45642,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 62,
+      "value": 68,
       "rank": "C"
      },
      "arm": {
@@ -45703,7 +45703,7 @@
     "外野手": {
      "games": 42,
      "defense": {
-      "value": 62,
+      "value": 68,
       "rank": "C"
      },
      "gold_glove": false,
@@ -46377,7 +46377,7 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 55,
+      "value": 52,
       "rank": "D"
      },
      "gold_glove": false,
@@ -46732,8 +46732,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 64,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -48109,8 +48109,8 @@
     "外野手": {
      "games": 9,
      "defense": {
-      "value": 74,
-      "rank": "B"
+      "value": 68,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -48333,8 +48333,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "arm": {
       "value": 63,
@@ -48394,8 +48394,8 @@
     "外野手": {
      "games": 37,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -48952,8 +48952,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 67,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "arm": {
       "value": 62,
@@ -49013,8 +49013,8 @@
     "外野手": {
      "games": 34,
      "defense": {
-      "value": 67,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -50368,8 +50368,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "arm": {
       "value": 50,
@@ -50429,8 +50429,8 @@
     "外野手": {
      "games": 28,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -51051,7 +51051,7 @@
       "rank": "E"
      },
      "defense": {
-      "value": 27,
+      "value": 25,
       "rank": "F"
      },
      "arm": {
@@ -51112,7 +51112,7 @@
     "外野手": {
      "games": 104,
      "defense": {
-      "value": 27,
+      "value": 25,
       "rank": "F"
      },
      "gold_glove": false,
@@ -51502,7 +51502,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 40,
+      "value": 41,
       "rank": "E"
      },
      "arm": {
@@ -51563,7 +51563,7 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 40,
+      "value": 41,
       "rank": "E"
      },
      "gold_glove": false,
@@ -52587,8 +52587,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -52756,8 +52756,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -53297,7 +53297,7 @@
     "外野手": {
      "games": 2,
      "defense": {
-      "value": 61,
+      "value": 60,
       "rank": "C"
      },
      "gold_glove": false,
@@ -53798,7 +53798,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 44,
+      "value": 40,
       "rank": "E"
      },
      "gold_glove": false,
@@ -54296,8 +54296,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 57,
-      "rank": "D"
+      "value": 65,
+      "rank": "C"
      },
      "arm": {
       "value": 56,
@@ -54357,8 +54357,8 @@
     "外野手": {
      "games": 65,
      "defense": {
-      "value": 57,
-      "rank": "D"
+      "value": 65,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -54415,7 +54415,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 59,
+      "value": 53,
       "rank": "D"
      },
      "arm": {
@@ -54476,7 +54476,7 @@
     "外野手": {
      "games": 118,
      "defense": {
-      "value": 59,
+      "value": 53,
       "rank": "D"
      },
      "gold_glove": false,
@@ -54692,7 +54692,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 52,
+      "value": 59,
       "rank": "D"
      },
      "arm": {
@@ -54831,7 +54831,7 @@
     "外野手": {
      "games": 10,
      "defense": {
-      "value": 52,
+      "value": 59,
       "rank": "D"
      },
      "gold_glove": false,
@@ -55461,7 +55461,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
+      "value": 60,
       "rank": "C"
      },
      "gold_glove": false,
@@ -56642,7 +56642,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 53,
+      "value": 55,
       "rank": "D"
      },
      "arm": {
@@ -56703,7 +56703,7 @@
     "外野手": {
      "games": 69,
      "defense": {
-      "value": 53,
+      "value": 55,
       "rank": "D"
      },
      "gold_glove": false,
@@ -56927,7 +56927,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 74,
+      "value": 73,
       "rank": "B"
      },
      "arm": {
@@ -56988,7 +56988,7 @@
     "外野手": {
      "games": 27,
      "defense": {
-      "value": 74,
+      "value": 73,
       "rank": "B"
      },
      "gold_glove": false,
@@ -57212,8 +57212,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 57,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "arm": {
       "value": 60,
@@ -57273,8 +57273,8 @@
     "外野手": {
      "games": 115,
      "defense": {
-      "value": 57,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -58036,7 +58036,7 @@
       "rank": "A"
      },
      "defense": {
-      "value": 74,
+      "value": 76,
       "rank": "B"
      },
      "arm": {
@@ -58097,7 +58097,7 @@
     "外野手": {
      "games": 57,
      "defense": {
-      "value": 74,
+      "value": 76,
       "rank": "B"
      },
      "gold_glove": true,
@@ -58481,8 +58481,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      },
      "arm": {
       "value": 70,
@@ -58542,8 +58542,8 @@
     "外野手": {
      "games": 21,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -58600,8 +58600,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "arm": {
       "value": 59,
@@ -58700,8 +58700,8 @@
     "外野手": {
      "games": 55,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -59746,8 +59746,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "arm": {
       "value": 79,
@@ -59807,8 +59807,8 @@
     "外野手": {
      "games": 26,
      "defense": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -59865,7 +59865,7 @@
       "rank": "E"
      },
      "defense": {
-      "value": 59,
+      "value": 52,
       "rank": "D"
      },
      "arm": {
@@ -59980,7 +59980,7 @@
     "外野手": {
      "games": 98,
      "defense": {
-      "value": 59,
+      "value": 52,
       "rank": "D"
      },
      "gold_glove": false,
@@ -60856,8 +60856,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 67,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 67,
@@ -60941,8 +60941,8 @@
     "外野手": {
      "games": 101,
      "defense": {
-      "value": 67,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -61390,8 +61390,8 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 60,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -63242,8 +63242,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 50,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "arm": {
       "value": 83,
@@ -63303,8 +63303,8 @@
     "外野手": {
      "games": 20,
      "defense": {
-      "value": 50,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -64366,8 +64366,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -64891,7 +64891,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      },
      "gold_glove": false,
@@ -65049,8 +65049,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -65408,7 +65408,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "gold_glove": false,
@@ -66215,7 +66215,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "arm": {
@@ -66276,7 +66276,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "gold_glove": false,
@@ -67391,7 +67391,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 92,
+      "value": 93,
       "rank": "S"
      },
      "arm": {
@@ -67452,7 +67452,7 @@
     "外野手": {
      "games": 125,
      "defense": {
-      "value": 92,
+      "value": 93,
       "rank": "S"
      },
      "gold_glove": true,
@@ -67510,8 +67510,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 47,
-      "rank": "E"
+      "value": 55,
+      "rank": "D"
      },
      "arm": {
       "value": 73,
@@ -67586,8 +67586,8 @@
     "外野手": {
      "games": 76,
      "defense": {
-      "value": 47,
-      "rank": "E"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -67764,7 +67764,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 62,
+      "value": 66,
       "rank": "C"
      },
      "gold_glove": false,
@@ -67988,7 +67988,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 67,
+      "value": 62,
       "rank": "C"
      },
      "arm": {
@@ -68049,7 +68049,7 @@
     "外野手": {
      "games": 101,
      "defense": {
-      "value": 67,
+      "value": 62,
       "rank": "C"
      },
      "gold_glove": false,
@@ -68275,8 +68275,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "arm": {
       "value": 74,
@@ -68336,8 +68336,8 @@
     "外野手": {
      "games": 50,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -68505,7 +68505,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 56,
+      "value": 50,
       "rank": "D"
      },
      "gold_glove": false,
@@ -68682,7 +68682,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 69,
+      "value": 64,
       "rank": "C"
      },
      "arm": {
@@ -68743,7 +68743,7 @@
     "外野手": {
      "games": 80,
      "defense": {
-      "value": 69,
+      "value": 64,
       "rank": "C"
      },
      "gold_glove": false,
@@ -69270,7 +69270,7 @@
     "外野手": {
      "games": 9,
      "defense": {
-      "value": 62,
+      "value": 60,
       "rank": "C"
      },
      "gold_glove": false,
@@ -69328,7 +69328,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 64,
+      "value": 60,
       "rank": "C"
      },
      "arm": {
@@ -69389,7 +69389,7 @@
     "外野手": {
      "games": 21,
      "defense": {
-      "value": 64,
+      "value": 60,
       "rank": "C"
      },
      "gold_glove": false,
@@ -72803,8 +72803,8 @@
       "rank": "A"
      },
      "defense": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "arm": {
       "value": 56,
@@ -72864,8 +72864,8 @@
     "外野手": {
      "games": 5,
      "defense": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -73327,7 +73327,7 @@
     "外野手": {
      "games": 3,
      "defense": {
-      "value": 61,
+      "value": 64,
       "rank": "C"
      },
      "gold_glove": false,
@@ -74043,8 +74043,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 51,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "arm": {
       "value": 100,
@@ -74104,8 +74104,8 @@
     "外野手": {
      "games": 51,
      "defense": {
-      "value": 51,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -74328,7 +74328,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 53,
+      "value": 54,
       "rank": "D"
      },
      "arm": {
@@ -74467,7 +74467,7 @@
     "外野手": {
      "games": 11,
      "defense": {
-      "value": 53,
+      "value": 54,
       "rank": "D"
      },
      "gold_glove": false,
@@ -74664,8 +74664,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -74822,7 +74822,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 57,
+      "value": 54,
       "rank": "D"
      },
      "gold_glove": false,
@@ -75342,8 +75342,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 52,
-      "rank": "D"
+      "value": 46,
+      "rank": "E"
      },
      "arm": {
       "value": 57,
@@ -75403,8 +75403,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 52,
-      "rank": "D"
+      "value": 46,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -75691,8 +75691,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -76200,8 +76200,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 68,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "arm": {
       "value": 51,
@@ -76261,8 +76261,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 68,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -76738,8 +76738,8 @@
     "外野手": {
      "games": 4,
      "defense": {
-      "value": 56,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -77675,7 +77675,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,
@@ -78233,7 +78233,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 69,
+      "value": 64,
       "rank": "C"
      },
      "arm": {
@@ -78294,7 +78294,7 @@
     "外野手": {
      "games": 130,
      "defense": {
-      "value": 69,
+      "value": 64,
       "rank": "C"
      },
      "gold_glove": false,
@@ -78850,8 +78850,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 54,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "arm": {
       "value": 71,
@@ -78911,8 +78911,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 54,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -79209,7 +79209,7 @@
     "外野手": {
      "games": 16,
      "defense": {
-      "value": 67,
+      "value": 63,
       "rank": "C"
      },
      "gold_glove": false,
@@ -79567,7 +79567,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 57,
+      "value": 53,
       "rank": "D"
      },
      "arm": {
@@ -79652,7 +79652,7 @@
     "外野手": {
      "games": 86,
      "defense": {
-      "value": 57,
+      "value": 53,
       "rank": "D"
      },
      "gold_glove": false,
@@ -80235,7 +80235,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "arm": {
@@ -80350,7 +80350,7 @@
     "外野手": {
      "games": 36,
      "defense": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "gold_glove": false,
@@ -80861,7 +80861,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 56,
+      "value": 50,
       "rank": "D"
      },
      "arm": {
@@ -80922,7 +80922,7 @@
     "外野手": {
      "games": 14,
      "defense": {
-      "value": 56,
+      "value": 50,
       "rank": "D"
      },
      "gold_glove": false,
@@ -82107,8 +82107,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 53,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -83024,7 +83024,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 58,
+      "value": 55,
       "rank": "D"
      },
      "arm": {
@@ -83160,7 +83160,7 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 58,
+      "value": 55,
       "rank": "D"
      },
      "gold_glove": false,
@@ -83550,7 +83550,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 26,
+      "value": 30,
       "rank": "F"
      },
      "arm": {
@@ -83611,7 +83611,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 26,
+      "value": 30,
       "rank": "F"
      },
      "gold_glove": false,
@@ -84161,7 +84161,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 63,
+      "value": 60,
       "rank": "C"
      },
      "arm": {
@@ -84252,7 +84252,7 @@
     "外野手": {
      "games": 2,
      "defense": {
-      "value": 63,
+      "value": 60,
       "rank": "C"
      },
      "gold_glove": false,
@@ -84458,8 +84458,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "arm": {
       "value": 89,
@@ -84519,8 +84519,8 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -85212,7 +85212,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 58,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,
@@ -85342,7 +85342,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 45,
+      "value": 44,
       "rank": "E"
      },
      "gold_glove": false,
@@ -85539,8 +85539,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -85712,8 +85712,8 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -86407,8 +86407,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -86465,8 +86465,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 68,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 53,
@@ -86526,8 +86526,8 @@
     "外野手": {
      "games": 51,
      "defense": {
-      "value": 68,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -86695,7 +86695,7 @@
     "外野手": {
      "games": 5,
      "defense": {
-      "value": 62,
+      "value": 65,
       "rank": "C"
      },
      "gold_glove": false,
@@ -87561,8 +87561,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -87619,8 +87619,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 68,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "arm": {
       "value": 78,
@@ -87680,8 +87680,8 @@
     "外野手": {
      "games": 95,
      "defense": {
-      "value": 68,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -87738,8 +87738,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "arm": {
       "value": 57,
@@ -87814,8 +87814,8 @@
     "外野手": {
      "games": 7,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -88675,7 +88675,7 @@
     "外野手": {
      "games": 6,
      "defense": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      },
      "gold_glove": false,
@@ -89021,7 +89021,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 60,
+      "value": 68,
       "rank": "C"
      },
      "arm": {
@@ -89082,7 +89082,7 @@
     "外野手": {
      "games": 78,
      "defense": {
-      "value": 60,
+      "value": 68,
       "rank": "C"
      },
      "gold_glove": false,
@@ -89943,7 +89943,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "gold_glove": false,
@@ -90269,8 +90269,8 @@
     "外野手": {
      "games": 5,
      "defense": {
-      "value": 59,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -90557,7 +90557,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "gold_glove": false,
@@ -90615,7 +90615,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 39,
+      "value": 38,
       "rank": "F"
      },
      "arm": {
@@ -90730,7 +90730,7 @@
     "外野手": {
      "games": 99,
      "defense": {
-      "value": 39,
+      "value": 38,
       "rank": "F"
      },
      "gold_glove": false,
@@ -90954,8 +90954,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 60,
@@ -91030,8 +91030,8 @@
     "外野手": {
      "games": 5,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -91588,8 +91588,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 51,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "arm": {
       "value": 55,
@@ -91688,8 +91688,8 @@
     "外野手": {
      "games": 82,
      "defense": {
-      "value": 51,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -93285,8 +93285,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -93843,8 +93843,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      },
      "arm": {
       "value": 59,
@@ -93958,8 +93958,8 @@
     "外野手": {
      "games": 7,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -94016,8 +94016,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "arm": {
       "value": 51,
@@ -94077,8 +94077,8 @@
     "外野手": {
      "games": 10,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -94303,8 +94303,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 77,
-      "rank": "B"
+      "value": 69,
+      "rank": "C"
      },
      "arm": {
       "value": 60,
@@ -94379,8 +94379,8 @@
     "外野手": {
      "games": 38,
      "defense": {
-      "value": 77,
-      "rank": "B"
+      "value": 69,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -94912,8 +94912,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 44,
@@ -94973,8 +94973,8 @@
     "外野手": {
      "games": 11,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -95697,7 +95697,7 @@
       "rank": "A"
      },
      "defense": {
-      "value": 71,
+      "value": 74,
       "rank": "B"
      },
      "arm": {
@@ -95812,7 +95812,7 @@
     "外野手": {
      "games": 64,
      "defense": {
-      "value": 71,
+      "value": 74,
       "rank": "B"
      },
      "gold_glove": false,
@@ -96155,8 +96155,8 @@
       "rank": "A"
      },
      "defense": {
-      "value": 57,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "arm": {
       "value": 57,
@@ -96294,8 +96294,8 @@
     "外野手": {
      "games": 65,
      "defense": {
-      "value": 57,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -96521,8 +96521,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "arm": {
       "value": 64,
@@ -96582,8 +96582,8 @@
     "外野手": {
      "games": 10,
      "defense": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -96917,7 +96917,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 53,
+      "value": 54,
       "rank": "D"
      },
      "gold_glove": false,
@@ -97086,7 +97086,7 @@
     "外野手": {
      "games": 2,
      "defense": {
-      "value": 55,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,
@@ -97279,8 +97279,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -97505,8 +97505,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 55,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "arm": {
       "value": 49,
@@ -97566,8 +97566,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -97958,7 +97958,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 68,
+      "value": 67,
       "rank": "C"
      },
      "arm": {
@@ -98019,7 +98019,7 @@
     "外野手": {
      "games": 33,
      "defense": {
-      "value": 68,
+      "value": 67,
       "rank": "C"
      },
      "gold_glove": true,
@@ -99936,8 +99936,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "arm": {
       "value": 76,
@@ -99997,8 +99997,8 @@
     "外野手": {
      "games": 74,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -100179,7 +100179,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 64,
+      "value": 66,
       "rank": "C"
      },
      "gold_glove": false,
@@ -101698,8 +101698,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 69,
-      "rank": "C"
+      "value": 75,
+      "rank": "B"
      },
      "arm": {
       "value": 66,
@@ -101759,8 +101759,8 @@
     "外野手": {
      "games": 82,
      "defense": {
-      "value": 69,
-      "rank": "C"
+      "value": 75,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -101956,7 +101956,7 @@
     "外野手": {
      "games": 24,
      "defense": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "gold_glove": false,
@@ -102512,8 +102512,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "arm": {
       "value": 81,
@@ -102663,8 +102663,8 @@
     "外野手": {
      "games": 52,
      "defense": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -104282,8 +104282,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -104578,8 +104578,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 63,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -105752,7 +105752,7 @@
       "rank": "A"
      },
      "defense": {
-      "value": 60,
+      "value": 65,
       "rank": "C"
      },
      "arm": {
@@ -105813,7 +105813,7 @@
     "外野手": {
      "games": 73,
      "defense": {
-      "value": 60,
+      "value": 65,
       "rank": "C"
      },
      "gold_glove": false,
@@ -105871,8 +105871,8 @@
       "rank": "A"
      },
      "defense": {
-      "value": 47,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "arm": {
       "value": 78,
@@ -105956,8 +105956,8 @@
     "外野手": {
      "games": 15,
      "defense": {
-      "value": 47,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -107218,8 +107218,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -107276,7 +107276,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 64,
+      "value": 62,
       "rank": "C"
      },
      "arm": {
@@ -107337,7 +107337,7 @@
     "外野手": {
      "games": 9,
      "defense": {
-      "value": 64,
+      "value": 62,
       "rank": "C"
      },
      "gold_glove": false,
@@ -107395,8 +107395,8 @@
       "rank": "A"
      },
      "defense": {
-      "value": 68,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "arm": {
       "value": 73,
@@ -107519,8 +107519,8 @@
     "外野手": {
      "games": 53,
      "defense": {
-      "value": 68,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -107649,8 +107649,8 @@
     "外野手": {
      "games": 3,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -108796,7 +108796,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 64,
+      "value": 66,
       "rank": "C"
      },
      "gold_glove": false,
@@ -109025,8 +109025,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 70,
-      "rank": "B"
+      "value": 66,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -109083,8 +109083,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 64,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 64,
@@ -109144,8 +109144,8 @@
     "外野手": {
      "games": 98,
      "defense": {
-      "value": 64,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -109368,8 +109368,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 72,
-      "rank": "B"
+      "value": 65,
+      "rank": "C"
      },
      "arm": {
       "value": 47,
@@ -109429,8 +109429,8 @@
     "外野手": {
      "games": 18,
      "defense": {
-      "value": 72,
-      "rank": "B"
+      "value": 65,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -110878,7 +110878,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 58,
+      "value": 53,
       "rank": "D"
      },
      "gold_glove": false,
@@ -111056,7 +111056,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 56,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,
@@ -111199,8 +111199,8 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -111342,7 +111342,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 66,
+      "value": 64,
       "rank": "C"
      },
      "gold_glove": false,
@@ -111566,7 +111566,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 63,
+      "value": 68,
       "rank": "C"
      },
      "arm": {
@@ -111627,7 +111627,7 @@
     "外野手": {
      "games": 49,
      "defense": {
-      "value": 63,
+      "value": 68,
       "rank": "C"
      },
      "gold_glove": false,
@@ -111804,7 +111804,7 @@
       "rank": "A"
      },
      "defense": {
-      "value": 52,
+      "value": 55,
       "rank": "D"
      },
      "arm": {
@@ -111865,7 +111865,7 @@
     "外野手": {
      "games": 15,
      "defense": {
-      "value": 52,
+      "value": 55,
       "rank": "D"
      },
      "gold_glove": false,
@@ -113378,7 +113378,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 76,
+      "value": 72,
       "rank": "B"
      },
      "arm": {
@@ -113439,7 +113439,7 @@
     "外野手": {
      "games": 130,
      "defense": {
-      "value": 76,
+      "value": 72,
       "rank": "B"
      },
      "gold_glove": false,
@@ -113497,8 +113497,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 67,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "arm": {
       "value": 51,
@@ -113558,8 +113558,8 @@
     "外野手": {
      "games": 10,
      "defense": {
-      "value": 67,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -114396,8 +114396,8 @@
       "rank": "A"
      },
      "defense": {
-      "value": 59,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "arm": {
       "value": 71,
@@ -114457,8 +114457,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 59,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -114684,7 +114684,7 @@
       "rank": "A"
      },
      "defense": {
-      "value": 65,
+      "value": 68,
       "rank": "C"
      },
      "arm": {
@@ -114745,7 +114745,7 @@
     "外野手": {
      "games": 54,
      "defense": {
-      "value": 65,
+      "value": 68,
       "rank": "C"
      },
      "gold_glove": false,
@@ -114803,7 +114803,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 67,
+      "value": 68,
       "rank": "C"
      },
      "arm": {
@@ -114864,7 +114864,7 @@
     "外野手": {
      "games": 121,
      "defense": {
-      "value": 67,
+      "value": 68,
       "rank": "C"
      },
      "gold_glove": false,
@@ -115914,7 +115914,7 @@
       "rank": "C"
      },
      "defense": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "arm": {
@@ -115975,7 +115975,7 @@
     "外野手": {
      "games": 7,
      "defense": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      },
      "gold_glove": false,
@@ -116693,7 +116693,7 @@
       "rank": "D"
      },
      "defense": {
-      "value": 57,
+      "value": 51,
       "rank": "D"
      },
      "arm": {
@@ -116769,7 +116769,7 @@
     "外野手": {
      "games": 12,
      "defense": {
-      "value": 57,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,
@@ -117162,8 +117162,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "arm": {
       "value": 54,
@@ -117223,8 +117223,8 @@
     "外野手": {
      "games": 47,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -118574,8 +118574,8 @@
     "外野手": {
      "games": 3,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -119613,8 +119613,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 60,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "arm": {
       "value": 66,
@@ -119737,8 +119737,8 @@
     "外野手": {
      "games": 40,
      "defense": {
-      "value": 60,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -119795,8 +119795,8 @@
       "rank": "B"
      },
      "defense": {
-      "value": 80,
-      "rank": "A"
+      "value": 77,
+      "rank": "B"
      },
      "arm": {
       "value": 71,
@@ -119856,8 +119856,8 @@
     "外野手": {
      "games": 143,
      "defense": {
-      "value": 80,
-      "rank": "A"
+      "value": 77,
+      "rank": "B"
      },
      "gold_glove": true,
      "detail": {
@@ -120082,8 +120082,8 @@
       "rank": "C"
      },
      "defense": {
-      "value": 60,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 81,
@@ -120143,8 +120143,8 @@
     "外野手": {
      "games": 35,
      "defense": {
-      "value": 60,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -121679,8 +121679,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "arm": {
       "value": 76,
@@ -121740,8 +121740,8 @@
     "外野手": {
      "games": 132,
      "defense": {
-      "value": 64,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -122099,7 +122099,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 64,
+      "value": 63,
       "rank": "C"
      },
      "gold_glove": false,
@@ -122325,7 +122325,7 @@
       "rank": "S"
      },
      "defense": {
-      "value": 51,
+      "value": 59,
       "rank": "D"
      },
      "arm": {
@@ -122386,7 +122386,7 @@
     "外野手": {
      "games": 128,
      "defense": {
-      "value": 51,
+      "value": 59,
       "rank": "D"
      },
      "gold_glove": false,
@@ -122444,8 +122444,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 66,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      },
      "arm": {
       "value": 74,
@@ -122505,8 +122505,8 @@
     "外野手": {
      "games": 17,
      "defense": {
-      "value": 66,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -123315,7 +123315,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 57,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,
@@ -123541,7 +123541,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 50,
+      "value": 53,
       "rank": "D"
      },
      "arm": {
@@ -123602,7 +123602,7 @@
     "外野手": {
      "games": 1,
      "defense": {
-      "value": 50,
+      "value": 53,
       "rank": "D"
      },
      "gold_glove": false,
@@ -124247,8 +124247,8 @@
       "rank": "S"
      },
      "defense": {
-      "value": 58,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "arm": {
       "value": 79,
@@ -124308,8 +124308,8 @@
     "外野手": {
      "games": 12,
      "defense": {
-      "value": 58,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "gold_glove": false,
      "detail": {
@@ -125984,8 +125984,8 @@
       "rank": "B"
      },
      "defense": {
-      "value": 39,
-      "rank": "F"
+      "value": 43,
+      "rank": "E"
      },
      "arm": {
       "value": 80,
@@ -126060,8 +126060,8 @@
     "外野手": {
      "games": 9,
      "defense": {
-      "value": 39,
-      "rank": "F"
+      "value": 43,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -126214,7 +126214,7 @@
     "外野手": {
      "games": 4,
      "defense": {
-      "value": 60,
+      "value": 65,
       "rank": "C"
      },
      "gold_glove": false,
@@ -126491,8 +126491,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -127101,7 +127101,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "gold_glove": false,
@@ -129000,8 +129000,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 66,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "gold_glove": false,
      "detail": {
@@ -129862,7 +129862,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "gold_glove": false,
@@ -130695,7 +130695,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 52,
+      "value": 55,
       "rank": "D"
      },
      "arm": {
@@ -130756,7 +130756,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 52,
+      "value": 55,
       "rank": "D"
      },
      "gold_glove": false,
@@ -131029,8 +131029,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 61,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -131222,8 +131222,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 52,
-      "rank": "D"
+      "value": 46,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -131280,8 +131280,8 @@
       "rank": "B"
      },
      "defense": {
-      "value": 49,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "arm": {
       "value": 73,
@@ -131341,8 +131341,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 49,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -132217,8 +132217,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 53,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "arm": {
       "value": 65,
@@ -132278,8 +132278,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 53,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -133003,8 +133003,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "arm": {
       "value": 54,
@@ -133064,8 +133064,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 62,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -133786,8 +133786,8 @@
       "rank": "E"
      },
      "defense": {
-      "value": 54,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "arm": {
       "value": 49,
@@ -133847,8 +133847,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 54,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -134668,8 +134668,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 52,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "gold_glove": false,
      "detail": {
@@ -134846,8 +134846,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 60,
-      "rank": "C"
+      "value": 55,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -134904,8 +134904,8 @@
       "rank": "D"
      },
      "defense": {
-      "value": 65,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "arm": {
       "value": 57,
@@ -134965,8 +134965,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 65,
-      "rank": "C"
+      "value": 59,
+      "rank": "D"
      },
      "gold_glove": false,
      "detail": {
@@ -136586,7 +136586,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 57,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,
@@ -137059,7 +137059,7 @@
       "rank": "A"
      },
      "defense": {
-      "value": 60,
+      "value": 63,
       "rank": "C"
      },
      "arm": {
@@ -137120,7 +137120,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 60,
+      "value": 63,
       "rank": "C"
      },
      "gold_glove": false,
@@ -138008,7 +138008,7 @@
       "rank": "E"
      },
      "defense": {
-      "value": 57,
+      "value": 50,
       "rank": "D"
      },
      "arm": {
@@ -138069,7 +138069,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 57,
+      "value": 50,
       "rank": "D"
      },
      "gold_glove": false,
@@ -138293,8 +138293,8 @@
       "rank": "F"
      },
      "defense": {
-      "value": 40,
-      "rank": "E"
+      "value": 34,
+      "rank": "F"
      },
      "arm": {
       "value": 39,
@@ -138354,8 +138354,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 40,
-      "rank": "E"
+      "value": 34,
+      "rank": "F"
      },
      "gold_glove": false,
      "detail": {
@@ -138412,7 +138412,7 @@
       "rank": "B"
      },
      "defense": {
-      "value": 50,
+      "value": 51,
       "rank": "D"
      },
      "arm": {
@@ -138473,7 +138473,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 50,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,
@@ -138831,8 +138831,8 @@
       "rank": "F"
      },
      "defense": {
-      "value": 40,
-      "rank": "E"
+      "value": 34,
+      "rank": "F"
      },
      "arm": {
       "value": 39,
@@ -138892,8 +138892,8 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 40,
-      "rank": "E"
+      "value": 34,
+      "rank": "F"
      },
      "gold_glove": false,
      "detail": {
@@ -141188,7 +141188,7 @@
     "外野手": {
      "games": 0,
      "defense": {
-      "value": 58,
+      "value": 51,
       "rank": "D"
      },
      "gold_glove": false,

@@ -338,9 +338,7 @@ func _starter_score(p: SimPlayer, slot: String) -> float:
 	if slot == "指名打者":
 		return score
 	var key := field_key(slot)
-	var def := p.defense_at(key)
-	if slot == "中堅手":
-		def += p.speed * 0.3
+	var def := p.range_at(slot)
 	if slot == "捕手" and not p.defense.has("捕手"):
 		return -1000.0 + score
 	if slot in ["遊撃手", "二塁手", "中堅手"] and not p.defense.has(key):
