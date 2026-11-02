@@ -4,7 +4,7 @@ extends SceneTree
 ## - UiInput：set_fullscreen / toggle_fullscreen が設定を保存し、再起動（load_display_settings）で復元される
 ## - F11・Alt+Enter のキーイベントで切り替わる（押した瞬間だけ。リピート・離す・Enter だけ・Alt+ほかのキーでは切り替わらない）
 ## - システムの設定（SaveView）の「フルスクリーン」ボタンが切り替えと表示に追従する
-## - project.godot：横長・縦長のモニターで黒い帯を出す（stretch aspect=keep）
+## - project.godot：stretch aspect=expand（スマホ縦画面対応。以前は keep で黒い帯）
 ##
 ##   godot --headless --path godot --script res://tests/fullscreen_check.gd
 
@@ -108,8 +108,8 @@ func _check_system_button() -> void:
 
 func _check_project() -> void:
 	print("== project.godot ==")
-	_check(ProjectSettings.get_setting("display/window/stretch/aspect") == "keep",
-			"stretch aspect=keep（横長・縦長は黒い帯で 16:9 のまま）")
+	_check(ProjectSettings.get_setting("display/window/stretch/aspect") == "expand",
+			"stretch aspect=expand（スマホ縦画面対応で keep から変更。画面の形に合わせて広がる）")
 	_check(ProjectSettings.get_setting("display/window/size/viewport_width") == 1280
 			and ProjectSettings.get_setting("display/window/size/viewport_height") == 720, "基準は 1280x720")
 

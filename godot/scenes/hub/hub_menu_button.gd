@@ -22,6 +22,12 @@ const SELECTED_BORDER := Color("ffd400")
 const GLOW_SEC := 1.4
 
 var key := ""
+## 中のボタンの無効化（hub.gd が「進める」の間だけ押せなくする）
+var disabled: bool:
+	get:
+		return _button.disabled
+	set(value):
+		_button.disabled = value
 
 var _button := Button.new()
 var _style_normal: GlossBox
