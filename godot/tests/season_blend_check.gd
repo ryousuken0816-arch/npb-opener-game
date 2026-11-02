@@ -9,7 +9,8 @@ extends SceneTree
 ## - 佐藤輝明のゲーム内の成績（OPS・本塁打）がリーグの上位：乱数で毎回大きく変わるので、試合の部分（Season）だけを
 ##   ゲームと同じく月ごとに寄せて EXTRA_SEASONS 回まわし、順位の平均で見る（OPS 10位以内・本塁打 5位以内）
 ##
-##   godot --headless --path godot --script res://tests/season_blend_check.gd
+##   godot --headless --path godot --script res://tests/season_blend_check.gd -- [スクショの出力先]
+## 出力先を渡してウィンドウ付きで流すと、9月1日の佐藤輝明の選手詳細を1枚撮る（--position で画面の隅に置き、フォーカスを奪わない）
 
 const TEAM := "阪神タイガース"
 const YEAR := 2026
@@ -23,7 +24,16 @@ var _gs: Node
 var _gd: Node
 
 
+var _out := ""
+
+
 func _initialize() -> void:
+	var args := OS.get_cmdline_user_args()
+	if args.size() > 0:
+		_out = args[0]
+		DirAccess.make_dir_recursive_absolute(_out)
+		if DisplayServer.get_name() != "headless":
+			DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_NO_FOCUS, true)
 	_run.call_deferred()
 
 
@@ -72,7 +82,7 @@ func _run() -> void:
 	print("9月1日 割合 %.2f %s" % [t_sep, sep])
 	_check(t_sep > t_summer and _sum(sep) >= _sum(summer), "9月1日：割合・打撃がさらに上がる（%.2f、%d）" % [t_sep, _sum(sep)])
 	_check_sim(sato, "9月1日")
-	var detail_sep := await _detail_meet(sato)
+	var detail_sep := await _detail_meet(sato, "player_detail_sep")
 	_check(detail_sep == _gd.player(sato)["batting"]["ratings"]["meet"]["value"],
 		"9月1日：選手詳細のミート %d が能力値と一致（開幕 %d）" % [detail_sep, detail_open])
 
@@ -82,7 +92,8 @@ func _run() -> void:
 	_check(after == goal, "シーズン後：%sの能力が post と一致 %s" % [SATO, after])
 	_check(_gd.season_blend == 0.0, "シーズン後は post を読み直して割合 0")
 	var ranks := [_ranks(_gs.season_stats(YEAR)["batting"], sato)]
-	for i in EXTRA_SEASONS:
+	# スクショを撮るとき（ウィンドウ付き）は、ウィンドウを長く出さないよう追加のシーズンは回さない
+	for i in (EXTRA_SEASONS if _out.is_empty() else 0):
 		ranks.append(_ranks(_sim_season(i + 1), sato))
 	var ops_avg := 0.0
 	var hr_avg := 0.0
@@ -162,10 +173,13 @@ func _norm(v: Variant) -> Variant:
 
 
 ## 選手詳細を開いて、能力のタブのミートの表示（数値）を読む
-func _detail_meet(id: String) -> int:
+func _detail_meet(id: String, shot := "") -> int:
 	var detail: Node = load("res://scenes/player_detail/player_detail.gd").call("open", root, id, [id])
 	await process_frame
 	await process_frame
+	if not shot.is_empty() and not _out.is_empty() and DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png(_out.path_join(shot + ".png"))
 	var value := -1
 	for box: Node in detail.find_children("*", "HBoxContainer", true, false):
 		var has_title := false
