@@ -76,11 +76,12 @@ const FAST_FORWARD_INTERVAL := 0.18
 const NEWS_STOP_KINDS := {
 	"amateur": "アマ球界の号", "mine": "自球団の速報", "magic": "マジック点灯", "pennant": "優勝決定",
 	"series": "CSの勝ち抜け", "champion": "日本一", "monthly": "月ごとの新聞",
+	"injury": "他球団の主力の長期離脱",
 }
 ## 早送りを止めるニュースのまとめた選び方（"important" が初期値）
 const NEWS_STOP_PRESETS := {
 	"important": ["amateur", "mine", "pennant", "champion"],
-	"all": ["amateur", "mine", "magic", "pennant", "series", "champion", "monthly"],
+	"all": ["amateur", "mine", "magic", "pennant", "series", "champion", "monthly", "injury"],
 	"none": [],
 }
 const NEWS_STOP_PRESET_NAMES := {"important": "大事なものだけ", "all": "すべて", "none": "止めない", "custom": "種類ごと"}
@@ -121,6 +122,8 @@ var postseason_history := {}
 var pennant_race := {}
 ## 新聞・速報（年をまたいで残る。セーブにも入る）
 var news: News = null
+## 選手の調子と故障（作業45）。年をまたいで持つ
+var health: Health = null
 var _desk: NewsDesk = null
 var _history: HistoryCompare = null
 ## 春季キャンプで「史実との比較」に使う、いま終わったオフのドラフト
@@ -202,6 +205,7 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	set_news_stop_preset("important")
 	news_stop = {}
 	GameData.debut_extra = {}
+	health = _new_health(hash("health-%s-%d" % [team_name, start_year]))
 	GameData.load_ratings(year, "pre")
 	league = LeagueRoster.new()
 	league.start(year, GameData.ratings, _opening_date(), team, randi() + 1)
@@ -395,6 +399,8 @@ func _stop_kind_of(a: Dictionary, issue_key: String) -> String:
 			return "champion" if postseason != null and postseason.is_finished() else "series"
 		"feat", "milestone", "team":
 			return "mine" if a["mine"] else ""
+		"injury":
+			return "mine" if a["mine"] else "injury"
 	return ""
 
 
@@ -925,7 +931,9 @@ func _advance_one_day() -> void:
 		_advance_postseason_day()
 		return
 	if season != null:
+		_health_before_games()
 		season.sim_until_day(day + 1)
+		_health_after_games(Season.date_of_day(day))
 		_sync_record()
 		desk().scan_day(Season.date_of_day(day))
 		_check_pennant_race()
@@ -1300,12 +1308,106 @@ func _start_season() -> void:
 		season = Season.new(year, roster, schedule, randi() + 1,
 				GameData.load_debut_years(year))
 		_mark_ikusei(true)
+		_health_new_season()
 		var mine: SimTeam = season.teams.get(team)
 		if mine != null:
 			for key: String in tactics:
 				mine.set_tactic(key, tactics[key])
 	day = _season_first_day()
 	_sync_record()
+
+
+# --- 調子・故障（作業45） -----------------------------------------------------------------------
+
+func _new_health(seed_value: int) -> Health:
+	var h := Health.new(seed_value)
+	h.age_of = _age_of
+	return h
+
+
+func _age_of(id: String) -> int:
+	return Growth.age_at(GameData.player(id), year)
+
+
+## 開幕：去年からの故障を各球団に当て、故障中の選手を外して1軍を組み直す（自球団も開幕は自動で組んだばかりなので）
+func _health_new_season() -> void:
+	if health == null:
+		health = _new_health(hash("health-%s-%d" % [team, year]))
+	health.new_year()
+	health.returning.clear()
+	var opening := _season_first_day()
+	health.apply(season.teams, opening)
+	for t: SimTeam in season.teams.values():
+		t.swap_out_injured(opening - 1)
+
+
+## 試合の前：治った選手を戻す。CPU球団は1軍を組み直し、自球団の主力の復帰は速報
+func _health_before_games() -> void:
+	if health == null or phase != Phase.SEASON:
+		return
+	var date := Season.date_of_day(day)
+	var healed := health.begin_day(day, season.teams)
+	for id: String in health.returning.keys():
+		healed.append(health.returning[id])
+	health.returning.clear()
+	for inj: Dictionary in healed:
+		var t: SimTeam = season.teams.get(str(inj["team"]))
+		if t == null or not t.by_id.has(inj["id"]):
+			continue
+		if t.name != team:
+			if not t.return_from_injury(t.by_id[inj["id"]], day, inj.get("place", {})):
+				health.returning[inj["id"]] = inj
+		elif inj.get("first", false):
+			var head := "%sが故障から復帰" % inj["name"]
+			post_news(News.article(date, "injury", head,
+				"%sで離脱していた%sが、2軍での調整を終えて1軍に上げられるようになった。" % [inj["part"], inj["name"]],
+				[inj["id"]], [team]), "", bool(inj.get("key", false)))
+
+
+## 試合の後：今日の試合と練習で故障を判定する。CPU球団は1軍を組み直す。
+## 自球団の1軍の選手は速報（主力）か記事で知らせ、抹消を促す。CPU球団の主力の長期離脱も速報
+func _health_after_games(date: String) -> void:
+	if health == null or phase != Phase.SEASON:
+		return
+	var rebuild := {}
+	for inj: Dictionary in health.after_games(day, season.games_on(date), season.teams):
+		var days: int = int(inj["until"]) - int(inj["start"])
+		var short := GameData.short_name(inj["team"])
+		var head := "%s（%s）が%sで離脱　%s" % [inj["name"], short, inj["part"], Health.length_text(days)]
+		if inj["team"] != team:
+			var t: SimTeam = season.teams[inj["team"]]
+			health.injuries[inj["id"]]["place"] = t.place_of(t.by_id[inj["id"]])
+			rebuild[inj["team"]] = true
+			if inj["key"] and days >= Health.LONG_DAYS:
+				post_news(News.article(date, "injury", head,
+					"%sの%sが%sと診断され、長期の離脱が決まった（%s）。" % [short, inj["name"], inj["part"],
+						Health.length_text(days)], [inj["id"]], [inj["team"]]), "", true)
+		elif inj["first"]:
+			post_news(News.article(date, "injury", head,
+				"%sが%sと診断された（%s）。1軍に登録したままでは試合に出られない。" % [inj["name"], inj["part"],
+					Health.length_text(days)] + "1軍登録の画面で抹消し、代わりの選手を上げよう。",
+				[inj["id"]], [team]), "", bool(inj["key"]))
+	for name: String in rebuild:
+		season.teams[name].swap_out_injured(day)
+
+
+## 自球団の1軍にいる故障中の選手（抹消を促す）
+func injured_on_first() -> Array[SimPlayer]:
+	var t := my_team()
+	if t == null or not is_daily_phase():
+		return []
+	return t.injured_active()
+
+
+## 自球団の1軍の故障中の選手をまとめて抹消し、2軍から代わりを上げる。[[抹消, 上げた], ...]
+func swap_out_injured() -> Array:
+	var t := my_team()
+	if t == null or not can_edit_roster():
+		return []
+	var done := t.swap_out_injured(day)
+	if not done.is_empty():
+		changed.emit()
+	return done
 
 
 # --- ポストシーズン・優勝争い ---------------------------------------------------------------
@@ -1759,6 +1861,7 @@ func to_save() -> Dictionary:
 		"draft_board": draft_board.to_save(year),
 		"news_stop_kinds": news_stop_kinds,
 		"season_blend": GameData.season_blend,
+		"health": health.to_save() if health != null else null,
 	}
 
 
@@ -1845,6 +1948,10 @@ func load_state(d: Dictionary) -> void:
 		var sd: Dictionary = d["season"]
 		season = Season.from_save(sd, GameData.load_debut_years(int(sd["year"])), GameData.player)
 		_mark_ikusei(false)
+	health = Health.from_save(d.get("health"))
+	health.age_of = _age_of
+	if season != null:
+		health.apply(season.teams, day)
 	wins = int(d.get("wins", 0))
 	losses = int(d.get("losses", 0))
 	draws = int(d.get("draws", 0))
