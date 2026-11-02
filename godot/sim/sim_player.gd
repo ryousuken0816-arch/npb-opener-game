@@ -45,10 +45,6 @@ var throws: String
 var primary_pos := ""  ## 能力値データの primary_pos（"投手" "捕手" "外野手" など。不明は空）
 var is_foreign := false  ## 外国人枠の対象（RosterRules.is_foreign）
 var is_ikusei := false  ## 育成選手（支配下登録するまで1軍に登録できない。GameState.mark_ikusei が付ける）
-## 調子（-2〜2）と故障（作業45。Health.apply が毎日付ける）。故障中は1軍の試合に出ない
-var form := 0
-var injured := false
-var injury := ""  ## 故障のひとこと（"故障 右肘の炎症（あと12日）" など。出られれば空）
 
 # 打撃（z 値）
 var meet := 0.0
