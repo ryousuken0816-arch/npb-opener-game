@@ -38,7 +38,7 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 | 選球眼 | BB%（四球/打席） |
 | 走力 | 盗塁企図率 0.45 ＋ 盗塁成功率 0.15 ＋ 三塁打率 0.4 |
 | 肩力 | 守備位置別の 補殺/試合（捕手・三塁・遊撃・外野）※2020年以降は外野・捕手は npbbasement の ARM、三塁・遊撃は外野ARMまたは補殺/試合 |
-| 守備力 | 守備位置別の失策率 ＋ ゴールデングラブ。※2020年以降は npbbasement の守備得点（内野: RngR+ErrR+DPR、外野: RngR+ErrR、捕手: Framing+Blocking+ErrR+ARM） |
+| 守備力 | 守備位置別の失策率 ＋ ゴールデングラブ（2019年までの成績の外野は走力を25%混ぜる。作業43、`OF_SPEED_*`）。※2020年以降は npbbasement の守備得点（内野: RngR+ErrR+DPR、外野: RngR+ErrR、捕手: Framing+Blocking+ErrR+ARM） |
 | 投手 総合力 | FIP（定数 = 年ごとのリーグ防御率 − 素のFIP）。**先発・救援で別々に正規化** |
 | 投手 スタミナ | 1登板あたりアウト数（12以上で先発扱い。先発数がデータにないため）。先発・救援共通で正規化 |
 | 投手 K/9・BB/9・HR/9 | 先発・救援で別々に正規化 |

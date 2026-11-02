@@ -1021,6 +1021,13 @@ func is_ikusei(id: String, p: Dictionary, at_year: int, debut: Dictionary) -> bo
 	var d: Variant = debut.get(id)
 	if d != null and int(d) <= at_year:
 		return false
+	# 名簿に育成の区別がある年（2026年）はそれを使う。1軍初出場の年は名簿にほとんど入っていないので、
+	# 直近3年に1軍の出場がある選手（能力値の加重打席・加重アウト数）も支配下とみなす（作業44：周東・牧原大成が育成扱いだった）
+	var flag: Variant = GameData.roster_ikusei(at_year).get(id)
+	if flag != null:
+		return bool(flag)
+	if _first_team_sample(p) > 0.0:
+		return false
 	if drafted.has(id):
 		return bool(drafted[id]["ikusei"])
 	var text: String = p.get("draft") if p.get("draft") is String else ""
@@ -1030,6 +1037,15 @@ func is_ikusei(id: String, p: Dictionary, at_year: int, debut: Dictionary) -> bo
 		var entry := GameData.draft_entry_for(p, int(joined.get(id, at_year)) - 1)
 		return bool(entry.get("ikusei", false))
 	return false
+
+
+static func _first_team_sample(p: Dictionary) -> float:
+	var n := 0.0
+	for part in ["batting", "pitching"]:
+		var s: Variant = p.get(part)
+		if s is Dictionary and s.get("sample") is Dictionary:
+			n += float(s["sample"].get("pa_1", 0.0)) + float(s["sample"].get("outs_1", 0.0))
+	return n
 
 
 ## 今の時点（オフは来季）で育成選手か
