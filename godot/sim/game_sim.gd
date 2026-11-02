@@ -13,7 +13,9 @@ extends RefCounted
 ##
 ## 守備の記録（守備得点の元。Records.fielding_runs）：段階5・6・7で、守備位置ごとに打球の機会と処理、失策、
 ## 外野の肩（長打を単打に止めた・走者を止めた・刺した）、捕手の盗塁阻止と暴投・捕逸、守備のアウト数を _fld に数え、
-## 結果の "fielding"（[ビジター, ホーム] の 選手ID → 守備位置 → {キー: 数}）で返す。キーは Records.FIELDING_PARTS
+## 結果の "fielding"（[ビジター, ホーム] の 選手ID → 守備位置 → {キー: 数}）で返す。キーは Records.FIELDING_PARTS。
+## あわせて、その機会で平均的な野手（守備力・肩の z = 0）と比べた成功の確率の差 × 1000 を「見込み」のキー（〜d）に足す
+## （作業44。守備得点はこちらで数える。実際に捕れたかで数えると運のぶれが能力の差より大きくなるため）
 ##
 ## 能力値は z 値（SimPlayer）で扱い、確率は「リーグ平均のロジット＋係数×z」をシグモイドで戻す。
 ## 係数・基準値（下の定数）は 2008年の史実のリーグ成績に合うように調整した（HANDOFF.md 参照）。
@@ -40,7 +42,7 @@ const A_OVR_SHARP := 0.05   ## 投手総合力 → 鋭い当たり（減）
 ## 凡打球
 const WEAK_GROUNDER := 0.62  ## 凡打球のうちゴロの割合（残りはフライ・ポップ）
 const GROUNDER_OUT := 0.81
-const A_IF_RANGE := 0.15    ## 内野守備力 → アウト
+const A_IF_RANGE := 0.18    ## 内野守備力 → アウト（作業44で 0.15 から。守備得点の散らばりを DELTA の範囲に）
 const A_SPEED_IF := 0.28    ## 走力 → 内野安打
 const WEAK_FLY_OUT := 0.94
 const BASE_ERROR := 0.064   ## アウトになる打球での失策率
@@ -50,7 +52,7 @@ const BASE_DP := 0.44       ## 一塁走者あり・2アウト未満のゴロア
 
 ## 鋭い当たり
 const SHARP_HIT := 0.66
-const A_OF_RANGE := 0.10    ## 外野守備力 → 安打（減）
+const A_OF_RANGE := 0.13    ## 外野守備範囲 → 安打（減）（作業44で 0.10 から）
 const SHARP_XBH := 0.35     ## 鋭い安打のうち長打の割合
 const A_POW_XBH := 0.35
 const A_SPEED_XBH := 0.15
@@ -337,11 +339,14 @@ func _weak_ball(batting: int, fielding: int, batter: SimPlayer, line: Dictionary
 	var def: float = 0.0 if is_pitcher else fielder.defense_at(SimTeam.field_key(pos))
 	var out_p := _sig(_logit(GROUNDER_OUT) + A_IF_RANGE * def - A_SPEED_IF * batter.speed)
 	_fld_add(fielding, fielder, pos, "gb")
+	_fld_exp(fielding, fielder, pos, "gbd", out_p - _sig(_logit(GROUNDER_OUT) - A_SPEED_IF * batter.speed))
 	if rng.randf() >= out_p:
 		_single(batting, fielding, batter, line, pline, pos, true)
 		return
 	_fld_add(fielding, fielder, pos, "gbo")
-	if rng.randf() < _sig(_logit(BASE_ERROR) - A_DEF_ERROR * def):
+	var err_p := _sig(_logit(BASE_ERROR) - A_DEF_ERROR * def)
+	_fld_exp(fielding, fielder, pos, "gbed", err_p - BASE_ERROR)
+	if rng.randf() < err_p:
 		_fld_add(fielding, fielder, pos, "gbe")
 		_reach_on_error(batting, fielding, batter)
 		return
@@ -370,10 +375,13 @@ func _sharp_ball(batting: int, fielding: int, batter: SimPlayer, line: Dictionar
 	var infield := key != "外野手"
 	var hit_p := _sig(_logit(SHARP_HIT) - A_OF_RANGE * def - (0.9 if infield else 0.0))
 	_fld_add(fielding, fielder, pos, "ln")
+	_fld_exp(fielding, fielder, pos, "lnd", _sig(_logit(SHARP_HIT) - (0.9 if infield else 0.0)) - hit_p)
 	if rng.randf() >= hit_p:
 		# ライナー・外野フライのアウト
 		_fld_add(fielding, fielder, pos, "lno")
-		if rng.randf() < _sig(_logit(FLY_ERROR) - A_DEF_ERROR * def):
+		var err_p := _sig(_logit(FLY_ERROR) - A_DEF_ERROR * def)
+		_fld_exp(fielding, fielder, pos, "lned", err_p - FLY_ERROR)
+		if rng.randf() < err_p:
 			_fld_add(fielding, fielder, pos, "lne")
 			_reach_on_error(batting, fielding, batter)
 			return
@@ -381,7 +389,9 @@ func _sharp_ball(batting: int, fielding: int, batter: SimPlayer, line: Dictionar
 		if _outs < 3 and not infield:
 			if _bases[2] != null:
 				_fld_add(fielding, fielder, pos, "ah")
-				if rng.randf() < _speed_p(SAC_FLY_3RD, _bases[2].p, fielder.arm_at(key)):
+				var tag_p := _speed_p(SAC_FLY_3RD, _bases[2].p, fielder.arm_at(key))
+				_fld_exp(fielding, fielder, pos, "ahhd", _speed_p(SAC_FLY_3RD, _bases[2].p) - tag_p)
+				if rng.randf() < tag_p:
 					var runner: Dictionary = _bases[2]
 					_bases[2] = null
 					line["sf"] += 1
@@ -397,9 +407,13 @@ func _sharp_ball(batting: int, fielding: int, batter: SimPlayer, line: Dictionar
 		_single(batting, fielding, batter, line, pline, pos, false)
 		return
 	var arm := fielder.arm_at(key)
-	var xbh_p := _sig(_logit(SHARP_XBH) + A_POW_XBH * batter.power + A_SPEED_XBH * batter.speed
-			- A_ARM_XBH * arm - A_OF_RANGE * def)
+	var xbh_base := _logit(SHARP_XBH) + A_POW_XBH * batter.power + A_SPEED_XBH * batter.speed
+	var xbh_p := _sig(xbh_base - A_ARM_XBH * arm - A_OF_RANGE * def)
 	_fld_add(fielding, fielder, pos, "xh")
+	# 長打を単打に止めた見込み：範囲の分（xsrd）と肩の分（xsad）に分ける
+	var xbh_range := _sig(xbh_base - A_OF_RANGE * def)
+	_fld_exp(fielding, fielder, pos, "xsrd", _sig(xbh_base) - xbh_range)
+	_fld_exp(fielding, fielder, pos, "xsad", xbh_range - xbh_p)
 	if rng.randf() >= xbh_p:
 		_fld_add(fielding, fielder, pos, "xs")
 		_single(batting, fielding, batter, line, pline, pos, false)
@@ -423,6 +437,7 @@ func _sharp_ball(batting: int, fielding: int, batter: SimPlayer, line: Dictionar
 	_bases = [null, null, null]
 	if first != null:
 		_fld_add(fielding, fielder, pos, "ah")
+		_arm_exp(fielding, fielder, pos, ADV_1_HOME_ON_DOUBLE, first.p, arm, "ahhd", "ahkd")
 		if rng.randf() < _speed_p(ADV_1_HOME_ON_DOUBLE, first.p, arm):
 			_score_runner(batting, first, true, batter)
 		elif _outs < 2 and rng.randf() < _thrown_out_p(arm):
@@ -450,6 +465,7 @@ func _single(batting: int, fielding: int, batter: SimPlayer, line: Dictionary, p
 		_bases[1] = null
 		if outfield:
 			_fld_add(fielding, fielder, pos, "ah")
+			_arm_exp(fielding, fielder, pos, ADV_2_HOME, runner.p, arm, "ahhd", "ahkd")
 		if outfield and rng.randf() < _speed_p(ADV_2_HOME, runner.p, arm):
 			_score_runner(batting, runner, true, batter)
 		elif outfield and _outs < 2 and rng.randf() < _thrown_out_p(arm):
@@ -465,6 +481,7 @@ func _single(batting: int, fielding: int, batter: SimPlayer, line: Dictionary, p
 		var chance := outfield and _bases[2] == null and not infield_hit
 		if chance:
 			_fld_add(fielding, fielder, pos, "a3")
+			_arm_exp(fielding, fielder, pos, ADV_1_TO_3, runner.p, arm, "a3hd", "a3kd")
 		if chance and rng.randf() < _speed_p(ADV_1_TO_3, runner.p, arm):
 			_bases[2] = runner
 		elif chance and _outs < 2 and rng.randf() < _thrown_out_p(arm):
@@ -604,11 +621,12 @@ func _try_steal(batting: int, fielding: int) -> void:
 	if rng.randf() >= attempt:
 		return
 	var catcher := _fielder(fielding, "捕手")
-	var success := _sig(_logit(STEAL_SUCCESS) + A_SPEED_SB * runner_p.speed
-			- A_ARM_SB * catcher.arm_at("捕手"))
+	var success_base := _logit(STEAL_SUCCESS) + A_SPEED_SB * runner_p.speed
+	var success := _sig(success_base - A_ARM_SB * catcher.arm_at("捕手"))
 	var line := _bat_line(batting, runner_p)
 	_bases[base] = null
 	_fld_add(fielding, catcher, "捕手", "sba")
+	_fld_exp(fielding, catcher, "捕手", "csd", _sig(success_base) - success)
 	if rng.randf() < success:
 		line["sb"] += 1
 		_bases[base + 1] = runner
@@ -625,7 +643,9 @@ func _maybe_wild_pitch(fielding: int) -> void:
 	var catcher := _fielder(fielding, "捕手")
 	var c_def: float = 0.0 if catcher == _pitcher[fielding] else catcher.defense_at("捕手")
 	_fld_add(fielding, catcher, "捕手", "wpo")
-	if rng.randf() >= _sig(_logit(WILD_PITCH) - A_C_DEF_WP * c_def):
+	var wp_p := _sig(_logit(WILD_PITCH) - A_C_DEF_WP * c_def)
+	_fld_exp(fielding, catcher, "捕手", "wpd", wp_p - WILD_PITCH)
+	if rng.randf() >= wp_p:
 		return
 	_fld_add(fielding, catcher, "捕手", "wp")
 	var batting := 1 - fielding
@@ -740,6 +760,23 @@ func _fld_add(fielding: int, p: SimPlayer, pos: String, key: String, n := 1) -> 
 		return
 	var d: Dictionary = _fld[fielding].get_or_add(p.id, {}).get_or_add(pos, {})
 	d[key] = int(d.get(key, 0)) + n
+
+
+## 守備の見込みの記録：平均的な野手と比べた確率の差 delta × 1000 を key に足す
+func _fld_exp(fielding: int, p: SimPlayer, pos: String, key: String, delta: float) -> void:
+	_fld_add(fielding, p, pos, key, roundi(delta * 1000.0))
+
+
+## 外野からの返球の見込み：走者が次の塁を狙う機会で、止めた（hold_key）・刺した（kill_key）見込みを肩 z = 0 の野手と比べて足す
+func _arm_exp(fielding: int, p: SimPlayer, pos: String, base: float, runner: SimPlayer, arm: float,
+		hold_key: String, kill_key: String) -> void:
+	var can_kill := _outs < 2
+	var s1 := _speed_p(base, runner, arm)
+	var s0 := _speed_p(base, runner)
+	var k1 := _thrown_out_p(arm) if can_kill else 0.0
+	var k0 := _thrown_out_p(0.0) if can_kill else 0.0
+	_fld_exp(fielding, p, pos, hold_key, (1.0 - s1) * (1.0 - k1) - (1.0 - s0) * (1.0 - k0))
+	_fld_exp(fielding, p, pos, kill_key, (1.0 - s1) * k1 - (1.0 - s0) * k0)
 
 
 func _fielder(fielding: int, pos: String) -> SimPlayer:

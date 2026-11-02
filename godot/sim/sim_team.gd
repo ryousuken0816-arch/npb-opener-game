@@ -175,10 +175,10 @@ func _auto_choose(excluded: Dictionary) -> Array[SimPlayer]:
 	rest.sort_custom(func(a: SimPlayer, b: SimPlayer) -> bool:
 		return _experience_value(a) > _experience_value(b))
 	# 控え捕手を必ず1人入れる
-	var catchers := chosen_fielders.filter(func(p: SimPlayer) -> bool: return p.defense.has("捕手"))
+	var catchers := chosen_fielders.filter(func(p: SimPlayer) -> bool: return p.can_play("捕手"))
 	if catchers.size() < 2:
 		for p: SimPlayer in rest:
-			if p.defense.has("捕手"):
+			if p.can_play("捕手"):
 				chosen_fielders.append(p)
 				rest.erase(p)
 				break
@@ -300,7 +300,7 @@ func _build_order(use_dh: bool, candidates: Array[SimPlayer]) -> Array:
 	return _batting_order(order)
 
 
-## 貪欲法の割り当てを、守備位置の入れ替え・控えとの入れ替えで改善する
+## 貪欲法の割り当てを、守備位置の入れ替え・控えとの入れ替え・控えを入れて押し出しで回す入れ替えで改善する
 ## （例：外野の記録がない強打者が左翼に入り、指名打者が空いていた…を直す）
 func _improve_assignment(assigned: Dictionary, used: Dictionary,
 		candidates: Array[SimPlayer]) -> void:
@@ -328,6 +328,25 @@ func _improve_assignment(assigned: Dictionary, used: Dictionary,
 					used[p.id] = true
 					assigned[slot] = p
 					improved = true
+		# 控えを位置 a に入れ、a にいた選手を位置 b へ回し、b にいた選手を外す（作業44：近藤を左翼へ回して周東を中堅に、など）
+		for a: String in slots:
+			for p in candidates:
+				if used.has(p.id):
+					continue
+				var q: SimPlayer = assigned[a]
+				for b: String in slots:
+					if b == a:
+						continue
+					var r: SimPlayer = assigned[b]
+					var before := _starter_score(q, a) + _starter_score(r, b)
+					var after := _starter_score(p, a) + _starter_score(q, b)
+					if after > before + 0.001:
+						used.erase(r.id)
+						used[p.id] = true
+						assigned[a] = p
+						assigned[b] = q
+						improved = true
+						break
 		if not improved:
 			break
 
@@ -337,12 +356,9 @@ func _starter_score(p: SimPlayer, slot: String) -> float:
 	var score := _experience_value(p)
 	if slot == "指名打者":
 		return score
-	var key := field_key(slot)
 	var def := p.range_at(slot)
-	if slot == "捕手" and not p.defense.has("捕手"):
+	if slot == "捕手" and not p.can_play("捕手"):
 		return -1000.0 + score
-	if slot in ["遊撃手", "二塁手", "中堅手"] and not p.defense.has(key):
-		def -= 1.5
 	return score + def * DEFENSE_WEIGHT[slot]
 
 

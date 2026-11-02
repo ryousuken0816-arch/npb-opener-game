@@ -23,6 +23,16 @@ const PITCHER_BAT_SPEED := -1.0
 ## 守備位置（fielding のキー）
 const POSITIONS := ["捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "外野手"]
 
+## 守備位置の慣れ（作業44）：能力値の fielding.<位置>.detail の weight（その位置の守備の出場量。少サンプル補正の重みで、
+## 正選手は 1.0）× FAMILIAR_SCALE を上限1にしたもの。守備力は「慣れ × 守備力 + (1 − 慣れ) × 不慣れの値」で使う
+## （ほとんど守ったことのない位置に、少サンプル補正の C 前後の守備力が付いていても、試合・スタメン選考では低く扱う）
+const FAMILIAR_SCALE := 2.5
+## 記録のない・慣れていない位置の守備 z 値（一塁は易しいので高め）
+const UNFAMILIAR_Z := -2.5
+const UNFAMILIAR_Z_FIRST := -1.0
+## この慣れ以上なら「守れる位置」（控え捕手を選ぶときなど）
+const FAMILIAR_MIN := 0.5
+
 ## 外野の守備範囲に混ぜる走力の割合（作業43。範囲 = (1−割合) × 守備力 + 割合 × 走力。中堅は広く走るので大きめ）
 const RANGE_SPEED_SHARE := {"中堅手": 0.3, "左翼手": 0.1, "右翼手": 0.1}
 
@@ -47,6 +57,7 @@ var batting_sample := 0.0  ## 1軍の加重打席数（オーダーの優先度�
 # 守備（位置 → z 値）
 var defense := {}
 var arm := {}
+var familiarity := {}  ## 位置 → 慣れ（0〜1）
 
 # 投球（z 値）
 var has_pitching := false
@@ -101,6 +112,7 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 		for pos: String in fielding:
 			var f: Dictionary = fielding[pos]
 			s.defense[pos] = z_of(f.get("defense"), UNKNOWN_BATTING)
+			s.familiarity[pos] = familiarity_of(f)
 			if f.get("arm") != null:
 				s.arm[pos] = z_of(f["arm"], UNKNOWN_BATTING)
 
@@ -129,18 +141,37 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 ## 所属・育成・外国人枠・投手の役割・出場量はそのまま
 func refresh_from(p: Dictionary) -> void:
 	var s := SimPlayer.from_rating(p)
-	for key in ["meet", "power", "eye", "speed", "trajectory", "defense", "arm",
+	for key in ["meet", "power", "eye", "speed", "trajectory", "defense", "arm", "familiarity",
 			"overall", "k9", "bb9", "hr9", "stamina"]:
 		set(key, s.get(key))
 
 
-## その位置の守備 z 値。記録のない位置は不慣れとして大きく下げる
+## 能力値の守備位置の項目（fielding.<位置>）→ 慣れ（0〜1）。detail の weight（basement の年）か detail.err.weight
+## （npb.jp の年）。detail が無い（架空の選手・新人の仮の守備位置など）ときは慣れているとみなす
+static func familiarity_of(f: Dictionary) -> float:
+	var detail: Variant = f.get("detail")
+	if not detail is Dictionary:
+		return 1.0
+	var w: Variant = detail.get("weight")
+	if w == null and detail.get("err") is Dictionary:
+		w = detail["err"].get("weight")
+	if w == null:
+		return 1.0
+	return clampf(float(w) * FAMILIAR_SCALE, 0.0, 1.0)
+
+
+## その位置の守備 z 値。記録のない位置・慣れていない位置は不慣れとして大きく下げる（作業44）
 func defense_at(pos: String) -> float:
-	if defense.has(pos):
-		return defense[pos]
-	if pos == "一塁手":
-		return -1.0
-	return -2.5
+	var low := UNFAMILIAR_Z_FIRST if pos == "一塁手" else UNFAMILIAR_Z
+	if not defense.has(pos):
+		return low
+	var f: float = familiarity.get(pos, 1.0)
+	return f * float(defense[pos]) + (1.0 - f) * low
+
+
+## その位置を守れるか（慣れが FAMILIAR_MIN 以上）
+func can_play(pos: String) -> bool:
+	return defense.has(pos) and float(familiarity.get(pos, 1.0)) >= FAMILIAR_MIN
 
 
 ## 守備範囲の z 値（slot はスタメンの位置。中堅手・左翼手・右翼手は守備力に走力を混ぜる。ほかは defense_at と同じ）

@@ -40,12 +40,15 @@ const RUNS_PER_WIN_BASE := 9.5
 ## 守備の記録のキー：gb ゴロの機会・gbo 処理・gbe 失策、ln 鋭い当たりの機会・lno 捕球・lne 失策、xh 外野の安打・
 ## xs 単打に止めた、ah 本塁を狙える走者・ahh 止めた・ahk 刺した、a3 一塁→三塁を狙える走者・a3h・a3k、
 ## sba 盗塁企図・cs 盗塁刺、wpo 走者ありの打席・wp 暴投・捕逸、outs 守備のアウト数（守備イニング×3）
+## [成功のキー, 機会のキー, 1つあたりの得点の種類, 内訳, 見込みのキー]。見込みのキー（GameSim._fld_exp。平均的な野手と比べた
+## 確率の差 × 1000）がリーグの記録にあればそちらで数え、無ければ（作業44より前のセーブ）実際の成功の数で数える
 const FIELDING_PARTS := [
-	["gbo", "gb", "range", "rng"], ["lno", "ln", "range", "rng"],
-	["gbe", "gbo", "error", "err"], ["lne", "lno", "error", "err"],
-	["xs", "xh", "xbh", "arm"], ["ahh", "ah", "hold_home", "arm"], ["ahk", "ah", "kill_home", "arm"],
-	["a3h", "a3", "hold_3b", "arm"], ["a3k", "a3", "kill_3b", "arm"],
-	["cs", "sba", "cs", "cs"], ["wp", "wpo", "wp", "wp"],
+	["gbo", "gb", "range", "rng", "gbd"], ["lno", "ln", "range", "rng", "lnd"],
+	["gbe", "gbo", "error", "err", "gbed"], ["lne", "lno", "error", "err", "lned"],
+	["", "xh", "xbh", "rng", "xsrd"], ["xs", "xh", "xbh", "arm", "xsad"],
+	["ahh", "ah", "hold_home", "arm", "ahhd"], ["ahk", "ah", "kill_home", "arm", "ahkd"],
+	["a3h", "a3", "hold_3b", "arm", "a3hd"], ["a3k", "a3", "kill_3b", "arm", "a3kd"],
+	["cs", "sba", "cs", "cs", "csd"], ["wp", "wpo", "wp", "wp", "wpd"],
 ]
 ## 1つあたりの得点（平均より1つ多いと何点防いだか）。範囲は内野（ゴロ・ライナーのアウト↔単打）と外野
 ## （鋭い当たりのアウト↔安打。長打を含む）で分ける。失策・暴投は1つ多いと失点が増える（−）
@@ -165,11 +168,15 @@ static func fielding_runs(b: Dictionary, base: Dictionary) -> Dictionary:
 			var lg_chances := float(lg.get(part[1], 0))
 			if chances <= 0.0 or lg_chances <= 0.0:
 				continue
-			var rate := float(lg.get(part[0], 0)) / lg_chances
+			var num: String = part[4] if lg.has(part[4]) else part[0]
+			if num.is_empty():
+				continue
+			var scale := 0.001 if num == part[4] else 1.0
+			var rate := float(lg.get(num, 0)) / lg_chances
 			var kind: String = part[2]
 			if kind == "range":
 				kind = "range_of" if pos in OUTFIELD else "range_if"
-			var runs: float = (float(line.get(part[0], 0)) - chances * rate) * float(FIELDING_RV[kind])
+			var runs: float = (float(line.get(num, 0)) - chances * rate) * scale * float(FIELDING_RV[kind])
 			r[part[3]] += runs
 			r["total"] += runs
 		result["pos"][pos] = r
