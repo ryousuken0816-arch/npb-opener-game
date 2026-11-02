@@ -1587,6 +1587,8 @@ func _archive_season() -> void:
 		"players": season.players.duplicate(true), "records": season.records.duplicate(true),
 		"leagues": season.leagues.duplicate(),
 		"feats": _season_feats(),
+		# 打順の数え（記録室の歴代メンバー。過去の年の試合の結果は残さないので、ここで数えて残す）
+		"orders": RecordsHistory.batting_orders(season.games),
 	}
 	awards_history[key] = Awards.compute(season, GameData.player, is_rookie)
 

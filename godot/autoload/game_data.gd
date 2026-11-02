@@ -470,6 +470,11 @@ func load_debut_years(year: int) -> Dictionary:
 	return result
 
 
+## data/<年>/rosters.json から 選手ID → 育成か（bool）。育成の区別は 2026年の名簿にしか無い（無ければ空）
+func roster_ikusei(year: int) -> Dictionary:
+	return _roster_field(year, "ikusei")
+
+
 ## data/<年>/rosters.json から 選手ID → 背番号（文字列）。背番号は 2026年の名簿にしか無い（無ければ空）
 func uniform_numbers(year: int) -> Dictionary:
 	return _roster_field(year, "number")

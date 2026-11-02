@@ -63,6 +63,13 @@ GG_BONUS = {0: 1.2, 1: 0.9, 2: 0.6, 3: 0.3}
 # basement (2020年〜): セイバーメトリクス守備指標（RngR, ARM, ErrR, DPR, Framing, Blocking）
 # 2020〜2025年の母集団（Inn >= 200）の rate1000（1000イニングあたり得点）の平均・標準偏差
 BASEMENT_START_YEAR = 2020
+# 作業43：basement の無い年（npb.jp の失策率・補殺だけで範囲が入らない 2008〜2019年の成績）の外野の守備力に、
+# 走力からの見込みを混ぜる。守備力 = 63 + SCALE × ((1−W) × (守備力 − 63) + W × (走力 − 外野の走力の平均))
+# （SCALE は混ぜてばらつきが縮む分を戻す。2012・2019年の外野のレギュラーで平均・ばらつきがほぼ変わらず、
+# 走力との相関が basement の年（0.45）に近くなる値）
+OF_SPEED_WEIGHT = 0.25
+OF_SPEED_MEAN = 74
+OF_SPEED_SCALE = 1.12
 BASEMENT_FULL_INN = {"一塁手": 600, "二塁手": 700, "三塁手": 700, "遊撃手": 700, "外野手": 800, "捕手": 600}
 BASEMENT_STATS = {
     "一塁手": {"def_mean": 0.50, "def_sd": 7.16},
@@ -783,9 +790,10 @@ class Calculator:
             out[pos] = entry
         return out
 
-    def fielding(self, pid, key, name):
+    def fielding(self, pid, key, name, speed=None):
         """守備位置ごとの守備力・肩力。2020年以降は basement（RngR, ARM, ErrR, DPR, FRM）、
-        2019年以前は npb.jp（失策率＋GG賞、補殺/試合）の Marcel 加重で算出。"""
+        2019年以前は npb.jp（失策率＋GG賞、補殺/試合）の Marcel 加重で算出。
+        speed（走力の値）を渡すと、basement の無い外野の守備力に走力を混ぜる（OF_SPEED_*）。"""
         prior_pctl = self.prior_pctl_for(name)
         per = defaultdict(lambda: {k: 0.0 for k in FLD_KEYS})
         games = defaultdict(float)
@@ -820,6 +828,14 @@ class Calculator:
                 a = comps["arm"].score(vals)
                 entry["arm"] = {"value": a, "rank": rank_of(a)}
             out[pos] = entry
+
+        # basement の無い年（2019年までの成績で算出する年）の外野の守備力に走力の見込みを混ぜる
+        if speed is not None and "外野手" in out and self.through < BASEMENT_START_YEAR:
+            d0 = out["外野手"]["defense"]["value"]
+            mixed = SCALE_MEAN + OF_SPEED_SCALE * ((1 - OF_SPEED_WEIGHT) * (d0 - SCALE_MEAN)
+                                                   + OF_SPEED_WEIGHT * (speed - OF_SPEED_MEAN))
+            d = max(1, min(100, round(mixed)))
+            out["外野手"]["defense"] = {"value": d, "rank": rank_of(d)}
 
         if b_out:
             # basement の結果で上書き（投手以外）
@@ -859,7 +875,8 @@ class Calculator:
         p = self.d.players.get(pid) if pid else None
         bat, bat_detail, bat_sample, trajectory = self.batting(pid, key, name)
         pit = self.pitching(pid, key, name)
-        fld = self.fielding(pid, key, name)
+        speed = (bat or {}).get("speed", {}).get("value") if isinstance((bat or {}).get("speed"), dict) else None
+        fld = self.fielding(pid, key, name, speed)
         pos_games = {pos: v["games"] for pos, v in fld.items()}
         is_pitcher = bool(pit) and (pos_games.get("投手", 0) >= max(pos_games.values() or [0])
                                     or not any(g for pos, g in pos_games.items() if pos != "投手"))
