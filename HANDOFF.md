@@ -552,3 +552,11 @@
 ## 次にやること（2026-11-01 司令塔より）
 
 Claude の使用量が上限に近いため、続きは Antigravity などが進める前提。**`docs/ANTIGRAVITY.md` の最後の節「Claude が止まったときの引き継ぎ」**に、途中の作業・次の順番・進め方をまとめた。
+
+## 2026-11-02 追記：Antigravity が main に直接入れた8コミットの点検
+
+全 `*_check.gd`（40本）をヘッドレスで1回流し、`godot/data/` が無い状態でも `data/`・`generated/` から読めることを確認した（起動エラー0件）。
+- 直した不具合：ハブの「進める」ボタン（`HubMenuButton`）に `disabled` が無く、押すとエラーで進めなかった（`contract_check` で発覚）→ `hub_menu_button.gd` に追加。システム画面にバックアップ欄が増えて1280x720で高さが足りずスクロールが出た（`layout_fit_check`・`save_check`）→ `save_view.gd` で Web・スマホのときだけ表示。`fullscreen_check` は stretch aspect が意図的に `expand` へ変わったので期待値を更新。
+- 新しいテスト：`tests/order_page_check.gd`（起用設定の▲▼・札どうしの入れ替え・控えを入れる・守備充足インジケーター・DHあり／なし・自動で組む）。
+- 再実行で通った（乱数しだい）：`lottery_3d_check`・`fa_comp_check`（人的補償の選手の件）。`pad_flow_check`・`start_year_check` の「最初の球団にフォーカス（続きから）」は、セーブが残っていると「続きから」にフォーカスが行く仕様のため（他のテストの後に流すと出る。単独・セーブなしなら通る）。
+- Web 書き出し：`tools/bundle_game_data.py` → `--export-release Web` が成功（pck 約58MB）。バンドル後（`godot/data/` あり）でもデスクトップのテストは通る。ただし `godot/data/` が残ったまま `data/` を更新すると、ゲームは古いバンドルを先に読む（`res://data` が優先）。デスクトップで遊ぶ前に `godot/data/` を消すこと。

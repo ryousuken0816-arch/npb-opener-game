@@ -173,6 +173,8 @@ func _build_backup_row(p: UiTheme.Palette) -> void:
 		else:
 			_set_status("保存エラー: " + err))
 	_backup_row.add_child(_download_button)
+	# ブラウザのデータ消去対策なので、Web・スマホのときだけ出す（PCの1280x720ではシステム画面の高さが足りなくなる）
+	_backup_row.visible = OS.has_feature("web") or UiLayout.is_mobile
 	add_child(_backup_row)
 
 
