@@ -124,6 +124,8 @@ var pennant_race := {}
 var news: News = null
 ## 選手の調子と故障（作業45）。年をまたいで持つ
 var health: Health = null
+## オーナーの目標と評価（作業46）
+var owner_goals: OwnerGoals = null
 var _desk: NewsDesk = null
 var _history: HistoryCompare = null
 ## 春季キャンプで「史実との比較」に使う、いま終わったオフのドラフト
@@ -206,11 +208,14 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	news_stop = {}
 	GameData.debut_extra = {}
 	health = _new_health(hash("health-%s-%d" % [team_name, start_year]))
+	owner_goals = OwnerGoals.new()
+	_apply_owner_budget()
 	GameData.load_ratings(year, "pre")
 	league = LeagueRoster.new()
 	league.start(year, GameData.ratings, _opening_date(), team, randi() + 1)
 	_sync_roster()
 	_start_season()
+	_owner_set_goals()
 	changed.emit()
 
 
@@ -1167,6 +1172,8 @@ func _prepare_future_year(mlb_returns: Array = []) -> void:
 ## （史実の球団へ）とドラフト会議（Draft。新人は指名した球団へ。画面で進めるか、次へ進むときにおまかせで終える）、春季キャンプ＝新しい年。
 ## CPU球団は外国人市場（戦力外の選手を含む）から少しずつ獲得する
 func _enter(new_phase: Phase) -> void:
+	if phase == Phase.AWARDS and new_phase != Phase.AWARDS:
+		_owner_evaluate()
 	phase = new_phase
 	match new_phase:
 		Phase.POSTSEASON:
@@ -1250,6 +1257,8 @@ func _enter(new_phase: Phase) -> void:
 		# 年の終わり：新しい年の所属（史実の球団 hist_team と比べる）を当ててから「史実との比較」の号
 		_publish(history().year_summary(year - 1, _last_draft))
 		_last_draft = null
+		_apply_owner_budget()
+		_owner_set_goals()
 	_autosave_pending = true
 	changed.emit()
 
@@ -1408,6 +1417,152 @@ func swap_out_injured() -> Array:
 	if not done.is_empty():
 		changed.emit()
 	return done
+
+
+# --- オーナーの目標と評価（作業46） ------------------------------------------------------------
+
+## 評価による予算の増減を自球団の予算に当てる
+func _apply_owner_budget() -> void:
+	ContractRenewal.owner_bonus = {team: owner_goals.bonus} if owner_goals != null and not team.is_empty() else {}
+
+
+## 今年の目標を決めて（まだ無ければ）、オーナーの話としてニュースに載せる（春季キャンプ・ゲームの開始）
+func _owner_set_goals() -> void:
+	if owner_goals == null:
+		owner_goals = OwnerGoals.new()
+	if not owner_goals.goals_of(year).is_empty() or league == null:
+		return
+	var lg := GameData.league_of(team)
+	var scores := {}
+	for t: String in GameData.teams(lg):
+		scores[t] = _team_strength(t)
+	var strength_rank := 1
+	for t: String in scores:
+		if t != team and float(scores[t]) > float(scores.get(team, 0.0)):
+			strength_rank += 1
+	var prev: Dictionary = stats_history.get(str(year - 1), {})
+	var prev_rank := _rank_in(prev.get("records", {}), prev.get("leagues", {}), team) if not prev.is_empty() else -1
+	var prev_champion: bool = postseason_history.get(str(year - 1), {}).get("champion", "") == team
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("owner_goals-%s-%d" % [team, year])
+	var list := OwnerGoals.choose(strength_rank, prev_rank, prev_champion, league.next_payroll(team),
+		ContractRenewal.budget(team), rng)
+	owner_goals.set_goals(year, list)
+	var lines: Array[String] = []
+	for g: Dictionary in list:
+		lines.append("・" + OwnerGoals.goal_text(g))
+	var why := "戦力は%s%d番手の見込み" % [GameData.LEAGUE_NAMES.get(lg, ""), strength_rank]
+	if prev_rank > 0:
+		why += "、昨季は%d位" % prev_rank
+	var date := "%d-02-01" % year if phase == Phase.CAMP else _opening_date()
+	post_news(News.article(date, "owner", "オーナーが今季の目標を示す：%s" % OwnerGoals.goal_text(list[0]),
+		"%s。オーナーは今季の目標として次を挙げた。\n%s" % [why, "\n".join(lines)], [], [team]), "", true)
+
+
+## 球団の戦力（開幕時の能力）：野手の上位9人と投手の上位7人の Depth.now_score の平均
+func _team_strength(team_name: String) -> float:
+	var bats: Array[float] = []
+	var arms: Array[float] = []
+	for p: Dictionary in GameData.players_of(team_name):
+		(arms if p.get("is_pitcher", false) else bats).append(Depth.now_score(p))
+	bats.sort()
+	arms.sort()
+	bats.reverse()
+	arms.reverse()
+	var top := bats.slice(0, 9)
+	top.append_array(arms.slice(0, 7))
+	var total := 0.0
+	for v: float in top:
+		total += v
+	return total / maxi(1, top.size())
+
+
+## 球団成績（{球団: {w, l, ...}}）と所属リーグから、その球団のリーグ内の順位（勝率順。いなければ -1）
+static func _rank_in(records: Dictionary, leagues: Dictionary, team_name: String) -> int:
+	if not records.has(team_name):
+		return -1
+	var pct := func(r: Dictionary) -> float:
+		var n: int = int(r.get("w", 0)) + int(r.get("l", 0))
+		return float(r.get("w", 0)) / n if n > 0 else 0.0
+	var mine: float = pct.call(records[team_name])
+	var rank := 1
+	for t: String in records:
+		if t != team_name and leagues.get(t, "") == leagues.get(team_name, "") and pct.call(records[t]) > mine:
+			rank += 1
+	return rank
+
+
+## 自球団の若手（OwnerGoals.YOUTH_AGE 歳以下）の今季の 打席＋対戦打者
+func youth_usage() -> int:
+	if season == null:
+		return 0
+	var n := 0
+	for kind: String in ["batting", "pitching"]:
+		var stats: Dictionary = season.get(kind)
+		for id: String in stats:
+			if season.players.get(id, {}).get("team", "") != team:
+				continue
+			var age := Growth.age_at(GameData.player(id), year)
+			if age >= 0 and age <= OwnerGoals.YOUTH_AGE:
+				n += int(stats[id].get("pa" if kind == "batting" else "bf", 0))
+	return n
+
+
+## 目標の採点に使う今の事実（final：年末の評価か）
+func _owner_facts(final: bool) -> Dictionary:
+	var lg := GameData.league_of(team)
+	var row := {}
+	for r: Dictionary in standings(lg):
+		if r["team"] == team:
+			row = r
+	var ps: Dictionary = postseason_history.get(str(year), {})
+	var played := float(row.get("wins", 0) + row.get("losses", 0) + row.get("draws", 0))
+	var total := 0.0
+	if season != null:
+		for g: Dictionary in season.games:
+			if g["status"] == "played" and (g["home"] == team or g["away"] == team):
+				total += 1.0
+	return {
+		"rank": int(row.get("rank", 6)), "win_pct": win_pct(row) if not row.is_empty() else 0.0,
+		"champion": ps.get("champion", "") == team, "js": team in [ps.get("champion", ""), ps.get("runner_up", "")],
+		"youth": youth_usage(), "payroll": league.next_payroll(team) if league != null else 0,
+		"budget": ContractRenewal.budget(team), "final": final,
+		"pace": played / total if total > 0.0 else 1.0,
+	}
+
+
+## 今年の目標と進み具合 [{text, actual, done, kind}]（ハブに出す。目標が無ければ空）
+func owner_progress() -> Array:
+	if owner_goals == null:
+		return []
+	var facts := _owner_facts(phase != Phase.SEASON and phase != Phase.POSTSEASON)
+	var result: Array = []
+	for g: Dictionary in owner_goals.goals_of(year):
+		var r := OwnerGoals.score_goal(g, facts)
+		result.append({"text": OwnerGoals.goal_text(g), "actual": r["actual"], "done": r["done"], "kind": g["kind"]})
+	return result
+
+
+## 表彰のあと：今年の目標を採点し、評価をオフ号に載せ、予算を動かす。続けて悪ければ「監督の進退」のニュース
+func _owner_evaluate() -> void:
+	if owner_goals == null or owner_goals.goals_of(year).is_empty():
+		return
+	var e := owner_goals.evaluate(year, _owner_facts(true), team)
+	_apply_owner_budget()
+	var lines: Array[String] = ["「%s」" % e["comment"]]
+	for r: Dictionary in e["results"]:
+		lines.append("%s %s（%s）" % ["○" if r["done"] else "×", r["text"], r["actual"]])
+	var delta: int = e["budget_delta"]
+	if delta != 0:
+		lines.append("来季の予算：%s%s（予算 %s）" % ["+" if delta > 0 else "−", OwnerGoals.money_text(absi(delta)),
+			OwnerGoals.money_text(ContractRenewal.budget(team))])
+	var date := "%d-11-02" % year
+	post_news(News.article(date, "owner", "オーナーの今季の評価は「%s」" % e["grade"], "\n".join(lines), [], [team]),
+		open_off_issue(), true)
+	if int(e["streak"]) >= OwnerGoals.BAD_STREAK_NEWS:
+		post_news(News.article(date, "owner", "%s、監督の進退に注目が集まる" % GameData.short_name(team),
+			"%d年続けてオーナーの期待を下回った。オーナーは続投を認めたうえで「来季は結果がすべてだ」と語った。" % e["streak"],
+			[], [team]), open_off_issue(), true)
 
 
 # --- ポストシーズン・優勝争い ---------------------------------------------------------------
@@ -1862,6 +2017,7 @@ func to_save() -> Dictionary:
 		"news_stop_kinds": news_stop_kinds,
 		"season_blend": GameData.season_blend,
 		"health": health.to_save() if health != null else null,
+		"owner_goals": owner_goals.to_save() if owner_goals != null else null,
 	}
 
 
@@ -1948,6 +2104,8 @@ func load_state(d: Dictionary) -> void:
 		var sd: Dictionary = d["season"]
 		season = Season.from_save(sd, GameData.load_debut_years(int(sd["year"])), GameData.player)
 		_mark_ikusei(false)
+	owner_goals = OwnerGoals.from_save(d.get("owner_goals"))
+	_apply_owner_budget()
 	health = Health.from_save(d.get("health"))
 	health.age_of = _age_of
 	if season != null:

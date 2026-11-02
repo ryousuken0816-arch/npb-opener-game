@@ -40,13 +40,15 @@ var resolved := false
 
 ## テスト用：球団 → 予算上限の差し替え（予算と関係のない仕組みを確かめるテストで、上限を外すのに使う）
 static var budget_override := {}
+## 球団 → オーナーの評価による予算の増減（万円。作業46。GameState が自球団の分を入れる）
+static var owner_bonus := {}
 
 
-## 球団の予算上限（万円）
+## 球団の予算上限（万円）。オーナーの評価の増減を含む
 static func budget(team_name: String) -> int:
 	if budget_override.has(team_name):
 		return int(budget_override[team_name])
-	return int(BUDGET.get(team_name, BUDGET_DEFAULT))
+	return int(BUDGET.get(team_name, BUDGET_DEFAULT)) + int(owner_bonus.get(team_name, 0))
 
 
 ## テスト用：予算上限を差し替える（amount < 0 で元に戻す）
