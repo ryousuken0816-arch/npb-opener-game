@@ -256,6 +256,9 @@ func _check_meeting() -> void:
 func _check_portrait() -> void:
 	print("== 縦長の画面（スマホ） ==")
 	var layout: Node = root.get_node("UiLayout")
+	var old_size := root.size
+	if DisplayServer.get_name() == "headless":
+		root.size = Vector2i(390, 844)  # 縦かどうかは画面の向きで決まる（担当M）
 	layout.call("set_force_mode", "mobile")
 	await _settle()
 	_hub.call("_open_sub_screen", "draft")
@@ -270,6 +273,7 @@ func _check_portrait() -> void:
 	_check(not nb.is_visible_in_tree() and board.is_visible_in_tree(), "「ボード」で指名ボードだけ")
 	_check(view.call("back") == true and view.call("mode") == "book", "Ⓑでボードから手帳へ戻る")
 	_hub.call("_close_sub_screen")
+	root.size = old_size
 	layout.call("set_force_mode", "pc")
 	await _settle()
 
