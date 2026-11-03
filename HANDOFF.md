@@ -627,6 +627,38 @@
    - 作業54（オフの新しい順番）のあと「ドラフトのあと＝春季キャンプ」のままだった draft_check・draft_rebid_check・draft_notebook_check の期待値を直した（ドラフトのあと FA・現役ドラフトを進めて春季キャンプ。draft_check の画面の確認は CONTRACT の段階から）
    - テスト：mlb_draftee_check・draft_check・draft_rebid_check・draft_notebook_check と quick（11本）ALL OK。ヘッドレスで起動して読み込みのエラー0件
 
+4.62 ~~【不具合】iPhone の Web 版で落ちる（メモリ）~~ → 完了（2026-11-03、担当M）。docs/AUTORUN.md の作業55
+   - ユーザーの報告：iPhone の Safari（Web 版）でボタンを何回か押すと固まり「WebGL context lost」で落ちる（2008年オフの契約更改など）。
+     メモリ・GPU のメモリが足りなくなって描画を止められたと考え、増え続けるもの・大きいものを測って減らした（実機では確かめていない）
+   - 測り方：新 `godot/tests/memory_cycle_check.gd`（ヘッドレス、既定10回で約4分、100回で約32分）。スマホの縦で画面ごとに「開く→中を一通り→閉じる」を繰り返し、
+     オブジェクト数・ノード数・取り残されたノード（ツリーの外で解放されていない）・メモリの1回あたりの増え方を出す。オブジェクトが1回5個より多く増える・取り残しが増える画面は NG。
+     数字は Web 用のデータ（`tools/bundle_game_data.py` の `godot/data/`）を置いて測ったもの。ヘッドレスなので GPU のメモリは測れない
+   - **直す前 → 後**（2008年・ソフトバンク・スマホの縦）
+     | 項目 | 前 | 後 |
+     |---|---|---|
+     | 選手詳細の開け閉め | 1回ごとにノードが1つ残る | 100回で 0（他の画面も100回でオブジェクト・ノードとも増えない） |
+     | 1シーズン後（ハブ・各画面を開いたあと） | 329.6MB | 308.8MB |
+     | シーズン中の山（ハブなし、9月） | 186.0MB | 154.5MB |
+     | iPhone の解像度（1170x2532）でハブと7画面を開いたあと | 245.8MB | 195.5MB（MSDF＋倍率2） |
+     | 2020年開始で歴代メンバーを12年見る | +285MB（記録室を閉じても残る） | +161MB、閉じると +38MB（パソコン版だけ選手ページを1年分持つ分） |
+     | 3D抽選の影の画像（Web） | 4096x4096（GPU 約64MB） | 1024x1024 |
+   - 直したこと
+     - 成績の表（`StatTable.build`）：年度別の行の入れ物を、使わないときも作ってツリーに入れずにいた → 選手詳細を開くたびに1つ残っていた
+     - 試合の結果の打撃・投手の行から 0 の項目を除く（`Season.compact_result`。1シーズンの全試合の行で約20MB減。ロードした古いセーブも詰める）。
+       足し合わせ（`Season._add_line`）は `BAT_LINE_KEYS`・`PIT_LINE_KEYS` を 0 から始めるので、月間・ポストシーズンの集計は今までどおり全部の項目がある。行を読むときは `line.get(項目, 0)`
+     - 月替わりの能力の寄せ（作業40）：寄せ先の `<年>_post` をシーズン中ずっと持っていた → 寄せるときだけ読む（`GameData.peek_ratings(年, phase, keep=false)`）
+     - 記録室の歴代メンバー・歴代ドラフト（`RecordsHistory`）：見た年の選手ページの集計・能力値ファイル・史実の成績を全部持ち続けていた（1年約24MB）→
+       最近使った年だけ（選手ページの集計16年・能力値と史実の成績4年）、記録室を閉じたら捨てる（`clear_caches`）。引退した選手のランクは年ごとにランクだけ覚える（`_ranks_of`）。
+       歴代ドラフトを19年続けて見る時間は 1.5秒 → 3.8秒（持たない分を読み直す）
+     - Web 版だけ：字を MSDF で描く（`UiTheme.msdf_fonts`。字の大きさ・画面の倍率ごとに字の画像を作らない）、画面の倍率の上限を2にする（`export_presets.cfg` の head_include の JavaScript。iPhone は3）、
+       3D抽選の影の画像を1024（`project.godot` の `directional_shadow/size.web`）。パソコン版の見た目は変えない
+   - 残り・気になる点
+     - Web 版は選手ページを全年分まとめた `all_players.json`（8.7MB）を最初の試合の日に読み（通算記録のため）、ずっと持つ（約40MB）。選手ごと・年ごとに分けて読むのは手間が大きいので未着手
+     - 能力の寄せの写し（`GameData._blend_base`、約10MB）はシーズン中ずっと持つ
+     - 采配・記録室・ドラフトの開け閉めは、オブジェクトは増えないがメモリが1回 0.1MB 前後増える（文字の形のキャッシュなど。100回で 8〜15MB）
+     - 実機（iPhone）では確かめていない。直したあとの Web 版で、同じ操作で落ちないか見てほしい
+   - テスト：memory_cycle_check（100回）ALL OK。quick（12本）と day_progress_check・records_check・postseason_check・history_views_check・news_check・season_check の18本 ALL OK（tactics_check は先発の行の outs を `.get` で読むよう直した）
+
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。
