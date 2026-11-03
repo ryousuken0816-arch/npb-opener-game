@@ -68,6 +68,7 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_gd = root.get_node("GameData")
 	_ds = load("res://sim/draft.gd")
+	_ds.lottery_seed = 1  # 抽選の当たりはテストのときだけ決めた種で引く（作業58。本番はその場で引く）
 	_dv = load("res://scenes/hub/draft_view.gd")
 	_settings = load("res://scripts/game_settings.gd")
 	_first = _ds.Stage["FIRST"]
@@ -191,6 +192,7 @@ func _play_flow(hub: Node, year: int, snap: Dictionary, flow: Dictionary) -> voi
 	for i in MAX_TRIES:
 		_gs.league.draft = _ds.from_save(snap.duplicate(true))
 		_gs.draft().get("_rng").seed = hash("%d-%s-%s-%d" % [year, kind, flow["mode"], i])
+		_ds.lottery_seed = absi(hash("lottery-%d-%s-%s-%d" % [year, kind, flow["mode"], i]))
 		view = await _open(hub, flow)
 		got = _bid(view, kind)
 		if got == kind:

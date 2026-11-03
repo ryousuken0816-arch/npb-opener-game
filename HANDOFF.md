@@ -627,7 +627,17 @@
    - 作業54（オフの新しい順番）のあと「ドラフトのあと＝春季キャンプ」のままだった draft_check・draft_rebid_check・draft_notebook_check の期待値を直した（ドラフトのあと FA・現役ドラフトを進めて春季キャンプ。draft_check の画面の確認は CONTRACT の段階から）
    - テスト：mlb_draftee_check・draft_check・draft_rebid_check・draft_notebook_check と quick（11本）ALL OK。ヘッドレスで起動して読み込みのエラー0件
 
-4.62 ~~【不具合】iPhone の Web 版で落ちる（メモリ）~~ → 完了（2026-11-03、担当M）。docs/AUTORUN.md の作業55
+4.62 ~~ドラフトの抽選だけは、その場で引く~~ → 完了（2026-11-03、担当T）。docs/AUTORUN.md の作業58
+   - 今までは抽選の当たりもセーブの乱数（`Draft._rng`。状態がセーブに入る）で引いていたので、同じセーブからやり直すと毎回同じ当たりになった
+   - 抽選（1位・外れ1位の競合）の当たりだけ `Draft._lottery_rng`（`_draw_lottery`。引くたびにその場の時刻から `randomize()`、セーブに入れない）で引く。
+     CPU の入札・指名・ほかの乱数（試合など）は今までどおり `_rng` で、同じセーブからやり直すと同じ。3D抽選・中継風の発表は決まった当たりを見せるだけなので変えていない
+   - テストは `Draft.lottery_seed`（static。-1＝その場で引く、0以上＝年・入札の回・候補から決まる種）を決めて流す。抽選を調べるテスト（draft_check・draft_rebid_check・
+     draft_announce_check・draft_announce_flow_check・lottery_3d_check・mlb_draftee_check・draft_meeting_check・draft_notebook_check）は最初に `lottery_seed = 1`、
+     やり直しで当たりを変えるテスト（draft_rebid_check・draft_announce_flow_check）は試すたびに種を変える
+   - 確認：draft_rebid_check の `_check_live_lottery`（2024年・巨人が宗山塁に入札）：同じ状態から16回やり直して CPU の1位の入札は1通り、宗山の当たりは7通りに変わる。種を決めると4回とも同じ
+   - 作業54（オフの新しい順番）のままだった lottery_3d_check・draft_announce_check・draft_meeting_check も直した（戦力外の段階 RELEASE → 契約更改・戦力外の CONTRACT から、ドラフトのあとは春季キャンプまで進める）
+   - テスト：draft_rebid_check・lottery_3d_check・draft_check・draft_announce_check・draft_meeting_check と quick（11本）ALL OK。ヘッドレスで起動して読み込みのエラー0件
+4.63 ~~【不具合】iPhone の Web 版で落ちる（メモリ）~~ → 完了（2026-11-03、担当M）。docs/AUTORUN.md の作業55
    - ユーザーの報告：iPhone の Safari（Web 版）でボタンを何回か押すと固まり「WebGL context lost」で落ちる（2008年オフの契約更改など）。
      メモリ・GPU のメモリが足りなくなって描画を止められたと考え、増え続けるもの・大きいものを測って減らした（実機では確かめていない）
    - 測り方：新 `godot/tests/memory_cycle_check.gd`（ヘッドレス、既定10回で約4分、100回で約32分）。スマホの縦で画面ごとに「開く→中を一通り→閉じる」を繰り返し、

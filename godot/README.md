@@ -335,6 +335,11 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
   1回目の入札（抽選で外れた球団も。`actual_first_bids`）と1位予想の的中、順位予想の上位12人のうち1位で消えた人数、予想を覆した入札、自球団の予想と実際）
 - テスト：`tests/draft_meeting_check.gd`（ヘッドレス可、約1分半）
 
+## ドラフトの抽選の乱数（docs/AUTORUN.md 作業58）
+
+- 抽選（1位・外れ1位の競合）の当たりだけは `Draft._lottery_rng` でその場で引く（セーブに入らない。同じセーブからやり直すと当たりが変わる）。CPU の入札・指名などは `Draft._rng`（セーブに入る）
+- テストで当たりを決めたいときは `Draft.lottery_seed`（static）に0以上の値を入れる（`load("res://sim/draft.gd").lottery_seed = 1`）。-1 でその場で引く
+
 ## スカウトの手帳・指名ボード（`ScoutNotebook`・`PickBoard`・`ScoutNotes`、docs/AUTORUN.md 作業51）
 
 - 参考画面：`docs/references/draft_notebook_mock.html`。ドラフト画面・作戦会議とも、最初は「手帳」。上の「手帳／ボード／表」で切り替える（「ボード」は縦長の画面だけ。横長は手帳と指名ボードを並べる）

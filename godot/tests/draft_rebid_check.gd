@@ -43,10 +43,12 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_gd = root.get_node("GameData")
 	_ds = load("res://sim/draft.gd")
+	_ds.lottery_seed = 1  # 抽選の当たりはテストのときだけ決めた種で引く（作業58。本番はその場で引く）
 	_dv = load("res://scenes/hub/draft_view.gd")
 	_first = _ds.Stage["FIRST"]
 	_waiver = _ds.Stage["WAIVER"]
 	_done = _ds.Stage["DONE"]
+	_check_live_lottery()
 	for c: Dictionary in CASES:
 		await _check_year(c["year"], c["team"])
 	print("\n== 結果: %s ==" % ("ALL OK" if _failures == 0 else "FAILED（%d件）" % _failures))
@@ -59,6 +61,41 @@ func _check(ok: bool, label: String) -> void:
 	else:
 		_failures += 1
 		print("NG ", label)
+
+
+## 作業58：抽選の当たりだけはその場で引く。同じ状態（セーブ）から何度やり直しても CPU の1位の入札は同じで、
+## 抽選の当たりは変わることがある。テストの種（lottery_seed）を決めれば同じ当たりになる
+func _check_live_lottery() -> void:
+	print("\n== 抽選はその場で引く（2024年 巨人・宗山塁） ==")
+	_gs.new_game("読売ジャイアンツ", 2024)
+	_gs.skip_to_phase(_gs.Phase.DRAFT)
+	var d0: RefCounted = _gs.draft()
+	var mune := ""
+	for c: Dictionary in d0.candidates:
+		if c["name"] == "宗山 塁":
+			mune = c["id"]
+	var snap: Dictionary = JSON.parse_string(JSON.stringify(d0.to_save()))
+	var bids_seen := {}
+	var winners := {}
+	_ds.lottery_seed = -1
+	for i in 16:
+		var d: RefCounted = _ds.from_save(JSON.parse_string(JSON.stringify(snap)))
+		d.user_bid(mune)
+		bids_seen[JSON.stringify(d.cpu_first_bids())] = true
+		d.run_first_wave()
+		winners[str(d.by_id[mune]["picked_by"])] = true
+	_check(bids_seen.size() == 1, "同じ状態から16回やり直しても CPU の1位の入札は同じ（%d通り）" % bids_seen.size())
+	_check(winners.size() >= 2, "抽選の当たりはその場で引くので変わる（宗山の当たり %d通り：%s）" % [winners.size(),
+		", ".join(winners.keys().map(func(t: String) -> String: return _gd.short_name(t)))])
+	var fixed := {}
+	_ds.lottery_seed = 7
+	for i in 4:
+		var d: RefCounted = _ds.from_save(JSON.parse_string(JSON.stringify(snap)))
+		d.user_bid(mune)
+		d.run_first_wave()
+		fixed[str(d.by_id[mune]["picked_by"])] = true
+	_check(fixed.size() == 1, "テストの種を決めれば当たりは同じ（%s）" % ", ".join(fixed.keys()))
+	_ds.lottery_seed = 1
 
 
 func _check_year(year: int, team: String) -> void:
@@ -81,6 +118,7 @@ func _check_year(year: int, team: String) -> void:
 		for i in MAX_TRIES:
 			_gs.league.draft = _ds.from_save(snap.duplicate(true))
 			_gs.draft().get("_rng").seed = hash("%d-%s-%d" % [year, kind, i])
+			_ds.lottery_seed = absi(hash("lottery-%d-%s-%d" % [year, kind, i]))
 			result = await _play_first(hub, kind)
 			result["tries"] = i + 1
 			if result["kind"] == kind:

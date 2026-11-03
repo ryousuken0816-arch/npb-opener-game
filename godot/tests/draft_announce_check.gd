@@ -42,6 +42,7 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_gd = root.get_node("GameData")
 	_ds = load("res://sim/draft.gd")
+	_ds.lottery_seed = 1  # 抽選の当たりはテストのときだけ決めた種で引く（作業58。本番はその場で引く）
 	_dv = load("res://scenes/hub/draft_view.gd")
 	_settings = load("res://scripts/game_settings.gd")
 	_announce = load("res://scenes/draft/pick_announce.gd")
@@ -128,7 +129,9 @@ func _silent_wav() -> AudioStreamWAV:
 func _check_2024() -> void:
 	print("== 2024年開始・ドラフトの画面（%s） ==" % USER)
 	_gs.new_game(USER, 2024)
-	_gs.skip_to_phase(_gs.Phase.RELEASE)
+	# 作業54：契約更改・戦力外がひとつの段階（CONTRACT）。締めるとドラフトの前に作戦会議
+	_gs.skip_to_phase(_gs.Phase.CONTRACT)
+	_gs.contract_resolve()
 	_gs.release_resolve()
 	change_scene_to_file("res://scenes/hub/hub.tscn")
 	await _frames(6)
