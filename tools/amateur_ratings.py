@@ -20,6 +20,7 @@
 5. 守備（作業66。`calibrate` の中）：アマの選手には守備の記録が無いので、守備位置の書き方（pos_detail。2025年秋の新人は翌年の史実の守備位置）と
    評価・長所の言葉・遠投から、本職と近い位置の fielding（守備力・肩）と batting の defense・arm を作る。投手にも投手の守備力を付ける。
    架空の候補（godot/sim/fictional_draft.gd の fill_fielding）と同じ決め方
+6. 弾道（作業66の続き。`calibrate` の中）：入団時のパワー＋パワー型かミート型か（パワー−ミート）＋有識者の評判（長打・打球の角度／巧打・非力）から1〜4。投手は1
 入力は data/amateur/<年>.json（形式は data/amateur/README.md）。
 2026_pre の2025年秋の新人は下地（Templates）にも使うので、2025年秋をそろえるのは作り直しの最後（tools/rebuild_all_ratings.py）。
 """
@@ -384,6 +385,19 @@ FIELD_SPREAD = 4
 ## 長所・短所の言葉（守備・強肩など。1語 STRENGTH_BONUS）は守備力・肩をこの割合だけ動かす
 FIELD_TRAIT_SHARE = 0.7
 
+## 入団時の弾道（作業66の続き。架空の候補の FictionalDraft.set_trajectory と同じ決め方）：
+## 点 = パワー + TRAJ_SHAPE ×（パワー − ミート）+ TRAJ_WORD × 評判（長打・角度の評判 +1、巧打・コンパクト型や短所の非力 −1）。
+## 点が TRAJ_CUTS 以上なら 4・3・2、ほかは1（4 はパワー TRAJ_4_POWER 以上だけ）。
+## 2008〜2025年の新人の1年目（シーズン後）は 1 が15%・2 が80%・3 が4%・4 が0.4%（パワー 1:〜46、3:63〜、4:81〜。TRAJECTORY_CUTOFFS どおり）。
+## 入団時のパワーは46〜78に収まるので、そのままの区切りでは1と4が出ない。形（パワー型・ミート型）と評判を足して、1と4が少しだけ出るようにした
+TRAJ_SHAPE = 0.4
+TRAJ_WORD = 4
+TRAJ_CUTS = ((80, 4), (66, 3), (46, 2))
+TRAJ_4_POWER = 74
+TRAJ_UP_WORDS = ("長打", "パワー", "本塁打", "飛距離", "強打", "スラッガー", "長距離", "角度", "アーチ", "ホームラン", "大砲")
+TRAJ_DOWN_WORDS = ("コンパクト", "単打", "ゴロ", "ライナー", "バント", "小技", "つなぎ", "巧打")
+TRAJ_WEAK_WORDS = ("長打", "パワー", "非力")
+
 
 def _num(block: dict, key: str, fallback: float) -> float:
     r = block.get(key)
@@ -541,6 +555,25 @@ def assign_fielding(p: dict, a: dict, grade: str, hs: bool, known: tuple | None 
     return True
 
 
+def trajectory_reputation(a: dict) -> int:
+    """長打・打球の角度の評判 +1、巧打・コンパクト型（長打の評判が無いとき）か短所の非力 −1"""
+    scout = (a or {}).get("scout") or {}
+    good = " ".join(str(x) for x in (scout.get("strengths") or [])) + " " + str(scout.get("type") or "")
+    weak = " ".join(str(x) for x in (scout.get("weaknesses") or []))
+    up = any(w in good for w in TRAJ_UP_WORDS)
+    down = (not up and any(w in good for w in TRAJ_DOWN_WORDS)) or any(w in weak for w in TRAJ_WEAK_WORDS)
+    return int(up) - int(down)
+
+
+def rookie_trajectory(r: dict, rep: int) -> int:
+    pw = _num(r, "power", 50)
+    score = pw + TRAJ_SHAPE * (pw - _num(r, "meet", 50)) + TRAJ_WORD * rep
+    for cut, t in TRAJ_CUTS:
+        if score >= cut and (t < 4 or pw >= TRAJ_4_POWER):
+            return t
+    return 1
+
+
 def known_positions(draft_year: int) -> dict:
     """draft_year 年秋の新人が翌年に史実で守った位置（<年+2>_pre が史実の成績から作ったファイルのとき）。id と名前 → (本職, [位置])"""
     path = RATINGS / f"{draft_year + 2}_pre.json"
@@ -648,6 +681,7 @@ def calibrate(ratings: dict, draft_year: int, scout: dict, known: dict | None = 
                 wk = _weapon_key(x["a"], r)
                 set_value(r, wk, max(_num(r, wk, 0), w_val))
                 _fit_batter(r, target, [k for k in keys if k != wk], cap)
+            p["batting"]["trajectory"] = rookie_trajectory(r, trajectory_reputation(x["a"]))
         g = p.get("growth")
         if isinstance(g, dict) and isinstance(g.get("peak"), dict):
             part = p["pitching"] if p.get("is_pitcher") and isinstance(p.get("pitching"), dict) else p["batting"]

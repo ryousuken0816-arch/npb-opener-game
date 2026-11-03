@@ -251,6 +251,7 @@ python tools/amateur_ratings.py calibrate --draft-year 2025  # 2025年秋の新�
 7. 守備（作業66、`calibrate` の中の `assign_fielding`）：アマの選手には守備の記録が無いので、守備位置の書き方（pos_detail。2025年秋の新人は2026年に史実で守った位置）から本職（二塁手・遊撃手など）と近い位置の fielding を作り、
    守備力・肩は評価（`FIELD_LEVEL` 大学・社会人など S 62〜D 54、高校は5低い）・長所の言葉・遠投・名前で決まるゆらぎ（±4）から。書き方の無い内野手は守備力・肩で遊撃・三塁・二塁・一塁に分ける。
    投手にも投手の守備力（`PITCH_FIELD_LEVEL`）。史実の翌々年のファイル（2025年秋 → 2027_pre と引き継ぎ）で守備の記録が無い新人にも付ける（`fill_fielding`）。架空の候補（`FictionalDraft.fill_fielding`）と同じ決め方
+8. 弾道（作業66の続き、`calibrate` の中の `rookie_trajectory`）：点＝パワー＋0.4×（パワー−ミート）＋4×評判（長打・打球の角度の評判 +1、巧打・コンパクト型や短所の非力 −1。架空の候補は0）が 80以上かつパワー74以上で4、66以上で3、46以上で2、ほかは1。投手は1のまま（`TRAJ_*`。架空の候補の `FictionalDraft.set_trajectory` と同じ）
    - ピーク（growth.peak）は入団時を下回らないようにだけする（入団時を下げてもピークはそのまま）
    - 2025年秋をそろえるのは作り直しのいちばん最後（`rebuild_all_ratings.py` の8）。2026_pre の2025年秋の新人は下地（1）と成長の係数（`growth_coefficients.py` の出場の少ない組）にも使うので、そろえる前の値で作る
 

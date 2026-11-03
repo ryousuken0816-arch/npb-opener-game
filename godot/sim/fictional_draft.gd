@@ -73,6 +73,10 @@ const SUB_POS := {"遊撃手": {"二塁手": -3, "三塁手": -4}, "二塁手": 
 const PITCH_FIELD_LEVEL := {"S": 73, "A": 72, "B": 71, "C": 70, "D": 69}
 const PITCH_FIELD_HS_GAP := 2.0
 const FIELD_SPREAD := 4
+## 入団時の弾道（set_trajectory。tools/amateur_ratings.py の同じ名前の定数と同じ値）
+const TRAJ_SHAPE := 0.4
+const TRAJ_CUTS := [[80.0, 4], [66.0, 3], [46.0, 2]]
+const TRAJ_4_POWER := 74.0
 ## 転生選手の出現確率（人数分布）
 const REINCARNATION_ODDS := [0.65, 0.25, 0.08, 0.02]
 ## 転生選手の高校／大学の割合
@@ -325,6 +329,7 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 			p["amateur"]["type"] = FictionalTalent.decide_player_type(p)
 			p["amateur"]["intro"] = intro_of(p)
 		fill_fielding(p)
+		set_trajectory(p)
 
 	return out
 
@@ -371,6 +376,26 @@ static func fill_fielding(p: Dictionary) -> void:
 		out[x] = _field_entry(x, d + float(subs[x]), arm)
 	p["primary_pos"] = primary
 	p["fielding"] = out
+
+
+## 入団時の弾道（作業66の続き。tools/amateur_ratings.py の rookie_trajectory と同じ決め方。架空の候補には評判の言葉が無いので評判は0）：
+## 点 = パワー + TRAJ_SHAPE ×（パワー − ミート）が TRAJ_CUTS 以上なら 4・3・2、ほかは1（4 はパワー TRAJ_4_POWER 以上だけ）。
+## 投手は1のまま（二刀流の投手は打撃の能力から決める）
+static func set_trajectory(p: Dictionary) -> void:
+	var two_way: Variant = p.get("two_way")
+	var bats := not bool(p.get("is_pitcher", false)) or (two_way is Dictionary and bool(two_way.get("active", false)))
+	var bat: Variant = p.get("batting")
+	if not bats or not bat is Dictionary or not bat.get("ratings") is Dictionary or not bat["ratings"].has("power"):
+		return
+	var r: Dictionary = bat["ratings"]
+	var pw := _rv(r, "power", 50.0)
+	var score := pw + TRAJ_SHAPE * (pw - _rv(r, "meet", 50.0))
+	var t := 1
+	for c: Array in TRAJ_CUTS:
+		if score >= float(c[0]) and (int(c[1]) < 4 or pw >= TRAJ_4_POWER):
+			t = int(c[1])
+			break
+	bat["trajectory"] = t
 
 
 ## 書き方の無い内野手の位置（守備力 → 遊撃手、肩 → 三塁手、守備力 → 二塁手、ほかは一塁手。高校は FIELD_HS_GAP 下げる）

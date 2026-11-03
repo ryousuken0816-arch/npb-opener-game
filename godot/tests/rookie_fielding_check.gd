@@ -5,6 +5,7 @@ extends SceneTree
 ##   守備力（捕手・三塁・遊撃・外野は肩も）と batting の defense・arm を持つ。投手は投手の守備力を持つ
 ## - 2027年を開始年にすると、2026年秋の新人の野手は試合で本職の位置を守れる（不慣れの扱いにならない）。オーダーに入った新人も同じ
 ## - 2028年以降の架空の候補も同じ（「内野手」のままの守備位置が無い）
+## - 入団時の弾道（作業66の続き）：新人・候補の野手は1〜4で、1と4も少しだけいる（2026・2027年秋の実在と架空の候補）
 ##
 ##   godot --headless --path godot --script res://tests/rookie_fielding_check.gd
 
@@ -14,6 +15,7 @@ const ARM_POS := ["捕手", "三塁手", "遊撃手", "外野手"]
 const TEAM := "阪神タイガース"
 
 var _failures := 0
+var _traj_real := {}
 var _gs: Node
 var _gd: Node
 
@@ -26,6 +28,7 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_gd = root.get_node("GameData")
 	_check_files()
+	_check_trajectory("2026・2027年秋の実在の新人・候補", _traj_real)
 	_check_game()
 	_check_draft()
 	_check_fictional()
@@ -84,6 +87,9 @@ func _check_files() -> void:
 				if not bool(p.get("is_pitcher", false)):
 					bat += 1
 					pos[p["primary_pos"]] = int(pos.get(p["primary_pos"], 0)) + 1
+					if name == "2028_pre" and y >= 2026:
+						var t := int(p["batting"].get("trajectory", 0))
+						_traj_real[t] = int(_traj_real.get(t, 0)) + 1
 			if n == 0:
 				continue
 			_check(bad.is_empty(), "%s の%d年秋の新人・候補 %d人（野手 %d人 %s）が守備位置・守備力・肩を持つ（足りない %s）"
@@ -157,6 +163,7 @@ func _check_fictional() -> void:
 	var n := 0
 	var bad: Array = []
 	var pos := {}
+	var traj := {}
 	for y in range(2028, 2033):
 		for p: Dictionary in fd.generate_year(y, rng):
 			n += 1
@@ -165,7 +172,24 @@ func _check_fictional() -> void:
 				bad.append("%s（%s）" % [p["name"], why])
 			if not bool(p.get("is_pitcher", false)):
 				pos[p["primary_pos"]] = int(pos.get(p["primary_pos"], 0)) + 1
+				var t := int(p["batting"].get("trajectory", 0))
+				traj[t] = int(traj.get(t, 0)) + 1
 	print("  野手の本職 %s" % pos)
+	_check_trajectory("架空の候補（5年分）", traj)
 	_check(bad.is_empty(), "架空の候補 %d人が守備位置・守備力・肩を持つ（足りない %s）" % [n, bad.slice(0, 5)])
 	_check(int(pos.get("遊撃手", 0)) > 0 and int(pos.get("二塁手", 0)) > 0 and int(pos.get("三塁手", 0)) > 0,
 		"内野手は二塁手・三塁手・遊撃手などに分かれる")
+
+
+## 弾道の内訳：1〜4だけで、1と4が出て、どちらも少数（1は2割まで、4は1割まで）
+func _check_trajectory(label: String, traj: Dictionary) -> void:
+	var n := 0
+	for t: int in traj:
+		n += int(traj[t])
+	var only := true
+	for t: int in traj:
+		only = only and t >= 1 and t <= 4
+	var t1 := int(traj.get(1, 0))
+	var t4 := int(traj.get(4, 0))
+	_check(n > 0 and only and t1 > 0 and t4 > 0 and t1 <= n * 0.2 and t4 <= n * 0.1,
+		"%sの野手の入団時の弾道 %s（%d人）に1と4が少しだけいる" % [label, traj, n])
