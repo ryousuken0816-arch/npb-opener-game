@@ -207,6 +207,10 @@ func _ready() -> void:
 	_draft_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "draft":
 			_description_label.text = text)
+	# ドラフトのあとの「次へ」：ハブへ戻らずに次の段階（FA）へ（作業65）
+	_draft_view.advance_requested.connect(func() -> void:
+		_close_sub_screen()
+		_on_menu_chosen("advance"))
 	_release_view.message_changed.connect(func(text: String) -> void:
 		if _open_key == "release":
 			_description_label.text = text)
@@ -495,6 +499,8 @@ func _on_menu_chosen(key: String) -> void:
 			return
 		if GameState.draft_open():
 			_open_sub_screen("draft")
+			if GameState.draft_talk_pending():
+				_draft_view.show_talk()  # 説得の待ち：手帳の説得のページを開く（作業65）
 			return
 		# 戦力外・引退を締めたら、ドラフトの段階へ進む前に作戦会議（その年に一度。作業37）
 		if GameState.draft_meeting_due():

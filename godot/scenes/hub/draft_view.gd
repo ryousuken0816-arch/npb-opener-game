@@ -20,6 +20,8 @@ extends VBoxContainer
 ## 「表に切り替え」で今までの候補一覧（能力の表）。入団前に見えるのは今の能力だけ（1年目・将来性は出さない）
 
 signal message_changed(text: String)
+## ドラフトのあとの「次へ」を押した（ハブが次の段階へ進める。作業65）
+signal advance_requested
 
 const TABS := [["info", "情報", Color("1e88e5")], ["pitch", "投手能力", Color("e53935")],
 	["bat", "野手能力", Color("2e9b48")], ["picks", "指名一覧", Color("8a5cc8")]]
@@ -117,6 +119,9 @@ var _status_label: Label
 var _fast_button: Button
 var _skip_button: Button
 var _complete_button: Button
+## ドラフトのあとの「次へ」（説得が残っていれば「説得せずに次へ」。作業65）と、その確かめの1回目を押したか
+var _next_button: Button
+var _skip_armed := false
 var _overlay: Control
 var _overlay_box: VBoxContainer
 var _overlay_next: Button
@@ -207,8 +212,12 @@ func open() -> void:
 	_message = ""
 	_shown_key = ""
 	_fast = false
+	_skip_armed = false
 	var d := GameState.draft()
 	_tab = "picks" if d != null and d.stage == Draft.Stage.DONE else "info"
+	if d != null and d.stage == Draft.Stage.DONE and not d.pending_talks().is_empty():
+		_selected = d.pending_talks()[0]
+		_mode = "book"  # 説得の待ちは手帳の説得のページから（作業65）
 	if d != null:
 		GameState.draft_predictions()
 		GameState.draft_board.apply_to(d)
@@ -310,6 +319,26 @@ func refresh() -> void:
 	_render_bottom(d)
 	if not focused_id.is_empty() and _tags.has(focused_id):
 		_tags[focused_id].grab_focus()
+	if d != null and d.stage == Draft.Stage.DONE:
+		_reveal_done.call_deferred()
+
+
+## ドラフトのあと：縦長の画面（ハブのサブ画面が縦に流れる）でも「次へ」と手帳の「説得する」が画面の中に来るよう流す（作業65）
+func _reveal_done() -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var scroll: ScrollContainer = null
+	var n := get_parent()
+	while n != null and scroll == null:
+		scroll = n as ScrollContainer
+		n = n.get_parent()
+	if scroll == null or not is_visible_in_tree():
+		return
+	if _next_button.is_visible_in_tree():
+		scroll.ensure_control_visible(_next_button)
+	var go := _notebook.go_button()
+	if _mode == "book" and go.is_visible_in_tree() and not go.disabled:
+		scroll.ensure_control_visible(go)
 
 
 func _process(delta: float) -> void:
@@ -427,6 +456,20 @@ func set_mode(mode: String) -> void:
 
 func mode() -> String:
 	return _mode
+
+
+## 説得の待ち（ドラフトのあと）：手帳のその選手のページを開く（ハブの可変ボタン「説得の交渉へ」。作業65）
+func show_talk() -> void:
+	var d := GameState.draft()
+	if d == null or d.pending_talks().is_empty():
+		return
+	_selected = d.pending_talks()[0]
+	set_mode("book")
+
+
+## ドラフトのあとの「次へ」のボタン（テスト用）
+func next_button() -> Button:
+	return _next_button
 
 
 func notebook() -> ScoutNotebook:
@@ -1486,6 +1529,13 @@ func _build_bottom() -> Control:
 	UiTheme.style_button(_complete_button, Color("8a5cc8"), Color.WHITE, 8, 4)
 	_complete_button.pressed.connect(_on_complete_pressed)
 	_bottom_buttons.add_child(_complete_button)
+	_next_button = Button.new()
+	_next_button.custom_minimum_size = Vector2(220, 46)
+	_next_button.add_theme_font_size_override("font_size", 17)
+	UiTheme.style_button(_next_button, Color("e53935"), Color.WHITE, 8, 4)
+	_next_button.pressed.connect(_on_next_pressed)
+	_next_button.visible = false
+	_bottom_buttons.add_child(_next_button)
 	return _bottom_box
 
 
@@ -1506,6 +1556,18 @@ func _render_bottom(d: Draft) -> void:
 	_fast_button.disabled = not waiting
 	_skip_button.disabled = not waiting
 	_complete_button.disabled = d == null or d.resolved or d.stage == Draft.Stage.DONE
+	# ドラフトのあとは押せないボタンを隠して、「次へ」（説得が残っていれば「説得せずに次へ」）を出す（作業65）
+	var done := d != null and d.stage == Draft.Stage.DONE
+	for b: Button in [_fast_button, _skip_button, _complete_button, _auto_pick_button, _finish_button]:
+		b.visible = not done
+	_next_button.visible = done
+	if done:
+		if d.resolved:
+			_next_button.text = "次へ：%s ▶" % GameState.button_text()
+		elif _skip_armed:
+			_next_button.text = "もう一度押すと説得せずに次へ"
+		else:
+			_next_button.text = "説得せずに次へ（渡米）"
 	if not _message.is_empty():
 		_status_label.text = _message
 	elif d == null:
@@ -1518,8 +1580,9 @@ func _render_bottom(d: Draft) -> void:
 		var names: Array[String] = []
 		for rec in mine:
 			names.append("%s %s" % [rec["label"], rec["name"]])
-		_status_label.text = "%sの指名：%s。可変ボタン「春季キャンプへ」で翌年へ進みます。" % [
-			GameData.short_name(GameState.team), "、".join(names) if not names.is_empty() else "なし"]
+		_status_label.text = "%sの指名：%s。「次へ」（可変ボタン「%s」）で次の段階へ進みます。" % [
+			GameData.short_name(GameState.team), "、".join(names) if not names.is_empty() else "なし",
+			GameState.button_text()]
 	elif d.stage == Draft.Stage.FIRST:
 		_status_label.text = "候補を選んで「1位で入札する」。重複したら抽選です。支配下の空き：あと%d人" % maxi(0, d.user_room)
 	elif d.is_user_turn():
@@ -1610,6 +1673,26 @@ func _on_skip_pressed() -> void:
 	_after_change(d)
 
 
+## ドラフトのあとの「次へ」：次の段階（FA）へ。説得が残っていれば、もう一度押したら期限切れ（渡米）にして次へ（作業65）
+func _on_next_pressed() -> void:
+	var d := GameState.draft()
+	if d == null or d.stage != Draft.Stage.DONE:
+		return
+	if not d.resolved:
+		if not _skip_armed:
+			_skip_armed = true
+			var names: Array[String] = []
+			for id in d.pending_talks():
+				names.append(d.by_id[id]["name"])
+			_message = "説得しないまま次へ進むと、%sは期限切れでメジャーへ挑戦します（入団しません）。もう一度押すと次へ進みます。" \
+				% "・".join(names)
+			refresh()
+			return
+		GameState.draft_resolve()
+	_skip_armed = false
+	advance_requested.emit()
+
+
 func _on_complete_pressed() -> void:
 	var d := GameState.draft()
 	if d == null or d.resolved:
@@ -1654,10 +1737,13 @@ func _after_change(d: Draft) -> void:
 		_selected = ""
 		var talks := d.pending_talks()
 		if not talks.is_empty():
-			# メジャー志望の選手を指名していれば、その選手を選んで説得へ
+			# メジャー志望の選手を指名していれば、手帳のその選手のページで説得へ（表・ボードを見ていても。作業65）
 			_selected = talks[0]
+			_mode = "book"
 			_message += "メジャー志望の%sを説得してください（約束を選んで「説得する」）。" % d.by_id[talks[0]]["name"]
-		_show_tab("picks")
+		_tab = "picks"  # _show_tab は案内の文を消すので使わない
+		refresh()
+		focus_first()
 		return
 	if not _selected.is_empty() and not str(d.by_id.get(_selected, {}).get("picked_by", "")).is_empty() \
 			and (d.is_user_turn() or d.stage == Draft.Stage.FIRST):
