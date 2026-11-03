@@ -2731,6 +2731,10 @@
      "speed": {
       "value": 46,
       "rank": "E"
+     },
+     "defense": {
+      "value": 71,
+      "rank": "B"
      }
     },
     "detail": {
@@ -2842,7 +2846,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 71,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "63765152",
@@ -4024,6 +4037,10 @@
      "speed": {
       "value": 57,
       "rank": "D"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -4135,7 +4152,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "01105159",
@@ -5004,6 +5030,10 @@
      "speed": {
       "value": 54,
       "rank": "D"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -5115,7 +5145,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "53055152",
@@ -7633,7 +7672,7 @@
    "draft": "2025年ドラフト1位",
    "career": "高川学園高 - 創価大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "三塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -7649,6 +7688,14 @@
       "rank": "B"
      },
      "speed": {
+      "value": 64,
+      "rank": "C"
+     },
+     "defense": {
+      "value": 64,
+      "rank": "C"
+     },
+     "arm": {
       "value": 64,
       "rank": "C"
      }
@@ -7702,7 +7749,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 64,
+      "rank": "C"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 64,
+      "rank": "C"
+     }
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 61,
+      "rank": "C"
+     },
+     "gold_glove": false
+    },
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 61,
+      "rank": "C"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 64,
+      "rank": "C"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 62,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "83585152",
@@ -7805,23 +7893,31 @@
    "draft": "2025年ドラフト2位",
    "career": "星稜高 - 日本大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      },
      "power": {
-      "value": 61,
+      "value": 62,
       "rank": "C"
      },
      "eye": {
-      "value": 62,
+      "value": 63,
       "rank": "C"
      },
      "speed": {
       "value": 58,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 56,
       "rank": "D"
      }
     },
@@ -7874,7 +7970,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 53,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "81185134",
@@ -9273,19 +9410,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
+      "value": 65,
       "rank": "C"
      },
      "power": {
-      "value": 62,
-      "rank": "C"
-     },
-     "eye": {
       "value": 63,
       "rank": "C"
      },
+     "eye": {
+      "value": 64,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 59,
       "rank": "D"
      }
     },
@@ -9338,7 +9483,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 59,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "41145157",
@@ -11451,23 +11609,31 @@
    "draft": "2025年育成選手ドラフト2位",
    "career": "九州文化学園高 - 関西・兵庫",
    "is_pitcher": false,
-   "primary_pos": "外野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 53,
+      "value": 55,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 55,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 53,
       "rank": "D"
      }
     },
@@ -11520,7 +11686,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 53,
+      "rank": "D"
+     }
+    },
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 53,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "03505150",
@@ -12508,6 +12715,10 @@
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
      }
     },
     "detail": {
@@ -12619,7 +12830,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "01305138",
@@ -15775,6 +15995,10 @@
      "speed": {
       "value": 57,
       "rank": "D"
+     },
+     "defense": {
+      "value": 72,
+      "rank": "B"
      }
     },
     "detail": {
@@ -15886,7 +16110,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "53955152",
@@ -19105,7 +19338,7 @@
    "draft": "2025年ドラフト1位",
    "career": "中京高 - 青山学院大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -19123,6 +19356,14 @@
      "speed": {
       "value": 62,
       "rank": "C"
+     },
+     "defense": {
+      "value": 62,
+      "rank": "C"
+     },
+     "arm": {
+      "value": 56,
+      "rank": "D"
      }
     },
     "detail": {
@@ -19174,7 +19415,36 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 62,
+      "rank": "C"
+     },
+     "gold_glove": false
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "33135151",
@@ -19974,22 +20244,30 @@
    "draft": "2025年ドラフト3位",
    "career": "北海高 - 東洋大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "遊撃手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
+      "value": 65,
       "rank": "C"
      },
      "power": {
-      "value": 62,
-      "rank": "C"
-     },
-     "eye": {
       "value": 63,
       "rank": "C"
      },
+     "eye": {
+      "value": 64,
+      "rank": "C"
+     },
      "speed": {
+      "value": 57,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "arm": {
       "value": 57,
       "rank": "D"
      }
@@ -20043,7 +20321,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 57,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "21525150",
@@ -20519,23 +20838,31 @@
    "draft": "2025年ドラフト5位",
    "career": "東海大菅生高 - 東海大 - NTT西日本",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
+      "value": 62,
       "rank": "C"
      },
      "power": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 58,
+      "value": 59,
       "rank": "D"
      },
      "speed": {
       "value": 56,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 55,
       "rank": "D"
      }
     },
@@ -20588,7 +20915,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 55,
+      "rank": "D"
+     }
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 55,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51455137",
@@ -23937,24 +24305,32 @@
    "draft": "2025年育成選手ドラフト1位",
    "career": "京都国際高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 51,
-      "rank": "D"
-     },
-     "power": {
       "value": 52,
       "rank": "D"
      },
-     "eye": {
+     "power": {
       "value": 53,
       "rank": "D"
      },
+     "eye": {
+      "value": 54,
+      "rank": "D"
+     },
      "speed": {
+      "value": 50,
+      "rank": "D"
+     },
+     "defense": {
       "value": 49,
       "rank": "E"
+     },
+     "arm": {
+      "value": 53,
+      "rank": "D"
      }
     },
     "detail": {
@@ -24006,7 +24382,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 46,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 53,
+      "rank": "D"
+     }
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 43,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 53,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 47,
+      "rank": "E"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "71975150",
@@ -24988,6 +25405,10 @@
      "speed": {
       "value": 63,
       "rank": "C"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -25099,7 +25520,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "11015155",
@@ -25612,6 +26042,10 @@
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 69,
+      "rank": "C"
      }
     },
     "detail": {
@@ -25723,7 +26157,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 69,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51155155",
@@ -25926,6 +26369,10 @@
      "speed": {
       "value": 54,
       "rank": "D"
+     },
+     "defense": {
+      "value": 73,
+      "rank": "B"
      }
     },
     "detail": {
@@ -26037,7 +26484,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 73,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "81285132",
@@ -31631,7 +32087,7 @@
    "draft": "2025年ドラフト5位",
    "career": "中部商 - 沖縄電力",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "三塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -31647,6 +32103,14 @@
       "rank": "D"
      },
      "speed": {
+      "value": 56,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "arm": {
       "value": 56,
       "rank": "D"
      }
@@ -31700,7 +32164,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "61165159",
@@ -32590,24 +33095,32 @@
    "draft": "2025年ドラフト6位",
    "career": "浦和学院高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "三塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 51,
+      "rank": "D"
      }
     },
     "detail": {
@@ -32659,7 +33172,28 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 51,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "21425116",
@@ -33281,6 +33815,14 @@
      "speed": {
       "value": 53,
       "rank": "D"
+     },
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 57,
+      "rank": "D"
      }
     },
     "detail": {
@@ -33332,7 +33874,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 57,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "51655153",
@@ -34433,6 +34988,10 @@
      "speed": {
       "value": 59,
       "rank": "D"
+     },
+     "defense": {
+      "value": 67,
+      "rank": "C"
      }
     },
     "detail": {
@@ -34486,7 +35045,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      },
      "stamina": {
@@ -34494,16 +35053,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -34544,7 +35103,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 67,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "11615152",
@@ -34579,6 +35147,10 @@
      "speed": {
       "value": 49,
       "rank": "E"
+     },
+     "defense": {
+      "value": 69,
+      "rank": "C"
      }
     },
     "detail": {
@@ -34690,7 +35262,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 69,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "21825150",
@@ -36929,6 +37510,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 66,
+      "rank": "C"
      }
     },
     "detail": {
@@ -37040,7 +37625,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 66,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "21425138",
@@ -37873,19 +38467,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 47,
+      "value": 49,
       "rank": "E"
      },
      "power": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 51,
+      "value": 53,
       "rank": "D"
      },
      "speed": {
-      "value": 47,
+      "value": 48,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 45,
       "rank": "E"
      }
     },
@@ -37938,7 +38540,20 @@
     "trajectory": 1
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "捕手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 45,
+      "rank": "E"
+     }
+    }
+   }
   },
   {
    "id": "47545152",
@@ -39394,6 +40009,10 @@
      "speed": {
       "value": 59,
       "rank": "D"
+     },
+     "defense": {
+      "value": 69,
+      "rank": "C"
      }
     },
     "detail": {
@@ -39447,7 +40066,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 70,
+      "value": 71,
       "rank": "B"
      },
      "stamina": {
@@ -39455,7 +40074,7 @@
       "rank": "C"
      },
      "k9": {
-      "value": 70,
+      "value": 71,
       "rank": "B"
      },
      "bb9": {
@@ -39505,7 +40124,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 69,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "21425151",
@@ -39872,6 +40500,10 @@
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 75,
+      "rank": "B"
      }
     },
     "detail": {
@@ -39983,7 +40615,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 75,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "63165134",
@@ -43034,6 +43675,10 @@
      "speed": {
       "value": 58,
       "rank": "D"
+     },
+     "defense": {
+      "value": 75,
+      "rank": "B"
      }
     },
     "detail": {
@@ -43145,7 +43790,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 75,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "53155157",
@@ -44156,6 +44810,10 @@
      "speed": {
       "value": 59,
       "rank": "D"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
      }
     },
     "detail": {
@@ -44267,7 +44925,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "23125155",
@@ -47602,23 +48269,31 @@
    "draft": "2025年ドラフト5位",
    "career": "瀬戸内高 - 東北福祉大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "power": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "eye": {
-      "value": 59,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "speed": {
-      "value": 53,
+      "value": 54,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 52,
       "rank": "D"
      }
     },
@@ -47671,7 +48346,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 52,
+      "rank": "D"
+     }
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 52,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "93195132",
@@ -49668,19 +50384,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "power": {
-      "value": 58,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 53,
+      "value": 54,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 54,
       "rank": "D"
      }
     },
@@ -49733,7 +50457,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 54,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "71375155",
@@ -49886,19 +50623,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "power": {
-      "value": 58,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 52,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "arm": {
+      "value": 50,
       "rank": "D"
      }
     },
@@ -49951,7 +50696,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 50,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "51355150",
@@ -51205,23 +51963,31 @@
    "draft": "2025年育成選手ドラフト2位",
    "career": "掛川西高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      },
      "power": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "eye": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 48,
+      "value": 49,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 45,
       "rank": "E"
      }
     },
@@ -51274,7 +52040,28 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 45,
+      "rank": "E"
+     }
+    }
+   }
   },
   {
    "id": "41545159",
@@ -51462,19 +52249,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 53,
-      "rank": "D"
-     },
-     "eye": {
       "value": 54,
       "rank": "D"
      },
+     "eye": {
+      "value": 55,
+      "rank": "D"
+     },
      "speed": {
+      "value": 54,
+      "rank": "D"
+     },
+     "defense": {
       "value": 53,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 51,
       "rank": "D"
      }
     },
@@ -51527,7 +52322,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 53,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 51,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "51955152",
@@ -51562,6 +52370,10 @@
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 74,
+      "rank": "B"
      }
     },
     "detail": {
@@ -51673,7 +52485,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 74,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "73375153",
@@ -54206,6 +55027,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
      }
     },
     "detail": {
@@ -54317,7 +55142,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "21625130",
@@ -54518,6 +55352,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 73,
+      "rank": "B"
      }
     },
     "detail": {
@@ -54629,7 +55467,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 73,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51655157",
@@ -55476,6 +56323,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 74,
+      "rank": "B"
      }
     },
     "detail": {
@@ -55587,7 +56438,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 74,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "61765157",
@@ -58176,7 +59036,7 @@
    "draft": "2025年ドラフト3位",
    "career": "関大北陽高 - 近畿大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "遊撃手",
    "batting": {
     "ratings": {
      "meet": {
@@ -58194,6 +59054,14 @@
      "speed": {
       "value": 57,
       "rank": "D"
+     },
+     "defense": {
+      "value": 61,
+      "rank": "C"
+     },
+     "arm": {
+      "value": 60,
+      "rank": "C"
      }
     },
     "detail": {
@@ -58245,7 +59113,40 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 61,
+      "rank": "C"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 60,
+      "rank": "C"
+     }
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 58,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 58,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 60,
+      "rank": "C"
+     }
+    }
+   }
   },
   {
    "id": "93395153",
@@ -59253,23 +60154,31 @@
    "draft": "2025年ドラフト6位",
    "career": "神村学園高伊賀",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "遊撃手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 61,
+      "value": 62,
       "rank": "C"
      },
      "eye": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      },
      "speed": {
       "value": 52,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 56,
       "rank": "D"
      }
     },
@@ -59322,7 +60231,40 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "41445159",
@@ -60683,6 +61625,14 @@
      "speed": {
       "value": 63,
       "rank": "C"
+     },
+     "defense": {
+      "value": 62,
+      "rank": "C"
+     },
+     "arm": {
+      "value": 61,
+      "rank": "C"
      }
     },
     "detail": {
@@ -60734,7 +61684,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 62,
+      "rank": "C"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 61,
+      "rank": "C"
+     }
+    }
+   }
   },
   {
    "id": "51055155",
@@ -62705,6 +63668,14 @@
      "speed": {
       "value": 53,
       "rank": "D"
+     },
+     "defense": {
+      "value": 58,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 51,
+      "rank": "D"
      }
     },
     "detail": {
@@ -62756,7 +63727,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "捕手": {
+     "games": 0,
+     "defense": {
+      "value": 58,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 51,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "51755152",
@@ -62773,23 +63757,31 @@
    "draft": "2025年育成選手ドラフト2位",
    "career": "長崎商 - 桐蔭横浜大 - 四国・徳島",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "power": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 53,
+      "value": 55,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 55,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 50,
       "rank": "D"
      }
     },
@@ -62842,7 +63834,36 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 50,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "43045159",
@@ -65446,6 +66467,10 @@
      "speed": {
       "value": 54,
       "rank": "D"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
      }
     },
     "detail": {
@@ -65557,7 +66582,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "41945139",
@@ -66256,6 +67290,10 @@
      "speed": {
       "value": 57,
       "rank": "D"
+     },
+     "defense": {
+      "value": 71,
+      "rank": "B"
      }
     },
     "detail": {
@@ -66367,7 +67405,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 71,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "41545151",
@@ -67068,6 +68115,10 @@
      "speed": {
       "value": 46,
       "rank": "E"
+     },
+     "defense": {
+      "value": 65,
+      "rank": "C"
      }
     },
     "detail": {
@@ -67179,7 +68230,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 65,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "11615134",
@@ -67714,6 +68774,10 @@
      "speed": {
       "value": 57,
       "rank": "D"
+     },
+     "defense": {
+      "value": 66,
+      "rank": "C"
      }
     },
     "detail": {
@@ -67825,7 +68889,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 66,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "13915152",
@@ -70368,24 +71441,32 @@
    "draft": "2025年ドラフト1位",
    "career": "桐蔭学園高 - 法政大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "三塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 70,
+      "value": 71,
       "rank": "B"
      },
      "power": {
-      "value": 65,
+      "value": 66,
       "rank": "C"
      },
      "eye": {
-      "value": 66,
+      "value": 67,
       "rank": "C"
      },
      "speed": {
       "value": 62,
       "rank": "C"
+     },
+     "defense": {
+      "value": 58,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 59,
+      "rank": "D"
      }
     },
     "detail": {
@@ -70437,7 +71518,36 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 58,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 59,
+      "rank": "D"
+     }
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51455151",
@@ -71194,7 +72304,7 @@
    "draft": "2025年ドラフト6位",
    "career": "作新学院高 - 中央大 - NTT東日本",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "三塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -71211,6 +72321,14 @@
      },
      "speed": {
       "value": 56,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 58,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 57,
       "rank": "D"
      }
     },
@@ -71263,7 +72381,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 58,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 57,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "41845152",
@@ -71280,7 +72439,7 @@
    "draft": "2025年ドラフト2位",
    "career": "関西高 - 城西大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "遊撃手",
    "batting": {
     "ratings": {
      "meet": {
@@ -71298,6 +72457,14 @@
      "speed": {
       "value": 58,
       "rank": "D"
+     },
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 61,
+      "rank": "C"
      }
     },
     "detail": {
@@ -71349,7 +72516,40 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 61,
+      "rank": "C"
+     }
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 61,
+      "rank": "C"
+     }
+    }
+   }
   },
   {
    "id": "01505157",
@@ -73533,6 +74733,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 65,
+      "rank": "C"
      }
     },
     "detail": {
@@ -73644,7 +74848,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 65,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "71475157",
@@ -75586,6 +76799,10 @@
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 71,
+      "rank": "B"
      }
     },
     "detail": {
@@ -75697,7 +76914,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 71,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "23025152",
@@ -76816,6 +78042,10 @@
      "speed": {
       "value": 54,
       "rank": "D"
+     },
+     "defense": {
+      "value": 75,
+      "rank": "B"
      }
     },
     "detail": {
@@ -76927,7 +78157,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 75,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51355159",
@@ -78462,6 +79701,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -78573,7 +79816,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "01505151",
@@ -79108,6 +80360,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
      }
     },
     "detail": {
@@ -79219,7 +80475,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "71875157",
@@ -84001,7 +85266,7 @@
    "draft": "2025年ドラフト5位",
    "career": "明秀学園日立高 - 中央大 - JR東日本",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -84018,6 +85283,14 @@
      },
      "speed": {
       "value": 56,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 57,
       "rank": "D"
      }
     },
@@ -84070,7 +85343,28 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 57,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "81185150",
@@ -87335,6 +88629,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 71,
+      "rank": "B"
      }
     },
     "detail": {
@@ -87446,7 +88744,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 71,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "13515155",
@@ -87919,6 +89226,10 @@
      "speed": {
       "value": 40,
       "rank": "E"
+     },
+     "defense": {
+      "value": 65,
+      "rank": "C"
      }
     },
     "detail": {
@@ -88030,7 +89341,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 65,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "11415153",
@@ -89412,19 +90732,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 51,
-      "rank": "D"
-     },
-     "power": {
-      "value": 52,
-      "rank": "D"
-     },
-     "eye": {
       "value": 53,
       "rank": "D"
      },
+     "power": {
+      "value": 54,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 55,
+      "rank": "D"
+     },
      "speed": {
-      "value": 49,
+      "value": 50,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 47,
       "rank": "E"
      }
     },
@@ -89477,7 +90805,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "捕手": {
+     "games": 0,
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 47,
+      "rank": "E"
+     }
+    }
+   }
   },
   {
    "id": "83185157",
@@ -90420,23 +91761,31 @@
    "draft": "2025年育成選手ドラフト2位",
    "career": "福井工大福井高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 48,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      },
      "power": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 51,
+      "value": 53,
       "rank": "D"
      },
      "speed": {
-      "value": 48,
+      "value": 49,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "arm": {
+      "value": 46,
       "rank": "E"
      }
     },
@@ -90489,7 +91838,36 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "gold_glove": false
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 46,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 46,
+      "rank": "E"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 47,
+      "rank": "E"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51555152",
@@ -90506,24 +91884,32 @@
    "draft": "2025年育成選手ドラフト4位",
    "career": "オイスカ浜松国際高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 47,
+      "value": 48,
       "rank": "E"
      },
      "power": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "eye": {
-      "value": 53,
+      "value": 54,
       "rank": "D"
      },
      "speed": {
       "value": 45,
       "rank": "E"
+     },
+     "defense": {
+      "value": 53,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 52,
+      "rank": "D"
      }
     },
     "detail": {
@@ -90575,7 +91961,36 @@
     "trajectory": 1
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 53,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 47,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 52,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "23325157",
@@ -91424,19 +92839,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
+      "value": 52,
+      "rank": "D"
+     },
+     "defense": {
       "value": 51,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 54,
       "rank": "D"
      }
     },
@@ -91489,7 +92912,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 54,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "21125157",
@@ -91627,19 +93063,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 50,
+      "value": 52,
       "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "eye": {
-      "value": 50,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 49,
+      "value": 50,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 47,
       "rank": "E"
      }
     },
@@ -91692,7 +93136,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 47,
+      "rank": "E"
+     }
+    }
+   }
   },
   {
    "id": "71975157",
@@ -94119,6 +95576,10 @@
      "speed": {
       "value": 59,
       "rank": "D"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
      }
     },
     "detail": {
@@ -94230,7 +95691,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "81785151",
@@ -98701,18 +100171,26 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
+      "value": 49,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "arm": {
       "value": 49,
       "rank": "E"
      }
@@ -98766,7 +100244,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "捕手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 49,
+      "rank": "E"
+     }
+    }
+   }
   },
   {
    "id": "13515157",
@@ -100489,7 +101980,7 @@
    "draft": "2025年ドラフト3位",
    "career": "東海大相模高 - 東海大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -100506,6 +101997,14 @@
      },
      "speed": {
       "value": 57,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 60,
+      "rank": "C"
+     },
+     "arm": {
+      "value": 58,
       "rank": "D"
      }
     },
@@ -100558,7 +102057,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 60,
+      "rank": "C"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 58,
+      "rank": "D"
+     }
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 58,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 58,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51655152",
@@ -100575,24 +102115,32 @@
    "draft": "2025年ドラフト4位",
    "career": "日大藤沢高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "遊撃手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "power": {
-      "value": 58,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 50,
+      "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 47,
+      "rank": "E"
      }
     },
     "detail": {
@@ -100644,7 +102192,40 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 47,
+      "rank": "E"
+     }
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 47,
+      "rank": "E"
+     }
+    }
+   }
   },
   {
    "id": "63165150",
@@ -101294,23 +102875,31 @@
    "draft": "2025年育成選手ドラフト1位",
    "career": "札幌静修高 - 北海学園大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 53,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "speed": {
       "value": 53,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 58,
       "rank": "D"
      }
     },
@@ -101363,7 +102952,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 53,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 58,
+      "rank": "D"
+     }
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 53,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 58,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "21225133",
@@ -101752,19 +103382,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
+      "value": 65,
       "rank": "C"
      },
      "power": {
-      "value": 63,
+      "value": 64,
       "rank": "C"
      },
      "eye": {
-      "value": 64,
+      "value": 65,
       "rank": "C"
      },
      "speed": {
       "value": 55,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 59,
       "rank": "D"
      }
     },
@@ -101817,7 +103455,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 59,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "11315153",
@@ -103107,6 +104758,10 @@
      "speed": {
       "value": 49,
       "rank": "E"
+     },
+     "defense": {
+      "value": 66,
+      "rank": "C"
      }
     },
     "detail": {
@@ -103218,7 +104873,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 66,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "11615138",
@@ -107058,6 +108722,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 71,
+      "rank": "B"
      }
     },
     "detail": {
@@ -107169,7 +108837,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 71,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "41745159",
@@ -107370,6 +109047,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
      }
     },
     "detail": {
@@ -107481,7 +109162,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "31335116",
@@ -107682,6 +109372,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 72,
+      "rank": "B"
      }
     },
     "detail": {
@@ -107793,7 +109487,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "43945159",
@@ -107996,6 +109699,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 72,
+      "rank": "B"
      }
     },
     "detail": {
@@ -108107,7 +109814,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "61665136",
@@ -111878,20 +113594,28 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "speed": {
-      "value": 49,
+      "value": 50,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 48,
       "rank": "E"
+     },
+     "arm": {
+      "value": 51,
+      "rank": "D"
      }
     },
     "detail": {
@@ -111943,7 +113667,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "捕手": {
+     "games": 0,
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 51,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "81885159",
@@ -114514,19 +116251,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 53,
+      "value": 55,
       "rank": "D"
      },
      "power": {
-      "value": 57,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 50,
+      "value": 51,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 47,
+      "rank": "E"
+     },
+     "arm": {
+      "value": 55,
       "rank": "D"
      }
     },
@@ -114579,7 +116324,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 47,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 55,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "01605132",
@@ -114924,6 +116682,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 73,
+      "rank": "B"
      }
     },
     "detail": {
@@ -115035,7 +116797,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 73,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "33335152",
@@ -115070,6 +116841,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 73,
+      "rank": "B"
      }
     },
     "detail": {
@@ -115181,7 +116956,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 73,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "31035159",
@@ -116726,22 +118510,30 @@
    "draft": "2025年育成選手ドラフト3位",
    "career": "日星高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 47,
+      "value": 49,
       "rank": "E"
      },
      "power": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 51,
+      "value": 53,
       "rank": "D"
      },
      "speed": {
+      "value": 48,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "arm": {
       "value": 47,
       "rank": "E"
      }
@@ -116795,7 +118587,48 @@
     "trajectory": 1
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 46,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 47,
+      "rank": "E"
+     }
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 46,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 47,
+      "rank": "E"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 47,
+      "rank": "E"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "11715159",
@@ -117621,23 +119454,31 @@
    "draft": "2025年育成選手ドラフト1位",
    "career": "創志学園高 - 駒沢大 - BC・栃木",
    "is_pitcher": false,
-   "primary_pos": "外野手",
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      },
      "power": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "eye": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "speed": {
       "value": 57,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 56,
       "rank": "D"
      }
     },
@@ -117690,7 +119531,28 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "81485150",
@@ -118149,6 +120011,10 @@
      "speed": {
       "value": 59,
       "rank": "D"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -118260,7 +120126,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "53555152",
@@ -118921,6 +120796,10 @@
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 69,
+      "rank": "C"
      }
     },
     "detail": {
@@ -119032,7 +120911,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 69,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "31835153",
@@ -120713,6 +122601,10 @@
      "speed": {
       "value": 57,
       "rank": "D"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -120824,7 +122716,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "61665134",
@@ -123703,6 +125604,10 @@
      "speed": {
       "value": 46,
       "rank": "E"
+     },
+     "defense": {
+      "value": 67,
+      "rank": "C"
      }
     },
     "detail": {
@@ -123814,7 +125719,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 67,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "71375138",
@@ -124603,19 +126517,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
+      "value": 51,
+      "rank": "D"
+     },
+     "defense": {
       "value": 50,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 52,
       "rank": "D"
      }
     },
@@ -124668,7 +126590,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "捕手": {
+     "games": 0,
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 52,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "61965151",
@@ -125727,7 +127662,7 @@
    "draft": "2025年ドラフト3位",
    "career": "大阪桐蔭高 - 中央大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "三塁手",
    "batting": {
     "ratings": {
      "meet": {
@@ -125744,6 +127679,14 @@
      },
      "speed": {
       "value": 57,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 56,
       "rank": "D"
      }
     },
@@ -125796,7 +127739,36 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 59,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "73175138",
@@ -127107,23 +129079,31 @@
    "draft": "2025年育成選手ドラフト4位",
    "career": "盛岡大付高 - 神奈川大",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
-      "rank": "D"
-     },
-     "power": {
       "value": 55,
       "rank": "D"
      },
-     "eye": {
+     "power": {
       "value": 56,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 57,
       "rank": "D"
      },
      "speed": {
       "value": 50,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 58,
       "rank": "D"
      }
     },
@@ -127176,7 +129156,40 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 58,
+      "rank": "D"
+     }
+    },
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 58,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "11015138",
@@ -127987,19 +130000,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "power": {
-      "value": 58,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 59,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
       "value": 53,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 52,
       "rank": "D"
      }
     },
@@ -128052,7 +130073,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 52,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "01805151",
@@ -128916,6 +130950,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 73,
+      "rank": "B"
      }
     },
     "detail": {
@@ -129027,7 +131065,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 73,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "23525150",
@@ -129328,19 +131375,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
-     },
-     "eye": {
       "value": 55,
       "rank": "D"
      },
+     "eye": {
+      "value": 56,
+      "rank": "D"
+     },
      "speed": {
-      "value": 51,
+      "value": 52,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 55,
       "rank": "D"
      }
     },
@@ -129393,7 +131448,28 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "捕手": {
+     "games": 0,
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 55,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 47,
+      "rank": "E"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "01705150",
@@ -129647,19 +131723,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 60,
+      "value": 61,
       "rank": "C"
      },
      "power": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "eye": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "speed": {
       "value": 56,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 52,
       "rank": "D"
      }
     },
@@ -129712,7 +131796,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 51,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 52,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "31535152",
@@ -129729,23 +131826,31 @@
    "draft": "2025年育成選手ドラフト2位",
    "career": "屋久島おおぞら高 - 日本プロスポーツ専門学校 - 日本海・石川",
    "is_pitcher": false,
-   "primary_pos": "外野手",
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "power": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "eye": {
-      "value": 53,
+      "value": 54,
       "rank": "D"
      },
      "speed": {
       "value": 54,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 58,
       "rank": "D"
      }
     },
@@ -129798,7 +131903,28 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 57,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 58,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "91395159",
@@ -130999,6 +133125,10 @@
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 75,
+      "rank": "B"
      }
     },
     "detail": {
@@ -131110,7 +133240,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 75,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51255159",
@@ -132293,6 +134432,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 66,
+      "rank": "C"
      }
     },
     "detail": {
@@ -132404,7 +134547,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 66,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "81485159",
@@ -135254,6 +137406,14 @@
      "speed": {
       "value": 61,
       "rank": "C"
+     },
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 60,
+      "rank": "C"
      }
     },
     "detail": {
@@ -135305,7 +137465,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "捕手": {
+     "games": 0,
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 60,
+      "rank": "C"
+     }
+    }
+   }
   },
   {
    "id": "81785155",
@@ -137749,23 +139922,31 @@
    "draft": "2025年ドラフト5位",
    "career": "山村学園高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "一塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "speed": {
-      "value": 49,
+      "value": 50,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "arm": {
+      "value": 47,
       "rank": "E"
      }
     },
@@ -137818,7 +139999,40 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "gold_glove": false
+    },
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 45,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 47,
+      "rank": "E"
+     }
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 45,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 47,
+      "rank": "E"
+     }
+    }
+   }
   },
   {
    "id": "81085115",
@@ -139026,19 +141240,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 64,
+      "value": 65,
       "rank": "C"
      },
      "power": {
-      "value": 62,
-      "rank": "C"
-     },
-     "eye": {
       "value": 63,
       "rank": "C"
      },
+     "eye": {
+      "value": 64,
+      "rank": "C"
+     },
      "speed": {
-      "value": 57,
+      "value": 58,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 56,
       "rank": "D"
      }
     },
@@ -139091,7 +141313,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "43345150",
@@ -139731,24 +141966,32 @@
    "draft": "2025年ドラフト6位",
    "career": "高知高 - 京都産業大 - 四国銀行",
    "is_pitcher": false,
-   "primary_pos": "外野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
+      "value": 62,
       "rank": "C"
      },
      "power": {
-      "value": 57,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 58,
+      "value": 59,
       "rank": "D"
      },
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 60,
+      "rank": "C"
      }
     },
     "detail": {
@@ -139800,7 +142043,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 60,
+      "rank": "C"
+     }
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 49,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 60,
+      "rank": "C"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 53,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51955151",
@@ -140570,6 +142854,10 @@
      "speed": {
       "value": 54,
       "rank": "D"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -140681,7 +142969,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "81885157",
@@ -140882,6 +143179,10 @@
      "speed": {
       "value": 40,
       "rank": "E"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -140993,7 +143294,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "01905159",
@@ -141194,6 +143504,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
      }
     },
     "detail": {
@@ -141305,7 +143619,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "61565159",
@@ -141652,6 +143975,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 72,
+      "rank": "B"
      }
     },
     "detail": {
@@ -141763,7 +144090,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 72,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "01005136",
@@ -142991,24 +145327,32 @@
    "draft": "2025年育成選手ドラフト1位",
    "career": "八王子学園八王子高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "二塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 50,
-      "rank": "D"
-     },
-     "power": {
-      "value": 51,
-      "rank": "D"
-     },
-     "eye": {
       "value": 52,
       "rank": "D"
      },
+     "power": {
+      "value": 53,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 54,
+      "rank": "D"
+     },
      "speed": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
+     },
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 53,
+      "rank": "D"
      }
     },
     "detail": {
@@ -143060,7 +145404,48 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "遊撃手": {
+     "games": 0,
+     "defense": {
+      "value": 47,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 53,
+      "rank": "D"
+     }
+    },
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 47,
+      "rank": "E"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 53,
+      "rank": "D"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 48,
+      "rank": "E"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "71375152",
@@ -143077,23 +145462,31 @@
    "draft": "2025年育成選手ドラフト2位",
    "career": "神村学園高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "三塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      },
      "power": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "eye": {
-      "value": 51,
+      "value": 52,
       "rank": "D"
      },
      "speed": {
-      "value": 48,
+      "value": 49,
+      "rank": "E"
+     },
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 46,
       "rank": "E"
      }
     },
@@ -143146,7 +145539,28 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 46,
+      "rank": "E"
+     }
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 50,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "51955150",
@@ -144061,19 +146475,27 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 55,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
       "value": 51,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 56,
       "rank": "D"
      }
     },
@@ -144126,7 +146548,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 56,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 56,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "01005150",
@@ -144598,6 +147033,10 @@
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -144709,7 +147148,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "11515138",
@@ -145244,6 +147692,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 75,
+      "rank": "B"
      }
     },
     "detail": {
@@ -145355,7 +147807,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 75,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "21525116",
@@ -147387,6 +149848,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 68,
+      "rank": "C"
      }
     },
     "detail": {
@@ -147498,7 +149963,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 68,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "11315150",
@@ -147867,6 +150341,10 @@
      "speed": {
       "value": 57,
       "rank": "D"
+     },
+     "defense": {
+      "value": 71,
+      "rank": "B"
      }
     },
     "detail": {
@@ -147978,7 +150456,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 71,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "71275153",
@@ -149323,6 +151810,10 @@
      "speed": {
       "value": 51,
       "rank": "D"
+     },
+     "defense": {
+      "value": 67,
+      "rank": "C"
      }
     },
     "detail": {
@@ -149434,7 +151925,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 67,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "41945150",
@@ -150447,6 +152947,10 @@
      "speed": {
       "value": 56,
       "rank": "D"
+     },
+     "defense": {
+      "value": 70,
+      "rank": "B"
      }
     },
     "detail": {
@@ -150558,7 +153062,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 70,
+      "rank": "B"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "53155155",
@@ -151249,20 +153762,28 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
       "value": 49,
       "rank": "E"
+     },
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 53,
+      "rank": "D"
      }
     },
     "detail": {
@@ -151314,7 +153835,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "捕手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 53,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "21125155",
@@ -152776,23 +155310,31 @@
    "draft": "2025年ドラフト4位",
    "career": "昌平高",
    "is_pitcher": false,
-   "primary_pos": "内野手",
+   "primary_pos": "三塁手",
    "batting": {
     "ratings": {
      "meet": {
-      "value": 52,
+      "value": 53,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 49,
+      "value": 50,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 48,
       "rank": "E"
      }
     },
@@ -152845,7 +155387,36 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "三塁手": {
+     "games": 0,
+     "defense": {
+      "value": 55,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 48,
+      "rank": "E"
+     }
+    },
+    "二塁手": {
+     "games": 0,
+     "defense": {
+      "value": 52,
+      "rank": "D"
+     },
+     "gold_glove": false
+    },
+    "一塁手": {
+     "games": 0,
+     "defense": {
+      "value": 53,
+      "rank": "D"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "11715153",
@@ -155478,6 +158049,10 @@
      "speed": {
       "value": 48,
       "rank": "E"
+     },
+     "defense": {
+      "value": 65,
+      "rank": "C"
      }
     },
     "detail": {
@@ -155589,7 +158164,16 @@
      "outs_2": 0.0
     }
    },
-   "fielding": {}
+   "fielding": {
+    "投手": {
+     "games": 0,
+     "defense": {
+      "value": 65,
+      "rank": "C"
+     },
+     "gold_glove": false
+    }
+   }
   },
   {
    "id": "91395150",
@@ -156944,20 +159528,28 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 56,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "speed": {
-      "value": 49,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
+     },
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "arm": {
+      "value": 55,
+      "rank": "D"
      }
     },
     "detail": {
@@ -157009,7 +159601,20 @@
     "trajectory": 2
    },
    "pitching": null,
-   "fielding": {}
+   "fielding": {
+    "外野手": {
+     "games": 0,
+     "defense": {
+      "value": 54,
+      "rank": "D"
+     },
+     "gold_glove": false,
+     "arm": {
+      "value": 55,
+      "rank": "D"
+     }
+    }
+   }
   },
   {
    "id": "01705159",
