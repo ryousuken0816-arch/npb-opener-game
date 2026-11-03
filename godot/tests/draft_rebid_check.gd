@@ -5,7 +5,7 @@ extends SceneTree
 ##   単独で確定／競合して当選／競合して外れ（外れ1位を画面で入札）
 ## の3通りを、画面の操作（入札する・演出の「次へ」・自球団の番まで飛ばす・選択終了）だけで進める。おまかせは使わない。
 ## 抽選は乱数なので、入札の直前の状態に戻して乱数を変え、狙った結果が出るまでくり返す。
-## 最後の通りはドラフトの終わりまで進め、可変ボタンで翌年の春季キャンプへ進んでハブの年が追従するかも調べる。
+## 最後の通りはドラフトの終わりまで進め、オフの残り（作業54：FA・現役ドラフト）を進めて翌年の春季キャンプでハブの年が追従するかも調べる。
 ##
 ##   godot --headless --path godot -s res://tests/draft_rebid_check.gd -- [出力先]
 ##   （出力先はウィンドウ付きのときだけ。CPU球団の外れ1位の結果の演出と、2019年の候補一覧（表の投手能力）をスクショ）
@@ -210,6 +210,15 @@ func _finish_draft(hub: Node, year: int, team: String) -> void:
 	await _frames(2)
 	hub.call("_on_menu_chosen", "advance")
 	await _frames(4)
+	# 作業54：ドラフトのあとは FA・現役ドラフト。締めて春季キャンプまで進める
+	guard = 0
+	while _gs.phase != _gs.Phase.CAMP and guard < 10:
+		guard += 1
+		hub.call("_close_sub_screen")
+		_gs.advance()
+		_gs.changed.emit()
+		await _frames(2)
+	await _frames(2)
 	var year_text: String = hub.get_node("%YearLabel").text
 	_check(_gs.year == year + 1 and year_text.contains(str(year + 1)),
 		"可変ボタンで翌年へ進み、ハブの年が追従（%s／%s）" % [year_text, _gs.phase_name()])

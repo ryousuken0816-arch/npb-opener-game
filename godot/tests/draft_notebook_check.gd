@@ -340,7 +340,10 @@ func _check_2028() -> void:
 		% [_board_magnets(board), d.picks.size()])
 	await _shot()
 	_hub.call("_close_sub_screen")
-	_gs.advance()
+	guard = 0
+	while _gs.phase != _gs.Phase.CAMP and guard < 10:  # 作業54：ドラフトのあとに FA・現役ドラフト
+		guard += 1
+		_gs.advance()
 	_check(_gs.phase == _gs.Phase.CAMP and _gs.year == 2029, "春季キャンプへ（%s）" % _gs.date_text())
 
 
