@@ -27,7 +27,7 @@ const TABS := [["info", "情報", Color("1e88e5")], ["pitch", "投手能力", Co
 	["bat", "野手能力", Color("2e9b48")], ["picks", "指名一覧", Color("8a5cc8")]]
 ## 列 [キー, 見出し, 幅]。キーは並び替えのキー（Draft.sort_value）
 const COLUMNS := {
-	"info": [["pos", "位置", 52], ["career", "経歴", 70], ["school", "出身", 180], ["age", "年齢", 58], ["type", "型", 132]],
+	"info": [["pos", "位置", 52], ["career", "経歴", 70], ["school", "出身", 150], ["age", "年齢", 50], ["type", "型", 90]],
 	"pitch": [["pos", "位置", 52], ["velocity", "球速", 80], ["overall", "総合", 62], ["stamina", "スタミナ", 78],
 		["k9", "奪三振", 70], ["bb9", "制球", 62]],
 	"bat": [["pos", "位置", 52], ["meet", "ミート", 62], ["power", "パワー", 62], ["eye", "選球眼", 62],
@@ -969,6 +969,9 @@ func _cell(c: Dictionary, key: String, width: int) -> Control:
 	l.add_theme_font_size_override("font_size", 17 if not key in ["school", "type"] else 15)
 	l.add_theme_color_override("font_color", NameTag.pos_color(c["pos"]).darkened(0.45) if key == "pos" \
 		else UiTheme.TEXT)
+	if key == "type" and not text.is_empty():
+		l.tooltip_text = text  # 型の名前（作業67）が欄に入りきらないとき
+		l.mouse_filter = Control.MOUSE_FILTER_PASS
 	if key == "age" and not c.get("age_known", false) and int(c["age"]) > 0:
 		l.tooltip_text = "生年月日のデータが無いので経歴からの目安"
 		l.mouse_filter = Control.MOUSE_FILTER_PASS

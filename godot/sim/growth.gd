@@ -47,7 +47,7 @@ const STARTER_STAMINA := 62.5
 const VALUE_MIN := 1
 const VALUE_MAX := 100
 const VELOCITY_MIN := 120
-const VELOCITY_MAX := 168
+const VELOCITY_MAX := 165  # 球速の上限（ユーザー指示 2026-11-03：架空の選手も165kmまで）
 const RANK_THRESHOLDS := [90, 80, 70, 60, 50, 40, 20, 0]
 const RANK_LETTERS := ["S", "A", "B", "C", "D", "E", "F", "G"]
 ## 弾道の段（tools/compute_ratings.py の TRAJECTORY_CUTOFFS。パワーの z で近似）

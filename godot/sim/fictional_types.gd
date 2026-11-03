@@ -102,7 +102,7 @@ const KEEP_SHAPE := 0.35
 const NOISE := 3.0
 ## 球速（km/h）の上限・下限（怪物以外）
 const VELO_MAX := 157
-const VELO_MAX_MONSTER := 162
+const VELO_MAX_MONSTER := 165
 const VELO_MIN := 132
 ## 投手の役割：スタミナがこれ以上なら先発（Growth.STARTER_STAMINA と同じ境目）
 ## 当時の評価 S・A の投手は先発型が中心（作業50）。S・A では救援の型を選びにくくする

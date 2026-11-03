@@ -6,6 +6,8 @@ extends RefCounted
 ## 長期インフレゼロで生成する。
 
 const MODEL_PATH := "res://../generated/fictional_model.json"
+## 架空の選手のピークの球速の上限（ユーザー指示 2026-11-03：163km → 165km。成長の上限 Growth.VELOCITY_MAX と同じ）
+const VELOCITY_PEAK_MAX := 165
 
 ## 年の質（豊作・不作）パラメータ
 const QUALITY_RHO := 0.20
@@ -307,7 +309,7 @@ func _generate_pitcher_peak(target_t: float, category: String,
 		var sig: float = float(stds.get(k, 12.0))
 		var raw_val: float = mu + z_map[k] * sig
 		if k == "velocity":
-			ratings[k] = clampi(roundi(raw_val), 133, 163)
+			ratings[k] = clampi(roundi(raw_val), 133, VELOCITY_PEAK_MAX)
 		else:
 			ratings[k] = clampi(roundi(soft_cap(raw_val)), 15, 99)
 
