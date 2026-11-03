@@ -59,13 +59,18 @@ python tools/compute_ratings.py --year 2008 --phase post  # シーズン後 → 
 
 少サンプル補正のブレンド先（事前値、上記②）を、通常の「母集団の30パーセンタイル目」ではなく
 **ドラフト順位＋出身区分から決めたパーセンタイル目**にする（`prior_pctl_for`）。2軍の成績が出れば
-blend の重みが自然に上がり実績側へ寄っていくので、この事前値は初期値（新人の頃）にしか効かない。
+blend の重みが自然に上がり実績側へ寄っていく。
 
 - 出身区分は drafts.json の `school` から判定（`draft_category`）：`〜高`＝高校（`ROOKIE_BASE_PCTL["高校"]`＝低め）、
   `大`を含む＝大学、それ以外＝社会人・独立リーグ等（即戦力寄り＝高め）
 - ドラフト順位（`round`。「1位」「1巡目」どちらの表記も対応）が上位ほど加算（`ROOKIE_ROUND_PCTL_BONUS`）、育成指名は減算（`ROOKIE_IKUSEI_PCTL_PENALTY`）
 - drafts.json に player_id が無いため名前（`norm_name`）で突合。ドラフト情報が見つからない選手（主に外国人）は既定値 `ROOKIE_IMPORT_PCTL`
 - パーセンタイルは `ROOKIE_PCTL_MIN`〜`ROOKIE_PCTL_MAX` にクリップ
+- **入団から年数が経った選手は下げる**（作業71）：使う成績の中のプロの年数（ドラフトの年から。ドラフト情報の無い外国人などは日本で最初に成績のある年から）が
+  2年を超えると、1年ごとに `PRIOR_DECAY_PER_YEAR`（7）ずつ下げ、`VETERAN_PRIOR_PCTL`（5）で止める。ただし1軍でよく出ている選手は下げない
+  （直近3年の加重で 打席 `PRIOR_FULL_PA` 600・アウト `PRIOR_FULL_OUTS` 300 に対する割合だけ下げ幅を弱める）。
+  出場の少ないベテランの控え・2軍の選手が C に寄らず E〜F まで下がり、主力の能力は変わらない
+- 2020年以降の守備（basement）の少サンプル補正も、寄せ先を平均（rate 0）ではなく同じ事前値のパーセンタイル（正規分布の分位点）にする
 
 この事前値は打撃・投手・守備すべての `_rate_block` に共通で渡す（`batting`/`pitching`/`fielding` は `name` 引数を受け取る）。
 投手は1軍・2軍とも成績が一切ない場合も `pitching(..., force=True)` で（全指標が事前値のみの）能力値を必ず生成するため、

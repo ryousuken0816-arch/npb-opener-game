@@ -17,6 +17,7 @@ import math
 import re
 import sys
 import unicodedata
+from statistics import NormalDist
 from collections import defaultdict
 from pathlib import Path
 
@@ -104,6 +105,15 @@ ROOKIE_ROUND_PCTL_BONUS = {1: 15, 2: 8, 3: 4}              # ドラフト順位�
 ROOKIE_IKUSEI_PCTL_PENALTY = -10                            # 育成指名
 ROOKIE_IMPORT_PCTL = 35                                     # ドラフト情報がない新加入選手（主に外国人）の既定値
 ROOKIE_PCTL_MIN, ROOKIE_PCTL_MAX = 5, 70
+# 作業71：入団（日本で最初の年）から年数が経った選手の事前値は下げていく。新人の年と2年目はそのまま、
+# そのあと1年ごとに PRIOR_DECAY_PER_YEAR ずつ下げ、VETERAN_PRIOR_PCTL で止める。出場の少ないベテランの控え・
+# 2軍の選手が平均（C）に寄らず E〜F まで下がるように（数年たっても1軍で出ていない＝それだけの力、とみなす）
+# 1軍でよく出ている選手（直近3年の加重で 打席 PRIOR_FULL_PA・アウト PRIOR_FULL_OUTS 以上）は下げない（出場の割合で弱める）。
+# 主力の、あまり守っていない位置の守備・救援投手の被本塁打などが下がりすぎないように
+PRIOR_DECAY_PER_YEAR = 7
+VETERAN_PRIOR_PCTL = 5
+PRIOR_FULL_PA = 600
+PRIOR_FULL_OUTS = 300
 
 # 弾道（野手）: ISO と HR/打数 の z 値を加重平均し、しきい値で 1〜4 に分類。
 # 実データが無いための代用指標。係数・しきい値は後で調整できるようここに定数化
@@ -571,18 +581,52 @@ class Calculator:
             return "大学"
         return "社会人"
 
-    def prior_pctl_for(self, name: str) -> float:
-        """少サンプル補正のブレンド先（事前値）のパーセンタイル。ドラフト情報があれば加減する。"""
+    def prior_pctl_for(self, name: str, key: str | None = None) -> float:
+        """少サンプル補正のブレンド先（事前値）のパーセンタイル。ドラフト情報があれば加減する。
+        入団から年数が経った選手は下げていく（作業71。PRIOR_DECAY_PER_YEAR・VETERAN_PRIOR_PCTL）"""
         info = self.draft_info.get(norm_name(name))
         if not info:
-            return ROOKIE_IMPORT_PCTL
-        pctl = ROOKIE_BASE_PCTL[self.draft_category(info.get("school"))]
-        m = re.match(r"(\d+)", info.get("round") or "")
-        if m:
-            pctl += ROOKIE_ROUND_PCTL_BONUS.get(int(m.group(1)), 0)
-        if info.get("ikusei"):
-            pctl += ROOKIE_IKUSEI_PCTL_PENALTY
-        return max(ROOKIE_PCTL_MIN, min(ROOKIE_PCTL_MAX, pctl))
+            pctl = ROOKIE_IMPORT_PCTL
+            first = self.first_season(key)
+            seasons = self.through - first + 1 if first is not None else 0
+        else:
+            pctl = ROOKIE_BASE_PCTL[self.draft_category(info.get("school"))]
+            m = re.match(r"(\d+)", info.get("round") or "")
+            if m:
+                pctl += ROOKIE_ROUND_PCTL_BONUS.get(int(m.group(1)), 0)
+            if info.get("ikusei"):
+                pctl += ROOKIE_IKUSEI_PCTL_PENALTY
+            seasons = self.through - int(info["draft_year"])  # 使う成績の中のプロの年数
+        pctl = max(ROOKIE_PCTL_MIN, min(ROOKIE_PCTL_MAX, pctl))
+        decay = PRIOR_DECAY_PER_YEAR * max(0, seasons - 1) * (1.0 - self.first_team_share(key))
+        return max(min(pctl, VETERAN_PRIOR_PCTL), pctl - decay)
+
+    def first_team_share(self, key: str | None) -> float:
+        """1軍での出場の多さ（0〜1）：直近3年の加重の打席 / PRIOR_FULL_PA と アウト / PRIOR_FULL_OUTS の大きいほう"""
+        page = self.d.players.get(key) if key else None
+        if not page:
+            return 0.0
+        pa = sum(season_weight(r["年度"], self.through) * (r.get("打席") or 0) for r in page.get("batting", []))
+        outs = sum(season_weight(r["年度"], self.through) * (r.get("outs") or 0) for r in page.get("pitching", []))
+        return min(1.0, max(pa / PRIOR_FULL_PA, outs / PRIOR_FULL_OUTS))
+
+    def first_season(self, key: str | None) -> int | None:
+        """日本で最初に成績のある年（1軍の選手ページ・1軍2軍のチーム成績。使う成績の最終年まで）。無ければ None"""
+        if key is None:
+            return None
+        if not hasattr(self, "_first_season"):
+            first: dict[str, int] = {}
+            for r in self.d.teamstats:
+                k = r["player_id"] or self._tmp_id(r)
+                if r["year"] <= self.through and (k not in first or r["year"] < first[k]):
+                    first[k] = r["year"]
+            for pid, pg in self.d.players.items():
+                for r in pg.get("batting", []) + pg.get("pitching", []):
+                    yr = r.get("年度")
+                    if isinstance(yr, int) and yr <= self.through and (pid not in first or yr < first[pid]):
+                        first[pid] = yr
+            self._first_season = first
+        return self._first_season.get(key)
 
     def provisional_velocity(self, name: str) -> dict:
         """1軍・2軍とも登板実績が一切ない投手向けの仮の球速。ドラフト順位が分かれば加減する。"""
@@ -642,7 +686,7 @@ class Calculator:
         p = self.d.players.get(pid) if pid else None
         comb, c1, c2 = self._weighted(p["batting"] if p else [], BAT_KEYS, self.farm_bat.get(key, []),
                                       FARM_BAT, pitching=False)
-        vals, detail = self._rate_block(comb, BAT_METRICS, self.bat_dist, self.prior_pctl_for(name))
+        vals, detail = self._rate_block(comb, BAT_METRICS, self.bat_dist, self.prior_pctl_for(name, key))
         ratings = {}
         for rating_name, comp in self.bat_comp.items():
             v = comp.score(vals)
@@ -665,7 +709,7 @@ class Calculator:
         # 成績が一切ない場合は判定できないため救援扱い
         role = self.role_of(PIT_METRICS["stamina"][0](comb) or 0) if has_data else "救援"
         # 率の補正（事前値）は役割別の母集団から取る
-        vals, detail = self._rate_block(comb, PIT_METRICS, self.pit_dist[role], self.prior_pctl_for(name))
+        vals, detail = self._rate_block(comb, PIT_METRICS, self.pit_dist[role], self.prior_pctl_for(name, key))
         ratings = {}
         for rating_name in PIT_RATINGS:
             r = role if rating_name in ROLE_SPLIT_RATINGS else "全体"
@@ -681,7 +725,7 @@ class Calculator:
                 "velocity": self.velocity_for(pid, comb) or self.provisional_velocity(name),
                 "sample": {"outs_1": round(c1["outs"], 1), "outs_2": round(c2["outs"], 1)}}
 
-    def _fielding_basement(self, pid, key, name, games, gg_by_pos):
+    def _fielding_basement(self, pid, key, name, games, gg_by_pos, prior_pctl=PRIOR_PCTL):
         """npbbasement.com のデータを用いた守備力・肩力の算出（2020年以降）。"""
         nm = norm_name(name)
         pos_acc = defaultdict(lambda: {"inn": 0.0, "runs": 0.0, "arm": 0.0, "rng": 0.0, "err": 0.0,
@@ -753,10 +797,12 @@ class Calculator:
             st = BASEMENT_STATS[pos]
             full = BASEMENT_FULL_INN[pos]
             w_blend = min(1.0, inn / full)
+            # 寄せ先は平均（0）ではなく、打撃・投手と同じ事前値のパーセンタイル（作業71：出場の少ない控えが C に集まらないように）
+            z_prior = NormalDist().inv_cdf(max(1.0, min(99.0, prior_pctl)) / 100)
 
             # 守備力
             obs_rate = (acc["runs"] / inn) * 1000
-            blended_rate = w_blend * obs_rate + (1 - w_blend) * 0.0
+            blended_rate = w_blend * obs_rate + (1 - w_blend) * (st["def_mean"] + z_prior * st["def_sd"])
             z_def = (blended_rate - st["def_mean"]) / st["def_sd"]
             d = to_scale(z_def)
 
@@ -780,7 +826,7 @@ class Calculator:
             # 肩力（外野手・捕手）
             if pos in ["外野手", "捕手"]:
                 obs_arm = (acc["arm"] / inn) * 1000
-                blended_arm = w_blend * obs_arm + (1 - w_blend) * 0.0
+                blended_arm = w_blend * obs_arm + (1 - w_blend) * (st["arm_mean"] + z_prior * st["arm_sd"])
                 z_arm = (blended_arm - st["arm_mean"]) / st["arm_sd"]
                 a = to_scale(z_arm)
                 entry["arm"] = {"value": a, "rank": rank_of(a)}
@@ -794,7 +840,7 @@ class Calculator:
         """守備位置ごとの守備力・肩力。2020年以降は basement（RngR, ARM, ErrR, DPR, FRM）、
         2019年以前は npb.jp（失策率＋GG賞、補殺/試合）の Marcel 加重で算出。
         speed（走力の値）を渡すと、basement の無い外野の守備力に走力を混ぜる（OF_SPEED_*）。"""
-        prior_pctl = self.prior_pctl_for(name)
+        prior_pctl = self.prior_pctl_for(name, key)
         per = defaultdict(lambda: {k: 0.0 for k in FLD_KEYS})
         games = defaultdict(float)
         for s, lvl, r in self.fld.get(key, []):
@@ -810,7 +856,7 @@ class Calculator:
         # 2020年以降かつ basement データがある場合
         b_out = None
         if self.through >= BASEMENT_START_YEAR and self.d.basement:
-            b_out = self._fielding_basement(pid, key, name, games, gg_by_pos)
+            b_out = self._fielding_basement(pid, key, name, games, gg_by_pos, prior_pctl)
 
         out = {}
         # 従来方式での算出（basementが無いポジション、投手、三塁・遊撃の肩力、2019年以前のフォールバック用）
