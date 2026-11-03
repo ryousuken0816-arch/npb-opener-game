@@ -144,8 +144,7 @@ func _check_tournaments() -> void:
 	_check(_gs.amateur_results.is_empty(), "未確認の2027年は史実の結果を捏造しない")
 	_gs.new_game(USER, 2027)
 	_gs.skip_to_phase(_gs.Phase.DRAFT)
-	_gs.advance()
-	_gs.advance()
+	_to_season(2028)
 	_gs.call("_amateur_news", "2028-10-08")
 	var results: Dictionary = _gs.amateur_results.duplicate(true)
 	_check(results.size() == 4, "架空年は秋までに4大会の結果を保存、神宮はまだ")
@@ -434,6 +433,14 @@ func _check_balance() -> void:
 		and _draft.career_of_row({"school": "明治大"}) == "大学生", "ドラフト画面の経歴は架空の候補の区分から（独立・専門学校）")
 
 
+## オフの段階を順に進めて year 年の開幕まで（作業54でドラフトのあとに FA・現役ドラフトなどが入った）
+func _to_season(year: int) -> void:
+	var guard := 0
+	while not (_gs.year == year and _gs.phase == _gs.Phase.SEASON) and guard < 12:
+		guard += 1
+		_gs.advance()
+
+
 ## 区分と学年・入社の年の表示から、入団する年の4月1日時点の年齢の範囲 [下限, 上限]
 func _age_limits(category: String, grade_text: String) -> Array:
 	match category:
@@ -506,8 +513,7 @@ func _check_fictional_flow() -> void:
 	print("== 2027年開始 → 2028年の架空の候補 ==")
 	_gs.new_game(USER, 2027)
 	_gs.skip_to_phase(_gs.Phase.DRAFT)
-	_gs.advance()  # 2027年のドラフトはおまかせ → 2028年の春季キャンプ
-	_gs.advance()  # 開幕
+	_to_season(2028)  # 2027年のドラフトはおまかせ → オフ（作業54：ドラフトのあとに FA など）→ 2028年の開幕
 	_check(_gs.year == 2028 and _gs.phase == _gs.Phase.SEASON, "2028年の開幕（%s）" % _gs.date_text())
 	_check(_gd.draft_classes.is_empty(), "開幕の時点ではまだ2028年の候補を作っていない")
 	_gs.advance_through(Season.day_number("2028-04-02") - 1)
@@ -564,7 +570,10 @@ func _check_fictional_flow() -> void:
 	d.auto_complete()
 	var mine: Array = d.picks_of(USER)
 	_check(mine.size() >= 3, "自球団が架空の候補を指名（%d人）" % mine.size())
-	_gs.advance()
+	var guard := 0
+	while not (_gs.year == 2029 and _gs.phase == _gs.Phase.CAMP) and guard < 12:  # 作業54：ドラフトのあとに FA など
+		guard += 1
+		_gs.advance()
 	_check(_gs.year == 2029 and _gs.phase == _gs.Phase.CAMP, "2029年の春季キャンプ（%s）" % _gs.date_text())
 	var present := 0
 	for rec: Dictionary in mine:

@@ -247,8 +247,9 @@ func _check_fictional() -> void:
 			stated.append(p["name"])
 	var marked := false
 	if stated.is_empty():
+		# 2位で指名できるように、1位で消えにくい評価 B の候補に付ける（S・A だと CPU 球団が1位で指名することがある）
 		for p: Dictionary in klass:
-			if p["amateur"]["grade"] in ["S", "A"]:
+			if p["amateur"]["grade"] == "B" and not bool(p["amateur"].get("as_ikusei", false)):
 				p["amateur"]["mlb_intent"] = {"stated": true, "note": "%sの%s、高校・大学からのメジャー挑戦を表明" % [
 					p["amateur"]["school"], p["name"]]}
 				stated.append(p["name"])
