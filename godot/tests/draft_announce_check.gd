@@ -129,7 +129,9 @@ func _silent_wav() -> AudioStreamWAV:
 func _check_2024() -> void:
 	print("== 2024年開始・ドラフトの画面（%s） ==" % USER)
 	_gs.new_game(USER, 2024)
-	_gs.skip_to_phase(_gs.Phase.RELEASE)
+	# 作業54：契約更改・戦力外がひとつの段階（CONTRACT）。締めるとドラフトの前に作戦会議
+	_gs.skip_to_phase(_gs.Phase.CONTRACT)
+	_gs.contract_resolve()
 	_gs.release_resolve()
 	change_scene_to_file("res://scenes/hub/hub.tscn")
 	await _frames(6)

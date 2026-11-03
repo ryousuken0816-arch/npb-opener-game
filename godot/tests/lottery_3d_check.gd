@@ -247,7 +247,9 @@ func _check_2012() -> void:
 ## その年から始めてドラフトの画面を開き、開幕の演出を閉じる。[Draft, DraftView]（開けなければ []）
 func _open_draft(year: int) -> Array:
 	_gs.new_game(USER, year)
-	_gs.skip_to_phase(_gs.Phase.RELEASE)
+	# 作業54：契約更改・戦力外がひとつの段階（CONTRACT）。締めるとドラフトの前に作戦会議
+	_gs.skip_to_phase(_gs.Phase.CONTRACT)
+	_gs.contract_resolve()
 	_gs.release_resolve()
 	change_scene_to_file("res://scenes/hub/hub.tscn")
 	await _frames(6)

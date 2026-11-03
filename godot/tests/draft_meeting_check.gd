@@ -167,7 +167,9 @@ func _check_season_meeting() -> void:
 
 func _check_pre_draft() -> void:
 	print("== 2024年オフ：ドラフト直前の作戦会議 → ドラフト会議 ==")
-	_gs.skip_to_phase(_gs.Phase.RELEASE)
+	# 作業54：契約更改・戦力外がひとつの段階（CONTRACT）
+	_gs.skip_to_phase(_gs.Phase.CONTRACT)
+	_gs.contract_resolve()
 	_gs.release_resolve()
 	change_scene_to_file("res://scenes/hub/hub.tscn")
 	await _frames(6)
@@ -176,7 +178,7 @@ func _check_pre_draft() -> void:
 	hub.call("_on_menu_chosen", "advance")
 	await _frames(3)
 	var view: Node = hub.get("_meeting_view")
-	_check(hub.get("_open_key") == "meeting" and _gs.phase == _gs.Phase.RELEASE,
+	_check(hub.get("_open_key") == "meeting" and _gs.phase == _gs.Phase.CONTRACT,
 		"可変ボタンで作戦会議が開く（段階はまだ%s）" % _gs.phase_name())
 	_check(view.get("_draft_button").visible, "作戦会議に「ドラフト会議へ」")
 	_check(_gs.draft_board.marked(2024).size() == 5, "シーズン中に付けた印が並ぶ")
@@ -217,7 +219,10 @@ func _check_pre_draft() -> void:
 			avoided = true
 	_check(not avoided, "おまかせで✕（%s）は指名しない：%s" % [d.by_id[avoid]["name"], "、".join(mine)])
 	hub.call("_close_sub_screen")
-	_gs.advance()
+	var guard := 0
+	while _gs.phase != _gs.Phase.CAMP and guard < 10:  # 作業54：ドラフトのあとに FA・現役ドラフト
+		guard += 1
+		_gs.advance()
 	var review: Array = _gs.news.of_kind("draft", 2024)
 	var found := false
 	for a: Dictionary in review:
