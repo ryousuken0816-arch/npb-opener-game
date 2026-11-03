@@ -44,6 +44,7 @@ func _run() -> void:
 		root.size = Vector2i(1280, 720)  # layout_fit_check と同じ画面の大きさで測る
 	_gs = root.get_node("GameState")
 	_ds = load("res://sim/draft.gd")
+	_ds.lottery_seed = 1  # 抽選の当たりはテストのときだけ決めた種で引く（作業58。本番はその場で引く）
 	_sn = load("res://sim/scout_notes.gd")
 	_db = load("res://sim/draft_board.gd")
 	_gs.new_game(TEAM, 2026)

@@ -164,7 +164,8 @@ func set_season_blend(t: float) -> void:
 		season_blend = 0.0
 		return
 	var year := int(ratings.get("year", -1))
-	var post := {} if ratings.get("phase") != "pre" else peek_ratings(year, "post")
+	# 寄せる先（<年>_post）は月に1回しか使わないので持っておかない（作業55：Web 版のメモリ）
+	var post := {} if ratings.get("phase") != "pre" else peek_ratings(year, "post", false)
 	if not SeasonBlend.applies(ratings, post):
 		return
 	var post_by_id := {}
@@ -182,8 +183,9 @@ func set_season_blend(t: float) -> void:
 	season_blend = t
 
 
-## 能力値ファイルを今のデータを変えずに読む（来季の準備用。読んだものは load_ratings() でそのまま使う）
-func peek_ratings(year: int, phase: String) -> Dictionary:
+## 能力値ファイルを今のデータを変えずに読む（来季の準備用。読んだものは load_ratings() でそのまま使う）。
+## keep = false なら読んだものを持っておかない（一度だけ使うとき。持っていれば持っているものを返す）
+func peek_ratings(year: int, phase: String, keep := true) -> Dictionary:
 	var path := find_ratings_path(year, phase)
 	if path.is_empty():
 		return {}
@@ -201,6 +203,8 @@ func peek_ratings(year: int, phase: String) -> Dictionary:
 			return {}
 		for p: Dictionary in parsed.get("players", []):
 			p["hist_team"] = p["team"]
+		if not keep:
+			return parsed
 		_parsed_cache[path] = parsed
 	return _parsed_cache[path]
 

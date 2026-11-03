@@ -738,6 +738,8 @@ func _close_sub_screen() -> void:
 	_set_wide(false)
 	var key := _open_key
 	_open_key = ""
+	if key == "records":
+		RecordsHistory.clear_caches()  # 歴代メンバー・歴代ドラフトで見た年のデータ（作業55）
 	UiLayout.set_sub_screen_active(false)
 	_sub_screen.visible = false
 	_update_rotate_hint()

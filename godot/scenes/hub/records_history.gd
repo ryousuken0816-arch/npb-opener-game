@@ -80,6 +80,15 @@ static var _ratings_cache := {}
 static var _hist_cache := {}
 ## 今季の打順の数え（試合が進んだら数え直す）
 static var _orders_cache := {}
+## "年_phase" → 選手ID → 総合ランク（_rank_of。小さいので全部の年を持つ）
+static var _rank_cache := {}
+## 年ごとの持ち物は最近使った年だけ持ち、記録室を閉じたら捨てる（clear_caches。作業55：年を切り替えるたびに
+## その年の選手ページ・能力値ファイルを持ち続けて、1年あたり約24MB、2020年開始で歴代メンバーを12年見ると
+## +285MB になり、iPhone の Web 版でメモリが足りなくなっていた）。
+## 選手ページの集計（1年約7MB）は、歴代ドラフトの通算成績で入団の次の年から開始年まで順に探すので多めに持つ
+const PAGES_YEARS := 16
+## 能力値ファイル（1年約12MB）・史実の年の成績（1年約4MB）
+const CACHE_YEARS := 4
 
 
 # --- 年・球団 ----------------------------------------------------------------------------------
@@ -140,6 +149,7 @@ static func pages_summary(y: int) -> Dictionary:
 	var fy := GameState.first_year
 	var cached: Dictionary = _pages_cache.get(y, {})
 	if not cached.is_empty() and int(cached["first_year"]) == fy:
+		_remember(_pages_cache, y, cached, PAGES_YEARS)
 		return cached
 	var season := {}
 	var career := {}
@@ -171,7 +181,7 @@ static func pages_summary(y: int) -> Dictionary:
 					Records.add_into(c.get_or_add(k, {}), line)
 					last[id] = maxi(int(last.get(id, 0)), ry)
 	cached = {"first_year": fy, "season": season, "career": career, "names": names, "bio": bio, "last": last}
-	_pages_cache[y] = cached
+	_remember(_pages_cache, y, cached, PAGES_YEARS)
 	return cached
 
 
@@ -179,13 +189,30 @@ static func pages_summary(y: int) -> Dictionary:
 static func ratings_index(y: int, phase := "post") -> Dictionary:
 	var key := "%d_%s" % [y, phase]
 	if _ratings_cache.has(key):
-		return _ratings_cache[key]
+		var hit: Dictionary = _ratings_cache[key]
+		_remember(_ratings_cache, key, hit)
+		return hit
 	var result := {}
-	var data := GameData.peek_ratings(y, phase)
+	var data := GameData.peek_ratings(y, phase, false)
 	for p: Dictionary in data.get("players", []):
 		result[str(p["id"])] = p
-	_ratings_cache[key] = result
+	_remember(_ratings_cache, key, result)
 	return result
+
+
+## 記録室を閉じたとき：年ごとの持ち物を捨てる（ランクと今季の打順は小さいので残す）
+static func clear_caches() -> void:
+	_pages_cache.clear()
+	_ratings_cache.clear()
+	_hist_cache.clear()
+
+
+## cache の key を最後（いちばん新しい）に入れ直し、いちばん長く使っていないものから CACHE_YEARS 個を超えた分を捨てる
+static func _remember(cache: Dictionary, key: Variant, value: Variant, limit := CACHE_YEARS) -> void:
+	cache.erase(key)
+	cache[key] = value
+	while cache.size() > limit:
+		cache.erase(cache.keys()[0])
 
 
 ## 選手の生年月日・投打・守備位置など（今の能力値データ → その年の能力値ファイル）
@@ -244,10 +271,12 @@ static func year_data(y: int) -> Dictionary:
 	if y in GameState.records_years():
 		d = _game_year(y)
 	elif _hist_cache.has(y):
-		return _hist_cache[y]
+		var hit: Dictionary = _hist_cache[y]
+		_remember(_hist_cache, y, hit)
+		return hit
 	else:
 		d = _hist_year(y)
-		_hist_cache[y] = d
+		_remember(_hist_cache, y, d)
 	_mark_leaders(d)
 	return d
 
@@ -846,12 +875,28 @@ static func _rank_of(id: String, p: Dictionary, last_year: int) -> String:
 		if league != null and league.retired.has(id):
 			ry = int(league.retired[id])
 		if ry >= HIST_FIRST_YEAR:
-			var last_p: Dictionary = ratings_index(mini(ry, HIST_LAST_YEAR), "post").get(id, {})
-			if not last_p.is_empty():
-				src = last_p
+			# 引退した年の能力値ファイルのランク。選手ごとに年が違うので、ファイルを丸ごと持たずランクだけを覚える
+			var ranks := _ranks_of(mini(ry, HIST_LAST_YEAR), "post")
+			if ranks.has(id):
+				return ranks[id]
 	if src.is_empty() or (src.get("batting") == null and src.get("pitching") == null):
 		return ""
 	return Depth.rank_of(Depth.now_score(src))
+
+
+## その年の能力値ファイルの全選手の総合ランク（選手ID → ランク。ランクの出せない選手はいない）
+static func _ranks_of(y: int, phase: String) -> Dictionary:
+	var key := "%d_%s" % [y, phase]
+	if _rank_cache.has(key):
+		return _rank_cache[key]
+	var src: Dictionary = _ratings_cache[key] if _ratings_cache.has(key) else {}
+	var players: Array = src.values() if not src.is_empty() else GameData.peek_ratings(y, phase, false).get("players", [])
+	var ranks := {}
+	for p: Dictionary in players:
+		if p.get("batting") != null or p.get("pitching") != null:
+			ranks[str(p["id"])] = Depth.rank_of(Depth.now_score(p))
+	_rank_cache[key] = ranks
+	return ranks
 
 
 static func _status_of(r: Dictionary) -> void:
