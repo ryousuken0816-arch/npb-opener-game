@@ -398,9 +398,9 @@ func voice() -> DraftVoice:
 	return _voice
 
 
-## 抽選を3Dの演出で見せるか（早送り中は2Dの演出）
+## 抽選を3Dの演出で見せるか（早送り中は2Dの演出）。Web 版・スマホは重いので2Dの演出（当たりは同じ。作業63）
 func use_3d_lottery() -> bool:
-	return not _fast
+	return not _fast and not DraftVoice.web_like() and not UiLayout.is_mobile
 
 
 ## いま出ている抽選の3D演出（無ければ null。テスト用）
@@ -1769,6 +1769,8 @@ func _next_overlay() -> void:
 	if _overlay_queue.is_empty():
 		_voice.stop()
 		_overlay.visible = false
+		_clear_overlay()  # 抽選の3Dの場面・発表の札などを、閉じたらすぐ解放する（作業63）
+		_overlay.remove_meta("item")
 		if _continue_first():
 			return
 		_preselect(GameState.draft())
@@ -1931,7 +1933,9 @@ func _tick_announce(delta: float) -> void:
 	if not announcing():
 		return
 	_announce_elapsed += delta
-	var voice_done := not _voice.is_busy() or _announce_elapsed >= _announce_total + ANNOUNCE_VOICE_WAIT
+	# Web 版は読み上げの終わりを待たない（声が出なくても・止まっても発表は進む。作業63）
+	var voice_done := not _voice.is_busy() or _announce_elapsed >= _announce_total + ANNOUNCE_VOICE_WAIT \
+		or DraftVoice.web_like()
 	if _announce_elapsed >= _announce_total and voice_done:
 		_voice.stop()
 		_next_overlay()

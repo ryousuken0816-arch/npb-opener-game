@@ -18,6 +18,7 @@ extends Node
 ## （発表の最後の部品を OS の声で読み終えたところで「次へ」を押すとフリーズした）。
 ## そこで、残りが短いと見込まれるときは止めずに自然に終わらせ、終わるまで次の OS の読み上げを始めない。
 ## テストでは tts_sim で OS の音声合成のまねをする（音を出さない。終わりの合図が来る・来ないを作れる）
+## Web 版（ブラウザの speechSynthesis）では終わり際の待ちはしない（いつでもすぐ止める）。発表も読み上げの終わりを待たない（作業63）
 
 const PAUSE_SEC := 0.15
 const HTTP_TIMEOUT := 4.0
@@ -133,6 +134,11 @@ func speak(parts: Array) -> void:
 		fetch_web(parts)
 	_queue = last_plan.duplicate()
 	_next()
+
+
+## Web 版か（Web 版の動きをまねるテストでは環境変数 NPB_SIM_WEB=1。作業63）
+static func web_like() -> bool:
+	return OS.has_feature("web") or OS.get_environment("NPB_SIM_WEB") == "1"
 
 
 ## 読み上げ中か
@@ -330,6 +336,8 @@ func _speak_os(text: String) -> void:
 
 ## 止めてよいか：読み始めてからの秒が長さの見込みより TTS_CUT_MARGIN 以上手前か、まだ話し始めていない（頼んだ直後）とき
 func tts_cuttable() -> bool:
+	if web_like():
+		return _tts_elapsed >= 0.0 or _tts_speaking()  # ブラウザの speechSynthesis はいつ止めても固まらない
 	if _tts_elapsed < 0.0:
 		return false
 	return _tts_elapsed < _tts_estimate - TTS_CUT_MARGIN 		or (_tts_elapsed < TTS_START_GRACE and not _tts_speaking())

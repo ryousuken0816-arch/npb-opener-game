@@ -693,6 +693,17 @@
      `mlb_draftee_check` の2028年の架空のメジャー志望は、表明が無い年に付ける候補を評価 B に（S・A だと CPU が1位で指名して落ちる）。それでも3回に1回ほど CPU に先に取られて NG になる（流し直して OK）。
      quick＋`draft_check`・`draft_rebid_check`・`mlb_draftee_check`・`fictional_diversity_test` OK。Godot のヘッドレス起動の読み込みエラー 0件。full は流していない
 
+4.65 ~~【不具合】iPhone の Web 版でドラフトの外れ1位の入札のときに落ちる~~ → 完了（2026-11-03、担当T）。docs/AUTORUN.md の作業63
+   - 直したこと：Web 版（`DraftVoice.web_like()`＝`OS.has_feature("web")`、テストでは環境変数 `NPB_SIM_WEB=1`）とスマホ表示（`UiLayout.is_mobile`）では、抽選を3Dでなく2Dの演出にした（`DraftView.use_3d_lottery`。当たりは同じ、パソコンは3Dのまま）。
+     Web 版は発表が読み上げの終わりを待たない（`_tick_announce`）、読み上げはいつでもすぐ止める（`DraftVoice.tts_cuttable`。作業42の「終わり際は止めない」は Windows の OneCore のための対策なので Web では使わない）。
+     演出をすべて閉じたとき（`_next_overlay` で列が空）に演出の中身（3Dの抽選の場面・発表の札・結果の一覧）をすぐ解放する（パソコンでも）
+   - 調べたこと：3Dの抽選の場面は、今までも次の演出に替わるときに解放されていた（`_clear_overlay`）が、最後の演出の中身は閉じても残っていた。Web・スマホでは3Dの場面（SubViewport・自前の World3D）そのものが重い。
+     手帳・指名ボードは作り直しのたびに古い部品を解放していて、外れ1位が続いても積み上がらない
+   - 確認：`godot/tests/draft_web_check.gd`（新、ヘッドレス約3分）ALL OK：Web のまねで2012年（阪神）・2020年（ソフトバンク）、自球団は毎回 CPU の入札が最も多い候補に入札して外れ1位を起こし（2〜4回の入札）、
+     演出の「次へ」を1つずつ押してドラフトの最後まで。3Dの場面は出ない、入札の回ごとのノード数は 1179 → 1186 のように指名ボードの札の分しか増えない、閉じると演出の部品が0。パソコン（2024年・宗山）は3Dの抽選のまま、閉じると3Dの場面が0
+   - **iPhone の実機では試していない**（Web 版の公開は司令塔）。まだ落ちるなら、ほかの画面と同じメモリの量そのもの（作業55）の可能性
+   - テスト：draft_web_check・lottery_3d_check・draft_announce_flow_check と quick（12本）ALL OK。ヘッドレスで起動して読み込みのエラー0件
+
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。
