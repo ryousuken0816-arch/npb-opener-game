@@ -224,7 +224,7 @@ func _check_tactics() -> void:
 			if g["result"].is_empty():
 				continue
 			for side in 2:
-				starter_outs += g["result"]["pitching"][side][0]["outs"]
+				starter_outs += int(g["result"]["pitching"][side][0].get("outs", 0))
 		totals.append({"sh": t["sh"], "sb": t["sb"] + t["cs"], "sp_ip": starter_outs / 3.0 / starts})
 		print("  方針%+d: 犠打%d 盗塁企図%d 先発の平均投球回%.2f" % [level, t["sh"], t["sb"] + t["cs"],
 			starter_outs / 3.0 / starts])

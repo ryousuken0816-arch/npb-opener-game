@@ -1131,6 +1131,11 @@ func _mlb_box(d: Draft, c: Dictionary) -> Control:
 	label.mouse_filter = Control.MOUSE_FILTER_PASS
 	box.add_child(label)
 	if d.can_persuade(id):
+		var warn := UiTheme.small_label("説得しないまま次の段階へ進むと、期限切れでメジャーへ挑戦します", 13,
+			Color("b3261e"), 800)
+		warn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		warn.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+		box.add_child(warn)
 		var line := HBoxContainer.new()
 		line.add_theme_constant_override("separation", 6)
 		line.add_child(UiTheme.small_label("約束", 14, UiTheme.TEXT, 800))
@@ -1296,6 +1301,17 @@ func _render_book(d: Draft) -> void:
 	_tags.clear()
 	_ids = _book_ids(d)
 	_notebook.clear_extra()
+	var talks: Array[String] = []
+	if d != null:
+		talks = d.pending_talks()
+	if not talks.is_empty():
+		# 自球団が指名したメジャー志望の選手の説得（作業57）：絞り込みで隠れていても、そのページを開いておく
+		if not talks.has(_selected):
+			_selected = talks[0]
+		if not _ids.has(_selected):
+			_ids.push_front(_selected)
+	elif d != null and d.talks.has(_selected) and not _ids.has(_selected):
+		_ids.push_front(_selected)  # 説得したあとも、その結果のページを出したままにする
 	if d == null or _ids.is_empty():
 		_notebook.show_empty("ドラフトはオフの「ドラフト」の段階で行います。" if d == null \
 			else "この絞り込みの候補はいません。上の「絞り込み」を変えてください。")
@@ -1489,13 +1505,14 @@ func _render_bottom(d: Draft) -> void:
 		and not d.is_user_turn()
 	_fast_button.disabled = not waiting
 	_skip_button.disabled = not waiting
-	_complete_button.disabled = d == null or d.resolved
+	_complete_button.disabled = d == null or d.resolved or d.stage == Draft.Stage.DONE
 	if not _message.is_empty():
 		_status_label.text = _message
 	elif d == null:
 		_status_label.text = ""
 	elif d.stage == Draft.Stage.DONE and not d.pending_talks().is_empty():
-		_status_label.text = "メジャー志望の%sの説得が残っています。約束を選んで「説得する」（しないまま進むと約束なしで交渉）。" 			% d.by_id[d.pending_talks()[0]]["name"]
+		_status_label.text = "メジャー志望の%sの説得が残っています。約束を選んで「説得する」（説得しないまま次へ進むと期限切れで渡米）。" \
+			% d.by_id[d.pending_talks()[0]]["name"]
 	elif d.resolved:
 		var mine := d.picks_of(GameState.team)
 		var names: Array[String] = []
@@ -1598,10 +1615,13 @@ func _on_complete_pressed() -> void:
 	if d == null or d.resolved:
 		return
 	var before := d.picks.size()
-	GameState.draft_resolve()
-	_message = "残り%d人をおまかせで指名し、ドラフトを終えました。" % (d.picks.size() - before)
+	d.auto_complete()
+	var done := "残り%d人をおまかせで指名しました。" % (d.picks.size() - before)
 	_selected = ""
-	_show_tab("picks")
+	# 終われば入団。自球団が指名したメジャー志望の選手の説得が残っていれば、その選手のページで説得へ（作業57）
+	_after_change(d)
+	_message = done + _message
+	refresh()
 
 
 func _cpu_step(d: Draft) -> void:

@@ -51,6 +51,7 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_gd = root.get_node("GameData")
 	_ds = load("res://sim/draft.gd")
+	_ds.lottery_seed = 1  # 抽選の当たりはテストのときだけ決めた種で引く（作業58。本番はその場で引く）
 	_dv = load("res://scenes/hub/draft_view.gd")
 	_first = _ds.Stage["FIRST"]
 	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
@@ -246,7 +247,9 @@ func _check_2012() -> void:
 ## その年から始めてドラフトの画面を開き、開幕の演出を閉じる。[Draft, DraftView]（開けなければ []）
 func _open_draft(year: int) -> Array:
 	_gs.new_game(USER, year)
-	_gs.skip_to_phase(_gs.Phase.RELEASE)
+	# 作業54：契約更改・戦力外がひとつの段階（CONTRACT）。締めるとドラフトの前に作戦会議
+	_gs.skip_to_phase(_gs.Phase.CONTRACT)
+	_gs.contract_resolve()
 	_gs.release_resolve()
 	change_scene_to_file("res://scenes/hub/hub.tscn")
 	await _frames(6)

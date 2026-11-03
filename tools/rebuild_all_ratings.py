@@ -41,6 +41,12 @@ def main():
     # 7. fictional_draft.py
     run("python tools/fictional_draft.py")
 
+    # 8. 2025年秋の新人（2026_pre）の入団時をそろえる（docs/AUTORUN.md 作業62）。最後に回す：
+    #    2026_pre の2025年秋の新人は、2・3 の下地（Templates）と 5 の成長の係数（出場の少ない組）にも使われるので、
+    #    そろえる前の値で作る（そろえた値を混ぜると、出場の少ない選手の伸び方の係数が大きく変わる）。
+    #    2026年秋・2027年秋の分は 2・3 の中でそろえている
+    run("python tools/amateur_ratings.py calibrate --draft-year 2025")
+
     print("\nAll ratings and derived files regenerated successfully!")
 
 if __name__ == "__main__":

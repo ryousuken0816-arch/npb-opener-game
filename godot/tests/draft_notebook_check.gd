@@ -44,6 +44,7 @@ func _run() -> void:
 		root.size = Vector2i(1280, 720)  # layout_fit_check と同じ画面の大きさで測る
 	_gs = root.get_node("GameState")
 	_ds = load("res://sim/draft.gd")
+	_ds.lottery_seed = 1  # 抽選の当たりはテストのときだけ決めた種で引く（作業58。本番はその場で引く）
 	_sn = load("res://sim/scout_notes.gd")
 	_db = load("res://sim/draft_board.gd")
 	_gs.new_game(TEAM, 2026)
@@ -340,7 +341,10 @@ func _check_2028() -> void:
 		% [_board_magnets(board), d.picks.size()])
 	await _shot()
 	_hub.call("_close_sub_screen")
-	_gs.advance()
+	guard = 0
+	while _gs.phase != _gs.Phase.CAMP and guard < 10:  # 作業54：ドラフトのあとに FA・現役ドラフト
+		guard += 1
+		_gs.advance()
 	_check(_gs.phase == _gs.Phase.CAMP and _gs.year == 2029, "春季キャンプへ（%s）" % _gs.date_text())
 
 

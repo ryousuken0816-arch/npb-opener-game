@@ -449,6 +449,9 @@ func _description(key: String) -> String:
 			return "自球団の選手の来季の年俸を確認・調整します。12球団の年俸総額と予算上限も見られます。"
 		if GameState.release_open():
 			return "支配下の上限（70人）に合わせて自球団の戦力外を選びます。史実の引退と他球団の戦力外も見られます。"
+		if GameState.draft_open() and GameState.draft().stage == Draft.Stage.DONE \
+				and not GameState.draft().pending_talks().is_empty():
+			return "ドラフト会議のあと：指名したメジャー志望の選手の説得が残っています（説得しないまま進むと期限切れで渡米）。"
 		if GameState.draft_open():
 			return "ドラフト会議：史実のドラフト指名選手から、1位入札（重複は抽選）・2位以降のウェーバー・育成の指名をします。"
 		return "オフシーズンを進めます。次は「%s」です。" % GameState.PHASE_NAMES[GameState.next_phase()]
@@ -735,6 +738,8 @@ func _close_sub_screen() -> void:
 	_set_wide(false)
 	var key := _open_key
 	_open_key = ""
+	if key == "records":
+		RecordsHistory.clear_caches()  # 歴代メンバー・歴代ドラフトで見た年のデータ（作業55）
 	UiLayout.set_sub_screen_active(false)
 	_sub_screen.visible = false
 	_update_rotate_hint()

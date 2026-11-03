@@ -24,6 +24,7 @@ var scores := {}                    ## 選手ID → keep_score
 var ikusei := {}                    ## 自球団の育成選手（支配下の人数に数えない）
 var protected := {}                 ## 選手ID → 戦力外にできない理由（複数年契約・今オフに加入）
 var marked := {}                    ## 自球団で戦力外に選んだ選手
+var retire_asked := {}              ## 自球団で引退を勧めた選手 → 受け入れたか（1人1オフ1回。作業56）
 var resolved := false
 
 
@@ -38,6 +39,8 @@ func check_mark(id: String) -> String:
 		return "戦力外・引退は締めました"
 	if id not in order:
 		return "自球団の選手ではありません"
+	if bool(retire_asked.get(id, false)):
+		return "引退しました"
 	if protected.has(id):
 		return "%sのため戦力外にできません" % protected[id]
 	return ""
@@ -83,7 +86,7 @@ func auto_fill(league: LeagueRoster) -> int:
 	for id in order:
 		if need(league) <= 0:
 			break
-		if marked.has(id) or ikusei.has(id) or protected.has(id):
+		if marked.has(id) or ikusei.has(id) or protected.has(id) or bool(retire_asked.get(id, false)):
 			continue
 		marked[id] = true
 		added += 1
@@ -109,7 +112,7 @@ func resolve(league: LeagueRoster) -> void:
 func to_save() -> Dictionary:
 	return {"year": year, "team": team, "retired_rows": retired_rows, "cpu_rows": cpu_rows,
 		"user_rows": user_rows, "order": order, "scores": scores, "ikusei": ikusei, "protected": protected,
-		"marked": marked, "resolved": resolved}
+		"marked": marked, "resolved": resolved, "retire_asked": retire_asked}
 
 
 static func from_save(d: Dictionary) -> Releases:
@@ -122,5 +125,6 @@ static func from_save(d: Dictionary) -> Releases:
 	r.ikusei = d.get("ikusei", {})
 	r.protected = d.get("protected", {})
 	r.marked = d.get("marked", {})
+	r.retire_asked = d.get("retire_asked", {})
 	r.resolved = bool(d.get("resolved", false))
 	return r

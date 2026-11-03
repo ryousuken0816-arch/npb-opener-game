@@ -7,6 +7,10 @@ extends RefCounted
 ## status=canceled の試合はシミュレーションせず、日程表で「中止」と表示する。
 
 const DAY_SECONDS := 86400
+## 1試合の打撃・投手の行の数の項目（GameSim の行と同じ）。試合の結果には 0 の項目を残さないので（compact_result）、
+## 足し合わせる（_add_line）ときはこの項目を 0 から始める
+const BAT_LINE_KEYS := ["pa", "ab", "h", "d", "t", "hr", "rbi", "r", "bb", "hbp", "so", "sb", "cs", "sh", "sf", "gdp", "roe"]
+const PIT_LINE_KEYS := ["outs", "bf", "h", "hr", "bb", "hbp", "so", "r", "er", "np", "gs", "w", "l", "sv", "hld"]
 const WEEKDAY_NAMES := ["日", "月", "火", "水", "木", "金", "土"]
 
 var year: int
@@ -273,6 +277,7 @@ func _play(g: Dictionary) -> void:
 			if allowed == 0:
 				pitching[pid]["sho"] = int(pitching[pid].get("sho", 0)) + 1
 	result.erase("fielding")
+	compact_result(result)
 
 
 ## パ・リーグ主催の試合（交流戦を含む）は DH 制
@@ -280,16 +285,40 @@ func _uses_dh(g: Dictionary) -> bool:
 	return leagues.get(g["home"], "C") == "P"
 
 
+## 打撃の行（skip に "pos" がある）か投手の行を totals に足す。行に無い項目は 0
 static func _add_line(totals: Dictionary, line: Dictionary, skip: Array) -> void:
 	var id: String = line["id"]
 	if not totals.has(id):
-		totals[id] = {"g": 0}
+		var t0 := {"g": 0}
+		for key: String in (BAT_LINE_KEYS if "pos" in skip else PIT_LINE_KEYS):
+			t0[key] = 0
+		totals[id] = t0
 	var t: Dictionary = totals[id]
 	t["g"] += 1
 	for key: String in line:
 		if key == "id" or key in skip:
 			continue
 		t[key] = t.get(key, 0) + line[key]
+
+
+## 試合の結果の打撃・投手の行から 0 の項目を除く（作業55：iPhone の Web 版のメモリ。1シーズンの全試合の行で
+## 約90MB使っていた。項目の多くは 0）。id・pos・order は残す。読む側は line.get(項目, 0) で読む
+static func compact_result(result: Dictionary) -> void:
+	for kind: String in ["batting", "pitching"]:
+		for side: Variant in result.get(kind, []):
+			if not side is Array:
+				continue
+			var lines := side as Array
+			for i in lines.size():
+				var line: Variant = lines[i]
+				if not line is Dictionary:
+					continue
+				var small := {}
+				for key: Variant in line:
+					var v: Variant = line[key]
+					if key in ["id", "pos", "order"] or not (v is int and v == 0):
+						small[key] = v
+				lines[i] = small
 
 
 # --- 集計 -----------------------------------------------------------------------------
@@ -372,6 +401,8 @@ static func from_save(d: Dictionary, debut_years: Dictionary, player_of: Callabl
 	var s := Season.new(int(d["year"]), {"players": roster}, [], 1, debut_years)
 	s.games.assign(d.get("games", []))
 	for g in s.games:
+		if g.get("result") is Dictionary:
+			compact_result(g["result"])
 		if not s._games_by_date.has(g["date"]):
 			s._games_by_date[g["date"]] = []
 		s._games_by_date[g["date"]].append(g)

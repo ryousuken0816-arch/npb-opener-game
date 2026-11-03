@@ -247,6 +247,7 @@ func _play(s: Dictionary, g: Dictionary, teams: Dictionary) -> void:
 			Season._add_line(batting, line, ["pos", "order"])
 		for line: Dictionary in result["pitching"][side]:
 			Season._add_line(pitching, line, [])
+	Season.compact_result(result)
 	var hs: int = result["home_score"]
 	var aws: int = result["away_score"]
 	if hs == aws:

@@ -5,7 +5,7 @@ extends SceneTree
 ##   単独で確定／競合して当選／競合して外れ（外れ1位を画面で入札）
 ## の3通りを、画面の操作（入札する・演出の「次へ」・自球団の番まで飛ばす・選択終了）だけで進める。おまかせは使わない。
 ## 抽選は乱数なので、入札の直前の状態に戻して乱数を変え、狙った結果が出るまでくり返す。
-## 最後の通りはドラフトの終わりまで進め、可変ボタンで翌年の春季キャンプへ進んでハブの年が追従するかも調べる。
+## 最後の通りはドラフトの終わりまで進め、オフの残り（作業54：FA・現役ドラフト）を進めて翌年の春季キャンプでハブの年が追従するかも調べる。
 ##
 ##   godot --headless --path godot -s res://tests/draft_rebid_check.gd -- [出力先]
 ##   （出力先はウィンドウ付きのときだけ。CPU球団の外れ1位の結果の演出と、2019年の候補一覧（表の投手能力）をスクショ）
@@ -43,10 +43,12 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_gd = root.get_node("GameData")
 	_ds = load("res://sim/draft.gd")
+	_ds.lottery_seed = 1  # 抽選の当たりはテストのときだけ決めた種で引く（作業58。本番はその場で引く）
 	_dv = load("res://scenes/hub/draft_view.gd")
 	_first = _ds.Stage["FIRST"]
 	_waiver = _ds.Stage["WAIVER"]
 	_done = _ds.Stage["DONE"]
+	_check_live_lottery()
 	for c: Dictionary in CASES:
 		await _check_year(c["year"], c["team"])
 	print("\n== 結果: %s ==" % ("ALL OK" if _failures == 0 else "FAILED（%d件）" % _failures))
@@ -59,6 +61,41 @@ func _check(ok: bool, label: String) -> void:
 	else:
 		_failures += 1
 		print("NG ", label)
+
+
+## 作業58：抽選の当たりだけはその場で引く。同じ状態（セーブ）から何度やり直しても CPU の1位の入札は同じで、
+## 抽選の当たりは変わることがある。テストの種（lottery_seed）を決めれば同じ当たりになる
+func _check_live_lottery() -> void:
+	print("\n== 抽選はその場で引く（2024年 巨人・宗山塁） ==")
+	_gs.new_game("読売ジャイアンツ", 2024)
+	_gs.skip_to_phase(_gs.Phase.DRAFT)
+	var d0: RefCounted = _gs.draft()
+	var mune := ""
+	for c: Dictionary in d0.candidates:
+		if c["name"] == "宗山 塁":
+			mune = c["id"]
+	var snap: Dictionary = JSON.parse_string(JSON.stringify(d0.to_save()))
+	var bids_seen := {}
+	var winners := {}
+	_ds.lottery_seed = -1
+	for i in 16:
+		var d: RefCounted = _ds.from_save(JSON.parse_string(JSON.stringify(snap)))
+		d.user_bid(mune)
+		bids_seen[JSON.stringify(d.cpu_first_bids())] = true
+		d.run_first_wave()
+		winners[str(d.by_id[mune]["picked_by"])] = true
+	_check(bids_seen.size() == 1, "同じ状態から16回やり直しても CPU の1位の入札は同じ（%d通り）" % bids_seen.size())
+	_check(winners.size() >= 2, "抽選の当たりはその場で引くので変わる（宗山の当たり %d通り：%s）" % [winners.size(),
+		", ".join(winners.keys().map(func(t: String) -> String: return _gd.short_name(t)))])
+	var fixed := {}
+	_ds.lottery_seed = 7
+	for i in 4:
+		var d: RefCounted = _ds.from_save(JSON.parse_string(JSON.stringify(snap)))
+		d.user_bid(mune)
+		d.run_first_wave()
+		fixed[str(d.by_id[mune]["picked_by"])] = true
+	_check(fixed.size() == 1, "テストの種を決めれば当たりは同じ（%s）" % ", ".join(fixed.keys()))
+	_ds.lottery_seed = 1
 
 
 func _check_year(year: int, team: String) -> void:
@@ -81,6 +118,7 @@ func _check_year(year: int, team: String) -> void:
 		for i in MAX_TRIES:
 			_gs.league.draft = _ds.from_save(snap.duplicate(true))
 			_gs.draft().get("_rng").seed = hash("%d-%s-%d" % [year, kind, i])
+			_ds.lottery_seed = absi(hash("lottery-%d-%s-%d" % [year, kind, i]))
 			result = await _play_first(hub, kind)
 			result["tries"] = i + 1
 			if result["kind"] == kind:
@@ -208,8 +246,15 @@ func _finish_draft(hub: Node, year: int, team: String) -> void:
 		"%d年：おまかせを使わずにドラフトの最後まで進む（自球団の指名 %d人）" % [year, d.picks_of(team).size()])
 	hub.call("_close_sub_screen")
 	await _frames(2)
-	hub.call("_on_menu_chosen", "advance")
-	await _frames(4)
+	# ドラフトのあとは FA → 現役ドラフト → 春季キャンプ（作業54）。翌年になるまで可変ボタンで進める
+	for i in 6:
+		if _gs.year == year + 1:
+			break
+		hub.call("_close_sub_screen")
+		_gs.fa_resolve()
+		_gs.comp_resolve()
+		hub.call("_on_menu_chosen", "advance")
+		await _frames(4)
 	var year_text: String = hub.get_node("%YearLabel").text
 	_check(_gs.year == year + 1 and year_text.contains(str(year + 1)),
 		"可変ボタンで翌年へ進み、ハブの年が追従（%s／%s）" % [year_text, _gs.phase_name()])

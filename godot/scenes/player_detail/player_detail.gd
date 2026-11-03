@@ -1053,6 +1053,14 @@ func unattached_text() -> String:
 	if league.in_mlb.has(player_id):
 		return "メジャー"
 	if league.retired.has(player_id):
+		var from: String = str(league.released.get(player_id, {}).get("from", ""))
+		if from.is_empty():
+			for i in range(league.log.size() - 1, -1, -1):
+				if league.log[i]["id"] == player_id and league.log[i]["kind"] == "retire":
+					from = str(league.log[i]["from"])
+					break
+		if not from.is_empty():
+			return "引退（%d年・%s）" % [league.retired[player_id], GameData.short_name(from)]
 		return "引退（%d年）" % league.retired[player_id]
 	return "所属なし"
 

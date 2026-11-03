@@ -4,6 +4,7 @@
 
     python tools/amateur_ratings.py rookies --draft-year 2026   # 2026年秋の新人を generated/ratings/2027_pre.json に入れる
     python tools/amateur_ratings.py carry --year 2027           # 2027_post（引き継ぎ）と 2028_pre（＋2027年の候補）を作る
+    python tools/amateur_ratings.py calibrate --draft-year 2025 # 2025年秋の新人（2026_pre）の入団時をそろえる（作り直しの最後に）
 
 作り方（tools/README.md「アマ選手の初期能力」）：
 1. 下地：既存の新人の初期能力の仕組み（compute_ratings.py の prior_pctl_for＝区分＋ドラフト順位）で作られた、
@@ -13,7 +14,11 @@
    候補（2027年）は格付けだけで決める（S・A＝1位、B＝2〜3位、C＝4〜5位、D＝育成）
 3. 有識者の評価の長所・短所（scout.strengths / weaknesses）の言葉で個別の能力を上下し、
    球速（最速−MAX_TO_AVG_KMH）・50m走・遠投などの数字は補助として少し効かせる
+4. 最後に入団時の水準をそろえる（作業62。`calibrate`。rookies・carry も最後に呼ぶ）：評価（S〜D。2025年秋は順位と競合の数から）の順に、
+   その年の一番上が78〜81、大卒・社会人の1位が B 前後、高卒の上位は総合 C の60台＋武器（奪三振・パワー・走力）1つを B〜A。
+   能力の形は残して全体を上下する。ピーク（growth.peak）は入団時を下回らないようにだけする
 入力は data/amateur/<年>.json（形式は data/amateur/README.md）。
+2026_pre の2025年秋の新人は下地（Templates）にも使うので、2025年秋をそろえるのは作り直しの最後（tools/rebuild_all_ratings.py）。
 """
 from __future__ import annotations
 
@@ -320,6 +325,207 @@ def amateur_id(draft_year: int, name: str) -> str:
     return f"ama{draft_year}:{norm_name(name)}"
 
 
+# ---------------------------------------------------------------- 入団時の水準をそろえる（作業62）
+## 物差し：投手は総合（overall）。野手は 0.35ミート＋0.35パワー＋0.1選球眼＋0.1走力＋0.1（守備−13）を投手の総合に換算する
+## （2026年のレギュラー（1軍300打席・50回以上）の中央・上位25%・上位10%を合わせた直線：投手 = 62 ＋ 1.875 ×（野手 − 60））
+BAT_TO_PITCH_MID, PITCH_MID, BAT_TO_PITCH_SLOPE = 60.0, 62.0, 1.875
+## 評価ごとの入団時の総合（投手の総合の物差し）[上, 下]。同じ評価の中は順に LEVEL_STEP ずつ下げる（下の値より下げない）
+LEVEL_READY = {"S": (79, 74), "A": (75, 70), "B": (69, 64), "C": (63, 57), "D": (56, 50)}  # 大学・社会人・独立など
+LEVEL_HS = {"S": (68, 64), "A": (64, 60), "B": (59, 55), "C": (54, 49), "D": (48, 43)}
+LEVEL_STEP = 1.0
+## 年ごとの豊作・不作（その年の全員を上下）。ユーザー：2027年は2026年より豊作（一番上が少し上、B以上が多い）。
+## YEAR_DEPTH は評価 B 以下だけにさらに足す（豊作の年は中位の層も厚い）
+YEAR_SHIFT = {2025: 0, 2026: 0, 2027: 2}
+YEAR_DEPTH = {2027: 2}
+## その年の一番上にする選手（ユーザー決定 2026-11-03：佐藤幻瑛は今年最強。メジャー志望で9位まで残っただけ）
+TOP_OF_YEAR = {2026: "佐藤幻瑛"}
+## 高卒の上位（評価 S・A）の武器 [上, 下]：投手は奪三振、野手はパワー・走力のうち長所の言葉か元の値で選ぶ
+WEAPON = {"S": (80, 77), "A": (76, 72)}
+## 入団時の個々の能力の上限（化け物以外は A に届かない）。その年の一番上の総合がこれを超えるときは総合まで
+RATING_CAP = 79
+SPEED_CAP = 85
+CAP_KNEE, CAP_SOFTNESS = 7, 0.4
+## 評価 S・A の投手は先発（スタミナの下限）
+STARTER_STAMINA = {"高校": 50, "default": 60}
+## 有識者の評価のデータが無い年（2025年秋）は順位と競合の数から評価を決める
+LOTTERY = ROOT / "npb_collector" / "draft_lottery_manual.json"
+PITCH_KEYS = ("overall", "k9", "bb9", "hr9")
+BAT_MAIN = ("meet", "power", "eye")
+BAT_WEAPONS = ("power", "speed")
+
+
+def _num(block: dict, key: str, fallback: float) -> float:
+    r = block.get(key)
+    return float(r["value"]) if isinstance(r, dict) and r.get("value") is not None else fallback
+
+
+def bat_composite(r: dict) -> float:
+    return (0.35 * _num(r, "meet", 45) + 0.35 * _num(r, "power", 45) + 0.1 * _num(r, "eye", 45)
+            + 0.1 * _num(r, "speed", 45) + 0.1 * (_num(r, "defense", 63) - 13))
+
+
+def entry_level(p: dict) -> float:
+    """入団時の総合（投手の総合の物差し）"""
+    if p.get("is_pitcher") and isinstance(p.get("pitching"), dict):
+        return _num(p["pitching"]["ratings"], "overall", 45)
+    if not isinstance(p.get("batting"), dict):
+        return 0.0
+    return PITCH_MID + BAT_TO_PITCH_SLOPE * (bat_composite(p["batting"]["ratings"]) - BAT_TO_PITCH_MID)
+
+
+def draft_round(text: str) -> tuple[int, bool]:
+    m = re.search(r"ドラフト(\d+)位", text or "")
+    return (int(m.group(1)) if m else 99), "育成" in (text or "")
+
+
+def grade_from_draft(rnd: int, ikusei: bool, bids: int, wave: int) -> str:
+    """有識者の評価が無い年：1位の競合（1回目の入札で2球団以上）＝S、1位＝A、2〜3位＝B、4位以下＝C、育成＝D"""
+    if ikusei:
+        return "D"
+    if rnd == 1:
+        return "S" if bids >= 2 and wave == 1 else "A"
+    return "B" if rnd <= 3 else "C"
+
+
+def _soft_cap(v: float, cap: float) -> float:
+    """上限の手前（CAP_KNEE）から上は伸びを CAP_SOFTNESS に縮め、上限で止める（上限に何人も張り付かないように）"""
+    knee = cap - CAP_KNEE
+    return min(cap, v if v <= knee else knee + (v - knee) * CAP_SOFTNESS)
+
+
+def _shift(block: dict, keys, delta: float, cap: float) -> None:
+    if abs(delta) < 0.5:
+        return  # そろえ済み（何度かけても同じになるように、上限の縮めも掛け直さない）
+    for k in keys:
+        if isinstance(block.get(k), dict) and block[k].get("value") is not None:
+            lim = SPEED_CAP if k == "speed" else cap
+            set_value(block, k, max(20, _soft_cap(block[k]["value"] + delta, lim)))
+
+
+def _fit_batter(r: dict, target: float, keys, cap: float) -> None:
+    """keys（＋走力は半分）を動かして野手の値を target（投手の物差し）に合わせる"""
+    goal = BAT_TO_PITCH_MID + (target - PITCH_MID) / BAT_TO_PITCH_SLOPE
+    for _ in range(6):
+        d = goal - bat_composite(r)
+        if abs(d) < 0.3:
+            break
+        w = 0.35 * sum(k in keys for k in ("meet", "power")) + 0.1 * ("eye" in keys) + 0.05 * ("speed" in keys)
+        step = d / max(0.2, w)
+        _shift(r, [k for k in keys if k != "speed"], step, cap)
+        if "speed" in keys:
+            _shift(r, ("speed",), step / 2, cap)  # 走力は半分だけ
+
+
+def _weapon_key(a: dict, r: dict) -> str:
+    words = " ".join(str(s) for s in ((a.get("scout") or {}).get("strengths") or []))
+    for k in BAT_WEAPONS:
+        if any(w in words for w in BAT_WORDS[k]):
+            return k
+    # 元の値が中央（パワー52・走力57）より上の分がいちばん大きいもの
+    return max(BAT_WEAPONS, key=lambda k: _num(r, k, 0) - {"power": 52, "speed": 57}[k])
+
+
+def calibrate(ratings: dict, draft_year: int, scout: dict) -> list[dict]:
+    """draft_year 年秋の新人・候補（draft が「<年>年」で始まる選手）の入団時の能力を、評価の順にそろえる。
+    能力の形（長所・短所）は残し、全体を上下する。ピーク（growth.peak）は入団時を下回らないようにだけする。
+    同じ能力値ファイルに何度かけても同じになる。そろえた選手の一覧（評価の順）を返す"""
+    lottery = {}
+    if LOTTERY.exists():
+        lottery = {norm_name(x["name"]): x for x in load(LOTTERY) if x.get("draft_year") == draft_year}
+    rows = []
+    for p in ratings["players"]:
+        text = str(p.get("draft") or "")
+        if not text.startswith(f"{draft_year}年") or not (isinstance(p.get("batting"), dict) or isinstance(p.get("pitching"), dict)):
+            continue
+        am = p.get("amateur") or {}
+        key = norm_name(p["name"])
+        a = scout.get(key, {})
+        rnd, ikusei = draft_round(text)
+        lot = lottery.get(key, {})
+        bids, wave = int(lot.get("bids", 0)), int(lot.get("wave", 9))
+        grade = (a.get("scout") or {}).get("grade") or am.get("grade") or a.get("eval_rank")
+        if grade not in GRADE_LEVEL:
+            grade = grade_from_draft(rnd, ikusei, bids, wave)
+        if TOP_OF_YEAR.get(draft_year) == key:
+            grade = "S"
+        if am and grade in GRADE_LEVEL:
+            am["grade"] = grade  # 当時の評価（ドラフト画面）も有識者の評価にそろえる
+        school = str(p.get("career") or "").split(" - ")[-1]
+        hs = (am.get("category") or a.get("category") or category_of(school)) == "高校"
+        rows.append({"p": p, "a": a, "grade": grade, "hs": hs,
+                     "order": (-GRADE_LEVEL[grade], not TOP_OF_YEAR.get(draft_year) == key, -bids, wave,
+                               rnd + (100 if ikusei else 0), -round(entry_level(p), 1))})
+    rows.sort(key=lambda x: x["order"])
+    seen: dict[tuple, int] = defaultdict(int)
+    shift = YEAR_SHIFT.get(draft_year, 0)
+    for x in rows:
+        p, grade, hs = x["p"], x["grade"], x["hs"]
+        hi, lo = (LEVEL_HS if hs else LEVEL_READY)[grade]
+        i = seen[(hs, grade)]
+        seen[(hs, grade)] += 1
+        target = max(lo, hi - LEVEL_STEP * i) + shift + (YEAR_DEPTH.get(draft_year, 0) if GRADE_LEVEL[grade] <= 3 else 0)
+        x["target"] = target
+        cap = max(RATING_CAP, round(target))
+        weapon = WEAPON.get(grade) if hs else None
+        w_val = (max(weapon[1], weapon[0] - LEVEL_STEP * i) + shift) if weapon else None
+        if p.get("is_pitcher") and isinstance(p.get("pitching"), dict):
+            r = p["pitching"]["ratings"]
+            _shift(r, PITCH_KEYS, target - _num(r, "overall", 45), cap)
+            set_value(r, "overall", target)
+            if weapon:
+                set_value(r, "k9", max(_num(r, "k9", 0), w_val))
+            if grade in ("S", "A"):
+                st = STARTER_STAMINA["高校" if hs else "default"]
+                if _num(r, "stamina", 0) < st:
+                    set_value(r, "stamina", st)
+                p["pitching"]["role"] = "先発"
+        else:
+            r = p["batting"]["ratings"]
+            keys = [k for k in BAT_MAIN + ("speed",) if isinstance(r.get(k), dict)]
+            _fit_batter(r, target, keys, cap)
+            if weapon:
+                wk = _weapon_key(x["a"], r)
+                set_value(r, wk, max(_num(r, wk, 0), w_val))
+                _fit_batter(r, target, [k for k in keys if k != wk], cap)
+        g = p.get("growth")
+        if isinstance(g, dict) and isinstance(g.get("peak"), dict):
+            part = p["pitching"] if p.get("is_pitcher") and isinstance(p.get("pitching"), dict) else p["batting"]
+            for k, r in part["ratings"].items():
+                if k in g["peak"] and isinstance(r, dict) and r.get("value") is not None:
+                    g["peak"][k] = max(g["peak"][k], r["value"])
+    return rows
+
+
+def scout_index(draft_year: int) -> dict:
+    src = AMATEUR / f"{draft_year}.json"
+    return {norm_name(a["name"]): a for a in load(src)["players"]} if src.exists() else {}
+
+
+## 新人・候補が入っている能力値ファイル（draft_year 年秋 → 翌年の pre と、それを引き継いだファイル）
+def calibrate_files(draft_year: int) -> list[Path]:
+    out = []
+    for name in (f"{draft_year + 1}_pre", f"{draft_year + 1}_post", f"{draft_year + 2}_pre"):
+        path = RATINGS / f"{name}.json"
+        if not path.exists():
+            continue
+        if name != f"{draft_year + 1}_pre" and not load(path).get("carried_from"):
+            continue  # 史実の成績から作ったファイル（引き継ぎでない）は触らない
+        out.append(path)
+    return out
+
+
+def cmd_calibrate(args) -> None:
+    y = args.draft_year
+    scout = scout_index(y)
+    for path in calibrate_files(y):
+        ratings = load(path)
+        rows = calibrate(ratings, y, scout)
+        dump(path, ratings)
+        top = sorted(rows, key=lambda x: -entry_level(x["p"]))[:5]
+        print(f"[amateur] {y}年秋の新人・候補の入団時をそろえた -> {path.name}: {len(rows)}人。上位 "
+              + "・".join(f"{x['p']['name']} {round(entry_level(x['p']))}" for x in top))
+
+
 # ---------------------------------------------------------------- コマンド
 def cmd_rookies(args) -> None:
     """史実の指名選手（data/<年+1>/drafts.json の当年秋）を <年+1>_pre.json に入れる／補正する"""
@@ -352,6 +558,7 @@ def cmd_rookies(args) -> None:
     filled = fill_leagues(ratings)
     dump(path, ratings)
     print(f"[amateur] {y}年秋の新人 -> {path.name}: 追加 {added}・補正 {adjusted}（リーグを埋めた {filled}人）")
+    cmd_calibrate(argparse.Namespace(draft_year=y))
 
 
 def cmd_carry(args) -> None:
@@ -375,6 +582,8 @@ def cmd_carry(args) -> None:
             n += 1
     dump(RATINGS / f"{y + 1}_pre.json", nxt)
     print(f"[amateur] {y}_post（{y}_pre の引き継ぎ）と {y + 1}_pre（＋候補 {n}人）")
+    if src.exists():
+        cmd_calibrate(argparse.Namespace(draft_year=y))
 
 
 def main(argv=None):
@@ -384,8 +593,10 @@ def main(argv=None):
     r.add_argument("--draft-year", type=int, required=True)
     c = sub.add_parser("carry")
     c.add_argument("--year", type=int, required=True)
+    k = sub.add_parser("calibrate")
+    k.add_argument("--draft-year", type=int, required=True)
     args = ap.parse_args(argv)
-    {"rookies": cmd_rookies, "carry": cmd_carry}[args.cmd](args)
+    {"rookies": cmd_rookies, "carry": cmd_carry, "calibrate": cmd_calibrate}[args.cmd](args)
 
 
 if __name__ == "__main__":

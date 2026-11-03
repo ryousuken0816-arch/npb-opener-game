@@ -748,6 +748,57 @@ func release_toggle(id: String) -> String:
 	return error
 
 
+## 自球団の選手に引退を勧めて受け入れる確率（今季のゲーム内成績も見る。作業56）
+func retire_offer_chance(id: String) -> float:
+	if league == null:
+		return 0.0
+	var stats: Dictionary = {}
+	if season != null:
+		var pitcher: bool = GameData.player(id).get("is_pitcher", false)
+		stats = (season.pitching if pitcher else season.batting).get(id, {})
+	return league.retire_offer_chance(id, year, stats)
+
+
+## 自球団の選手に引退を勧められないときの理由（勧められるなら空。1人1オフ1回まで）
+func retire_offer_block(id: String) -> String:
+	var r := releases()
+	if r == null or not contract_with_release():
+		return "引退の勧めは「契約更改・戦力外」の段階で行います"
+	if r.resolved:
+		return "戦力外・引退は締めました"
+	if r.retire_asked.has(id):
+		return "このオフはもう引退を勧めました（%s）" % ("受け入れて引退" if r.retire_asked[id] else "断られた")
+	if league.team_of.get(id, "") != team:
+		return "自球団の選手ではありません"
+	return league.retire_offer_block(id, year)
+
+
+## 自球団の選手に引退を勧める。受け入れればその場で引退（市場に出ない）し、自球団の速報を出す。
+## {ok: 勧められたか, accepted: 受け入れたか, text: 結果の文}
+func retire_offer(id: String) -> Dictionary:
+	var block := retire_offer_block(id)
+	if not block.is_empty():
+		return {"ok": false, "accepted": false, "text": block}
+	var r := releases()
+	var chance := retire_offer_chance(id)
+	var accepted := randf() < chance
+	r.retire_asked[id] = accepted
+	var p_name: String = league.names.get(id, id)
+	if not accepted:
+		changed.emit()
+		return {"ok": true, "accepted": false, "text": "%sは引退の勧めを断りました。契約か戦力外を選び直してください。" % p_name}
+	r.marked.erase(id)
+	var p := GameData.player(id)
+	var age := FreeAgency.age_of(p, year)
+	league.retire_by_offer(id)
+	post_news(News.article("%d-11-10" % year, "retire", "%s、現役引退を表明" % p_name,
+		"%sの%s（%d歳）が、今季限りでの現役引退を表明した。" % [GameData.short_name(team), p_name, age],
+		[id], [team]), open_off_issue(), true)
+	_sync_roster()
+	changed.emit()
+	return {"ok": true, "accepted": true, "text": "%sは引退の勧めを受け入れ、現役引退を表明しました。" % p_name}
+
+
 ## 足りない人数をおまかせで選ぶ。選んだ人数
 func release_auto() -> int:
 	var r := releases()

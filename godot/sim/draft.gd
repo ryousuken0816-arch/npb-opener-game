@@ -147,6 +147,11 @@ var talks := {}
 var force_roll := -1.0
 
 var _rng := RandomNumberGenerator.new()
+## 抽選（1位・外れ1位の競合）の当たりだけを引く乱数（作業58）。セーブの乱数（_rng）とは別に、その場の時刻から作るので、
+## 同じセーブからやり直すと当たりが変わることがある（CPU の入札・指名・ほかの乱数は _rng のまま同じ）。セーブには入れない
+var _lottery_rng := RandomNumberGenerator.new()
+## テストのときだけ抽選の種を決める（-1＝その場で引く）。0以上なら、年・入札の回・候補から決まった種で引く
+static var lottery_seed := -1
 var _team_noise := {}
 ## 球団 → {候補ID: true}：メジャー志望の候補を避けない（たまの強行指名・史実で強行指名した球団）
 var _team_dare := {}
@@ -396,7 +401,7 @@ func run_first_wave() -> Array[Dictionary]:
 		bidders.sort_custom(func(a: String, b: String) -> bool: return teams.find(a) < teams.find(b))
 		var winner: String = bidders[0]
 		if bidders.size() > 1:
-			winner = bidders[_rng.randi_range(0, bidders.size() - 1)]
+			winner = bidders[_draw_lottery(id, bidders.size())]
 			lotteries.append({"wave": wave, "id": id, "teams": bidders.duplicate(), "winner": winner})
 		_record_pick(winner, id, 1, false)
 		for t: String in bidders:
@@ -407,6 +412,15 @@ func run_first_wave() -> Array[Dictionary]:
 	if teams_without_first().is_empty() or wave > MAX_WAVES or _remaining().is_empty():
 		_start_waiver()
 	return last_wave
+
+
+## 抽選の当たりの添字（0〜n-1）。lottery_seed が決まっていなければ、その場の時刻から作った乱数で引く（作業58）
+func _draw_lottery(id: String, n: int) -> int:
+	if lottery_seed >= 0:
+		_lottery_rng.seed = hash("%d|%d|%d|%s" % [lottery_seed, year, wave, id])
+	else:
+		_lottery_rng.randomize()
+	return _lottery_rng.randi_range(0, n - 1)
 
 
 ## 直前の入札で抽選になった候補 [{wave, id, teams, winner}]
@@ -1041,7 +1055,7 @@ func can_persuade(id: String) -> bool:
 
 
 ## 自球団が指名して、まだ説得していないメジャー志望の選手（ドラフト会議が終わっても、これが残っていれば入団の
-## 処理を待つ。可変ボタンで次へ進むと約束なしの扱いで決まる）
+## 処理を待つ。説得しないまま次の段階へ進むと期限切れで渡米する。作業57）
 func pending_talks() -> Array[String]:
 	var result: Array[String] = []
 	for rec in picks:
@@ -1063,11 +1077,15 @@ func persuade(id: String, promise: int) -> Dictionary:
 
 
 ## まだ決まっていない交渉をすべて決める（ドラフト会議の結果で入団させる前に LeagueRoster.apply_draft から）。
-## 自球団で説得しなかった選手は約束なし、CPU球団は CPU_PROMISE_RATE の確率で約束を付ける
+## 自球団で説得しなかった選手は交渉の期限切れで失敗（渡米。勝手に成功にしない。作業57）、
+## CPU球団は CPU_PROMISE_RATE の確率で約束を付けて確率で決める
 func resolve_talks() -> void:
 	for rec in picks:
 		var id: String = rec["id"]
 		if talks.has(id) or not bool(by_id[id].get("mlb_intent", false)):
+			continue
+		if rec["team"] == user_team:
+			talks[id] = {"team": user_team, "promise": 0, "chance": 0.0, "ok": false, "expired": true}
 			continue
 		var promise := 0
 		if rec["team"] != user_team and _rng.randf() < MlbPersuasion.CPU_PROMISE_RATE:
