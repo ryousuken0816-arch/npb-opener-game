@@ -2784,24 +2784,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 49,
-      "rank": "E"
+      "value": 54,
+      "rank": "D"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 48,
-      "rank": "E"
+      "value": 53,
+      "rank": "D"
      },
      "bb9": {
-      "value": 49,
-      "rank": "E"
+      "value": 54,
+      "rank": "D"
      },
      "hr9": {
-      "value": 48,
-      "rank": "E"
+      "value": 53,
+      "rank": "D"
      }
     },
     "abilities": [],
@@ -4077,23 +4077,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
       "value": 60,
       "rank": "C"
      },
-     "bb9": {
-      "value": 63,
-      "rank": "C"
-     },
      "hr9": {
-      "value": 65,
+      "value": 62,
       "rank": "C"
      }
     },
@@ -5057,7 +5057,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 58,
+      "value": 52,
       "rank": "D"
      },
      "stamina": {
@@ -5065,16 +5065,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 57,
+      "value": 51,
       "rank": "D"
      },
      "bb9": {
-      "value": 60,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "hr9": {
-      "value": 62,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      }
     },
     "abilities": [],
@@ -7637,20 +7637,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "power": {
-      "value": 60,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "eye": {
-      "value": 61,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "speed": {
-      "value": 59,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      }
     },
     "detail": {
@@ -7809,19 +7809,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
+      "value": 65,
       "rank": "C"
      },
      "power": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "eye": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "speed": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -9273,19 +9273,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -11455,19 +11455,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "power": {
-      "value": 57,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 58,
+      "value": 53,
       "rank": "D"
      },
      "speed": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -12561,24 +12561,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 59,
-      "rank": "D"
+      "value": 69,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 68,
+      "rank": "C"
      },
      "bb9": {
-      "value": 61,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "hr9": {
-      "value": 65,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -15828,7 +15828,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
+      "value": 63,
       "rank": "C"
      },
      "stamina": {
@@ -15836,15 +15836,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 60,
-      "rank": "C"
-     },
-     "bb9": {
       "value": 63,
       "rank": "C"
      },
+     "bb9": {
+      "value": 66,
+      "rank": "C"
+     },
      "hr9": {
-      "value": 65,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -19109,20 +19109,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      },
      "power": {
-      "value": 60,
+      "value": 66,
       "rank": "C"
      },
      "eye": {
-      "value": 61,
+      "value": 67,
       "rank": "C"
      },
      "speed": {
-      "value": 59,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      }
     },
     "detail": {
@@ -19978,19 +19978,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -20523,19 +20523,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 61,
       "rank": "C"
      },
      "power": {
-      "value": 58,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -23941,19 +23941,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 49,
-      "rank": "E"
-     },
-     "power": {
-      "value": 50,
-      "rank": "D"
-     },
-     "eye": {
       "value": 51,
       "rank": "D"
      },
+     "power": {
+      "value": 52,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 53,
+      "rank": "D"
+     },
      "speed": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -25041,28 +25041,28 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 69,
-      "rank": "C"
+      "value": 74,
+      "rank": "B"
      },
      "stamina": {
-      "value": 36,
-      "rank": "F"
-     },
-     "k9": {
-      "value": 69,
+      "value": 60,
       "rank": "C"
      },
+     "k9": {
+      "value": 73,
+      "rank": "B"
+     },
      "bb9": {
-      "value": 71,
+      "value": 74,
       "rank": "B"
      },
      "hr9": {
-      "value": 68,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      }
     },
     "abilities": [],
-    "role": "救援",
+    "role": "先発",
     "detail": {
      "fip": {
       "observed": null,
@@ -25665,24 +25665,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 59,
-      "rank": "D"
+      "value": 68,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 67,
+      "rank": "C"
      },
      "bb9": {
-      "value": 61,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "hr9": {
-      "value": 65,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -25979,23 +25979,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 57,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 57,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "hr9": {
-      "value": 61,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -31635,19 +31635,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 61,
       "rank": "C"
      },
      "power": {
-      "value": 58,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -32594,19 +32594,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 56,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 55,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -33267,19 +33267,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "power": {
-      "value": 54,
+      "value": 59,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 51,
+      "value": 53,
       "rank": "D"
      }
     },
@@ -34051,19 +34051,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
-      "rank": "D"
-     },
-     "power": {
       "value": 54,
       "rank": "D"
      },
+     "power": {
+      "value": 53,
+      "rank": "D"
+     },
      "eye": {
-      "value": 55,
+      "value": 54,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 50,
       "rank": "D"
      },
      "defense": {
@@ -34486,24 +34486,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 62,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      },
      "bb9": {
-      "value": 66,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 58,
+      "rank": "D"
      }
     },
     "abilities": [],
@@ -34632,7 +34632,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 54,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
@@ -34640,15 +34640,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 54,
+      "value": 50,
       "rank": "D"
      },
      "bb9": {
-      "value": 57,
+      "value": 53,
       "rank": "D"
      },
      "hr9": {
-      "value": 58,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -37873,19 +37873,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 41,
+      "value": 47,
       "rank": "E"
      },
      "power": {
-      "value": 46,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "eye": {
-      "value": 45,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "speed": {
-      "value": 44,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -39447,28 +39447,28 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 60,
+      "rank": "C"
      },
      "k9": {
-      "value": 62,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "bb9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "abilities": [],
-    "role": "救援",
+    "role": "先発",
     "detail": {
      "fip": {
       "observed": null,
@@ -39925,24 +39925,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 59,
-      "rank": "D"
+      "value": 67,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "bb9": {
-      "value": 61,
+      "value": 69,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -43087,7 +43087,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
+      "value": 64,
       "rank": "C"
      },
      "stamina": {
@@ -43095,15 +43095,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 61,
+      "value": 63,
       "rank": "C"
      },
      "bb9": {
-      "value": 66,
+      "value": 68,
       "rank": "C"
      },
      "hr9": {
-      "value": 66,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -44209,24 +44209,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
-      "rank": "C"
+      "value": 53,
+      "rank": "D"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 62,
-      "rank": "C"
+      "value": 53,
+      "rank": "D"
      },
      "bb9": {
-      "value": 66,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      }
     },
     "abilities": [],
@@ -47606,19 +47606,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 53,
       "rank": "D"
      }
     },
@@ -49668,19 +49668,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 53,
       "rank": "D"
      }
     },
@@ -49886,20 +49886,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 54,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 58,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 57,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      }
     },
     "detail": {
@@ -51209,19 +51209,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 44,
-      "rank": "E"
-     },
-     "power": {
       "value": 48,
       "rank": "E"
      },
+     "power": {
+      "value": 52,
+      "rank": "D"
+     },
      "eye": {
-      "value": 47,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
+      "value": 48,
       "rank": "E"
      }
     },
@@ -51462,19 +51462,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
+      "value": 55,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 53,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 54,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 53,
       "rank": "D"
      }
     },
@@ -51615,24 +51615,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 65,
+      "rank": "C"
      },
      "bb9": {
-      "value": 61,
+      "value": 68,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -54259,24 +54259,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 55,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 65,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -54571,7 +54571,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
@@ -54579,16 +54579,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -55529,7 +55529,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
@@ -55537,16 +55537,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -58180,19 +58180,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -59257,20 +59257,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 57,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 61,
+      "rank": "C"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 60,
+      "rank": "C"
      },
      "speed": {
-      "value": 46,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      }
     },
     "detail": {
@@ -60669,20 +60669,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
-      "rank": "C"
+      "value": 72,
+      "rank": "B"
      },
      "power": {
-      "value": 60,
+      "value": 67,
       "rank": "C"
      },
      "eye": {
-      "value": 61,
+      "value": 68,
       "rank": "C"
      },
      "speed": {
-      "value": 59,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      }
     },
     "detail": {
@@ -62691,19 +62691,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
-     },
-     "power": {
       "value": 56,
       "rank": "D"
      },
+     "power": {
+      "value": 54,
+      "rank": "D"
+     },
      "eye": {
-      "value": 57,
+      "value": 55,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 53,
       "rank": "D"
      }
     },
@@ -62777,19 +62777,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "power": {
-      "value": 57,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 58,
+      "value": 53,
       "rank": "D"
      },
      "speed": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -65499,23 +65499,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 57,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 57,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "hr9": {
-      "value": 61,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -66309,7 +66309,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "stamina": {
@@ -66317,15 +66317,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 60,
+      "value": 62,
       "rank": "C"
      },
      "bb9": {
-      "value": 63,
+      "value": 65,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
+      "value": 67,
       "rank": "C"
      }
     },
@@ -67767,23 +67767,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
       "value": 60,
       "rank": "C"
      },
-     "bb9": {
-      "value": 63,
-      "rank": "C"
-     },
      "hr9": {
-      "value": 65,
+      "value": 62,
       "rank": "C"
      }
     },
@@ -70372,20 +70372,20 @@
    "batting": {
     "ratings": {
      "meet": {
+      "value": 70,
+      "rank": "B"
+     },
+     "power": {
       "value": 65,
       "rank": "C"
      },
-     "power": {
-      "value": 60,
-      "rank": "C"
-     },
      "eye": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "speed": {
-      "value": 59,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      }
     },
     "detail": {
@@ -71198,19 +71198,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 61,
       "rank": "C"
      },
      "power": {
-      "value": 58,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -71284,19 +71284,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
+      "value": 65,
       "rank": "C"
      },
      "power": {
-      "value": 57,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      },
      "eye": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "speed": {
-      "value": 56,
+      "value": 58,
       "rank": "D"
      }
     },
@@ -73586,23 +73586,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 50,
-      "rank": "D"
+      "value": 48,
+      "rank": "E"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
+      "value": 48,
+      "rank": "E"
+     },
+     "bb9": {
       "value": 50,
       "rank": "D"
      },
-     "bb9": {
-      "value": 52,
-      "rank": "D"
-     },
      "hr9": {
-      "value": 52,
+      "value": 50,
       "rank": "D"
      }
     },
@@ -75639,24 +75639,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 59,
-      "rank": "D"
+      "value": 65,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "bb9": {
-      "value": 61,
+      "value": 67,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
-      "rank": "C"
+      "value": 71,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -76869,23 +76869,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 57,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 57,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "bb9": {
-      "value": 59,
-      "rank": "D"
+      "value": 66,
+      "rank": "C"
      },
      "hr9": {
-      "value": 61,
+      "value": 68,
       "rank": "C"
      }
     },
@@ -78515,7 +78515,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
@@ -78523,15 +78523,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 55,
+      "value": 50,
       "rank": "D"
      },
      "bb9": {
-      "value": 58,
+      "value": 53,
       "rank": "D"
      },
      "hr9": {
-      "value": 59,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -79161,24 +79161,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 55,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -84005,19 +84005,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 61,
       "rank": "C"
      },
      "power": {
-      "value": 58,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -87388,7 +87388,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
@@ -87396,15 +87396,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 52,
+      "value": 50,
       "rank": "D"
      },
      "bb9": {
-      "value": 55,
+      "value": 53,
       "rank": "D"
      },
      "hr9": {
-      "value": 57,
+      "value": 55,
       "rank": "D"
      }
     },
@@ -87972,7 +87972,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 42,
+      "value": 43,
       "rank": "E"
      },
      "stamina": {
@@ -87980,15 +87980,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 42,
+      "value": 43,
       "rank": "E"
      },
      "bb9": {
-      "value": 39,
-      "rank": "F"
+      "value": 40,
+      "rank": "E"
      },
      "hr9": {
-      "value": 40,
+      "value": 41,
       "rank": "E"
      }
     },
@@ -89412,19 +89412,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 49,
-      "rank": "E"
-     },
-     "power": {
-      "value": 50,
-      "rank": "D"
-     },
-     "eye": {
       "value": 51,
       "rank": "D"
      },
+     "power": {
+      "value": 52,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 53,
+      "rank": "D"
+     },
      "speed": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -90424,19 +90424,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 44,
-      "rank": "E"
-     },
-     "power": {
       "value": 48,
       "rank": "E"
      },
+     "power": {
+      "value": 52,
+      "rank": "D"
+     },
      "eye": {
-      "value": 47,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
+      "value": 48,
       "rank": "E"
      }
     },
@@ -90510,19 +90510,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 37,
-      "rank": "F"
+      "value": 47,
+      "rank": "E"
      },
      "power": {
-      "value": 44,
-      "rank": "E"
+      "value": 54,
+      "rank": "D"
      },
      "eye": {
-      "value": 43,
-      "rank": "E"
+      "value": 53,
+      "rank": "D"
      },
      "speed": {
-      "value": 40,
+      "value": 45,
       "rank": "E"
      }
     },
@@ -91627,20 +91627,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 50,
       "rank": "D"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
+      "value": 49,
+      "rank": "E"
      },
      "eye": {
-      "value": 55,
+      "value": 50,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
-      "rank": "D"
+      "value": 49,
+      "rank": "E"
      }
     },
     "detail": {
@@ -94172,28 +94172,28 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 60,
+      "rank": "C"
      },
      "k9": {
-      "value": 62,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "bb9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "abilities": [],
-    "role": "救援",
+    "role": "先発",
     "detail": {
      "fip": {
       "observed": null,
@@ -98701,19 +98701,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 56,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 55,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -100493,19 +100493,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -100579,20 +100579,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 54,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 58,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 57,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      }
     },
     "detail": {
@@ -101298,19 +101298,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
+      "value": 55,
       "rank": "D"
      },
      "power": {
-      "value": 56,
+      "value": 53,
       "rank": "D"
      },
      "eye": {
-      "value": 57,
+      "value": 54,
       "rank": "D"
      },
      "speed": {
-      "value": 54,
+      "value": 53,
       "rank": "D"
      }
     },
@@ -101752,19 +101752,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "power": {
-      "value": 54,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "eye": {
-      "value": 55,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "speed": {
-      "value": 51,
+      "value": 55,
       "rank": "D"
      }
     },
@@ -103160,7 +103160,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 54,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
@@ -103168,15 +103168,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 54,
+      "value": 50,
       "rank": "D"
      },
      "bb9": {
-      "value": 57,
+      "value": 53,
       "rank": "D"
      },
      "hr9": {
-      "value": 58,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -107111,28 +107111,28 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 55,
-      "rank": "D"
+      "value": 76,
+      "rank": "B"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 67,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 68,
+      "rank": "C"
      }
     },
     "abilities": [],
-    "role": "救援",
+    "role": "先発",
     "detail": {
      "fip": {
       "observed": null,
@@ -107423,7 +107423,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 51,
+      "value": 59,
       "rank": "D"
      },
      "stamina": {
@@ -107431,16 +107431,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 52,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "bb9": {
-      "value": 54,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "hr9": {
-      "value": 56,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -107735,24 +107735,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 49,
-      "rank": "E"
+      "value": 58,
+      "rank": "D"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 50,
+      "value": 59,
       "rank": "D"
      },
      "bb9": {
-      "value": 51,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 51,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -108049,7 +108049,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
@@ -108057,16 +108057,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -111878,19 +111878,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 56,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 55,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -114514,20 +114514,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 53,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 57,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 56,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      }
     },
     "detail": {
@@ -114977,7 +114977,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
@@ -114985,15 +114985,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 55,
+      "value": 50,
       "rank": "D"
      },
      "bb9": {
-      "value": 58,
+      "value": 53,
       "rank": "D"
      },
      "hr9": {
-      "value": 59,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -116730,19 +116730,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 41,
+      "value": 47,
       "rank": "E"
      },
      "power": {
-      "value": 46,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "eye": {
-      "value": 45,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "speed": {
-      "value": 44,
+      "value": 47,
       "rank": "E"
      }
     },
@@ -117625,19 +117625,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
-      "rank": "C"
-     },
-     "power": {
       "value": 60,
       "rank": "C"
      },
+     "power": {
+      "value": 55,
+      "rank": "D"
+     },
      "eye": {
-      "value": 61,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "speed": {
-      "value": 59,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -118202,28 +118202,28 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 62,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 60,
+      "rank": "C"
      },
      "k9": {
-      "value": 62,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      },
      "bb9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      },
      "hr9": {
-      "value": 66,
-      "rank": "C"
+      "value": 73,
+      "rank": "B"
      }
     },
     "abilities": [],
-    "role": "救援",
+    "role": "先発",
     "detail": {
      "fip": {
       "observed": null,
@@ -118974,24 +118974,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 59,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "bb9": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -120766,23 +120766,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
       "value": 60,
       "rank": "C"
      },
-     "bb9": {
-      "value": 63,
-      "rank": "C"
-     },
      "hr9": {
-      "value": 65,
+      "value": 62,
       "rank": "C"
      }
     },
@@ -124603,20 +124603,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 56,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 55,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      }
     },
     "detail": {
@@ -125731,19 +125731,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -127111,20 +127111,20 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 49,
-      "rank": "E"
+      "value": 54,
+      "rank": "D"
      },
      "power": {
-      "value": 50,
+      "value": 55,
       "rank": "D"
      },
      "eye": {
-      "value": 51,
+      "value": 56,
       "rank": "D"
      },
      "speed": {
-      "value": 48,
-      "rank": "E"
+      "value": 50,
+      "rank": "D"
      }
     },
     "detail": {
@@ -127987,19 +127987,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "power": {
-      "value": 54,
+      "value": 58,
       "rank": "D"
      },
      "eye": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "speed": {
-      "value": 51,
+      "value": 53,
       "rank": "D"
      }
     },
@@ -128969,7 +128969,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 52,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
@@ -128977,15 +128977,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 52,
+      "value": 50,
       "rank": "D"
      },
      "bb9": {
-      "value": 55,
+      "value": 53,
       "rank": "D"
      },
      "hr9": {
-      "value": 57,
+      "value": 55,
       "rank": "D"
      }
     },
@@ -129647,19 +129647,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 65,
-      "rank": "C"
-     },
-     "power": {
       "value": 60,
       "rank": "C"
      },
+     "power": {
+      "value": 55,
+      "rank": "D"
+     },
      "eye": {
-      "value": 61,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "speed": {
-      "value": 59,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -129733,19 +129733,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 61,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      },
      "power": {
-      "value": 57,
+      "value": 52,
       "rank": "D"
      },
      "eye": {
-      "value": 58,
+      "value": 53,
       "rank": "D"
      },
      "speed": {
-      "value": 56,
+      "value": 54,
       "rank": "D"
      }
     },
@@ -131052,24 +131052,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 59,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "bb9": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -132346,7 +132346,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "stamina": {
@@ -132354,16 +132354,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 55,
+      "value": 59,
       "rank": "D"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -135240,20 +135240,20 @@
    "batting": {
     "ratings": {
      "meet": {
+      "value": 70,
+      "rank": "B"
+     },
+     "power": {
       "value": 65,
       "rank": "C"
      },
-     "power": {
-      "value": 60,
-      "rank": "C"
-     },
      "eye": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "speed": {
-      "value": 59,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      }
     },
     "detail": {
@@ -137753,19 +137753,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 56,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 55,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -139026,19 +139026,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 58,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "power": {
-      "value": 56,
-      "rank": "D"
+      "value": 62,
+      "rank": "C"
      },
      "eye": {
-      "value": 57,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "speed": {
-      "value": 54,
+      "value": 57,
       "rank": "D"
      }
     },
@@ -139735,19 +139735,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 62,
+      "value": 61,
       "rank": "C"
      },
      "power": {
-      "value": 58,
+      "value": 57,
       "rank": "D"
      },
      "eye": {
-      "value": 59,
+      "value": 58,
       "rank": "D"
      },
      "speed": {
-      "value": 57,
+      "value": 56,
       "rank": "D"
      }
     },
@@ -140623,7 +140623,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 57,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
@@ -140631,16 +140631,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 57,
+      "value": 50,
       "rank": "D"
      },
      "bb9": {
-      "value": 59,
+      "value": 52,
       "rank": "D"
      },
      "hr9": {
-      "value": 61,
-      "rank": "C"
+      "value": 54,
+      "rank": "D"
      }
     },
     "abilities": [],
@@ -140935,7 +140935,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 42,
+      "value": 43,
       "rank": "E"
      },
      "stamina": {
@@ -140943,15 +140943,15 @@
       "rank": "F"
      },
      "k9": {
-      "value": 42,
+      "value": 43,
       "rank": "E"
      },
      "bb9": {
-      "value": 39,
-      "rank": "F"
+      "value": 40,
+      "rank": "E"
      },
      "hr9": {
-      "value": 40,
+      "value": 41,
       "rank": "E"
      }
     },
@@ -142995,15 +142995,15 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 49,
-      "rank": "E"
-     },
-     "power": {
       "value": 50,
       "rank": "D"
      },
-     "eye": {
+     "power": {
       "value": 51,
+      "rank": "D"
+     },
+     "eye": {
+      "value": 52,
       "rank": "D"
      },
      "speed": {
@@ -143081,19 +143081,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 44,
-      "rank": "E"
-     },
-     "power": {
       "value": 48,
       "rank": "E"
      },
+     "power": {
+      "value": 52,
+      "rank": "D"
+     },
      "eye": {
-      "value": 47,
-      "rank": "E"
+      "value": 51,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
+      "value": 48,
       "rank": "E"
      }
     },
@@ -144651,24 +144651,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 59,
-      "rank": "D"
+      "value": 64,
+      "rank": "C"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 63,
+      "rank": "C"
      },
      "bb9": {
-      "value": 61,
+      "value": 66,
       "rank": "C"
      },
      "hr9": {
-      "value": 65,
-      "rank": "C"
+      "value": 70,
+      "rank": "B"
      }
     },
     "abilities": [],
@@ -145297,28 +145297,28 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
-      "rank": "D"
+      "value": 68,
+      "rank": "C"
      },
      "stamina": {
-      "value": 35,
-      "rank": "F"
+      "value": 50,
+      "rank": "D"
      },
      "k9": {
-      "value": 55,
-      "rank": "D"
+      "value": 80,
+      "rank": "A"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 71,
+      "rank": "B"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 72,
+      "rank": "B"
      }
     },
     "abilities": [],
-    "role": "救援",
+    "role": "先発",
     "detail": {
      "fip": {
       "observed": null,
@@ -147440,23 +147440,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 49,
-      "rank": "E"
+      "value": 57,
+      "rank": "D"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 50,
+      "value": 58,
       "rank": "D"
      },
      "bb9": {
-      "value": 51,
+      "value": 59,
       "rank": "D"
      },
      "hr9": {
-      "value": 51,
+      "value": 59,
       "rank": "D"
      }
     },
@@ -147920,23 +147920,23 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 60,
-      "rank": "C"
+      "value": 57,
+      "rank": "D"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
+      "value": 57,
+      "rank": "D"
+     },
+     "bb9": {
       "value": 60,
       "rank": "C"
      },
-     "bb9": {
-      "value": 63,
-      "rank": "C"
-     },
      "hr9": {
-      "value": 65,
+      "value": 62,
       "rank": "C"
      }
     },
@@ -149376,7 +149376,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "stamina": {
@@ -149384,16 +149384,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 55,
+      "value": 57,
       "rank": "D"
      },
      "bb9": {
-      "value": 58,
-      "rank": "D"
+      "value": 60,
+      "rank": "C"
      },
      "hr9": {
-      "value": 59,
-      "rank": "D"
+      "value": 61,
+      "rank": "C"
      }
     },
     "abilities": [],
@@ -150500,7 +150500,7 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 59,
+      "value": 50,
       "rank": "D"
      },
      "stamina": {
@@ -150508,16 +150508,16 @@
       "rank": "F"
      },
      "k9": {
-      "value": 58,
-      "rank": "D"
+      "value": 49,
+      "rank": "E"
      },
      "bb9": {
-      "value": 61,
-      "rank": "C"
+      "value": 52,
+      "rank": "D"
      },
      "hr9": {
-      "value": 65,
-      "rank": "C"
+      "value": 56,
+      "rank": "D"
      }
     },
     "abilities": [],
@@ -151249,19 +151249,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 56,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 55,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -152780,19 +152780,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 45,
-      "rank": "E"
+      "value": 52,
+      "rank": "D"
      },
      "power": {
-      "value": 49,
-      "rank": "E"
+      "value": 56,
+      "rank": "D"
      },
      "eye": {
-      "value": 48,
-      "rank": "E"
+      "value": 55,
+      "rank": "D"
      },
      "speed": {
-      "value": 46,
+      "value": 49,
       "rank": "E"
      }
     },
@@ -155531,24 +155531,24 @@
    "pitching": {
     "ratings": {
      "overall": {
-      "value": 50,
-      "rank": "D"
+      "value": 47,
+      "rank": "E"
      },
      "stamina": {
       "value": 35,
       "rank": "F"
      },
      "k9": {
-      "value": 50,
-      "rank": "D"
+      "value": 47,
+      "rank": "E"
      },
      "bb9": {
-      "value": 52,
-      "rank": "D"
+      "value": 49,
+      "rank": "E"
      },
      "hr9": {
-      "value": 52,
-      "rank": "D"
+      "value": 49,
+      "rank": "E"
      }
     },
     "abilities": [],
@@ -156944,19 +156944,19 @@
    "batting": {
     "ratings": {
      "meet": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "power": {
-      "value": 52,
+      "value": 54,
       "rank": "D"
      },
      "eye": {
-      "value": 53,
+      "value": 55,
       "rank": "D"
      },
      "speed": {
-      "value": 48,
+      "value": 49,
       "rank": "E"
      }
     },

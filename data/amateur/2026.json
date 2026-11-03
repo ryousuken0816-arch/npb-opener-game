@@ -3874,7 +3874,7 @@
     "2025年 日米大学野球で米国打線を抑える"
    ],
    "evaluation": "フォークとスライダーを交えたパワーピッチングの右腕",
-   "eval_rank": "B",
+   "eval_rank": "S",
    "intro": "ペンシルベニア州立大の右腕159km",
    "sources": [
     "https://www.baseballchannel.jp/npb/hawks/297888/"
@@ -3889,13 +3889,18 @@
      "フォーク"
     ],
     "weaknesses": [],
-    "grade": "B",
+    "grade": "S",
     "type": "パワー型右腕",
     "comments": [
      {
       "by": "球団スカウト評（ベースボールチャンネル）",
       "summary": "先発でも救援でも1年目から通用し得るパワーピッチャー",
       "url": "https://www.baseballchannel.jp/npb/hawks/297888/"
+     },
+     {
+      "by": "ユーザー決定（2026-11-03）・日刊スポーツ／ベースボール・アメリカ",
+      "summary": "本来は1位候補。メジャー志望で9位まで残っただけで、この年の新人で最強（米ベースボール・アメリカの2027年MLBドラフトの順位で全体47位）",
+      "url": "https://news.yahoo.co.jp/articles/c6b8d1ef40a9f1a0996e0df419db7cb7c4d6da2f"
      }
     ]
    },
