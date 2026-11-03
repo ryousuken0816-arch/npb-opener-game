@@ -1317,7 +1317,7 @@ func retire_offer_chance(id: String, season_year: int, stats: Dictionary = {}) -
 	var chance := RETIRE_OFFER_BASE + RETIRE_OFFER_PER_AGE * (age - RETIRE_OFFER_MIN_AGE)
 	chance -= RETIRE_OFFER_ABILITY * float(Salary.ability(p)[0])
 	if not stats.is_empty():
-		var s := Salary.season_ability(p, stats)
+		var s := Salary.season_ability(p, stats, season_year)
 		chance -= RETIRE_OFFER_SEASON * float(s[0]) * clampf(float(s[1]), 0.0, 1.0)
 	chance -= RETIRE_OFFER_SALARY * salary_of(id) / 10000.0
 	return clampf(chance, RETIRE_OFFER_RANGE[0], RETIRE_OFFER_RANGE[1])

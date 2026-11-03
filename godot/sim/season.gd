@@ -14,6 +14,8 @@ const PIT_LINE_KEYS := ["outs", "bf", "h", "hr", "bb", "hbp", "so", "r", "er", "
 const WEEKDAY_NAMES := ["日", "月", "火", "水", "木", "金", "土"]
 
 var year: int
+## その年の点の入りやすさ（RunEnv.for_year。合わせ込みのツールは差し替える）
+var env: Dictionary = {}
 ## 日付順。{date, day, kind, home, away, venue, status, game_no, result}
 var games: Array[Dictionary] = []
 var teams := {}                     ## 正式名 → SimTeam
@@ -36,6 +38,7 @@ var _debut_years := {}
 func _init(season_year: int, ratings: Dictionary, schedule: Array, seed_value: int = 0,
 		debut_years: Dictionary = {}) -> void:
 	year = season_year
+	env = RunEnv.for_year(year)
 	_rng.seed = seed_value if seed_value != 0 else hash("season-%d" % year)
 	_debut_years = debut_years
 	var by_team := {}
@@ -235,6 +238,7 @@ func _play(g: Dictionary) -> void:
 	var away: SimTeam = teams[g["away"]]
 	var use_dh := _uses_dh(g)
 	var sim := GameSim.new(away, home, g["day"], use_dh, _rng)
+	sim.set_env(env)
 	var result := sim.play()
 	g["result"] = result
 	var hs: int = result["home_score"]

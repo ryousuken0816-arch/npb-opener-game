@@ -194,6 +194,15 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
 - 史実の無い年（2027年〜）は寄せない（成長・衰えの仕組み）
 - 確認：`godot/tests/season_blend_check.gd`（ヘッドレス約3分半。2026年、佐藤輝明が 開幕 → 7月 → 9月 → シーズン後 と上がる・試合の能力・選手詳細・セーブ／ロード・ゲーム内の成績の順位（乱数でぶれるので6シーズンの平均。OPS 3.7位・本塁打 4.0位））
 
+## 年ごとの点の入りやすさ（`RunEnv`、docs/AUTORUN.md 作業70）
+
+- 能力値は「その年までの5年の中での位置」（z）なので、年ごとの水準（飛ばないボール・投高打低）は能力値に残らない。試合（`GameSim`）の基準の確率
+  `BASE_K`・`BASE_BB`・`BASE_HR`・`BASE_SHARP`（2008年に合わせた値）に、その年のずれ（ロジット）を足す（`GameSim.set_env`。`Season.env` と `Postseason` が `RunEnv.for_year` を渡す）
+- ずれは `generated/run_env.json` の `years`（2008〜2026年。`tools/fit_run_env.py` が `godot/tests/run_env_fit.gd` で各年を回して、三振率・四球率・本塁打率・BABIP を史実に合わせる）。
+  2027年〜は `future`（直近3年の平均）。`league`（史実のリーグの OPS・防御率）は年俸の査定（`Salary.season_ability`）が基準を年ごとの水準にずらすのに使う
+- 投手の K9・BB9・HR9、打者のパワー・選球眼の効き方（`A_K9_K` 0.30・`A_CTL_BB` 0.36・`A_HR9_HR` 0.44・`A_POW_HR` 0.60・`A_EYE_BB` 0.40）は、能力値の z と元の成績（K/9・BB/9・HR/9・本塁打率・四球率）の関係に合わせた
+- 係数（`game_sim.gd` の A_*）を変えたら `python tools/fit_run_env.py --rounds 2` で合わせ直す（今の値から始める。約15分）
+
 ## フェーズ進行（可変ボタン）
 
 シーズンは**日単位**で進む。`GameState.day` は「今日」（まだ試合をしていない日）の通し日数（`Season.day_number`）で、

@@ -173,6 +173,17 @@ python tools/manual_overrides.py   # rebuild_all_ratings.py が compute_ratings 
 作り直した `generated/ratings/` に当てる。守備力・肩は当てない（basement から出した値のまま）。今は Antigravity が 2026-11-01 に強化した2024年ドラフトの6人
 （石塚裕惺・金丸夢斗・中村優斗・宗山塁・渡部聖弥・西川史礁。2026_pre・2026_post・2027_pre）だけ。
 
+## fit_run_env.py — 年ごとの点の入りやすさ（docs/AUTORUN.md 作業70）
+
+```
+python tools/fit_run_env.py [--rounds 3] [--jobs 4] [--years 2008-2026] [--godot <Godot>]   # → generated/run_env.json
+python tools/fit_run_env.py --league-only   # 史実のリーグの OPS・防御率（league）だけ書き直す
+```
+
+Godot の `godot/tests/run_env_fit.gd` を年を分けて並列に流し、各年を1シーズンずつ回して、リーグの三振率・四球率・本塁打率・BABIP が史実（`data/<年>/teamstats_linked.json`）に合うように、
+試合の基準の確率に足すずれ（ロジット）を直す。今の `run_env.json` の値から始めるので、試合の係数を少し変えたあとは `--rounds 2` で足りる。`future`（2027年〜）は直近3年の平均。
+`fit` に最後に回した成績（ずれを直す前）と史実を残す。能力値を作り直したとき（`rebuild_all_ratings.py`）も流し直す（Godot を使うのでパイプラインには入れていない）
+
 ## growth_coefficients.py — 成長・衰え・引退の係数（docs/AUTORUN.md 作業27）
 
 ```

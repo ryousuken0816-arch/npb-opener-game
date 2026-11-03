@@ -25,13 +25,13 @@ const P_HBP := 0.0102
 const BASE_BB := 0.072
 const BASE_K := 0.179
 const BASE_HR := 0.0228
-const A_EYE_BB := 0.30      ## 選球眼 → 四球
-const A_CTL_BB := 0.18      ## 制球 → 四球（減）
+const A_EYE_BB := 0.40      ## 選球眼 → 四球（作業70で 0.30 から。選球眼の z と実際の四球率の関係）
+const A_CTL_BB := 0.36      ## 制球 → 四球（減）（作業70で 0.18 から。能力値の BB9 の z と実際の四球率の関係に合わせる）
 const A_MEET_K := 0.29      ## ミート → 三振（減）
-const A_K9_K := 0.18        ## 奪三振 → 三振
-const A_POW_HR := 0.36      ## パワー → 本塁打
+const A_K9_K := 0.30        ## 奪三振 → 三振（作業70で 0.18 から。K9 の z と実際の三振率の関係）
+const A_POW_HR := 0.60      ## パワー → 本塁打（作業70で 0.36 から。パワー99・弾道4で本塁打率 8%＝600打席で50本前後）
 const A_TRAJ_HR := 0.08     ## 弾道 → 本塁打
-const A_HR9_HR := 0.20      ## 被弾抑制 → 本塁打（減）
+const A_HR9_HR := 0.44      ## 被弾抑制 → 本塁打（減）（作業70で 0.20 から。HR9 の z と実際の被本塁打率の関係）
 
 ## 打球の質（鋭い当たりの割合）
 const BASE_SHARP := 0.363
@@ -144,6 +144,11 @@ var _virtual_outs := 0  ## 失策がなければ取れていたアウトを含�
 var _bases: Array = [null, null, null]  ## 走者 {p: SimPlayer, resp: SimPlayer, earned: bool}
 var _lead_event := {}   ## 最後に勝ち越したときの {side, win, lose}
 var _game_over := false
+## 基準の確率（ロジット。set_env でその年のずれを足す）
+var _base_bb := 0.0
+var _base_k := 0.0
+var _base_hr := 0.0
+var _base_sharp := 0.0
 
 
 func _init(away: SimTeam, home: SimTeam, game_day: int, dh: bool,
@@ -152,6 +157,15 @@ func _init(away: SimTeam, home: SimTeam, game_day: int, dh: bool,
 	day = game_day
 	use_dh = dh
 	rng = random
+	set_env({})
+
+
+## その年の点の入りやすさ（RunEnv.for_year。基準の確率に足すロジットのずれ）
+func set_env(env: Dictionary) -> void:
+	_base_bb = _logit(BASE_BB) + float(env.get("bb", 0.0))
+	_base_k = _logit(BASE_K) + float(env.get("k", 0.0))
+	_base_hr = _logit(BASE_HR) + float(env.get("hr", 0.0))
+	_base_sharp = _logit(BASE_SHARP) + float(env.get("sharp", 0.0))
 
 
 ## 試合を最後まで進め、結果（スコア・勝敗投手・個人成績）を返す
@@ -253,9 +267,9 @@ func _plate_appearance(batting: int, fielding: int) -> void:
 		return
 
 	var fat := _fatigue(fielding)
-	var bb_p := _sig(_logit(BASE_BB) + A_EYE_BB * batter.eye - A_CTL_BB * (pitcher.bb9 - fat))
-	var k_p := _sig(_logit(BASE_K) - A_MEET_K * batter.meet + A_K9_K * (pitcher.k9 - fat))
-	var hr_p := _sig(_logit(BASE_HR) + A_POW_HR * batter.power
+	var bb_p := _sig(_base_bb + A_EYE_BB * batter.eye - A_CTL_BB * (pitcher.bb9 - fat))
+	var k_p := _sig(_base_k - A_MEET_K * batter.meet + A_K9_K * (pitcher.k9 - fat))
+	var hr_p := _sig(_base_hr + A_POW_HR * batter.power
 			+ A_TRAJ_HR * (batter.trajectory - 2.5) - A_HR9_HR * (pitcher.hr9 - fat))
 	var r := rng.randf()
 	if r < P_HBP:
@@ -305,7 +319,7 @@ func _fatigue(fielding: int) -> float:
 func _ball_in_play(batting: int, fielding: int, batter: SimPlayer, line: Dictionary,
 		pline: Dictionary, fat: float) -> void:
 	var pitcher: SimPlayer = _pitcher[fielding]
-	var sharp_p := _sig(_logit(BASE_SHARP) + A_MEET_SHARP * batter.meet
+	var sharp_p := _sig(_base_sharp + A_MEET_SHARP * batter.meet
 			+ A_POW_SHARP * batter.power - A_OVR_SHARP * (pitcher.overall - fat))
 	if rng.randf() < sharp_p:
 		_sharp_ball(batting, fielding, batter, line, pline)

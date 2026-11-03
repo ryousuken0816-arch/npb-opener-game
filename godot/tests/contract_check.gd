@@ -139,7 +139,7 @@ func _check_renewals(y: int, season: Variant, before: Dictionary, fixed_before: 
 			over_limit.append("%s %s→%s" % [league.names[id], Salary.text(prev), Salary.text(now)])
 		var p: Dictionary = _gd.player(id)
 		var stats: Dictionary = (season.pitching if p.get("is_pitcher", false) else season.batting).get(id, {})
-		var s := Salary.season_ability(p, stats)
+		var s := Salary.season_ability(p, stats, y)
 		# 活躍：今季の実力 z が高く出場も多い／不振：年俸5000万円以上で出場が多いのに成績が悪い
 		# （年俸の安い若手は出場が増えれば成績が悪くても上がるので除く）
 		if float(s[0]) >= 0.8 and float(s[1]) >= 0.6:

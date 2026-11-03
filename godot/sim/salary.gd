@@ -76,6 +76,7 @@ const SEASON_OPS_MEAN := 0.760
 const SEASON_OPS_SD := 0.110
 const SEASON_ERA_MEAN := 3.60
 const SEASON_ERA_SD := 1.00
+## 上の OPS・防御率は2008年の水準。年ごとの水準（RunEnv.league。作業70）に、リーグの OPS・防御率の比でずらす
 
 
 ## 最低年俸（支配下）。2025年から600万円
@@ -161,7 +162,7 @@ static func rookie(draft: Dictionary, year: int) -> int:
 static func renew(current: int, p: Dictionary, season_stats: Dictionary, years: int, foreign: bool,
 		year: int) -> int:
 	var a := ability(p)
-	var season := season_ability(p, season_stats)
+	var season := season_ability(p, season_stats, year - 1)  # year は来季。成績は今季（year − 1）の水準で見る
 	var z: float = lerpf(a[0], season[0], SEASON_WEIGHT)
 	var playing: float = lerpf(a[1], season[1], SEASON_PLAYING_WEIGHT)
 	var value := market_value(z, playing, a[2])
@@ -188,8 +189,18 @@ static func renew_limits(current: int, proposed: int, year: int) -> Array[int]:
 	return [low, high]
 
 
-## 今季のゲーム内成績から [実力 z, 出場量]（打者は OPS、投手は防御率。少ないほど z を0へ縮める）
-static func season_ability(p: Dictionary, s: Dictionary) -> Array:
+## 今季のゲーム内成績から [実力 z, 出場量]（打者は OPS、投手は防御率。少ないほど z を0へ縮める）。
+## year を渡すと、その年のリーグの水準（RunEnv.league）で基準をずらす
+static func season_ability(p: Dictionary, s: Dictionary, year: int = 0) -> Array:
+	var ops_mean := SEASON_OPS_MEAN
+	var era_mean := SEASON_ERA_MEAN
+	var era_sd := SEASON_ERA_SD
+	var lg := RunEnv.league(year) if year > 0 else {}
+	var ref := RunEnv.reference_league()
+	if not lg.is_empty() and not ref.is_empty():
+		ops_mean *= float(lg["ops"]) / float(ref["ops"])
+		era_mean *= float(lg["era"]) / float(ref["era"])
+		era_sd *= float(lg["era"]) / float(ref["era"])
 	var pitching: Variant = p.get("pitching")
 	if p.get("is_pitcher", false) and pitching is Dictionary:
 		var outs := float(s.get("outs", 0))
@@ -198,7 +209,7 @@ static func season_ability(p: Dictionary, s: Dictionary) -> Array:
 		if outs <= 0.0:
 			return [0.0, 0.0]
 		var era := float(s.get("er", 0)) * 27.0 / outs
-		var z := (SEASON_ERA_MEAN - era) / SEASON_ERA_SD * PITCHER_Z_SCALE
+		var z := (era_mean - era) / era_sd * PITCHER_Z_SCALE
 		if pitching.get("role") != "先発":
 			z *= RELIEVER_Z_SCALE
 		return [z * playing, playing]
@@ -212,7 +223,7 @@ static func season_ability(p: Dictionary, s: Dictionary) -> Array:
 	var obp := on_base / on_base_den if on_base_den > 0 else 0.0
 	var tb := float(s.get("h", 0) + s.get("d", 0) + 2 * s.get("t", 0) + 3 * s.get("hr", 0))
 	var slg := tb / ab if ab > 0 else 0.0
-	return [(obp + slg - SEASON_OPS_MEAN) / SEASON_OPS_SD * playing, playing]
+	return [(obp + slg - ops_mean) / SEASON_OPS_SD * playing, playing]
 
 
 ## 10万円単位に丸める
