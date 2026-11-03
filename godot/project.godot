@@ -39,3 +39,4 @@ environment/defaults/default_clear_color=Color(0, 0, 0, 1)
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+lights_and_shadows/directional_shadow/size.web=1024

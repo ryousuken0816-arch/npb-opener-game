@@ -164,10 +164,12 @@ static func build(columns: Array, rows: Array, with_history: bool,
 	for col: Array in columns:
 		header.append(col[0])
 	table.add_child(_row(columns, header, palette.main, palette.on_main, true))
-	var history_box := VBoxContainer.new()
-	history_box.add_theme_constant_override("separation", 1)
-	history_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# 年度別の行の入れ物は with_history のときだけ作る（作ってツリーに入れないと解放されず、選手詳細を開くたびに残っていた）
+	var history_box: VBoxContainer = null
 	if with_history:
+		history_box = VBoxContainer.new()
+		history_box.add_theme_constant_override("separation", 1)
+		history_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var scroll := ScrollContainer.new()
 		scroll.name = "History"
 		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
