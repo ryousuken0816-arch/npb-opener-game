@@ -1931,6 +1931,10 @@ func load_state(d: Dictionary) -> void:
 	var classes: Variant = d.get("draft_classes")
 	if classes is Dictionary:
 		for key: String in classes:
+			# 作業66より前のセーブの架空の候補：守備位置を具体的に・弾道を付ける（作業69）
+			for p: Variant in classes[key]:
+				if p is Dictionary:
+					FictionalDraft.upgrade_old(p)
 			GameData.set_draft_class(int(key), classes[key])
 	fictional_hits = str(d.get("fictional_hits", "historical"))
 	reincarnation_on = bool(d.get("reincarnation_on", true))
@@ -1950,6 +1954,12 @@ func load_state(d: Dictionary) -> void:
 	if syn is Dictionary:
 		for key: String in syn:
 			GameData.synthetic[int(key)] = syn[key]
+			# 架空の年の能力値にいる、作業66より前に作った架空の選手も同じく（作業69）
+			var ps: Variant = syn[key].get("players") if syn[key] is Dictionary else null
+			if ps is Array:
+				for p: Variant in ps:
+					if p is Dictionary:
+						FictionalDraft.upgrade_old(p)
 	GameData.load_ratings(year, "pre" if phase in [Phase.SEASON, Phase.CAMP, Phase.POSTSEASON] else "post")
 	if phase in [Phase.SEASON, Phase.POSTSEASON]:
 		GameData.set_season_blend(float(d.get("season_blend", 0.0)))

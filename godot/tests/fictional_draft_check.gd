@@ -45,6 +45,7 @@ func _run() -> void:
 	_draft = load("res://sim/draft.gd")
 	_check_generator()
 	_check_balance()
+	_check_types()
 	_check_news_text()
 	_check_tournaments()
 	_check_amateur_news_2026()
@@ -532,6 +533,11 @@ func _check_fictional_flow() -> void:
 		if not a["players"].is_empty() and not _gd.call("player", str(a["players"][0])).is_empty():
 			linked += 1
 	_check(linked >= 2, "ニュースの選手から候補の選手詳細を引ける（%d本）" % linked)
+	# 作業67：その年の色はセンバツ号のはじめに出る（例年並みの年は出ない）
+	var theme := str(cls[0]["amateur"].get("year_theme", ""))
+	var theme_art := spring.filter(func(a: Dictionary) -> bool: return ("今年は" + theme) in str(a["headline"]))
+	_check(not theme.is_empty() and (theme_art.size() == 1 or theme == "例年並み"),
+		"2028年の色「%s」がセンバツ号に出る（%d本）" % [theme, theme_art.size()])
 	var date_before: String = _gs.date_text()
 	_gs.skip_to_phase(_gs.Phase.DRAFT)
 	var d: RefCounted = _gs.draft()
@@ -555,6 +561,16 @@ func _check_fictional_flow() -> void:
 			rei.append(c)
 		ranks[c["hyouka_rank"]] = int(ranks.get(c["hyouka_rank"], 0)) + 1
 	_check(fictional == d.candidates.size() and fictional >= 95, "候補はすべて架空の選手（%d人）" % fictional)
+	# 作業69：ドラフトの時点で、候補の選手データ（選手詳細が読む）に弾道1〜4と具体的な守備位置
+	var no_traj: Array = []
+	for c: Dictionary in d.candidates:
+		var cp: Dictionary = _gd.call("player", str(c["id"]))
+		if cp.is_empty() or bool(cp.get("is_pitcher", false)):
+			continue
+		var tj: Variant = cp.get("batting", {}).get("trajectory")
+		if tj == null or int(tj) < 1 or int(tj) > 4 or not str(cp.get("primary_pos", "")) in SimPlayer.POSITIONS:
+			no_traj.append("%s（%s・%s）" % [cp["name"], str(tj), cp.get("primary_pos", "")])
+	_check(no_traj.is_empty(), "ドラフトの候補（野手）は弾道と具体的な守備位置を持つ（無い %s）" % [no_traj.slice(0, 4)])
 	_check(real_school == d.candidates.size(), "出身校・所属はすべて実在の学校名（%d人）" % real_school)
 	_check(ranks.has("S") or ranks.has("A"), "当時の評価に上位の目玉がいる（%s）" % ranks)
 	print("  転生選手：%s" % ", ".join(rei.map(func(c: Dictionary) -> String:
@@ -580,6 +596,33 @@ func _check_fictional_flow() -> void:
 		if _gs.league.team_of.get(rec["id"], "") == USER and not _gd.call("player", rec["id"]).is_empty():
 			present += 1
 	_check(present == mine.size(), "指名した架空の選手 %d/%d人が自球団に所属" % [present, mine.size()])
+	# 作業69：入団した架空の選手（自球団・CPU 球団とも）は弾道1〜4・具体的な守備位置と守備適性を持つ
+	var joined := 0
+	var bad_join: Array = []
+	for rec: Dictionary in d.picks:
+		var jp: Dictionary = _gd.call("player", str(rec["id"]))
+		if jp.is_empty() or bool(jp.get("is_pitcher", false)):
+			continue
+		joined += 1
+		var traj: Variant = jp.get("batting", {}).get("trajectory")
+		var pos := str(jp.get("primary_pos", ""))
+		var fld: Dictionary = jp.get("fielding", {})
+		var keys_ok := not fld.is_empty()
+		for k: String in fld:
+			keys_ok = keys_ok and k in SimPlayer.POSITIONS
+		if traj == null or int(traj) < 1 or int(traj) > 4 or not pos in SimPlayer.POSITIONS or not keys_ok \
+				or not SimPlayer.from_rating(jp).can_play(pos):
+			bad_join.append("%s（弾道 %s・%s・%s）" % [jp["name"], str(traj), pos, fld.keys()])
+	_check(joined >= 20 and bad_join.is_empty(), "入団した架空の野手 %d人が弾道と具体的な守備位置を持つ（%s）" % [joined, bad_join.slice(0, 4)])
+	# 作業69：作業66より前の形（守備位置「内野手」・弾道なし）の選手は、読み込むときに今の形になる
+	var old := {"id": "fic:2028:999", "name": "古い 選手", "is_pitcher": false, "primary_pos": "内野手",
+		"amateur": {"fictional": true, "category": "大学", "grade": "B"},
+		"batting": {"ratings": {"meet": {"value": 72, "rank": "B"}, "power": {"value": 68, "rank": "C"},
+			"eye": {"value": 55, "rank": "D"}, "speed": {"value": 60, "rank": "C"}}, "sample": {"pa_1": 0.0, "pa_2": 0.0}},
+		"fielding": {"内野手": {"games": 0, "defense": {"value": 79, "rank": "B"}, "arm": {"value": 62, "rank": "C"}}}}
+	_check(_fd.upgrade_old(old) and old["primary_pos"] == "遊撃手" and old["fielding"].has("二塁手")
+		and int(old["batting"]["trajectory"]) in [1, 2, 3, 4] and int(old["batting"]["ratings"]["defense"]["value"]) == 79,
+		"古い形の架空の選手（内野手 B79・弾道なし）→ 遊撃手（二塁手も）・弾道 %s" % str(old["batting"].get("trajectory")))
 	_check_ages(d.candidates, mine)
 	if not rei.is_empty():
 		var rp: Dictionary = _gd.call("player", rei[0]["id"])
@@ -699,3 +742,85 @@ func _check(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  NG  ") + label)
 	if not ok:
 		_failures += 1
+
+
+## 作業67：型・能力の散らばり・年の色・物語（30年分。入団時の能力だけを見る）
+func _check_types() -> void:
+	print("== 作業67：架空の候補の型・年の色・物語（30年分） ==")
+	var fd: RefCounted = _fd.new()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 2067
+	var years := 30
+	var bat_keys := ["meet", "power", "eye", "speed", "defense", "arm"]
+	var types := {}
+	var themes := {}
+	var stories := 0
+	var convert_weak := 0
+	var of_shapes := {}
+	var of_n := 0
+	var bat_n := 0
+	var bat_strong := 0
+	var bat_weak := 0
+	var by_grade := {}
+	var named := 0
+	var all_n := 0
+	for y in range(2028, 2028 + years):
+		var cls: Array = fd.generate_year(y, rng)
+		themes[str(cls[0]["amateur"].get("year_theme", ""))] = int(themes.get(str(cls[0]["amateur"].get("year_theme", "")), 0)) + 1
+		for p: Dictionary in cls:
+			var am: Dictionary = p["amateur"]
+			var group := FictionalTypes.pos_group(p)
+			if not types.has(group):
+				types[group] = {}
+			types[group][str(am.get("type", ""))] = true
+			all_n += 1
+			named += 1 if str(am.get("type", "")) in str(am.get("intro", "")) else 0
+			if not str(am.get("story", "")).is_empty():
+				stories += 1
+				if am.get("story_key") == "convert_bat" and int(p["batting"]["ratings"]["arm"]["value"]) < 70:
+					convert_weak += 1
+			var r: Dictionary = p["pitching"]["ratings"] if p["is_pitcher"] else p["batting"]["ratings"]
+			var keys: Array = ["k9", "bb9", "hr9", "stamina"] if p["is_pitcher"] else bat_keys
+			var hi := 0
+			var lo := 0
+			var shape := ""
+			for k: String in keys:
+				var v := int(r[k]["value"])
+				hi += 1 if v >= 70 else 0
+				lo += 1 if v < 50 else 0
+				shape += "B" if v >= 70 else ("e" if v < 50 else ".")
+			var g := str(am["grade"])
+			if not by_grade.has(g):
+				by_grade[g] = [0, 0]
+			by_grade[g][0] += 1
+			by_grade[g][1] += hi
+			if not p["is_pitcher"] and not p.has("reincarnation"):
+				bat_n += 1
+				bat_strong += 1 if hi >= 1 else 0
+				bat_weak += 1 if lo >= 1 else 0
+				if group == "外野手":
+					of_n += 1
+					of_shapes[shape] = int(of_shapes.get(shape, 0)) + 1
+	var avg := func(g: String) -> float:
+		return float(by_grade.get(g, [0, 0])[1]) / maxf(1, by_grade.get(g, [1, 0])[0])
+	var top_shape := 0
+	for k: String in of_shapes:
+		top_shape = maxi(top_shape, int(of_shapes[k]))
+	var counts := {}
+	for g: String in types:
+		counts[g] = types[g].size()
+	print("  型の数 %s、年の色 %s、物語 %d人" % [counts, themes, stories])
+	print("  長所（B 以上）の数の平均 S %.1f・A %.1f・B %.1f・C %.1f・D %.1f" % [avg.call("S"), avg.call("A"), avg.call("B"), avg.call("C"), avg.call("D")])
+	_check(int(counts.get("投手", 0)) >= 9 and int(counts.get("捕手", 0)) >= 6 and int(counts.get("内野手", 0)) >= 8
+		and int(counts.get("外野手", 0)) >= 8, "型は守備位置ごとに10前後（%s）" % counts)
+	_check(float(named) / maxf(1, all_n) >= 0.9, "紹介文（手帳の札・作戦会議・ニュース）に型の名前（%d／%d人）" % [named, all_n])
+	_check(float(top_shape) / maxf(1, of_n) <= 0.25,
+		"外野手の能力の形がばらける（いちばん多い形 %d／%d人）" % [top_shape, of_n])
+	_check(float(bat_strong) / maxf(1, bat_n) >= 0.95 and float(bat_weak) / maxf(1, bat_n) >= 0.7,
+		"野手は長所 B 以上を持ち、短所 E 以下も多い（長所 %d・短所 %d／%d人）" % [bat_strong, bat_weak, bat_n])
+	_check(avg.call("S") >= 2.0 and avg.call("A") >= 2.0 and avg.call("B") > avg.call("D") + 0.5,
+		"評価の高い選手ほど長所が多い（S %.1f・A %.1f・B %.1f・D %.1f）" % [avg.call("S"), avg.call("A"), avg.call("B"), avg.call("D")])
+	_check(themes.size() >= 6 and int(themes.get("例年並み", 0)) <= years / 2,
+		"年の色は年ごとに変わる（%s）" % themes)
+	_check(stories >= years * 4 and stories <= years * 12 and convert_weak == 0,
+		"物語は年に数人、元投手の野手は肩が強い（%d人、肩の弱い元投手 %d人）" % [stories, convert_weak])

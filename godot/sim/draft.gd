@@ -606,6 +606,8 @@ static func sort_value(c: Dictionary, key: String) -> Variant:
 			return float(c["future_seen"])
 		"school":
 			return str(c["school"])
+		"type":
+			return str(c.get("type", ""))
 		"name":
 			return str(c["name"])
 		"velocity":
@@ -904,6 +906,8 @@ func _fill_profile(c: Dictionary, p: Dictionary) -> void:
 					p_rat["velocity"] = int(sub_pit["velocity"].get("kmh", 140))
 				c["two_way_pit"] = p_rat
 	c["intro"] = str(ama["intro"]) if ama is Dictionary and ama.get("intro") is String else intro_text(c)
+	# 型（作業67。架空の候補は型の名前、実在は有識者の評価のタイプ）。候補一覧の表の「型」の列
+	c["type"] = str(ama.get("type", "")) if ama is Dictionary and ama.get("type") is String else ""
 	var honors := AmateurTournament.summary(GameState.amateur_results, year, c["name"], c["school"])
 	if not honors.is_empty():
 		c["intro"] += "\n" + honors

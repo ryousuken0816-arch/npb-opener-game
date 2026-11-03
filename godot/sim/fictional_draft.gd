@@ -73,10 +73,12 @@ const SUB_POS := {"遊撃手": {"二塁手": -3, "三塁手": -4}, "二塁手": 
 const PITCH_FIELD_LEVEL := {"S": 73, "A": 72, "B": 71, "C": 70, "D": 69}
 const PITCH_FIELD_HS_GAP := 2.0
 const FIELD_SPREAD := 4
-## 入団時の弾道（set_trajectory。tools/amateur_ratings.py の同じ名前の定数と同じ値）
+## 入団時の弾道（set_trajectory。点の式は tools/amateur_ratings.py の rookie_trajectory と同じ）。区切りは架空の候補だけ別：
+## 型（作業67）で長所・短所がはっきりした分、点が実在の新人より広がる（下位10% 29・下位15% 33・上位10% 84・上位3% 94）ので、
+## 弾道1 が15%前後・3 が15%前後・4 が数%になるように決めた（史実の新人の1年目は 1 15%・3 4%・4 0.4%）
 const TRAJ_SHAPE := 0.4
-const TRAJ_CUTS := [[80.0, 4], [66.0, 3], [46.0, 2]]
-const TRAJ_4_POWER := 74.0
+const TRAJ_CUTS := [[94.0, 4], [80.0, 3], [31.0, 2]]
+const TRAJ_4_POWER := 78.0
 ## 転生選手の出現確率（人数分布）
 const REINCARNATION_ODDS := [0.65, 0.25, 0.08, 0.02]
 ## 転生選手の高校／大学の割合
@@ -196,11 +198,13 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 	# 年の質（豊作・不作の波）を更新
 	_last_quality = FictionalTalent.next_class_quality(_last_quality, rng)
 	var quality := _last_quality
+	# その年の色（作業67。投手の豊作年など。顔ぶれと質を偏らせる）
+	var theme := FictionalTypes.pick_theme(rng)
 
 	# ひな形から区分・守備位置の構成をサンプリング
-	var picks := _pick_templates(int(size["reg"]), false, rng)
+	var picks := _pick_templates(int(size["reg"]), false, rng, theme)
 	var monsters := _monster_slots(picks, rng)
-	picks.append_array(_pick_templates(int(size["ikusei"]), true, rng))
+	picks.append_array(_pick_templates(int(size["ikusei"]), true, rng, theme))
 
 	# 各候補を FictionalTalent で生成
 	var raw_candidates: Array = []
@@ -233,6 +237,9 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 
 	var level_seen := {}
 	var ready_top := false
+	# 完成型・未完の大器は毎年どちらも何人か（作業67）
+	var n_complete := 0
+	var n_wild := 0
 	for i in raw_candidates.size():
 		var p: Dictionary = raw_candidates[i]
 		var is_ikusei := (i >= reg_count)
@@ -276,6 +283,22 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 				lv_grade = "S"
 			ready_top = true
 		var lv_key := "%s/%s" % [p["category"] == "高校", lv_grade]
+		# 型（作業67）：守備位置・評価・年の色から選び、入団時の総合を変えずに能力の形を作る（_calibrate_entry の中）
+		var lefty := float(FictionalTypes.THEMES[theme].get("lefty", 0.0))
+		if p["is_pitcher"] and lefty > 0.0 and p["throws"] != "左" and rng.randf() < lefty:
+			p["throws"] = "左"
+		var type_key := FictionalTypes.pick_type(p, grade, theme, rng)
+		var ready_pick: bool = p["category"] != "高校" and not is_ikusei and not bool(p.get("is_monster", false))
+		if ready_pick and grade in ["A", "B"] and rank_in_reg >= 20 and n_complete < FictionalTypes.MIN_EACH:
+			type_key = FictionalTypes.complete_type(p)
+		elif not is_ikusei and rank_in_reg >= 45 and n_wild < FictionalTypes.MIN_EACH and grade in ["C", "D"]:
+			type_key = FictionalTypes.wild_type(p)
+		n_complete += 1 if FictionalTypes.is_complete(type_key) else 0
+		n_wild += 1 if FictionalTypes.is_wild(type_key) else 0
+		p["_type"] = type_key
+		p["_grade"] = grade
+		p["_theme_bonus"] = (FictionalTypes.level_bonus(theme, p) if grade in ["B", "C", "D"] else 0.0) \
+			+ (FictionalTypes.COMPLETE_BONUS if FictionalTypes.is_complete(type_key) else 0.0)
 		_calibrate_entry(p, lv_grade, int(level_seen.get(lv_key, 0)), quality, rng)
 		level_seen[lv_key] = int(level_seen.get(lv_key, 0)) + 1
 
@@ -295,12 +318,14 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 			am["projected"] = "超目玉" if p["category"] == "高校" else "超目玉（即戦力）"
 			am["bids"] = maxi(am["bids"], rng.randi_range(3, 6))
 
-		# 二刀流の二つ名反映
-		am["type"] = FictionalTalent.decide_player_type(p)
+		# 型の名前（二刀流は最後に二刀流の名前にする）
+		am["type_key"] = str(p["_type"])
+		am["type"] = FictionalTypes.label_of(str(p["_type"]))
 		am["intro"] = intro_of(p)
 
 		# 作業用キーを削除
-		p.erase("_apparent_eval")
+		for k: String in ["_apparent_eval", "_type", "_grade", "_theme_bonus"]:
+			p.erase(k)
 		out.append(p)
 
 	# 夢多め・掘り出し物の追加処理（旧オプション互換）
@@ -320,6 +345,8 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 			pool.remove_at(j)
 
 	_mark_mlb_intent(out, rng)
+	# 物語（作業67）：一部の候補に経歴の物語。紹介文に足す
+	FictionalTypes.assign_stories(out, rng)
 
 	# クラス全体から二刀流候補を年間枠（ポアソン分布・上限2人）で適性に基づき選出して副次能力を付与
 	_talent.assign_two_way_for_class(out, rng)
@@ -327,9 +354,15 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 		var tw: Dictionary = p.get("two_way", {})
 		if bool(tw.get("active", false)):
 			p["amateur"]["type"] = FictionalTalent.decide_player_type(p)
+		if bool(tw.get("active", false)) or not str(p["amateur"].get("story", "")).is_empty():
 			p["amateur"]["intro"] = intro_of(p)
+		p["amateur"]["year_theme"] = theme
+	# 一芸だけ S（作業67。確率で年に0〜2人。紹介文に「◯◯は世代随一」）
+	FictionalTypes.assign_one_skill(out, theme, rng)
+	for p: Dictionary in out:
 		fill_fielding(p)
 		set_trajectory(p)
+		_sync_peak(p)
 
 	return out
 
@@ -374,11 +407,16 @@ static func fill_fielding(p: Dictionary) -> void:
 	var subs: Dictionary = SUB_POS.get(primary, {})
 	for x: String in subs:
 		out[x] = _field_entry(x, d + float(subs[x]), arm)
+	# ユーティリティ（作業67の型）は内野のどこでも・外野も守れる
+	if str(am.get("type", "")) == "ユーティリティ":
+		for x: String in ["二塁手", "三塁手", "遊撃手", "一塁手", "外野手"]:
+			if not out.has(x):
+				out[x] = _field_entry(x, d - 4.0, arm)
 	p["primary_pos"] = primary
 	p["fielding"] = out
 
 
-## 入団時の弾道（作業66の続き。tools/amateur_ratings.py の rookie_trajectory と同じ決め方。架空の候補には評判の言葉が無いので評判は0）：
+## 入団時の弾道（作業66の続き。tools/amateur_ratings.py の rookie_trajectory と同じ式。架空の候補には評判の言葉が無いので評判は0）：
 ## 点 = パワー + TRAJ_SHAPE ×（パワー − ミート）が TRAJ_CUTS 以上なら 4・3・2、ほかは1（4 はパワー TRAJ_4_POWER 以上だけ）。
 ## 投手は1のまま（二刀流の投手は打撃の能力から決める）
 static func set_trajectory(p: Dictionary) -> void:
@@ -396,6 +434,54 @@ static func set_trajectory(p: Dictionary) -> void:
 			t = int(c[1])
 			break
 	bat["trajectory"] = t
+
+
+## 作業66より前に作った架空の選手（古いセーブの候補・架空の年の能力値）を今の形にする（作業69）：守備位置が「内野手」などの区分のまま
+## （試合では本職でも不慣れの扱い）・投手の守備力なし・弾道なし（選手詳細で「－」）。直したら true
+static func upgrade_old(p: Dictionary) -> bool:
+	if not is_fictional_amateur(p) and not str(p.get("id", "")).begins_with("fic:") and not str(p.get("id", "")).begins_with("rei:"):
+		return false
+	var changed := false
+	var f: Variant = p.get("fielding")
+	if bool(p.get("is_pitcher", false)):
+		if not f is Dictionary or not f.has("投手"):
+			fill_fielding(p)
+			changed = true
+		return changed
+	if not p.get("batting") is Dictionary or not p["batting"].get("ratings") is Dictionary:
+		return false
+	var old_pos := not str(p.get("primary_pos", "")) in FIELD_POS
+	if f is Dictionary:
+		for k: String in f:
+			old_pos = old_pos or not k in FIELD_POS
+	if old_pos or not f is Dictionary or f.is_empty():
+		# 守備力・肩は今の値（区分の守備位置の値か打撃の側の値）のまま、具体的な守備位置に分ける
+		var br: Dictionary = p["batting"]["ratings"]
+		var cur: Dictionary = f.get(str(p.get("primary_pos", "")), {}) if f is Dictionary else {}
+		for k: String in ["defense", "arm"]:
+			if cur.get(k) is Dictionary and not br.get(k) is Dictionary:
+				br[k] = cur[k].duplicate()
+		fill_fielding(p)
+		changed = true
+	if p["batting"].get("trajectory") == null:
+		set_trajectory(p)
+		changed = true
+	return changed
+
+
+## ピーク（growth.peak）は入団時を下回らないようにだけする（型・物語で入団時の能力を動かしたあと）
+static func _sync_peak(p: Dictionary) -> void:
+	var peak: Variant = p.get("growth", {}).get("peak")
+	if not peak is Dictionary:
+		return
+	for part: String in ["batting", "pitching"]:
+		var block: Variant = p.get(part)
+		if not block is Dictionary or not block.get("ratings") is Dictionary:
+			continue
+		for k: String in block["ratings"]:
+			var r: Variant = block["ratings"][k]
+			if peak.has(k) and r is Dictionary and r.get("value") != null:
+				peak[k] = maxf(float(peak[k]), float(r["value"]))
 
 
 ## 書き方の無い内野手の位置（守備力 → 遊撃手、肩 → 三塁手、守備力 → 二塁手、ほかは一塁手。高校は FIELD_HS_GAP 下げる）
@@ -492,7 +578,8 @@ func _calibrate_entry(p: Dictionary, grade: String, i: int, quality: float, rng:
 	else:
 		var lv: Array = (LEVEL_HS if hs else LEVEL_READY)[grade]
 		var deep := grade in ["B", "C", "D"]
-		target = minf(RATING_CAP, maxf(lv[1], lv[0] - LEVEL_STEP * i) + (2.0 * shift if deep else maxf(shift, -1.0)))
+		target = minf(RATING_CAP, maxf(lv[1], lv[0] - LEVEL_STEP * i) + (2.0 * shift if deep else maxf(shift, -1.0))
+			+ float(p.get("_theme_bonus", 0.0)))
 		if hs and WEAPON.has(grade):
 			weapon = maxf(WEAPON[grade][1], WEAPON[grade][0] - LEVEL_STEP * i) + shift
 	target = roundf(target)
@@ -518,26 +605,38 @@ func _calibrate_entry(p: Dictionary, grade: String, i: int, quality: float, rng:
 			_set_rating(br, wk, maxf(_rv(br, wk, 0.0), weapon))
 			keys.erase(wk)
 			_fit_batter(br, target, keys, cap)
+	if p.has("_type"):
+		FictionalTypes.apply_shape(p, str(p["_type"]), str(p.get("_grade", grade)), target, weapon, cap, rng)
+	if not bool(p["is_pitcher"]):
+		var br2: Dictionary = part["ratings"]
 		var f: Dictionary = p.get("fielding", {}).get(p["primary_pos"], {})
 		for k: String in ["defense", "arm"]:
-			if not f.is_empty() and br.get(k) is Dictionary:
-				f[k] = br[k].duplicate()
+			if not f.is_empty() and br2.get(k) is Dictionary:
+				f[k] = br2[k].duplicate()
 	var peak: Dictionary = p.get("growth", {}).get("peak", {})
 	for k: String in part["ratings"]:
 		if peak.has(k) and part["ratings"][k] is Dictionary:
 			peak[k] = maxf(float(peak[k]), float(part["ratings"][k]["value"]))
 
 
-func _pick_templates(n: int, ikusei: bool, rng: RandomNumberGenerator) -> Array:
+func _pick_templates(n: int, ikusei: bool, rng: RandomNumberGenerator, theme := "例年並み") -> Array:
 	var pool: Array = []
+	var w_max := 0.0
 	for t: Dictionary in data.get("templates", []):
 		if bool(t["ikusei"]) == ikusei:
 			pool.append(t)
+			w_max = maxf(w_max, FictionalTypes.template_weight(theme, t))
 	var out: Array = []
 	if pool.is_empty():
 		return out
+	# 年の色の倍率で選び直す（倍率の高いひな形ほど残りやすい）
 	for i in n:
-		out.append(pool[rng.randi_range(0, pool.size() - 1)])
+		var t: Dictionary = pool[rng.randi_range(0, pool.size() - 1)]
+		for _try in 8:
+			if rng.randf() * w_max <= FictionalTypes.template_weight(theme, t):
+				break
+			t = pool[rng.randi_range(0, pool.size() - 1)]
+		out.append(t)
 	return out
 
 
@@ -816,11 +915,13 @@ static func _count_from(odds: Array, rng: RandomNumberGenerator) -> int:
 
 
 static func type_word(p: Dictionary) -> String:
-	return FictionalTalent.decide_player_type(p)
+	var t := str(p.get("amateur", {}).get("type", ""))
+	return t if not t.is_empty() else FictionalTalent.decide_player_type(p)
 
 
 static func intro_of(p: Dictionary) -> String:
 	var am: Dictionary = p.get("amateur", {})
 	var sch: String = str(am.get("school", ""))
 	var t_word: String = str(am.get("type", type_word(p)))
-	return "%sの%s" % [sch, t_word]
+	var story := str(am.get("story", ""))
+	return "%sの%s" % [sch, t_word] + ("。%s" % story if not story.is_empty() else "")

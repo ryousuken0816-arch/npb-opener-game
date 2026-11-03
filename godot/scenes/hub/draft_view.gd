@@ -27,7 +27,7 @@ const TABS := [["info", "情報", Color("1e88e5")], ["pitch", "投手能力", Co
 	["bat", "野手能力", Color("2e9b48")], ["picks", "指名一覧", Color("8a5cc8")]]
 ## 列 [キー, 見出し, 幅]。キーは並び替えのキー（Draft.sort_value）
 const COLUMNS := {
-	"info": [["pos", "位置", 52], ["career", "経歴", 70], ["school", "出身", 210], ["age", "年齢", 58]],
+	"info": [["pos", "位置", 52], ["career", "経歴", 70], ["school", "出身", 180], ["age", "年齢", 58], ["type", "型", 132]],
 	"pitch": [["pos", "位置", 52], ["velocity", "球速", 80], ["overall", "総合", 62], ["stamina", "スタミナ", 78],
 		["k9", "奪三振", 70], ["bb9", "制球", 62]],
 	"bat": [["pos", "位置", 52], ["meet", "ミート", 62], ["power", "パワー", 62], ["eye", "選球眼", 62],
@@ -36,10 +36,10 @@ const COLUMNS := {
 ## 予想＝有識者の予想順位（作業38）。1年目・将来性の列は作業51で消した（入団前に見えるのは今の能力だけ）
 const TAIL_COLUMNS := [["hyouka", "評価", 56], ["yosou", "予想", 48]]
 ## 並び替えのキー（テスト用にまとめて）。名前・出身校以外は大きい順が先
-const SORT_KEYS := ["pos", "career", "age", "school", "name", "velocity", "overall", "stamina", "k9", "bb9",
+const SORT_KEYS := ["pos", "career", "age", "school", "type", "name", "velocity", "overall", "stamina", "k9", "bb9",
 	"meet", "power", "eye", "speed", "arm", "defense", "hyouka", "yosou"]
 ## 小さい順が自然なキー（最初に押したとき小さい順）
-const ASCENDING_FIRST := ["pos", "career", "age", "school", "name"]
+const ASCENDING_FIRST := ["pos", "career", "age", "school", "type", "name"]
 const FILTERS := [["all", "全選手"], ["left", "未指名"], ["marked", "目星だけ"], ["投手", "投手"], ["捕手", "捕手"], ["内野手", "内野手"],
 	["外野手", "外野手"]]
 const POS_SHORT := {"投手": "投", "捕手": "捕", "内野手": "内", "外野手": "外"}
@@ -952,6 +952,8 @@ func _cell(c: Dictionary, key: String, width: int) -> Control:
 			text = c["career"]
 		"school":
 			text = c["school"]
+		"type":
+			text = str(c.get("type", ""))
 		"age":
 			text = ("%d歳" % int(c["age"])) if int(c["age"]) > 0 else "-"
 		"velocity":
@@ -959,12 +961,12 @@ func _cell(c: Dictionary, key: String, width: int) -> Control:
 	var l := Label.new()
 	l.text = text
 	l.custom_minimum_size = Vector2(width, 0)
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if key != "school" else HORIZONTAL_ALIGNMENT_LEFT
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if not key in ["school", "type"] else HORIZONTAL_ALIGNMENT_LEFT
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.clip_text = true
 	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	l.add_theme_font_override("font", UiTheme.font(800 if key == "pos" else 700))
-	l.add_theme_font_size_override("font_size", 17 if key != "school" else 15)
+	l.add_theme_font_size_override("font_size", 17 if not key in ["school", "type"] else 15)
 	l.add_theme_color_override("font_color", NameTag.pos_color(c["pos"]).darkened(0.45) if key == "pos" \
 		else UiTheme.TEXT)
 	if key == "age" and not c.get("age_known", false) and int(c["age"]) > 0:

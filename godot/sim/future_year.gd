@@ -85,6 +85,7 @@ func build(season_year: int, league: LeagueRoster, season: Season, base: Diction
 	for q: Dictionary in players:
 		# 入ったばかりの野手に守備の記録が無ければ、1年目から守備位置を付ける（ゲームは2軍の試合をしないため）
 		if fresh.has(q["id"]):
+			FictionalDraft.upgrade_old(q)  # 作業66より前に作った架空の候補（作業69）
 			growth.assign_fielding_if_missing(q, rng)
 		var team: String = league.team_of.get(q["id"], newcomer_team.get(q["id"], ""))
 		q["team"] = team

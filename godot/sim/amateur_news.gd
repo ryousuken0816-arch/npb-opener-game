@@ -187,6 +187,12 @@ func post_stage(year: int, stage: Dictionary) -> int:
 	var date := "%d-%s" % [year, stage["date"]]
 	gs.news.open_issue(key, stage["title"] % year, date, year)
 	var n := 0
+	# その年の色（作業67。架空の候補の年）：センバツ号とドラフト直前号のはじめに「今年は◯◯の豊作年」
+	if stage["key"] in ["spring", "fall"] and not all.is_empty():
+		var ta := FictionalTypes.theme_article(str(all[0].get("theme", "")))
+		if not ta.is_empty():
+			gs.post_news(News.article(date, "amateur", ta[0], ta[1]), key, true)
+			n += 1
 	for c: Dictionary in mlb:
 		var body := "%s（%s）の%s。%s" % [c["name"], c["school"], c["pos"], c["mlb_note"] if not c["mlb_note"].is_empty()
 			else "高卒・大卒からのメジャー挑戦を表明した"]
@@ -319,7 +325,7 @@ func _from_fictional(p: Dictionary) -> Dictionary:
 		"projected": am.get("projected", ""), "mlb": mi is Dictionary and bool(mi.get("stated", false)),
 		"mlb_note": str(mi.get("note", "")) if mi is Dictionary else "", "id": p["id"], "fictional": true,
 		"reincarnation": am.get("reincarnation", {}), "peak": p.get("growth", {}).get("peak", {}),
-		"type": am.get("type", "")}
+		"type": am.get("type", ""), "theme": am.get("year_theme", ""), "story": am.get("story", "")}
 
 
 func _from_amateur(a: Dictionary, year: int) -> Dictionary:
