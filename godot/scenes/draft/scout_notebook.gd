@@ -463,6 +463,13 @@ func show_page(d: Draft, c: Dictionary, index: int, total: int) -> void:
 		state = "指名済み：%s %s" % [GameData.short_name(c["picked_by"]), c["pick_label"]]
 	elif d.bids.get(GameState.team, "") == c["id"]:
 		state = "1位で入札中"
+	if c.get("mlb_intent", false):
+		# メジャー志望（作業26・57）：指名したら説得の交渉。しないまま期限が来ると渡米
+		var talk: Dictionary = d.talks.get(c["id"], {})
+		var mlb := "メジャー志望を表明（交渉期限 %s）" % MlbPersuasion.deadline_text(d.year, c.get("mlb_overseas", false))
+		if not talk.is_empty():
+			mlb = "説得：%s" % ("成功・入団" if talk["ok"] else ("期限切れ・渡米" if talk.get("expired", false) else "失敗・渡米"))
+		state = mlb if state.is_empty() else state + "／" + mlb
 	_state_label.text = state
 	_state_label.visible = not state.is_empty()
 	_stamp.rank = _stamp_text(str(c["hyouka_rank"]))

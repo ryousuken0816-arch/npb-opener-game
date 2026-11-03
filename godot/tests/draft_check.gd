@@ -7,7 +7,8 @@ extends SceneTree
 ## 2) 2024年開始（巨人）：ハブ → 可変ボタン → ドラフトの画面で、宗山塁（史実は楽天、5球団競合）を1位入札 → 抽選の演出。
 ##    並び替えが全項目で効く（列の見出しのキーすべて、昇順・降順）・絞り込み。2位以降は自球団の番で止まり、画面から指名・
 ##    選択終了。結果まとめ（指名一覧）。翌年（2025年）の開幕で指名選手が自球団の編成にいて、シーズンを進めると試合に出る
-## 3) 2025年開始（日本ハム）：すぐドラフトへ → ドラフトの段階で候補がいる → 次へ進むとおまかせで終わり、2026年の春季キャンプ
+## 3) 2025年開始（日本ハム）：すぐドラフトへ → ドラフトの段階で候補がいる → 次へ進むとおまかせで終わり、
+##    オフの残り（作業54：ドラフトのあとに FA・現役ドラフト）を進めて2026年の春季キャンプ
 ##
 ##   godot --headless --path godot --script res://tests/draft_check.gd -- [出力先]
 
@@ -123,7 +124,9 @@ func _check_2008() -> void:
 	_check(not _gs.draft_open() and d.resolved and d.stage == _done, "残りはおまかせで終わる")
 	_check_quota(d, "2008年")
 	_check(d.remaining().is_empty(), "候補は全員どこかが指名（未指名 %d人）" % d.remaining().size())
-	_check(_gs.button_text() == "春季キャンプへ", "終わると可変ボタンは春季キャンプへ（%s）" % _gs.button_text())
+	# 作業54：ドラフトのあとは FA（オフの新しい順番）。可変ボタンは次の段階へ
+	_check(_gs.next_phase() != _gs.Phase.DRAFT and _gs.button_text() == _gs.PHASE_BUTTON[_gs.next_phase()],
+		"終わると可変ボタンは次の段階へ（%s）" % _gs.button_text())
 	var mine: Array = d.picks_of(USER)
 	while _gs.phase != _gs.Phase.SEASON:
 		_gs.advance()
@@ -198,7 +201,9 @@ func _check_quota(d: RefCounted, label: String) -> void:
 func _check_2024_ui() -> void:
 	print("== 2024年開始・ドラフトの画面（%s） ==" % USER)
 	_gs.new_game(USER, 2024)
-	_gs.skip_to_phase(_gs.Phase.RELEASE)
+	# 作業54：契約更改・戦力外がひとつの段階（CONTRACT）。締めるとドラフトの前に作戦会議
+	_gs.skip_to_phase(_gs.Phase.CONTRACT)
+	_gs.contract_resolve()
 	_gs.release_resolve()
 	change_scene_to_file("res://scenes/hub/hub.tscn")
 	await _frames(6)
@@ -410,7 +415,12 @@ func _check_2025() -> void:
 	# 2026年は最終成績になった（作業16）ので、2025年秋の新人の1年目はもう「シーズン途中」ではない
 	_check(partial == 0, "2025年秋の新人の1年目は最終成績（シーズン途中 %d/%d人）" % [partial, d.candidates.size()])
 	_gs.advance()
-	_check(d.resolved and _gs.phase == _gs.Phase.CAMP and _gs.year == 2026, "次へ進むとおまかせで終わり2026年の春季キャンプ")
+	_check(d.resolved, "次へ進むとおまかせで終わる（%s）" % _gs.phase_name())
+	var guard := 0
+	while _gs.phase != _gs.Phase.CAMP and guard < 10:
+		guard += 1
+		_gs.advance()
+	_check(_gs.phase == _gs.Phase.CAMP and _gs.year == 2026, "オフの残りを進めて2026年の春季キャンプ（%s）" % _gs.date_text())
 	_check_quota(d, "2025年")
 	var present := 0
 	for rec: Dictionary in d.picks_of("北海道日本ハムファイターズ"):

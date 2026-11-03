@@ -19,6 +19,7 @@ const WEAK_PCT := 0.30
 const MAGNET_COLORS := {
 	"good": [Color("FAECE7"), Color("712B13")], "role": [Color("E6F1FB"), Color("0C447C")],
 	"bad": [Color("F1EFE8"), Color("444441")], "special": [Color("F3E5F5"), Color("6A1B9A")],
+	"mlb": [Color("0D47A1"), Color("FFFFFF")],
 }
 ## 採点表の字の色：良い＝赤、ふつう＝青、弱点＝灰
 const TIER_COLORS := {"good": Color("A32D2D"), "normal": Color("185FA5"), "weak": Color("5F5E5A"),
@@ -209,6 +210,8 @@ static func rumor_text(d: Draft, c: Dictionary) -> String:
 ## 特徴の札 [{text, kind（good/role/bad/special）}]（多くて5枚）
 static func traits(d: Draft, c: Dictionary) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
+	if c.get("mlb_intent", false):
+		out.append({"text": "メジャー志望", "kind": "mlb"})  # いちばん前に（作業57）
 	if bool(c.get("two_way", {}).get("active", false)):
 		out.append({"text": "二刀流", "kind": "special"})
 	if not c.get("reincarnation", {}).is_empty():
@@ -243,8 +246,6 @@ static func traits(d: Draft, c: Dictionary) -> Array[Dictionary]:
 			out.append({"text": "守備に難", "kind": "bad"})
 		if value_of(c, "speed") >= 0 and percentile(d, c, "speed") < 0.15:
 			out.append({"text": "鈍足", "kind": "bad"})
-	if c.get("mlb_intent", false):
-		out.append({"text": "メジャー志望", "kind": "bad"})
 	# 悪い札を最後まで残す（多いときは良い札・役割の札から削る）
 	while out.size() > 5:
 		var drop := -1

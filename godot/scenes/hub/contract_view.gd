@@ -11,6 +11,7 @@ extends VBoxContainer
 ## 新しいオフの順番（作業54）では戦力外も同じ画面で決める：選んだ選手を「戦力外にする」、上に支配下の人数（◯/70）・
 ## 来季の年俸総額と予算、下にドラフトで本指名できる人数の見込み。「契約更改・戦力外を確定」で両方締める
 ## （70人を超えていたら確認してから、足りない分はおまかせで選ぶ。仕組みは Releases）。
+## 33歳以上の選手には「引退を勧める」（受け入れる見込みを★で出す。受け入れればその場で引退。作業56）。
 
 signal message_changed(text: String)
 
@@ -48,6 +49,7 @@ var _status_label: Label
 var _close_button: Button
 var _release_button: Button
 var _auto_button: Button
+var _retire_button: Button
 var _confirm_pending := false
 var _ids: Array[String] = []
 var _tags := {}
@@ -189,6 +191,11 @@ func toggle_release() -> void:
 	_on_release_pressed()
 
 
+## 選んだ選手に「引退を勧める」を押す（テスト用）
+func offer_retire() -> void:
+	_on_retire_pressed()
+
+
 ## 「確定」を押す（テスト用。70人を超えていると1回目は確認）
 func press_close() -> void:
 	_on_close_pressed()
@@ -270,6 +277,12 @@ func _build_deal() -> Control:
 	UiTheme.style_button(_auto_button, Color("ff8a3d"), Color.WHITE, 8, 4)
 	_auto_button.pressed.connect(_on_auto_pressed)
 	cut_row.add_child(_auto_button)
+	_retire_button = Button.new()
+	_retire_button.text = "引退を勧める"
+	_retire_button.custom_minimum_size = Vector2(0, 42)
+	UiTheme.style_button(_retire_button, Color("8a5cc8"), Color.WHITE, 8, 4)
+	_retire_button.pressed.connect(_on_retire_pressed)
+	_right_box.add_child(_retire_button)
 	return panel
 
 
@@ -374,7 +387,7 @@ func _render_deal(c: ContractRenewal) -> void:
 	_diff_label.text = _diff_text(prev, amount)
 	_diff_label.label_settings.font_color = (UP_COLOR if diff > 0 else (DOWN_COLOR if diff < 0 else SAME_COLOR))
 	_amount_label.text = Salary.text(amount)
-	var adjustable := c.can_adjust(id) and not _is_marked(id)
+	var adjustable := c.can_adjust(id) and not _is_marked(id) and not _is_retired_by_offer(id)
 	_set_adjust_enabled(adjustable)
 	_reset_button.disabled = not adjustable or amount == int(row["proposed"])
 	if adjustable:
@@ -382,6 +395,8 @@ func _render_deal(c: ContractRenewal) -> void:
 			Salary.text(row["low"]), Salary.text(row["high"]),
 			roundi(100 * (Salary.CUT_LIMIT_HIGH if prev > Salary.CUT_LIMIT_BORDER else Salary.CUT_LIMIT_LOW)),
 			roundi(100 * Salary.ADJUST_FLOOR_RATE)]
+	elif _is_retired_by_offer(id):
+		_range_label.text = "引退の勧めを受け入れて引退しました"
 	elif _is_marked(id):
 		_range_label.text = "戦力外にする選手です（来季の契約はしません）"
 	elif c.resolved:
@@ -411,8 +426,10 @@ func _render_release_buttons(c: ContractRenewal) -> void:
 	var merged := GameState.contract_with_release() and r != null
 	_release_button.visible = merged
 	_auto_button.visible = merged
+	_retire_button.visible = merged
 	if not merged:
 		return
+	_render_retire_button(c)
 	var id := _selected
 	var has_row := c != null and c.rows.has(id)
 	_release_button.text = "戦力外をやめる" if r.marked.has(id) else "戦力外にする"
@@ -420,6 +437,41 @@ func _render_release_buttons(c: ContractRenewal) -> void:
 	_release_button.disabled = not has_row or r.resolved or not reason.is_empty()
 	_release_button.tooltip_text = reason
 	_auto_button.disabled = r.resolved or r.need(GameState.league) <= 0
+
+
+## 「引退を勧める」：33歳以上の選手だけ。受け入れる見込みを★（5段階）で出す。1人1オフ1回まで
+func _render_retire_button(c: ContractRenewal) -> void:
+	var r := GameState.releases()
+	var id := _selected
+	if c == null or not c.rows.has(id) or GameData.player(id).is_empty():
+		_retire_button.text = "引退を勧める（33歳以上）"
+		_retire_button.disabled = true
+		return
+	if r.retire_asked.has(id):
+		_retire_button.text = "引退しました" if r.retire_asked[id] else "引退の勧めを断られました"
+		_retire_button.disabled = true
+		return
+	var block := GameState.retire_offer_block(id)
+	if not block.is_empty():
+		_retire_button.text = "引退を勧める（%d歳以上）" % LeagueRoster.RETIRE_OFFER_MIN_AGE
+		_retire_button.disabled = true
+		_retire_button.tooltip_text = block
+		return
+	var chance := GameState.retire_offer_chance(id)
+	_retire_button.text = "引退を勧める　受け入れ %s" % stars(chance)
+	_retire_button.tooltip_text = "受け入れる見込み 約%d%%（年齢・能力・今季の成績・年俸から）" % roundi(chance * 100.0)
+	_retire_button.disabled = false
+
+
+## 受け入れる見込みの★（5段階）
+static func stars(chance: float) -> String:
+	var n := clampi(roundi(chance * 5.0), 1, 5)
+	return "★".repeat(n) + "☆".repeat(5 - n)
+
+
+func _is_retired_by_offer(id: String) -> bool:
+	var r := GameState.releases()
+	return r != null and bool(r.retire_asked.get(id, false))
 
 
 func _is_marked(id: String) -> bool:
@@ -593,7 +645,11 @@ func _tile(c: ContractRenewal, id: String, short_name: String) -> Control:
 	var diff: int = int(row_data["amount"]) - int(row_data["prev"])
 	var badge := Label.new()
 	var color := UP_COLOR if diff > 0 else (DOWN_COLOR if diff < 0 else SAME_COLOR)
-	if _is_marked(id):
+	if _is_retired_by_offer(id):
+		badge.text = "引退"
+		color = Color("8a5cc8")
+		tag.modulate = Color(1, 1, 1, 0.55)
+	elif _is_marked(id):
 		badge.text = "戦力外"
 		color = CUT_COLOR
 		tag.modulate = Color(1, 1, 1, 0.55)
@@ -737,6 +793,16 @@ func _on_release_pressed() -> void:
 	var error := GameState.release_toggle(_selected)
 	_confirm_pending = false
 	_message = error
+	refresh()
+
+
+func _on_retire_pressed() -> void:
+	var c := GameState.contracts()
+	if c == null or not c.rows.has(_selected) or not GameState.contract_with_release():
+		return
+	var result := GameState.retire_offer(_selected)
+	_confirm_pending = false
+	_message = str(result["text"])
 	refresh()
 
 
