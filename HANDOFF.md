@@ -623,6 +623,7 @@
    - 確認：`godot/tests/mlb_draftee_check.gd` に画面で進める確認を足した（2026年・巨人で織田翔希を1位で指名 → 絞り込み「未指名」で「残りをおまかせで終える」→ 入団も渡米もせず織田のページで「説得する ★★☆☆☆」→
      ハブの可変ボタンもドラフトへ → ①「説得する」で成功・入団 ②説得しないまま次の段階へ → 期限切れで渡米・出来事に残る、どちらもオフの新しい順番（ドラフト → FA → 現役ドラフト）で2027年の春季キャンプまで）。
      説得して失敗する場合は今までの `_check_oda(false)`。ALL OK
+     2028年の架空の候補のメジャー志望（`FictionalDraft._mark_mlb_intent`。阪神で2028年の島田啓太）も同じ：2位で指名 → 説得の待ち・手帳に説得のページ → ドラフトのあとの状態から ①成功・入団 ②失敗・渡米 ③説得しないまま次へ＝期限切れ・渡米（`_check_fictional`。表明の無い年は評価 S・A の候補に付けて確かめる）
    - 作業54（オフの新しい順番）のあと「ドラフトのあと＝春季キャンプ」のままだった draft_check・draft_rebid_check・draft_notebook_check の期待値を直した（ドラフトのあと FA・現役ドラフトを進めて春季キャンプ。draft_check の画面の確認は CONTRACT の段階から）
    - テスト：mlb_draftee_check・draft_check・draft_rebid_check・draft_notebook_check と quick（11本）ALL OK。ヘッドレスで起動して読み込みのエラー0件
 

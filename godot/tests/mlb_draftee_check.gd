@@ -9,6 +9,9 @@ extends SceneTree
 ##   6) 作業57：画面で進める（2026年・巨人）。手帳に「メジャー志望」の札、絞り込み「未指名」・「残りをおまかせで終える」でも
 ##      ドラフトのあと織田のページで説得へ（勝手に入団しない）、ハブの可変ボタンも説得へ戻る。
 ##      ①「説得する」で成功 ②説得しないまま次の段階へ進むと期限切れで渡米（出来事に残る）。オフの新しい順番で春季キャンプまで
+##   7) 作業57：2028年の架空の候補でメジャー志望を表明した選手（FictionalDraft._mark_mlb_intent。表明は年0〜2人で無い年が多いので、
+##      無ければ評価 S・A の候補に同じ形で付ける）を2位で指名 → 同じ説得の待ちになり、手帳に説得のページ。
+##      ドラフトのあとの状態を覚えておき、①説得して成功 ②説得して失敗 ③説得しないまま次へ（期限切れ）の3通りを確かめる
 ##
 ##   godot --headless --path godot --script res://tests/mlb_draftee_check.gd
 ##
@@ -36,6 +39,7 @@ func _run() -> void:
 	_check_rintaro()
 	await _check_ui(true)
 	await _check_ui(false)
+	await _check_fictional()
 	print("ALL OK" if _failures == 0 else "FAILED (%d)" % _failures)
 	quit(1 if _failures > 0 else 0)
 
@@ -224,6 +228,98 @@ func _check_ui(talk: bool) -> void:
 	_to_camp()
 	_check(_gs.year == 2027 and _gs.phase == _gs.Phase.CAMP and league.team_of.has(oda) == talk,
 		"オフの新しい順番で2027年の春季キャンプへ（織田は%s）" % ("巨人" if league.team_of.has(oda) else "NPB にいない"))
+
+
+## 作業57：2028年の架空の候補のメジャー志望
+func _check_fictional() -> void:
+	var user := "阪神タイガース"
+	print("== 2028年 架空の候補のメジャー志望（%s） ==" % user)
+	_gs.new_game(user, 2027)
+	_gs.skip_to_phase(_gs.Phase.DRAFT)
+	_gs.draft_resolve()
+	_to_camp()
+	_gs.advance()  # 2028年の開幕
+	var klass: Array = _gs.draft_class(2028)
+	var stated: Array = []
+	for p: Dictionary in klass:
+		var mi: Variant = p["amateur"].get("mlb_intent")
+		if mi is Dictionary and bool(mi.get("stated", false)):
+			stated.append(p["name"])
+	var marked := false
+	if stated.is_empty():
+		for p: Dictionary in klass:
+			if p["amateur"]["grade"] in ["S", "A"]:
+				p["amateur"]["mlb_intent"] = {"stated": true, "note": "%sの%s、高校・大学からのメジャー挑戦を表明" % [
+					p["amateur"]["school"], p["name"]]}
+				stated.append(p["name"])
+				marked = true
+				break
+	print("  2028年の架空の候補のメジャー志望：%s%s" % [", ".join(stated), "（この年は表明が無いので付けた）" if marked else ""])
+	_gs.skip_to_phase(_gs.Phase.DRAFT)
+	var d: RefCounted = _gs.draft()
+	var target := ""
+	for c: Dictionary in d.candidates:
+		if c.get("fictional", false) and c.get("mlb_intent", false):
+			target = c["id"]
+	_check(d != null and d.year == 2028 and not target.is_empty(), "2028年のドラフトの候補に架空のメジャー志望（%s）"
+		% d.by_id.get(target, {}).get("name", "なし"))
+	if target.is_empty():
+		return
+	# 1位は別の候補（抽選を避ける）、2位でメジャー志望の候補を指名（CPU はふだん避けるので残っていることが多い）
+	var first := ""
+	for c: Dictionary in d.candidates:
+		if c["id"] != target and not c.get("mlb_intent", false):
+			if first.is_empty() or float(c["hyouka"]) > float(d.by_id[first]["hyouka"]):
+				first = c["id"]
+	d.user_bid(first)
+	var guard := 0
+	while d.stage == _ds.Stage["FIRST"] and guard < 10:
+		guard += 1
+		if d.first_pick_of(user).is_empty() and not d.bids.has(user):
+			for c: Dictionary in d.remaining():
+				if c["id"] != target and not c.get("mlb_intent", false):
+					d.user_bid(c["id"])
+					break
+		d.run_first_wave()
+	d.run_until_user()
+	var error: String = d.user_pick(target) if str(d.by_id[target]["picked_by"]).is_empty() else "ほかの球団が指名"
+	_check(error.is_empty() and d.pick_of(target).get("team", "") == user, "架空のメジャー志望の候補を%sで指名（%s）"
+		% [d.pick_of(target).get("label", "-"), error if not error.is_empty() else d.by_id[target]["name"]])
+	if not error.is_empty():
+		return
+	d.auto_complete()
+	_gs.draft_sync()
+	_check(d.stage == _ds.Stage["DONE"] and not d.resolved and target in d.pending_talks()
+		and not _gs.league.team_of.has(target), "ドラフトのあと説得の待ち（勝手に入団・渡米しない）")
+	var saved: Dictionary = JSON.parse_string(JSON.stringify(_gs.to_save()))
+	# 画面：手帳に説得のページ
+	change_scene_to_file("res://scenes/hub/hub.tscn")
+	await _frames(6)
+	var hub: Node = current_scene
+	hub.call("_open_sub_screen", "draft")
+	await _frames(4)
+	var view: Node = hub.get("_draft_view")
+	view.call("finish_overlays")
+	await _frames(2)
+	var go: Button = (view.call("notebook") as Control).call("go_button")
+	_check(view.call("selected_id") == target and go.text.begins_with("説得する") and not go.disabled,
+		"手帳に架空の候補の説得のページ（%s）" % go.text)
+	hub.call("_close_sub_screen")
+	for outcome: String in ["成功", "失敗", "期限切れ"]:
+		_gs.load_state(JSON.parse_string(JSON.stringify(saved)))
+		var d2: RefCounted = _gs.draft()
+		var league: RefCounted = _gs.league
+		if outcome == "期限切れ":
+			_gs.advance()
+		else:
+			d2.force_roll = 0.0 if outcome == "成功" else 0.99
+			d2.persuade(target, 3)
+			_gs.draft_sync()
+		var talk: Dictionary = d2.talks.get(target, {})
+		var joined: bool = league.team_of.get(target, "") == user
+		var ok: bool = d2.resolved and joined == (outcome == "成功") \
+			and bool(talk.get("expired", false)) == (outcome == "期限切れ")
+		_check(ok, "%s：%s（%s）" % [outcome, "入団" if joined else "入団しない（渡米）", str(talk)])
 
 
 func _frames(n: int) -> void:
