@@ -149,6 +149,8 @@ func setup(p: UiTheme.Palette, only_load := false) -> void:
 
 var _backup_row: HBoxContainer
 var _download_button: Button
+var _lite_row: HBoxContainer
+var _lite_button: Button
 var _selected_slot: String = "slot1"
 
 
@@ -176,6 +178,27 @@ func _build_backup_row(p: UiTheme.Palette) -> void:
 	# ブラウザのデータ消去対策なので、Web・スマホのときだけ出す（PCの1280x720ではシステム画面の高さが足りなくなる）
 	_backup_row.visible = OS.has_feature("web") or UiLayout.is_mobile
 	add_child(_backup_row)
+	# 軽量モード（作業75）：メモリの少ない端末の Web 版向け。バックアップと同じく Web・スマホのときだけ出す
+	_lite_row = HBoxContainer.new()
+	_lite_row.add_theme_constant_override("separation", 10)
+	var lite_label := UiTheme.small_label("メモリの少ない端末向け", 16, UiTheme.TEXT, 700)
+	lite_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_lite_row.add_child(lite_label)
+	_lite_button = _setting_button("オンにすると、閉じた画面や覚えた字の画像を捨ててメモリを減らす（開き直しは少し遅くなる）。"
+		+ "iPhone などメモリの少ない端末では最初からオン。次の起動でも同じになる")
+	_lite_button.toggle_mode = true
+	_lite_button.toggled.connect(func(on: bool) -> void:
+		LiteMode.set_on(on)
+		_sync_lite_button())
+	_lite_row.add_child(_lite_button)
+	_lite_row.visible = _backup_row.visible and not load_only
+	add_child(_lite_row)
+	_sync_lite_button()
+
+
+func _sync_lite_button() -> void:
+	_lite_button.set_pressed_no_signal(LiteMode.on())
+	_lite_button.text = "軽量モード：%s" % ("オン" if LiteMode.on() else "オフ")
 
 
 ## システムの設定「フルスクリーン」の表示を UiInput の状態に合わせる（F11 での切り替えにも追従）

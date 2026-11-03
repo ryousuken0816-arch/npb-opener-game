@@ -89,6 +89,31 @@ static func font(weight: int = 500) -> Font:
 	return _fonts[bold]
 
 
+## 字の画像の覚え（描いた字ごとに作り、Web 版では1字約12KB。新しい名前の字が出るたびに増える）を捨てる。
+## 次に描くときに作り直す。軽量モードで、字の多い画面を閉じたときに呼ぶ（作業75）
+static func trim_glyphs() -> void:
+	for f: Font in _fonts.values():
+		if f is FontFile:
+			var ff := f as FontFile
+			for i in ff.get_cache_count():
+				ff.clear_size_cache(i)
+
+
+## 字の画像の覚えの大きさ（バイト。CPU 側の画像。Web では同じだけ GPU 側にもある）
+static func glyph_bytes() -> int:
+	var n := 0
+	for f: Font in _fonts.values():
+		if f is FontFile:
+			var ff := f as FontFile
+			for i in ff.get_cache_count():
+				for sz: Vector2i in ff.get_size_cache_list(i):
+					for t in ff.get_texture_count(i, sz):
+						var img := ff.get_texture_image(i, sz, t)
+						if img != null:
+							n += img.get_data_size()
+	return n
+
+
 ## 明度に応じて白か濃い文字色を返す
 static func text_on(color: Color) -> Color:
 	return Color.WHITE if color.get_luminance() < 0.6 else TEXT

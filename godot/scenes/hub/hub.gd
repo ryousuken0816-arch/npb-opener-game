@@ -36,27 +36,52 @@ const TITLE_SCENE := "res://scenes/title/title.tscn"
 ## 表の多い画面（ドラフトの候補一覧・FAの表・記録室・順位表など）は、スマホの縦向きのとき横向きをすすめる
 ## （iOS の Safari は向きを固定できない）
 const ROTATE_HINT_KEYS := ["draft", "meeting", "fa", "records", "schedule", "awards", "comp", "contract", "release"]
+## 開くときに作るサブ画面（_view）
+const VIEW_KEYS := ["scout", "fa", "trade", "comp", "contract", "release", "draft", "meeting", "system", "awards", "records",
+	"postseason", "news"]
+## 軽量モードで、閉じたら字の画像の覚えを捨てる画面（選手の名前などいろいろな字が出る）
+const TRIM_GLYPH_KEYS := ["records", "draft", "meeting", "fa", "awards", "news", "contract", "release", "trade"]
+## 軽量モード：字の画像の覚えがこれを超えたら捨てる（作業75。見ている画面の字は次に描くときに作り直す）。
+## 2秒ごとと、サブ画面の中身が変わったとき（message_changed）に調べる
+const LITE_GLYPH_BUDGET := 16 * 1048576
+const LITE_GLYPH_CHECK_SEC := 2.0
 
 var _palette: UiTheme.Palette
 var _buttons := {}
 var _focused_key := "advance"
 var _open_key := ""
 var _guide := PadGuide.new()
-var _scout_view := ScoutView.new()
-var _fa_view := FaView.new()
-var _trade_view := TradeView.new()
-var _comp_view := CompView.new()
-var _contract_view := ContractView.new()
-var _release_view := ReleaseView.new()
-var _draft_view := DraftView.new()
-var _meeting_view := DraftMeetingView.new()
+## サブ画面（采配・日程表は hub.tscn）。開くときに作り（_view）、軽量モードでは閉じたら捨てる（作業75：ハブを開いたときに
+## 全部作ると約34MB。ドラフト12MB・作戦会議5MB・トレード4MB など）。下の _draft_view などは _view を通す
+var _views := {}
+var _scout_view: ScoutView:
+	get: return _view("scout")
+var _fa_view: FaView:
+	get: return _view("fa")
+var _trade_view: TradeView:
+	get: return _view("trade")
+var _comp_view: CompView:
+	get: return _view("comp")
+var _contract_view: ContractView:
+	get: return _view("contract")
+var _release_view: ReleaseView:
+	get: return _view("release")
+var _draft_view: DraftView:
+	get: return _view("draft")
+var _meeting_view: DraftMeetingView:
+	get: return _view("meeting")
 ## 作戦会議を新戦力から開いた（閉じたら新戦力のボタンへ戻る）
 var _meeting_from_scout := false
-var _save_view := SaveView.new()
-var _awards_view := AwardsView.new()
-var _records_view := RecordsView.new()
-var _postseason_view := PostseasonView.new()
-var _news_view := NewsView.new()
+var _save_view: SaveView:
+	get: return _view("system")
+var _awards_view: AwardsView:
+	get: return _view("awards")
+var _records_view: RecordsView:
+	get: return _view("records")
+var _postseason_view: PostseasonView:
+	get: return _view("postseason")
+var _news_view: NewsView:
+	get: return _view("news")
 var _ticker := NewsTicker.new()
 ## ハブの右下（順位表の下）のニュースの札。押すと新聞の画面
 var _news_card: Button
@@ -113,114 +138,17 @@ func _ready() -> void:
 	_standings.setup(_palette, GameData.league_of(GameState.team))
 	_schedule_view.setup(_palette)
 	_tactics_view.setup(_palette)
-	_scout_view.setup(_palette)
-	_scout_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_scout_view.visible = false
-	_placeholder_label.get_parent().add_child(_scout_view)
-	_fa_view.setup(_palette)
-	_fa_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_fa_view.visible = false
-	_placeholder_label.get_parent().add_child(_fa_view)
-	_trade_view.setup(_palette)
-	_trade_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_trade_view.visible = false
-	_placeholder_label.get_parent().add_child(_trade_view)
-	_comp_view.setup(_palette)
-	_comp_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_comp_view.visible = false
-	_placeholder_label.get_parent().add_child(_comp_view)
-	_comp_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "comp":
-			_description_label.text = text)
-	_scout_view.trade_requested.connect(func() -> void: _open_sub_screen("trade"))
-	_scout_view.meeting_requested.connect(func() -> void:
-		_meeting_from_scout = true
-		_open_sub_screen("meeting"))
-	_trade_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "trade":
-			_description_label.text = text)
-	_contract_view.setup(_palette)
-	_contract_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_contract_view.visible = false
-	_placeholder_label.get_parent().add_child(_contract_view)
-	_release_view.setup(_palette)
-	_release_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_release_view.visible = false
-	_placeholder_label.get_parent().add_child(_release_view)
-	_draft_view.setup(_palette)
-	_draft_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_draft_view.visible = false
-	_placeholder_label.get_parent().add_child(_draft_view)
-	_meeting_view.setup(_palette)
-	_meeting_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_meeting_view.visible = false
-	_placeholder_label.get_parent().add_child(_meeting_view)
-	_meeting_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "meeting":
-			_description_label.text = text)
-	_meeting_view.draft_requested.connect(func() -> void: _on_menu_chosen("advance"))
-	_save_view.setup(_palette)
-	_save_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_save_view.visible = false
-	_placeholder_label.get_parent().add_child(_save_view)
-	_awards_view.setup(_palette)
-	_awards_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_awards_view.visible = false
-	_placeholder_label.get_parent().add_child(_awards_view)
-	_awards_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "awards":
-			_description_label.text = text)
-	_records_view.setup(_palette)
-	_records_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_records_view.visible = false
-	_placeholder_label.get_parent().add_child(_records_view)
-	_records_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "records":
-			_description_label.text = text)
-	_postseason_view.setup(_palette)
-	_postseason_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_postseason_view.visible = false
-	_placeholder_label.get_parent().add_child(_postseason_view)
-	_postseason_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "postseason":
-			_description_label.text = text)
-	_postseason_view.advance_requested.connect(func() -> void: _on_menu_chosen("advance"))
 	GameState.celebrate.connect(_on_celebrate)
-	_news_view.setup(_palette)
-	_news_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_news_view.visible = false
-	_placeholder_label.get_parent().add_child(_news_view)
-	_news_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "news":
-			_description_label.text = text)
 	add_child(_ticker)
 	GameState.news_posted.connect(_ticker.push)
 	GameState.issue_published.connect(_on_issue_published)
 	GameState.news_stopped.connect(func() -> void: _open_news_stop(_open_key))
-	_news_view.stop_chosen.connect(_on_stop_chosen)
 	_build_news_card()
-	_save_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "system":
-			_description_label.text = text)
-	# ロードしたらハブを作り直す（球団・年・段階が変わるので）
-	_save_view.loaded.connect(func() -> void: get_tree().reload_current_scene.call_deferred())
-	_draft_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "draft":
-			_description_label.text = text)
-	# ドラフトのあとの「次へ」：ハブへ戻らずに次の段階（FA）へ（作業65）
-	_draft_view.advance_requested.connect(func() -> void:
-		_close_sub_screen()
-		_on_menu_chosen("advance"))
-	_release_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "release":
-			_description_label.text = text)
-	_contract_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "contract":
-			_description_label.text = text)
-	_fa_view.close_requested.connect(_close_sub_screen)
-	_fa_view.message_changed.connect(func(text: String) -> void:
-		if _open_key == "fa":
-			_description_label.text = text)
+	var glyph_timer := Timer.new()
+	glyph_timer.wait_time = LITE_GLYPH_CHECK_SEC
+	glyph_timer.autostart = true
+	glyph_timer.timeout.connect(_check_glyphs)
+	add_child(glyph_timer)
 	_tactics_view.title_changed.connect(func(text: String) -> void: _sub_title_label.text = text)
 	_tactics_view.description_changed.connect(func(text: String) -> void:
 		_description_label.text = text)
@@ -235,6 +163,117 @@ func _ready() -> void:
 	_refresh()
 	_buttons["advance"].grab_button_focus()
 	UiFx.fade_in(self)
+
+
+## サブ画面（key は _open_key と同じ）。まだ作っていなければ作る
+func _view(key: String) -> Control:
+	var v: Control = _views.get(key)
+	if v != null and is_instance_valid(v) and not v.is_queued_for_deletion():
+		return v
+	v = _make_view(key)
+	_views[key] = v
+	return v
+
+
+func _make_view(key: String) -> Control:
+	var v: Control
+	match key:
+		"scout":
+			var scout := ScoutView.new()
+			scout.setup(_palette)
+			scout.trade_requested.connect(func() -> void: _open_sub_screen("trade"))
+			scout.meeting_requested.connect(func() -> void:
+				_meeting_from_scout = true
+				_open_sub_screen("meeting"))
+			v = scout
+		"fa":
+			var fa := FaView.new()
+			fa.setup(_palette)
+			fa.close_requested.connect(_close_sub_screen)
+			v = fa
+		"trade":
+			var trade := TradeView.new()
+			trade.setup(_palette)
+			v = trade
+		"comp":
+			var comp := CompView.new()
+			comp.setup(_palette)
+			v = comp
+		"contract":
+			var contract := ContractView.new()
+			contract.setup(_palette)
+			v = contract
+		"release":
+			var release := ReleaseView.new()
+			release.setup(_palette)
+			v = release
+		"draft":
+			var draft := DraftView.new()
+			draft.setup(_palette)
+			# ドラフトのあとの「次へ」：ハブへ戻らずに次の段階（FA）へ（作業65）
+			draft.advance_requested.connect(func() -> void:
+				_close_sub_screen()
+				_on_menu_chosen("advance"))
+			v = draft
+		"meeting":
+			var meeting := DraftMeetingView.new()
+			meeting.setup(_palette)
+			meeting.draft_requested.connect(func() -> void: _on_menu_chosen("advance"))
+			v = meeting
+		"system":
+			var save := SaveView.new()
+			save.setup(_palette)
+			# ロードしたらハブを作り直す（球団・年・段階が変わるので）
+			save.loaded.connect(func() -> void: get_tree().reload_current_scene.call_deferred())
+			v = save
+		"awards":
+			var awards := AwardsView.new()
+			awards.setup(_palette)
+			v = awards
+		"records":
+			var records := RecordsView.new()
+			records.setup(_palette)
+			v = records
+		"postseason":
+			var postseason := PostseasonView.new()
+			postseason.setup(_palette)
+			postseason.advance_requested.connect(func() -> void: _on_menu_chosen("advance"))
+			v = postseason
+		"news":
+			var news := NewsView.new()
+			news.setup(_palette)
+			news.stop_chosen.connect(_on_stop_chosen)
+			v = news
+	# 案内は下の帯へ（その画面を開いているときだけ）
+	if v.has_signal("message_changed"):
+		v.connect("message_changed", func(text: String) -> void:
+			_check_glyphs()
+			if _open_key == key:
+				_description_label.text = text)
+	v.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	v.visible = false
+	_placeholder_label.get_parent().add_child(v)
+	return v
+
+
+## 軽量モード：字の画像の覚えが LITE_GLYPH_BUDGET を超えていたら捨てる
+func _check_glyphs() -> void:
+	if LiteMode.on() and UiTheme.glyph_bytes() > LITE_GLYPH_BUDGET:
+		UiTheme.trim_glyphs()
+
+
+## 軽量モード：開いている画面（keep）のほかのサブ画面を捨てる（作業75）
+func _drop_views(keep: String) -> void:
+	if not LiteMode.on():
+		return
+	for key: String in _views.keys():
+		if key == keep:
+			continue
+		var v: Control = _views[key]
+		_views.erase(key)
+		if is_instance_valid(v):
+			v.visible = false
+			v.queue_free()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -608,22 +647,15 @@ func _open_sub_screen(key: String) -> void:
 	var is_records := key == "records"
 	var is_postseason := key == "postseason"
 	var is_news := key == "news"
-	_news_view.visible = is_news
-	_postseason_view.visible = is_postseason
-	_awards_view.visible = is_awards
-	_records_view.visible = is_records
-	_save_view.visible = is_system
-	_draft_view.visible = is_draft
-	_meeting_view.visible = is_meeting
+	_drop_views(key)
+	for k: String in _views:
+		_views[k].visible = k == key
+	var has_view := key in VIEW_KEYS
+	if has_view:
+		_view(key).visible = true
 	_tactics_view.visible = is_tactics
 	_schedule_view.visible = is_schedule
-	_scout_view.visible = is_scout
-	_fa_view.visible = is_fa
-	_trade_view.visible = is_trade
-	_comp_view.visible = is_comp
-	_contract_view.visible = is_contract
-	_release_view.visible = is_release
-	_placeholder_label.visible = not is_tactics and not is_schedule and not is_scout and not is_fa 		and not is_trade and not is_comp and not is_contract and not is_release and not is_draft and not is_meeting and not is_system and not is_awards and not is_records 		and not is_postseason and not is_news
+	_placeholder_label.visible = not is_tactics and not is_schedule and not has_view
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
 	_set_wide(is_tactics or is_fa or is_trade or is_comp or is_contract or is_release or is_draft or is_meeting or is_awards or is_records or is_postseason or is_news)
 	UiFx.slide_in(_sub_screen)
@@ -746,6 +778,9 @@ func _close_sub_screen() -> void:
 	_open_key = ""
 	if key == "records":
 		RecordsHistory.clear_caches()  # 歴代メンバー・歴代ドラフトで見た年のデータ（作業55）
+	_drop_views("")
+	if LiteMode.on() and key in TRIM_GLYPH_KEYS:
+		UiTheme.trim_glyphs()  # 字の多い画面で覚えた字の画像（作業75）
 	UiLayout.set_sub_screen_active(false)
 	_sub_screen.visible = false
 	_update_rotate_hint()

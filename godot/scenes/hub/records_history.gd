@@ -72,9 +72,15 @@ const DRAFT_HEAD := ["順位", "名前", "今の球団", "位置", "経歴", "�
 ## 球団のマークのボタンの大きさ
 const EMBLEM_SIZE := 40
 
-## 年 → 選手ページから集めたもの（pages_summary）
-static var _pages_cache := {}
-## "年_phase" → 選手ID → 能力値ファイルの選手
+## 選手ID → 開始年より前の1軍の通算 {"b", "p"}・最後に1軍に出た年（どの年の選手ページにも全部の年度があるので、
+## 読んだ年の分を1つにまとめて持つ。_scan_page。作業75）
+static var _careers := {}
+static var _last := {}
+## 選手ページを読んだ年 → その年のページにいた選手ID（careers_of が「この年にいたが通算は無い」を見分ける）
+static var _page_ids := {}
+## _careers を作ったときの開始年（違えば作り直す）
+static var _careers_first_year := 0
+## "年_phase" → 選手ID → 能力値ファイルの選手（歴代で使う項目だけ・総合ランク。_slim）
 static var _ratings_cache := {}
 ## 年 → 史実の年の year_data
 static var _hist_cache := {}
@@ -85,10 +91,14 @@ static var _rank_cache := {}
 ## 年ごとの持ち物は最近使った年だけ持ち、記録室を閉じたら捨てる（clear_caches。作業55：年を切り替えるたびに
 ## その年の選手ページ・能力値ファイルを持ち続けて、1年あたり約24MB、2020年開始で歴代メンバーを12年見ると
 ## +285MB になり、iPhone の Web 版でメモリが足りなくなっていた）。
-## 選手ページの集計（1年約7MB）は、歴代ドラフトの通算成績で入団の次の年から開始年まで順に探すので多めに持つ
-const PAGES_YEARS := 16
-## 能力値ファイル（1年約12MB）・史実の年の成績（1年約4MB）
+## 作業75：それでも2020年開始で歴代を全部見ると +170MB（選手ページの集計を16年・能力値ファイルを丸ごと4年）で、
+## iPhone SE2 で落ちていた → 選手ページは通算だけを1つにまとめ、能力値ファイルは使う項目とランクだけ持つ
+## 能力値ファイル（使う項目だけ）・史実の年の成績（1年約4MB）を持つ年の数。軽量モードは LITE_CACHE_YEARS
 const CACHE_YEARS := 4
+const LITE_CACHE_YEARS := 2
+## 能力値ファイルの選手のうち、歴代で使う項目（fielding は守備位置ごとの試合数だけにする）
+const SLIM_KEYS := ["id", "name", "is_pitcher", "throws", "bats", "birth", "primary_pos", "career", "draft", "team",
+	"hist_team", "amateur"]
 
 
 # --- 年・球団 ----------------------------------------------------------------------------------
@@ -142,45 +152,80 @@ static func draft_years() -> Array[int]:
 # --- 史実のデータ ------------------------------------------------------------------------------
 
 ## その年の選手ページ（data/<年>/players.json）から：
-## season＝選手ID → 球団 → {"b": 打撃, "p": 投手}（その年の1軍成績。途中で移籍した選手は球団ごと）、
-## career＝選手ID → {"b", "p"}（ゲームを始めた年より前の1軍の通算）、last＝その中で最後に1軍に出た年、
-## names・bio（生年月日・投打）
+## season＝選手ID → 球団 → {"b": 打撃, "p": 投手}（その年の1軍成績。途中で移籍した選手は球団ごと）、names。
+## 通算（ゲームを始めた年より前の1軍の通算）と最後に1軍に出た年は _careers・_last にまとめる（_scan_page）。
+## 年ごとには持たない（使うのは _hist_year で、その結果を _hist_cache が持つ）
 static func pages_summary(y: int) -> Dictionary:
+	_check_careers()
 	var fy := GameState.first_year
-	var cached: Dictionary = _pages_cache.get(y, {})
-	if not cached.is_empty() and int(cached["first_year"]) == fy:
-		_remember(_pages_cache, y, cached, PAGES_YEARS)
-		return cached
+	var scan := not _page_ids.has(y)
+	var ids := {}
 	var season := {}
-	var career := {}
 	var names := {}
-	var bio := {}
-	var last := {}
 	GameData.each_year_page(y, func(id: String, page: Dictionary) -> void:
 		names[id] = str(page.get("name", ""))
-		bio[id] = {"birth": page.get("birth"), "throws": page.get("throws", ""), "bats": page.get("bats", "")}
+		if scan:
+			_add_career(id, page, fy, ids)
+		var rows: Variant
 		for kind: String in ["batting", "pitching"]:
 			var k := "b" if kind == "batting" else "p"
-			var rows: Variant = page.get(kind)
+			rows = page.get(kind)
 			if not rows is Array:
 				continue
 			for row: Variant in rows:
-				if not row is Dictionary:
+				if not row is Dictionary or int((row as Dictionary).get("年度", 0)) != y:
 					continue
-				var ry := int((row as Dictionary).get("年度", 0))
 				var line := Records.from_page_batting(row) if k == "b" else Records.from_page_pitching(row)
-				if ry == y:
-					var team := GameData.resolve_team(str((row as Dictionary).get("所属球団", "")), y)
-					var by_team: Dictionary = season.get_or_add(id, {})
-					var per: Dictionary = by_team.get_or_add(team, {})
-					Records.add_into(per.get_or_add(k, {}), line)
-				if ry > 0 and ry < fy:
-					var c: Dictionary = career.get_or_add(id, {})
-					Records.add_into(c.get_or_add(k, {}), line)
-					last[id] = maxi(int(last.get(id, 0)), ry))
-	cached = {"first_year": fy, "season": season, "career": career, "names": names, "bio": bio, "last": last}
-	_remember(_pages_cache, y, cached, PAGES_YEARS)
-	return cached
+				var team := GameData.resolve_team(str((row as Dictionary).get("所属球団", "")), y)
+				var by_team: Dictionary = season.get_or_add(id, {})
+				var per: Dictionary = by_team.get_or_add(team, {})
+				Records.add_into(per.get_or_add(k, {}), line))
+	if scan:
+		_page_ids[y] = ids
+	return {"season": season, "names": names}
+
+
+## その年の選手ページから通算だけを _careers・_last に足す（もう読んだ年なら何もしない）
+static func _scan_page(y: int) -> void:
+	_check_careers()
+	if _page_ids.has(y):
+		return
+	var fy := GameState.first_year
+	var ids := {}
+	GameData.each_year_page(y, func(id: String, page: Dictionary) -> void: _add_career(id, page, fy, ids))
+	_page_ids[y] = ids
+
+
+static func _add_career(id: String, page: Dictionary, fy: int, ids: Dictionary) -> void:
+	ids[id] = true
+	if _careers.has(id) or _last.has(id):
+		return
+	var career := {}
+	var last := 0
+	for kind: String in ["batting", "pitching"]:
+		var k := "b" if kind == "batting" else "p"
+		var rows: Variant = page.get(kind)
+		if not rows is Array:
+			continue
+		for row: Variant in rows:
+			if not row is Dictionary:
+				continue
+			var ry := int((row as Dictionary).get("年度", 0))
+			if ry > 0 and ry < fy:
+				var line := Records.from_page_batting(row) if k == "b" else Records.from_page_pitching(row)
+				Records.add_into(career.get_or_add(k, {}), line)
+				last = maxi(last, ry)
+	if not career.is_empty():
+		_careers[id] = career
+		_last[id] = last
+
+
+static func _check_careers() -> void:
+	if _careers_first_year != GameState.first_year:
+		_careers.clear()
+		_last.clear()
+		_page_ids.clear()
+		_careers_first_year = GameState.first_year
 
 
 ## 能力値ファイルの選手（選手ID → 選手）。その年のファイルが無ければ空
@@ -188,21 +233,50 @@ static func ratings_index(y: int, phase := "post") -> Dictionary:
 	var key := "%d_%s" % [y, phase]
 	if _ratings_cache.has(key):
 		var hit: Dictionary = _ratings_cache[key]
-		_remember(_ratings_cache, key, hit)
+		_remember(_ratings_cache, key, hit, _cache_years())
 		return hit
 	var result := {}
 	var data := GameData.peek_ratings(y, phase, false)
 	for p: Dictionary in data.get("players", []):
-		result[str(p["id"])] = p
-	_remember(_ratings_cache, key, result)
+		result[str(p["id"])] = _slim(p)
+	data = {}
+	_remember(_ratings_cache, key, result, _cache_years())
 	return result
+
+
+## 能力値ファイルの選手から歴代で使う項目だけ（作業75）。能力は総合ランク（"rank"。出せなければ無し）にする
+static func _slim(p: Dictionary) -> Dictionary:
+	var r := {}
+	for k: String in SLIM_KEYS:
+		if p.has(k):
+			r[k] = p[k]
+	var am: Variant = p.get("amateur")
+	if am is Dictionary:
+		r["amateur"] = {"school": (am as Dictionary).get("school", "")}
+	var fielding: Variant = p.get("fielding")
+	if fielding is Dictionary:
+		var games := {}
+		for pos: String in fielding:
+			var f: Variant = fielding[pos]
+			if f is Dictionary:
+				games[pos] = {"games": (f as Dictionary).get("games", 0)}
+		r["fielding"] = games
+	if p.get("batting") != null or p.get("pitching") != null:
+		r["rank"] = Depth.rank_of(Depth.now_score(p))
+	return r
+
+
+static func _cache_years() -> int:
+	return LITE_CACHE_YEARS if LiteMode.on() else CACHE_YEARS
 
 
 ## 記録室を閉じたとき：年ごとの持ち物を捨てる（ランクと今季の打順は小さいので残す）
 static func clear_caches() -> void:
-	_pages_cache.clear()
 	_ratings_cache.clear()
 	_hist_cache.clear()
+	_careers.clear()
+	_last.clear()
+	_page_ids.clear()
 
 
 ## cache の key を最後（いちばん新しい）に入れ直し、いちばん長く使っていないものから CACHE_YEARS 個を超えた分を捨てる
@@ -270,11 +344,11 @@ static func year_data(y: int) -> Dictionary:
 		d = _game_year(y)
 	elif _hist_cache.has(y):
 		var hit: Dictionary = _hist_cache[y]
-		_remember(_hist_cache, y, hit)
+		_remember(_hist_cache, y, hit, _cache_years())
 		return hit
 	else:
 		d = _hist_year(y)
-		_remember(_hist_cache, y, d)
+		_remember(_hist_cache, y, d, _cache_years())
 	_mark_leaders(d)
 	return d
 
@@ -814,13 +888,14 @@ static func careers_of(ids: Array, draft_year: int) -> Dictionary:
 	for y in years:
 		if missing.is_empty() or draft_year >= fy:
 			break
-		var ps := pages_summary(y)
+		_scan_page(y)
+		var seen: Dictionary = _page_ids[y]
 		var still: Array = []
 		for id: String in missing:
-			if ps["career"].has(id):
-				result[id] = (ps["career"][id] as Dictionary).duplicate(true)
-				result[id]["last"] = int(ps["last"].get(id, 0))
-			elif not ps["names"].has(id):
+			if _careers.has(id):
+				result[id] = (_careers[id] as Dictionary).duplicate(true)
+				result[id]["last"] = int(_last.get(id, 0))
+			elif not seen.has(id):
 				still.append(id)
 		missing = still
 	for y in GameState.records_years():
@@ -877,6 +952,8 @@ static func _rank_of(id: String, p: Dictionary, last_year: int) -> String:
 			var ranks := _ranks_of(mini(ry, HIST_LAST_YEAR), "post")
 			if ranks.has(id):
 				return ranks[id]
+	if src.has("rank"):
+		return str(src["rank"])  # 歴代で持つ能力値ファイルの選手（_slim）
 	if src.is_empty() or (src.get("batting") == null and src.get("pitching") == null):
 		return ""
 	return Depth.rank_of(Depth.now_score(src))
@@ -888,11 +965,15 @@ static func _ranks_of(y: int, phase: String) -> Dictionary:
 	if _rank_cache.has(key):
 		return _rank_cache[key]
 	var src: Dictionary = _ratings_cache[key] if _ratings_cache.has(key) else {}
-	var players: Array = src.values() if not src.is_empty() else GameData.peek_ratings(y, phase, false).get("players", [])
 	var ranks := {}
-	for p: Dictionary in players:
-		if p.get("batting") != null or p.get("pitching") != null:
-			ranks[str(p["id"])] = Depth.rank_of(Depth.now_score(p))
+	if not src.is_empty():
+		for id: String in src:
+			if src[id].has("rank"):
+				ranks[id] = src[id]["rank"]
+	else:
+		for p: Dictionary in GameData.peek_ratings(y, phase, false).get("players", []):
+			if p.get("batting") != null or p.get("pitching") != null:
+				ranks[str(p["id"])] = Depth.rank_of(Depth.now_score(p))
 	_rank_cache[key] = ranks
 	return ranks
 
