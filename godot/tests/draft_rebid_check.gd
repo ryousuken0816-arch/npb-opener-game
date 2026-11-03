@@ -8,7 +8,7 @@ extends SceneTree
 ## 最後の通りはドラフトの終わりまで進め、可変ボタンで翌年の春季キャンプへ進んでハブの年が追従するかも調べる。
 ##
 ##   godot --headless --path godot -s res://tests/draft_rebid_check.gd -- [出力先]
-##   （出力先はウィンドウ付きのときだけ。CPU球団の外れ1位の結果の演出と、2019年の候補一覧（1年目の順）をスクショ）
+##   （出力先はウィンドウ付きのときだけ。CPU球団の外れ1位の結果の演出と、2019年の候補一覧（表の投手能力）をスクショ）
 
 const CASES := [
 	{"year": 2012, "team": "阪神タイガース"},
@@ -179,9 +179,10 @@ func _finish_draft(hub: Node, year: int, team: String) -> void:
 	var d: RefCounted = _gs.draft()
 	var view: Node = _find_draft_view(hub)
 	if year == CASES[-1]["year"]:
-		# スクショ：投手能力のタブを1年目の順に並べ、先頭の候補の要約（1年目の能力。作業13）
+		# スクショ：表の投手能力のタブを当時の評価の順に並べ、先頭の候補の要約（1年目の列は作業51で消した）
+		view.call("set_mode", "table")
 		view.call("switch_tab", 1)
-		view.call("set_sort", "first", true)
+		view.call("set_sort", "hyouka", true)
 		var top: Array = view.call("list_ids")
 		if not top.is_empty():
 			view.call("select_candidate", top[0])

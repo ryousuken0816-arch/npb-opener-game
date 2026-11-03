@@ -36,8 +36,20 @@ const _TWO_WAY_PLAN := [
 	["D", TWO_WAY_D_RATE],
 ]
 
-## 即戦力の怪物（1年目からタイトル争い級）の確率
-const MONSTER_ROOKIE_RATE := 0.015  # 約1.5%
+## 怪物（opts.monster。FictionalDraft が年に0〜2人選ぶ）：才能の分位点の範囲と、入団時の完成度
+const MONSTER_U := [0.990, 0.999]
+const MONSTER_MATURITY := {"高校": [0.70, 0.82], "default": [0.78, 0.88]}
+## 入団時の完成度（ピークに対する。高校生はふだん C〜D になる低さ）
+const MATURITY := {"高校": [0.45, 0.60], "大学": [0.55, 0.85], "専門": [0.50, 0.80], "社会人": [0.75, 0.95], "default": [0.50, 0.85]}
+
+## 投手の先発型・救援型（作業50）：先発型の割合は才能の分位点 u で START_SHARE[0]（u=0.5以下）→ [1]（u=1）
+const START_SHARE := [0.40, 0.90]
+const MONSTER_START_SHARE := 0.90
+## ピークのスタミナ：先発型は C〜A、救援型は F〜E
+const STARTER_STAMINA := [65, 84]
+const RELIEVER_STAMINA := [28, 48]
+## スタミナの伸びしろ（50を超えた分の割合。ほかの項目より伸びしろが小さく、先発型は入団時から C 以上）
+const STAMINA_MARGIN_SCALE := 0.35
 
 var model: Dictionary = {}
 var ready: bool = false
@@ -133,10 +145,10 @@ func generate_player(category: String, pos: String, side: String, quality: float
 	var is_p := (side == "P")
 
 	# 1. 真の才能 T の決定
-	var is_monster := rng.randf() < MONSTER_ROOKIE_RATE
+	var is_monster := bool(opts.get("monster", false))
 	var u: float
 	if is_monster:
-		u = rng.randf_range(0.975, 0.998)  # 即戦力の怪物
+		u = rng.randf_range(MONSTER_U[0], MONSTER_U[1])  # 本当に飛び抜けた才能
 	else:
 		# 分位点モデルに基づく才能＋年の質 Q_y
 		var z_val := rng.randfn(0.0, 1.0) + quality
@@ -148,7 +160,7 @@ func generate_player(category: String, pos: String, side: String, quality: float
 	# 2. ピーク能力の生成（野手 または 投手）
 	var peak_dict := {}
 	if is_p:
-		peak_dict = _generate_pitcher_peak(true_talent, category, rng, is_monster)
+		peak_dict = _generate_pitcher_peak(true_talent, category, rng, is_monster, u)
 	else:
 		peak_dict = _generate_batter_peak(true_talent, category, pos, rng, is_monster)
 
@@ -246,7 +258,7 @@ func _generate_batter_peak(target_t: float, category: String, pos: String,
 
 ## 投手のピーク能力生成
 func _generate_pitcher_peak(target_t: float, category: String,
-		rng: RandomNumberGenerator, is_monster: bool) -> Dictionary:
+		rng: RandomNumberGenerator, is_monster: bool, u: float = 0.5) -> Dictionary:
 	var m_pit: Dictionary = model.get("pitching", {})
 	var keys: Array = m_pit.get("keys", ["stamina", "k9", "bb9", "hr9", "velocity"])
 	var means: Dictionary = m_pit.get("means", {})
@@ -299,6 +311,14 @@ func _generate_pitcher_peak(target_t: float, category: String,
 		else:
 			ratings[k] = clampi(roundi(soft_cap(raw_val)), 15, 99)
 
+	# 先発型・救援型（上位の才能ほど先発型が多い）。スタミナは実力の点にほとんど効かないので型で決める
+	var start_share: float = MONSTER_START_SHARE if is_monster \
+		else lerpf(START_SHARE[0], START_SHARE[1], clampf((u - 0.5) / 0.5, 0.0, 1.0))
+	if rng.randf() < start_share:
+		ratings["stamina"] = maxi(int(ratings["stamina"]), rng.randi_range(STARTER_STAMINA[0], STARTER_STAMINA[1]))
+	else:
+		ratings["stamina"] = mini(int(ratings["stamina"]), rng.randi_range(RELIEVER_STAMINA[0], RELIEVER_STAMINA[1]))
+
 	# 投手の総合力（overall）の算出
 	var k9_v := float(ratings.get("k9", 50))
 	var bb9_v := float(ratings.get("bb9", 50))
@@ -315,16 +335,10 @@ func _generate_entry_abilities(peak_dict: Dictionary, category: String, side: St
 	var peak_ratings: Dictionary = peak_dict.get("ratings", {})
 	var is_p := (side == "P")
 
-	# 成熟度 R: 高校生は低め、社会人は高め
-	var maturity: float
-	if is_monster:
-		maturity = rng.randf_range(0.82, 0.96)  # 怪物新人は即戦力完成度
-	else:
-		match category:
-			"高校": maturity = rng.randf_range(0.35, 0.65)
-			"大学": maturity = rng.randf_range(0.55, 0.85)
-			"社会人": maturity = rng.randf_range(0.75, 0.95)
-			_: maturity = rng.randf_range(0.50, 0.85)
+	# 成熟度 R: 高校生は低め、社会人は高め。怪物は入団時から主力級だが、まだ伸びる
+	var range_m: Array = MONSTER_MATURITY.get(category, MONSTER_MATURITY["default"]) if is_monster \
+		else MATURITY.get(category, MATURITY["default"])
+	var maturity: float = rng.randf_range(range_m[0], range_m[1])
 
 	var entry_ratings := {}
 	var entry_vel := 140
@@ -332,8 +346,10 @@ func _generate_entry_abilities(peak_dict: Dictionary, category: String, side: St
 	if is_p:
 		for k: String in ["stamina", "k9", "bb9", "hr9", "overall"]:
 			var pk: float = float(peak_ratings.get(k, 50))
-			# 伸びしろ: 成熟度に応じてピークから減算
+			# 伸びしろ: 成熟度に応じてピークから減算（スタミナは小さい）
 			var margin := (pk - 35.0) * (1.0 - maturity) * rng.randf_range(0.85, 1.15)
+			if k == "stamina":
+				margin = maxf(0.0, pk - 50.0) * (1.0 - maturity) * STAMINA_MARGIN_SCALE * rng.randf_range(0.85, 1.15)
 			entry_ratings[k] = clampi(roundi(pk - margin), 20, roundi(pk))
 		# 球速の伸びしろ
 		var pk_vel: float = float(peak_ratings.get("velocity", 145))
@@ -378,7 +394,7 @@ func _generate_growth_info(category: String, maturity: float, rng: RandomNumberG
 	var base_age: int = 27
 	match category:
 		"高校": base_age = 28
-		"大学": base_age = 27
+		"大学", "専門": base_age = 27
 		"社会人": base_age = 26
 		"独立": base_age = 27
 

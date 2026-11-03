@@ -42,13 +42,42 @@ INDEPENDENT_WORDS = (
     "ゴールデンブレーブス", "アストロプラネッツ", "フューチャードリームス", "サラマンダーズ", "ブルーオーシャンズ",
     "セイバーズ", "ハーキュリーズ", "ブレイブウォリアーズ", "ドリームス", "ホワイトベアーズ", "ネイチャーズ", "ベアーズ",
     "フェニックス", "ビックブルー", "ヴェルディ", "ゼロワン", "オセアン", "BC", "独立",
+    "IL・", "エレファンツ", "ブルーサンダーズ", "レッドホープス", "スカイセイラーズ", "セインツ", "レッドソルジャーズ",
+    "9クルーズ", "シュライクス", "ブレイバーズ", "B‐リングス", "くふうハヤテ",  # くふうハヤテ（2軍だけに参加するプロ）も独立と同じ扱い
 )
+# 専門学校（区分「専門」。2年で卒業して20歳で入団）
+VOCATIONAL_WORDS = ("専門学校", "教育学院", "高専", "梅田学園")
+# 候補の所属に使わない（海外のプロ・中学校・「〇〇高卒」のような所属なし・休部したチーム）
+SKIP_WORDS = ("メッツ", "ウィズ", "中学校", "高卒", "大卒", "カレッジ", "三菱ふそう", "IL・福岡")
+# 古い名前 → 今の名前（社名の変更・チームの統合・大学の改称）。表記ゆれもここでそろえる
+RENAMES = {
+    "JX-ENEOS": "ENEOS", "新日鐵住金広畑": "日本製鉄広畑", "新日鉄住金広畑": "日本製鉄広畑",
+    "住友金属鹿島": "日本製鉄鹿島", "新日鉄住金鹿島": "日本製鉄鹿島", "新日鐵住金鹿島": "日本製鉄鹿島",
+    "新日鉄住金かずさマジック": "日本製鉄かずさマジック", "新日鐵住金かずさマジック": "日本製鉄かずさマジック",
+    "三菱日立パワーシステムズ": "三菱重工East", "三菱パワー": "三菱重工East",
+    "三菱重工広島": "三菱重工West", "三菱重工神戸": "三菱重工West",
+    "王子製紙": "王子", "王子(王子製紙)": "王子", "富士重工業": "SUBARU", "室蘭シャークス": "日本製鉄室蘭シャークス",
+    "オール足利クラブ": "全足利クラブ",
+    "國學院大學": "國學院大", "国学院大": "國學院大", "駒沢大": "駒澤大", "八戸大": "八戸学院大", "道都大": "星槎道都大",
+    "奈良産業大": "奈良学園大", "岐阜経済大": "岐阜協立大", "徳山大": "周南公立大",
+    "東海大在学": "東海大", "早稲田大ソフトボール部": "早稲田大", "日本大国際関係学部": "日本大学国際関係学部",
+    "東農大北海道オホーツク": "東京農業大学北海道オホーツク", "東京農大生物産業学部": "東京農業大学北海道オホーツク",
+    "早稲田実業": "早稲田実業高", "日高中津分校": "日高高中津分校", "日本航空高石川": "日本航空石川高",
+    "武蔵ヒートベアーズ": "埼玉武蔵ヒートベアーズ", "富山サンダーバーズ": "富山GRNサンダーバーズ",
+    "四国・九州IL・香川": "香川オリーブガイナーズ", "四国・九州IL・愛媛": "愛媛マンダリンパイレーツ",
+    "BCリーグ・福井": "福井ネクサスエレファンツ", "福井ミラクルエレファンツ": "福井ネクサスエレファンツ",
+    "BCリーグ・信濃": "信濃グランセローズ", "BCリーグ・富山": "富山GRNサンダーバーズ",
+    "新潟アルビレックスBC": "オイシックス新潟アルビレックス・ベースボール・クラブ",
+    "群馬大教育学部": "群馬大", "東海大北海道キャンパス": "東海大学北海道キャンパス",
+}
 
 
 def category_of(school: str) -> str:
     if any(w in school for w in INDEPENDENT_WORDS):
         return "独立"
-    if school.endswith("高") or "高校" in school or "高等学校" in school:
+    if any(w in school for w in VOCATIONAL_WORDS):
+        return "専門"
+    if school.endswith("高") or "高校" in school or "高等学校" in school or "高中津分校" in school:
         return "高校"
     if "大学" in school or school.endswith("大"):
         return "大学"
@@ -56,12 +85,13 @@ def category_of(school: str) -> str:
 
 
 def school_name(school: str) -> str:
-    """表記ゆれをそろえる（「明治大学」→「明治大」、「〇〇高校」→「〇〇高」）"""
+    """表記ゆれをそろえる（「明治大学」→「明治大」、「〇〇高校」→「〇〇高」）。古い名前は今の名前にする"""
     school = school.strip()
     for long, short in (("高等学校", "高"), ("高校", "高"), ("大学", "大")):
         if school.endswith(long):
-            return school[: -len(long)] + short
-    return school
+            school = school[: -len(long)] + short
+            break
+    return RENAMES.get(school, school)
 
 
 def round_of(text: str) -> int:
@@ -154,7 +184,7 @@ def main() -> None:
     for y in SCHOOL_YEARS:
         for d in drafts(y):
             school = school_name(str(d.get("school", "")))
-            if school:
+            if school and not any(w in school for w in SKIP_WORDS):
                 schools[(category_of(school), school)] += 1
 
     sizes = {}
@@ -197,7 +227,7 @@ def main() -> None:
             if side == "P" and top_kmh is not None:
                 peak["velocity"] = round(top_kmh)
             age = gc.age_at(peak_src, best_year) if best_year else None
-            school = str(d.get("school", "")).strip()
+            school = school_name(str(d.get("school", "")))
             rnd = round_of(d.get("round", ""))
             ikusei = bool(d.get("ikusei", False))
             templates.append({

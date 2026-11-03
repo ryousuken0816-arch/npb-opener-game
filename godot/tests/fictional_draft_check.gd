@@ -2,6 +2,8 @@ extends SceneTree
 ## アマ球界のニュース・架空のドラフト候補・転生選手の確認（docs/AUTORUN.md 作業21・22・32。ヘッドレスで数分）：
 ##   1) FictionalDraft だけで30年分：1年の人数・区分と順位の割合・将来性 S の人数（史実どおり／夢多め）・無名校の掘り出し物・
 ##      学校が実在の一覧から・名前が重ならない・転生選手（名前は元の選手と同じ、ピークが元の全盛期に近い）
+##      作業50：当時の評価 S は年2〜4人・A は4〜10人、怪物は年0〜2人、高校生は入団時 C〜D 中心（化け物は数年に1人）、
+##      S・A の投手の多くは先発型（スタミナ C 以上）、名前に実在のスターの名前を使わない、所属の区分（独立・専門学校・今の社名）
 ##   2) 2026年開始：シーズンを進めると春（センバツ）・大学選手権・都市対抗・夏の甲子園・秋の号が日付どおりに出る
 ##      （実在の候補の名前・メジャー志望の織田翔希）。4月1日の時点では春の号だけ
 ##   3) 2027年開始 → 2028年：春に架空の候補のニュース → 2028年のドラフトの候補は架空の選手（実在の学校名）・転生の印 →
@@ -23,6 +25,7 @@ var _growth: GDScript
 var _fa: GDScript
 var _an: GDScript
 var _at: GDScript
+var _draft: GDScript
 var _examples: Array[String] = []
 
 
@@ -39,7 +42,9 @@ func _run() -> void:
 	_fa = load("res://sim/free_agency.gd")
 	_an = load("res://sim/amateur_news.gd")
 	_at = load("res://sim/amateur_tournament.gd")
+	_draft = load("res://sim/draft.gd")
 	_check_generator()
+	_check_balance()
 	_check_news_text()
 	_check_tournaments()
 	_check_amateur_news_2026()
@@ -293,8 +298,96 @@ func _check_generator() -> void:
 					n += 1
 			if p["name"] == src.get("name") and n > 0 and gap / n <= 12.0 and p["amateur"]["grade"] in ["S", "A"]:
 				close += 1
-	_check(rei_total >= 10 and rei_total <= 32, "転生選手は年に0〜2人（20年で %d人）" % rei_total)
+	# REINCARNATION_ODDS の期待値は年0.47人（20年で約9人）。前の基準（10〜32）は期待値より上の下限で、乱数しだいで半分ほど落ちていた
+	_check(rei_total >= 4 and rei_total <= 20, "転生選手は年に0〜2人（20年で %d人）" % rei_total)
 	_check(close == rei_total, "転生選手は元の名前・全盛期に近いピーク・高い当時の評価（%d/%d人）" % [close, rei_total])
+
+
+## 作業50：当時の評価・怪物・高校生の完成度・上位投手のスタミナ・名前・所属の区分（ドラフトの時点で見える情報だけを集計）
+func _check_balance() -> void:
+	print("== 作業50：架空の候補の手直し（30年分） ==")
+	var fd: RefCounted = _fd.new()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 2050
+	var years := 30
+	var s_bad := 0
+	var a_bad := 0
+	var mon_bad := 0
+	var s_total := 0
+	var a_total := 0
+	var mon_total := 0
+	var hs_phenom := 0
+	var hs_strong := 0
+	var hs_reg := 0
+	var hs_cd := 0
+	var top_p := 0
+	var top_p_starter := 0
+	var star_names := 0
+	var legends := {}
+	for l: Dictionary in fd.data.get("legends", []):
+		legends[str(l["name"]).replace(" ", "")] = true
+	for y in range(2028, 2028 + years):
+		var s := 0
+		var a := 0
+		var mon := 0
+		for p: Dictionary in fd.generate_year(y, rng):
+			var am: Dictionary = p["amateur"]
+			s += 1 if am["grade"] == "S" else 0
+			a += 1 if am["grade"] == "A" else 0
+			var monster := bool(p.get("is_monster", false))
+			mon += 1 if monster else 0
+			if str(p["name"]).get_slice(" ", 1) in ["大谷", "宗佑磨", "朗希", "輝明", "翔平", "由伸", "宗隆"] \
+					or legends.has(str(p["name"]).replace(" ", "")):
+				star_names += 1
+			if am["category"] == "高校" and not bool(am["as_ikusei"]):
+				# 入団時の総合の目安（投手は総合、野手はミート・パワーの高いほう）
+				var ovr := 0
+				if p["is_pitcher"]:
+					ovr = int(p["pitching"]["ratings"]["overall"]["value"])
+				else:
+					ovr = maxi(int(p["batting"]["ratings"]["meet"]["value"]), int(p["batting"]["ratings"]["power"]["value"]))
+				hs_reg += 1
+				hs_cd += 1 if ovr >= 50 and ovr < 70 else 0
+				if monster:
+					hs_phenom += 1
+				elif ovr >= 70:
+					hs_strong += 1
+			if p["is_pitcher"] and am["grade"] in ["S", "A"]:
+				top_p += 1
+				if int(p["pitching"]["ratings"]["stamina"]["value"]) >= 60 and str(p["pitching"]["role"]) == "先発":
+					top_p_starter += 1
+		s_total += s
+		a_total += a
+		mon_total += mon
+		s_bad += 1 if s < 2 or s > 4 else 0
+		a_bad += 1 if a < 4 or a > 10 else 0
+		mon_bad += 1 if mon > 2 else 0
+	print("  1年あたり S %.1f人・A %.1f人・怪物 %.2f人、高校生の化け物 %d人／%d年、高校生（本指名）の入団時 C〜D %.0f%%・それ以外で B 以上 %d人、S・A の投手 %d人のうち先発型 %.0f%%"
+		% [float(s_total) / years, float(a_total) / years, float(mon_total) / years, hs_phenom, years,
+		100.0 * hs_cd / maxf(1, hs_reg), hs_strong, top_p, 100.0 * top_p_starter / maxf(1, top_p)])
+	_check(s_bad == 0, "当時の評価 S は毎年2〜4人（外れた年 %d）" % s_bad)
+	_check(a_bad == 0, "当時の評価 A は毎年4〜10人（外れた年 %d）" % a_bad)
+	_check(mon_bad == 0 and mon_total <= years, "怪物は年に0〜2人（多すぎた年 %d、30年で %d人）" % [mon_bad, mon_total])
+	_check(hs_phenom >= 3 and hs_phenom <= 18, "高校生の化け物は数年に1人（30年で %d人）" % hs_phenom)
+	_check(hs_strong <= years / 3, "化け物以外の高校生は入団時 B 以上がまれ（30年で %d人）" % hs_strong)
+	_check(float(hs_cd) / maxf(1, hs_reg) >= 0.45, "高校生（本指名）の入団時は C〜D が中心（%.0f%%）" % (100.0 * hs_cd / maxf(1, hs_reg)))
+	_check(float(top_p_starter) / maxf(1, top_p) >= 0.7, "当時の評価 S・A の投手の多くは先発型・スタミナ C 以上（%.0f%%）"
+		% (100.0 * top_p_starter / maxf(1, top_p)))
+	_check(star_names == 0, "名前に実在のスターの名前（大谷・朗希など、名選手と同じ姓名）を使わない（%d人）" % star_names)
+	# 所属の区分：独立リーグ・くふうハヤテは「独立」、専門学校は「専門」、古い社名は無い
+	var bad_cat: Array = []
+	var has_vocational := false
+	for sc: Dictionary in fd.data.get("schools", []):
+		var name := str(sc["name"])
+		var cat := str(sc["category"])
+		has_vocational = has_vocational or cat == "専門"
+		if (("IL" in name or "BC" in name or "ハヤテ" in name or "インディゴ" in name) and cat != "独立") \
+				or ("専門学校" in name and cat != "専門") or name in ["JX-ENEOS", "新日鐵住金鹿島", "三菱日立パワーシステムズ"]:
+			bad_cat.append("%s（%s）" % [name, cat])
+	_check(bad_cat.is_empty() and has_vocational, "所属の区分（独立・専門学校）と今の社名（区分の誤り %s）" % [bad_cat])
+	# ドラフト画面の経歴：独立・専門学校の区分がそのまま出る
+	_check(_draft.CATEGORY_CAREER.get("独立", "") == "独立" and _draft.career_of_row({"category": "専門", "school": "x専門学校"}) == "専門学校"
+		and _draft.career_of_row({"school": "明治大"}) == "大学生", "ドラフト画面の経歴は架空の候補の区分から（独立・専門学校）")
 
 
 ## 区分と学年・入社の年の表示から、入団する年の4月1日時点の年齢の範囲 [下限, 上限]

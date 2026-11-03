@@ -227,10 +227,13 @@ func _check_meeting(when: String) -> void:
 		view.select_candidate(ids[0])
 		view.set_mark("◎")
 		await _check_screen("%s：作戦会議 候補を選んで印" % when)
+	view.set_mode("table")
+	await _check_screen("%s：作戦会議 表" % when)
 	for i in 3:
 		view.switch_tab(1)
 		await _check_screen("%s：作戦会議 タブ%d" % [when, i + 2])
 	view.switch_tab(1)
+	view.set_mode("book")
 	_hub.call("_close_sub_screen")
 
 
@@ -285,10 +288,19 @@ func _check_draft(when: String) -> void:
 	var view: Node = _hub.get("_draft_view")
 	await _check_screen("%s：ドラフト 開幕の演出" % when)
 	view.finish_overlays()
-	await _check_screen("%s：ドラフト 候補一覧" % when)
+	await _check_screen("%s：ドラフト 手帳" % when)
+	# スカウトの手帳（作業51）：めくる・指名ボード・表のタブ
+	view.switch_tab(1)
+	await _check_screen("%s：ドラフト 手帳をめくる" % when)
+	view.set_mode("board")
+	await _check_screen("%s：ドラフト 指名ボード" % when)
+	view.set_mode("table")
+	await _check_screen("%s：ドラフト 表" % when)
 	for i in 3:
 		view.switch_tab(1)
 		await _check_screen("%s：ドラフト タブ%d" % [when, i + 2])
+	view.switch_tab(1)
+	view.set_mode("book")
 	var ids: Array = view.list_ids()
 	if not ids.is_empty():
 		view.select_candidate(ids[0])

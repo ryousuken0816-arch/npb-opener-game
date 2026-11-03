@@ -151,7 +151,7 @@ func _auto_choose(excluded: Dictionary) -> Array[SimPlayer]:
 	var pitchers: Array[SimPlayer] = []
 	var fielders: Array[SimPlayer] = []
 	for p in players:
-		if excluded.has(p.id) or p.is_ikusei or p.injured:
+		if excluded.has(p.id) or p.is_ikusei:
 			continue
 		if p.is_pitcher:
 			if p.has_pitching:
@@ -486,8 +486,6 @@ func promote_error(p: SimPlayer, today: int, swap_out: SimPlayer = null) -> Stri
 		return "%sはすでに1軍です" % p.name
 	if p.is_ikusei:
 		return "%sは育成選手です（支配下に登録すると1軍に上げられます）" % p.name
-	if p.injured:
-		return "%sは%sのため1軍に上げられません" % [p.name, p.injury if not p.injury.is_empty() else "故障中"]
 	var back := reregister_day(p)
 	# 抹消したその日のうち（試合前）に戻すのは取り消しとみなす
 	if back >= 0 and today != int(demoted_day[p.id]) and today < back:
@@ -673,151 +671,6 @@ func _set_pitcher_at(role: Array, p: SimPlayer) -> void:
 
 # --- オーダー --------------------------------------------------------------------------
 
-## 試合で使うスタメン：故障中の選手は、その守備位置に最も合う1軍の控え（故障していない）に代える。
-## 保存しているオーダーは変えない（自球団は抹消するまで1軍に残るので）
-func game_lineup(use_dh: bool) -> Array:
-	var order: Array = []
-	var used := {}
-	for entry: Array in lineup(use_dh):
-		order.append(entry.duplicate())
-		if entry[0] != null:
-			used[entry[0].id] = true
-	for entry: Array in order:
-		if entry[0] == null or not entry[0].injured:
-			continue
-		var best: SimPlayer = null
-		for p in active_players(false):
-			if used.has(p.id) or p.injured:
-				continue
-			if best == null or _starter_score(p, entry[1]) > _starter_score(best, entry[1]):
-				best = p
-		if best != null:
-			entry[0] = best
-			used[best.id] = true
-	return order
-
-
-## 試合で使う控え（故障中と、game_lineup で代わりにスタメンに入った選手を除く）
-func game_bench(use_dh: bool, order: Array) -> Array[SimPlayer]:
-	var used := {}
-	for entry: Array in order:
-		if entry[0] != null:
-			used[entry[0].id] = true
-	var result: Array[SimPlayer] = []
-	for p in bench(use_dh):
-		if not p.injured and not used.has(p.id):
-			result.append(p)
-	return result
-
-
-## 主力（スタメン・先発ローテの5人・抑え・勝ちパターンの中継ぎ）か。故障のニュースに使う
-func is_key_player(p: SimPlayer) -> bool:
-	if not is_active(p):
-		return false
-	if p.is_pitcher:
-		var i := rotation.find(p)
-		return p == closer or (i >= 0 and i < ROTATION_SIZE - 1) or relievers.slice(0, SETUP_COUNT).has(p)
-	for use_dh in [true, false]:
-		for entry: Array in lineup(use_dh):
-			if entry[0] == p:
-				return true
-	return false
-
-
-## 1軍の故障中の選手
-func injured_active() -> Array[SimPlayer]:
-	var result: Array[SimPlayer] = []
-	for p in players:
-		if p.injured and is_active(p):
-			result.append(p)
-	return result
-
-
-## 故障中の p の代わりに上げる2軍の選手（投手なら投手、野手は同じ守備位置に合う選手。いなければ null）
-func injury_replacement(p: SimPlayer, today: int) -> SimPlayer:
-	var best: SimPlayer = null
-	var best_value := -INF
-	var slot := ""
-	for use_dh in [true, false]:
-		for entry: Array in lineup(use_dh):
-			if entry[0] == p:
-				slot = entry[1]
-	for c in players_where(false, p.is_pitcher):
-		if c.injured or not promote_error(c, today, p).is_empty():
-			continue
-		if c.is_pitcher and not c.has_pitching:
-			continue
-		var v := _pitcher_value(c) if c.is_pitcher else (
-				_starter_score(c, slot) if not slot.is_empty() else _experience_value(c))
-		if v > best_value:
-			best_value = v
-			best = c
-	return best
-
-
-## 今の持ち場 {slots: スタメンの [DHあり, 打順の添字, 守備位置] の一覧, role: pitcher_role}。
-## CPU球団が故障から戻った選手を元の持ち場に戻すのに使う（故障したときに Health の記録に残す）
-func place_of(p: SimPlayer) -> Dictionary:
-	var slots: Array = []
-	for use_dh in [true, false]:
-		var order: Array = lineup(use_dh)
-		for i in order.size():
-			if order[i][0] == p:
-				slots.append([use_dh, i, order[i][1]])
-	return {"slots": slots, "role": pitcher_role(p)}
-
-
-## 故障から戻った2軍の p を1軍に戻す（CPU球団。auto_register は重いので使わない）：1軍の同じ種類で
-## 控え（スタメン・先発・抑え以外）のいちばん劣る選手と入れ替え、place（place_of）の持ち場に戻す。
-## 抹消から10日たっていなくて今日は戻せないときだけ false（翌日にまた試す）。戻す必要が無いときも true
-func return_from_injury(p: SimPlayer, today: int, place: Dictionary) -> bool:
-	if p.injured or is_active(p) or p.is_ikusei or not by_id.has(p.id):
-		return true
-	var in_lineup := {}
-	for use_dh in [true, false]:
-		for entry: Array in lineup(use_dh):
-			if entry[0] != null:
-				in_lineup[entry[0].id] = true
-	var worst: SimPlayer = null
-	for c in active_players(p.is_pitcher):
-		if in_lineup.has(c.id) or c == closer or rotation.has(c):
-			continue
-		if worst == null or _auto_value(c) < _auto_value(worst):
-			worst = c
-	var slots: Array = place.get("slots", [])
-	var role: Array = place.get("role", ["", -1])
-	var was_key := not slots.is_empty() or str(role[0]) in [ROLE_ROTATION, ROLE_CLOSER]
-	if worst == null or (not was_key and _auto_value(p) <= _auto_value(worst)):
-		return true
-	var err := swap_registration(worst, p, today)
-	if not err.is_empty():
-		return not err.contains("再登録")
-	if p.is_pitcher:
-		if str(role[0]) in [ROLE_ROTATION, ROLE_CLOSER]:
-			_take_out_pitcher(p)
-			_place_pitcher(p, str(role[0]), int(role[1]))
-	else:
-		for s: Array in slots:
-			var order: Array = lineup(bool(s[0]))
-			var i := int(s[1])
-			var taken := order.any(func(e: Array) -> bool: return e[0] == p)
-			if not taken and i < order.size() and str(order[i][1]) == str(s[2]):
-				order[i][0] = p
-		_rebuild_bench()
-	return true
-
-
-## 1軍の故障中の選手を抹消し、2軍の代わりの選手を上げる。[[抹消した, 上げた（いなければ null）], ...]
-func swap_out_injured(today: int) -> Array:
-	var done: Array = []
-	for p in injured_active():
-		var sub := injury_replacement(p, today)
-		var err := swap_registration(p, sub, today) if sub != null else demote(p, today)
-		if err.is_empty():
-			done.append([p, sub])
-	return done
-
-
 func lineup(use_dh: bool) -> Array:
 	return lineup_dh if use_dh else lineup_no_dh
 
@@ -866,15 +719,10 @@ func set_tactic(key: String, level: int) -> void:
 
 ## その日の先発投手。ローテーション順に、中5日以上あいている投手を選ぶ
 func pick_starter(day: int) -> SimPlayer:
-	var healthy := func(p: SimPlayer) -> bool: return not p.injured
-	var pool: Array[SimPlayer] = rotation.filter(healthy)
+	var pool := rotation
 	if pool.is_empty():
-		# 先発がいなければ、1軍の投手のうち最もスタミナのある投手を使う（故障中の投手は避ける）
-		pool = bullpen.filter(healthy)
-		if pool.is_empty():
-			pool = active_players(true).filter(healthy)
-		if pool.is_empty():
-			pool = rotation.duplicate() if not rotation.is_empty() else active_players(true)
+		# 先発がいなければ、1軍の投手のうち最もスタミナのある投手を使う
+		pool = bullpen.duplicate() if not bullpen.is_empty() else active_players(true)
 		pool.sort_custom(func(a: SimPlayer, b: SimPlayer) -> bool: return a.stamina > b.stamina)
 	for i in pool.size():
 		var p: SimPlayer = pool[(_rotation_index + i) % pool.size()]
@@ -893,8 +741,6 @@ func pick_starter(day: int) -> SimPlayer:
 func available_relievers(day: int) -> Array[SimPlayer]:
 	var result: Array[SimPlayer] = []
 	for p in bullpen:
-		if p.injured:
-			continue
 		var outings: Array = recent_outings.get(p.id, [])
 		var yesterday := 0
 		var streak := 0

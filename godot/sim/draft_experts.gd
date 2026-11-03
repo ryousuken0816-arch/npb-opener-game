@@ -65,7 +65,7 @@ static func prospects(year: int) -> Array[Dictionary]:
 		var school := str(d.get("school", ""))
 		hyouka += AmateurTournament.bonus(GameState.amateur_results, year, d["name"], school)
 		result.append({"key": key, "name": d["name"], "pos": str(d.get("pos", "")), "school": school,
-			"career": Draft.career_of(school), "hyouka": hyouka, "ikusei": ikusei})
+			"career": Draft.career_of_row(d), "hyouka": hyouka, "ikusei": ikusei})
 	return result
 
 

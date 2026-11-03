@@ -6,7 +6,7 @@ extends SceneTree
 ## - 7月31日までは交渉できて、8月1日からはできない（画面の文言・ボタン・ハブの日付が追従）
 ## - オフ：表彰の段階はできない、FA・トレード・ポスティングでできる（FA宣言中の選手は出せない）、契約更改は締めてから、
 ##   オフの成立で支配下の人数が入れ替わる
-## ウィンドウ付きで出力先を渡すと、交渉の画面（条件を入れた状態）と、ドラフトの候補一覧（野手能力・1年目の順）をスクショ。
+## ウィンドウ付きで出力先を渡すと、交渉の画面（条件を入れた状態）と、ドラフトの候補一覧（表の野手能力）をスクショ。
 ##
 ##   godot --headless --path godot -s res://tests/trade_check.gd -- [出力先]
 
@@ -178,7 +178,14 @@ func _check_offseason() -> void:
 	_gs.advance_through(_gs.season_last_day())
 	_check(_gs.phase == _gs.Phase.AWARDS and not _gs.trade_block_reason().is_empty(),
 		"表彰の段階は交渉できない（%s）" % _gs.trade_block_reason())
+	# オフの順番（作業54）：表彰 → 契約更改・戦力外 → ドラフト → FA。FA より前は交渉できない
 	_gs.advance()
+	_check(_gs.phase == _gs.Phase.CONTRACT and _gs.trade_block_reason().contains("契約更改"),
+		"契約更改・戦力外の途中は交渉できない（%s）" % _gs.trade_block_reason())
+	_gs.contract_resolve()
+	_check(not _gs.trade_block_reason().is_empty(), "契約更改を締めても FA の前は交渉できない（%s）" % _gs.trade_block_reason())
+	while _gs.phase != _gs.Phase.FA_TRADE:
+		_gs.advance()
 	_check(_gs.phase == _gs.Phase.FA_TRADE and _gs.trade_block_reason().is_empty(),
 		"FA・トレード・ポスティングの段階は交渉できる（%s）" % _gs.phase_name())
 	var f: RefCounted = _gs.fa()
@@ -191,11 +198,6 @@ func _check_offseason() -> void:
 		var err: String = _gs.trade_request(team, [], [id], 0)["text"]
 		_check(err.contains("FA宣言中"), "FA宣言中の選手は獲れない（%s）" % err)
 		break
-	_gs.advance()
-	_check(_gs.phase == _gs.Phase.CONTRACT and _gs.trade_block_reason().contains("契約更改"),
-		"契約更改の途中は交渉できない（%s）" % _gs.trade_block_reason())
-	_gs.contract_resolve()
-	_check(_gs.trade_block_reason().is_empty(), "契約更改を締めたら交渉できる")
 	# オフの成立：自球団の主力1人と相手の控え2人（支配下の人数が1人増える）
 	var league: RefCounted = _gs.league
 	var mine: Array = []
@@ -213,7 +215,7 @@ func _check_offseason() -> void:
 	_check((_gs.league.to_save() as Dictionary).has("trade_refused"), "断られた記録はセーブに入る")
 
 
-## スクショ：ドラフトの候補一覧（野手能力のタブ・1年目の順。作業13の列を足したあとの横幅の確認）
+## スクショ：ドラフトの候補一覧（表の野手能力のタブ。横幅の確認）
 func _shot_draft() -> void:
 	if _out.is_empty() or DisplayServer.get_name() == "headless":
 		return
@@ -224,8 +226,9 @@ func _shot_draft() -> void:
 	await _frames(2)
 	var view: Node = _hub.get("_draft_view")
 	view.call("finish_overlays")
+	view.call("set_mode", "table")
 	view.call("switch_tab", 2)
-	view.call("set_sort", "first", true)
+	view.call("set_sort", "hyouka", true)
 	var ids: Array = view.call("list_ids")
 	if not ids.is_empty():
 		view.call("select_candidate", ids[0])

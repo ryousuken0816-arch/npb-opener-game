@@ -131,12 +131,11 @@ func _check_2008() -> void:
 	var present := 0
 	var ik_ok := true
 	var salary_ok := true
-	var debut09: Dictionary = _gd.load_debut_years(2009)
 	for rec: Dictionary in mine:
 		if league.team_of.get(rec["id"], "") == USER:
 			present += 1
 		var p: Dictionary = _gd.player(rec["id"])
-		if rec["ikusei"] != league.is_ikusei(rec["id"], p, 2009, debut09):
+		if rec["ikusei"] != league.is_ikusei(rec["id"], p, 2009):
 			ik_ok = false
 		var c: Dictionary = d.by_id[rec["id"]]
 		var expected: int = _salary.rookie({"round": rec["round"], "high_school": c["career"] == "高校生",

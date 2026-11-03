@@ -120,7 +120,7 @@ func _check_renew() -> void:
 		if jy <= 0:
 			continue
 		var y := jy + 3
-		if not league.is_ikusei(id, gd.player(id), y, gd.load_debut_years(y)):
+		if not league.is_ikusei(id, gd.player(id), y):
 			continue
 		var n: int = league.log.size()
 		league.call("_renew_ikusei", y)

@@ -35,6 +35,8 @@ const TEAM_SUCCESSOR := {"横浜ベイスターズ": "横浜DeNAベイスター�
 const ROSTER_LIMIT := 70
 ## 育成の契約年数（満了したら育成で再契約。_renew_ikusei）
 const IKUSEI_CONTRACT_YEARS := 3
+## 選手ページの無い選手の育成の判定で、ドラフト会議の一覧をさかのぼる年数（_tmp_ikusei）
+const TMP_DRAFT_LOOKBACK := 12
 ## CPU球団の育成からの昇格：支配下の実力の下からこの割合の選手より良ければ上げる。23歳以下は実力に足す
 const CPU_PROMOTE_SHARE := 0.5
 const CPU_PROMOTE_YOUTH := 0.3
@@ -1007,36 +1009,53 @@ func begin_year(new_year: int, ratings: Dictionary) -> void:
 
 # --- 戦力外 ---------------------------------------------------------------------------
 
-## 育成選手か：ドラフトが育成指名（選手ページの「育成ドラフト」、無ければドラフト会議の一覧の育成）で、
-## その年までに1軍に出ていない（debut：選手ID → 1軍初出場の年）。データに育成の区別が無いので近似
-func is_ikusei(id: String, p: Dictionary, at_year: int, debut: Dictionary) -> bool:
+## 育成選手か（at_year の時点。オフは来季）。史実の名簿に育成の区別がある年（2026年）はそれ。無い年は
+## 「その年までに1軍に出ていない（選手ページの1軍の成績。名簿の debut_year は育成出身の選手で抜けている）で、
+## ドラフトが育成指名（選手ページの「育成ドラフト」、ページの無い選手はドラフト会議の一覧）」で近似。
+## 名簿の無い年（2027年〜）は2026年の状態のまま、ゲームの中の昇格（promoted）とドラフト（drafted）だけで変わる
+## （作業53：入団の年を1軍初出場とみなす debut_extra で、2027年以降やロード後に育成が全員支配下になっていた）
+func is_ikusei(id: String, p: Dictionary, at_year: int) -> bool:
 	if p.is_empty():
 		return false
 	# 支配下に登録した選手（作業19）。登録した年から支配下
 	if promoted.has(id) and at_year >= int(promoted[id]["year"]):
 		return false
-	# ゲームのドラフトで育成指名した選手は、入団1年目は史実で1軍に出ていても育成（支配下の枠を指名時の見込みどおりにする）
-	if drafted.has(id) and bool(drafted[id]["ikusei"]) and at_year <= int(drafted[id]["year"]) + 1:
-		return true
-	var d: Variant = debut.get(id)
-	if d != null and int(d) <= at_year:
-		return false
-	# 名簿に育成の区別がある年（2026年）はそれを使う。1軍初出場の年は名簿にほとんど入っていないので、
-	# 直近3年に1軍の出場がある選手（能力値の加重打席・加重アウト数）も支配下とみなす（作業44：周東・牧原大成が育成扱いだった）
-	var flag: Variant = GameData.roster_ikusei(at_year).get(id)
+	if drafted.has(id):
+		if not bool(drafted[id]["ikusei"]):
+			return false
+		# ゲームのドラフトで育成指名した選手は、入団1年目は史実で1軍に出ていても育成（支配下の枠を指名時の見込みどおりにする）。
+		# 史実の無い年（2026年秋〜）の指名は、支配下に登録するまで育成
+		if at_year <= int(drafted[id]["year"]) + 1 or int(drafted[id]["year"]) >= GameData.SCHEDULE_COPY_FROM:
+			return true
+	var y := mini(at_year, GameData.SCHEDULE_COPY_FROM)
+	var flag: Variant = GameData.roster_ikusei(y).get(id)
 	if flag != null:
 		return bool(flag)
-	if _first_team_sample(p) > 0.0:
+	var d: Variant = GameData.page_debut_years(y).get(id)
+	if d != null and int(d) <= y:
+		return false
+	# 選手ページが読めないとき（Web 版で一覧が無いなど）の念のため：直近3年に1軍の出場がある（作業44）
+	if at_year == y and _first_team_sample(p) > 0.0:
 		return false
 	if drafted.has(id):
-		return bool(drafted[id]["ikusei"])
+		return true
 	var text: String = p.get("draft") if p.get("draft") is String else ""
 	if not text.is_empty():
 		return "育成" in text
 	if id.begins_with("tmp:"):
-		var entry := GameData.draft_entry_for(p, int(joined.get(id, at_year)) - 1)
-		return bool(entry.get("ikusei", false))
+		return _tmp_ikusei(p, y)
 	return false
+
+
+## 選手ページの無い選手（仮ID。NPB の選手ページは支配下に登録されると作られる）：ドラフト会議の一覧を
+## 直近 TMP_DRAFT_LOOKBACK 年さかのぼって探し、本指名なら支配下。見つからなければ育成（育成の外国人・独立リーグ出身など）
+func _tmp_ikusei(p: Dictionary, at_year: int) -> bool:
+	var name := str(p.get("name", ""))
+	for dy in range(at_year - 1, at_year - 1 - TMP_DRAFT_LOOKBACK, -1):
+		var entry := GameData.draft_entry(name, dy)
+		if not entry.is_empty():
+			return bool(entry.get("ikusei", false))
+	return true
 
 
 static func _first_team_sample(p: Dictionary) -> float:
@@ -1050,16 +1069,15 @@ static func _first_team_sample(p: Dictionary) -> float:
 
 ## 今の時点（オフは来季）で育成選手か
 func ikusei_now(id: String) -> bool:
-	return is_ikusei(id, GameData.player(id), _count_year(), _count_debut())
+	return is_ikusei(id, GameData.player(id), _count_year())
 
 
 ## 球団の育成選手（選手ID → true）
 func ikusei_of(team: String) -> Dictionary:
 	var at := _count_year()
-	var debut := _count_debut()
 	var result := {}
 	for id: String in team_of:
-		if team_of[id] == team and is_ikusei(id, GameData.player(id), at, debut):
+		if team_of[id] == team and is_ikusei(id, GameData.player(id), at):
 			result[id] = true
 	return result
 
@@ -1083,7 +1101,6 @@ func promote_ikusei(id: String, date: String) -> String:
 ## CPU球団が支配下に上げる育成選手（実力が支配下の下位 CPU_PROMOTE_SHARE より上の選手を、良い順に最大 count 人）
 func cpu_promotion_candidates(team: String, count: int) -> Array[String]:
 	var at := _count_year()
-	var debut := _count_debut()
 	var regular: Array[float] = []
 	var cands: Array = []
 	for id: String in team_of:
@@ -1091,7 +1108,7 @@ func cpu_promotion_candidates(team: String, count: int) -> Array[String]:
 			continue
 		var p := GameData.player(id)
 		var z := float(Salary.ability(p)[0]) if not p.is_empty() else -9.0
-		if is_ikusei(id, p, at, debut):
+		if is_ikusei(id, p, at):
 			var age := FreeAgency.age_of(p, at)
 			cands.append([id, z + (CPU_PROMOTE_YOUTH if age > 0 and age <= 23 else 0.0)])
 		else:
@@ -1113,12 +1130,11 @@ func cpu_promotion_candidates(team: String, count: int) -> Array[String]:
 ## 育成の契約（3年）が終わった選手（年が替わるとき。join の年から数える）。史実の育成選手と同じく
 ## いったん自由契約にして育成で再契約したことにする（所属・年俸は変えず、出来事に残すだけ。作業19）
 func _renew_ikusei(new_year: int) -> void:
-	var debut := GameData.load_debut_years(new_year)
 	for id: String in team_of:
 		var joined_year := _ikusei_joined_year(id)
 		if joined_year <= 0 or (new_year - joined_year) % IKUSEI_CONTRACT_YEARS != 0 or new_year == joined_year:
 			continue
-		if not is_ikusei(id, GameData.player(id), new_year, debut):
+		if not is_ikusei(id, GameData.player(id), new_year):
 			continue
 		var name: String = str(names.get(id, GameData.player(id).get("name", id)))
 		_log("", "ikusei_renew", id, name, team_of[id], team_of[id],
@@ -1136,22 +1152,17 @@ func _ikusei_joined_year(id: String) -> int:
 	return 0
 
 
-## 支配下の人数を数える年と1軍初出場の年（オフは来季。戦力外は来季の編成に向けて決める）
+## 支配下の人数を数える年（オフは来季。戦力外は来季の編成に向けて決める）
 func _count_year() -> int:
 	return int(_plan.get("year", year))
-
-
-func _count_debut() -> Dictionary:
-	return _plan["debut"] if _plan.has("debut") else GameData.load_debut_years(year)
 
 
 ## 球団の支配下の人数（育成選手を除く）
 func registered_count(team: String) -> int:
 	var at := _count_year()
-	var debut := _count_debut()
 	var n := 0
 	for id: String in team_of:
-		if team_of[id] == team and not is_ikusei(id, GameData.player(id), at, debut):
+		if team_of[id] == team and not is_ikusei(id, GameData.player(id), at):
 			n += 1
 	return n
 
@@ -1170,10 +1181,9 @@ func _incoming_other(team: String) -> int:
 	var n := 0
 	if _plan.has("newcomers") and not _plan.get("newcomers_done", false):
 		var at := _count_year()
-		var debut: Dictionary = _plan["debut"]
 		for id: String in _plan["newcomers"]:
 			var p: Dictionary = _plan["entries"][id]
-			if _current_name(p.get("hist_team", p["team"])) == team and not is_ikusei(id, p, at, debut):
+			if _current_name(p.get("hist_team", p["team"])) == team and not is_ikusei(id, p, at):
 				n += 1
 	if team != user_team and cpu_demand.has(team):
 		n += int(cpu_demand[team]["p"]) + int(cpu_demand[team]["b"])
@@ -1233,7 +1243,6 @@ func recent_joins(season_year: int) -> Dictionary:
 func open_releases(season_year: int) -> Releases:
 	limit_active = true
 	releases = Releases.new(season_year, user_team)
-	var debut := _count_debut()
 	var at := _count_year()
 	for e in events(year, "retire"):
 		var id: String = e["id"]
@@ -1254,7 +1263,7 @@ func open_releases(season_year: int) -> Releases:
 	var mine := players_of(user_team)
 	for id in mine:
 		rel.scores[id] = keep_score(id, season_year)
-		if is_ikusei(id, GameData.player(id), at, debut):
+		if is_ikusei(id, GameData.player(id), at):
 			rel.ikusei[id] = true
 		var reason := protected_reason(id, season_year, joins)
 		if not reason.is_empty():
@@ -1277,7 +1286,6 @@ func _cpu_cuts(team: String, season_year: int, count: int) -> Array[String]:
 	if count <= 0:
 		return cuts
 	var at := _count_year()
-	var debut := _count_debut()
 	var candidates: Array[String] = []
 	var pitchers := 0
 	var fielders := 0
@@ -1285,7 +1293,7 @@ func _cpu_cuts(team: String, season_year: int, count: int) -> Array[String]:
 	var joins := recent_joins(season_year)
 	for id in players_of(team):
 		var p := GameData.player(id)
-		if is_ikusei(id, p, at, debut):
+		if is_ikusei(id, p, at):
 			continue
 		if p.get("is_pitcher", false):
 			pitchers += 1

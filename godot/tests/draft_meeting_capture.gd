@@ -44,6 +44,7 @@ func _run() -> void:
 	view.call("set_memo", "制球が安定。中位で残っていれば")
 	view.call("select_candidate", by_hyouka[0]["id"])
 	await _shot("meeting_list")
+	view.call("set_mode", "table")
 	view.call("switch_tab", -1)
 	await _shot("meeting_experts")
 	_hub.call("_close_sub_screen")

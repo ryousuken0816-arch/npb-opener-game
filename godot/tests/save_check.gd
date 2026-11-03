@@ -175,25 +175,10 @@ func _standings() -> Array:
 func _check_offseason() -> void:
 	print("\n-- 2) オフの途中のセーブ／ロード --")
 	_gs.new_game(USER, 2008)
-	_gs.skip_to_phase(3)  # FA_TRADE
-	var fa: Object = _gs.fa()
-	_check(fa != null and _gs.fa_open(), "2008年オフ：FA段階")
-	var offer_id := ""
-	for id: String in fa.declared:
-		if fa.info[id]["from"] != USER:
-			offer_id = id
-			break
-	var offer_error := "宣言した他球団の選手なし"
-	if not offer_id.is_empty():
-		var r: Array = fa.bid_range(offer_id)
-		offer_error = _gs.fa_offer(offer_id, r[1], 3)
-	_check(offer_error.is_empty(), "FA：%sに提示 %s" % [_gs.league.names.get(offer_id, offer_id), offer_error])
-	var fa_state: Variant = _norm(_gs.to_save())
-	_check(str(_sg.call("save", "slot2")).is_empty(), "FA段階でスロット2にセーブ")
-
-	_gs.advance()
+	# オフの順番（作業54）：表彰 → 契約更改・戦力外 → ドラフト → FA
+	_gs.skip_to_phase(4)  # CONTRACT
 	var c: Object = _gs.contracts()
-	_check(c != null and _gs.contract_open(), "契約更改の段階")
+	_check(c != null and _gs.contract_open(), "契約更改・戦力外の段階")
 	var renew_id := ""
 	for id: String in c.order:
 		if c.can_adjust(id) and int(c.rows[id]["high"]) > int(c.rows[id]["amount"]):
@@ -208,7 +193,6 @@ func _check_offseason() -> void:
 	var contract_state: Variant = _norm(_gs.to_save())
 	_check(str(_sg.call("save", "slot3")).is_empty(), "契約更改の段階でスロット3にセーブ")
 
-	_gs.advance()
 	_gs.advance()
 	var d: Object = _gs.draft()
 	_check(d != null and _gs.draft_open(), "ドラフトの段階")
@@ -236,6 +220,24 @@ func _check_offseason() -> void:
 	var draft_state: Variant = _norm(_gs.to_save())
 	var draft_turn: String = d.current_team()
 	_check(str(_sg.call("save", "slot1")).is_empty(), "ドラフトの途中でスロット1にセーブ（上書き）")
+	d.run_until_user()
+	d.auto_complete()
+	_gs.draft_sync()
+	_gs.advance()  # ドラフト → FA
+	var fa: Object = _gs.fa()
+	_check(fa != null and _gs.fa_open(), "2008年オフ：FA段階")
+	var offer_id := ""
+	for id: String in fa.declared:
+		if fa.info[id]["from"] != USER:
+			offer_id = id
+			break
+	var offer_error := "宣言した他球団の選手なし"
+	if not offer_id.is_empty():
+		var r: Array = fa.bid_range(offer_id)
+		offer_error = _gs.fa_offer(offer_id, r[1], 3)
+	_check(offer_error.is_empty(), "FA：%sに提示 %s" % [_gs.league.names.get(offer_id, offer_id), offer_error])
+	var fa_state: Variant = _norm(_gs.to_save())
+	_check(str(_sg.call("save", "slot2")).is_empty(), "FA段階でスロット2にセーブ")
 
 	# それぞれ別の状態にしてからロード → 元どおり → 最後まで進めて翌年の開幕へ
 	for item: Array in [["slot2", fa_state, 3, "FA"], ["slot3", contract_state, 4, "契約更改"],
@@ -301,18 +303,18 @@ func _check_autosave() -> void:
 		var info: Dictionary = _sg.call("info", "auto")
 		_check(info.get("summary", {}).get("date", "") == _gs.date_text(),
 			"月替わりでオートセーブを更新（%s）" % info.get("summary", {}).get("date", "なし"))
-	_gs.skip_to_phase(3)  # FA_TRADE（表彰を通る）
+	_gs.skip_to_phase(4)  # CONTRACT（表彰を通る。作業54のオフの順番）
 	await _frames(3)
 	var info2: Dictionary = _sg.call("info", "auto")
-	_check(int(info2.get("summary", {}).get("phase", -1)) == 3, "段階の切り替わり（FA）でオートセーブを更新")
+	_check(int(info2.get("summary", {}).get("phase", -1)) == 4, "段階の切り替わり（契約更改・戦力外）でオートセーブを更新")
 	_gs.advance()
 	await _frames(3)
 	info2 = _sg.call("info", "auto")
-	_check(int(info2.get("summary", {}).get("phase", -1)) == 4, "段階の切り替わり（契約更改）でオートセーブを更新（%s）"
+	_check(int(info2.get("summary", {}).get("phase", -1)) == 6, "段階の切り替わり（ドラフト）でオートセーブを更新（%s）"
 		% info2.get("summary", {}).get("text", ""))
 	_gs.new_game("広島東洋カープ", 2009)
 	var error: String = _sg.call("load_slot", "auto")
-	_check(error.is_empty() and _gs.phase == 4 and _gs.team == "中日ドラゴンズ", "オートセーブをロードできる")
+	_check(error.is_empty() and _gs.phase == 6 and _gs.team == "中日ドラゴンズ", "オートセーブをロードできる")
 	_sg.set("autosave_enabled", false)
 
 

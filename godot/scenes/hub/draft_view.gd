@@ -4,7 +4,7 @@ extends VBoxContainer
 ## オフの「ドラフト」の画面（ハブの可変ボタン「ドラフト会議」から開く。docs/references/draft_list_pawapuro.webp が参考）。
 ##
 ## 上に段階の見出し（第1巡選択希望選手／第N巡選択／育成）といまの番、その下にタブ（情報／投手能力／野手能力／指名一覧）と
-## 絞り込み・候補の人数。左に候補の一覧（済マーク・名前札・守備位置・経歴・出身・年齢・各能力・当時の評価・将来性）、
+## 絞り込み・候補の人数。左に候補の一覧（済マーク・名前札・守備位置・経歴・出身・年齢・各能力・当時の評価・予想）、
 ## 右に選んだ候補の要約と「入札する／指名する」。一覧の列の見出しを押すとその列で並び替え（もう一度押すと逆順）。
 ## 仕組みは Draft（GameState.draft()）。
 ## 進行：開幕の演出 → 1位入札（全球団同時。各球団の入札を1球団ずつ発表 → 重複は抽選の演出。3Dの Lottery3D、早送り中は2D）
@@ -15,6 +15,9 @@ extends VBoxContainer
 ## 作戦会議（作業37・38、DraftBoard）：一覧の左端に印（◎○△☆✕）、絞り込み「目星だけ」、列「予想」（有識者の予想順位）。
 ## 自球団が入札・指名する番には、印の上の順（本命の順番 → ○ → ☆ → △）の候補を最初から選んでおく（おすすめ）。
 ## 開幕の演出に有識者の12球団の1位予想
+## スカウトの手帳（作業51）：最初は「手帳」（左に候補1人ずつのページ ScoutNotebook、右に12球団の指名ボード PickBoard）。
+## ページを左右にめくり（LB/RB・◀▶）、「この男でいく」で入札・指名。縦長の画面では手帳とボードを切り替えて1つずつ出す。
+## 「表に切り替え」で今までの候補一覧（能力の表）。入団前に見えるのは今の能力だけ（1年目・将来性は出さない）
 
 signal message_changed(text: String)
 
@@ -28,18 +31,17 @@ const COLUMNS := {
 	"bat": [["pos", "位置", 52], ["meet", "ミート", 62], ["power", "パワー", 62], ["eye", "選球眼", 62],
 		["speed", "走力", 56], ["arm", "肩力", 56], ["defense", "守備", 56]],
 }
-## 1年目＝入団1年目のシーズン後の総合（作業13。Draft._fill_first_years）
-## 予想＝有識者の予想順位（作業38）。この列を足した分、名前・1年目・評価・将来性を少し細くした（画面からはみ出さないように）
-const TAIL_COLUMNS := [["first", "1年目", 54], ["hyouka", "評価", 46], ["future", "将来性", 56], ["yosou", "予想", 38]]
+## 予想＝有識者の予想順位（作業38）。1年目・将来性の列は作業51で消した（入団前に見えるのは今の能力だけ）
+const TAIL_COLUMNS := [["hyouka", "評価", 56], ["yosou", "予想", 48]]
 ## 並び替えのキー（テスト用にまとめて）。名前・出身校以外は大きい順が先
 const SORT_KEYS := ["pos", "career", "age", "school", "name", "velocity", "overall", "stamina", "k9", "bb9",
-	"meet", "power", "eye", "speed", "arm", "defense", "first", "hyouka", "future", "yosou"]
+	"meet", "power", "eye", "speed", "arm", "defense", "hyouka", "yosou"]
 ## 小さい順が自然なキー（最初に押したとき小さい順）
 const ASCENDING_FIRST := ["pos", "career", "age", "school", "name"]
 const FILTERS := [["all", "全選手"], ["left", "未指名"], ["marked", "目星だけ"], ["投手", "投手"], ["捕手", "捕手"], ["内野手", "内野手"],
 	["外野手", "外野手"]]
 const POS_SHORT := {"投手": "投", "捕手": "捕", "内野手": "内", "外野手": "外"}
-const NAME_WIDTH := 128
+const NAME_WIDTH := 150
 const MARK_WIDTH := 56
 ## 済マークの欄のうち、作戦会議の印の幅
 const BOARD_MARK_WIDTH := 22
@@ -76,6 +78,8 @@ const MINE_COLOR := Color("ff6d00")
 const BID_COLOR := Color("e53935")
 const MLB_COLOR := Color("0d47a1")
 const REINCARNATION_COLOR := Color("8e24aa")
+## 画面の形（作業51）："book"＝手帳と指名ボード、"board"＝指名ボードだけ（縦長の画面）、"table"＝今までの能力の表
+const MODES := [["book", "手帳"], ["board", "ボード"], ["table", "表"]]
 
 var _palette: UiTheme.Palette
 var _tab := "info"
@@ -128,6 +132,19 @@ var _announce_elapsed := 0.0
 var _announce_total := 0.0
 ## Ⓑで発表を飛ばした：自球団の番が来るまで他球団の指名は発表しない
 var _announce_skip := false
+var _mode := "book"
+var _mode_buttons := {}
+## 表のときだけ出すタブの部品（LB/RB の札・タブのボタン）
+var _table_only: Array[Control] = []
+var _book_body: BoxContainer
+var _notebook: ScoutNotebook
+var _board: PickBoard
+## 手帳の印・メモを変えた回数（refresh の作り直しの合図）
+var _board_version := 0
+var _bottom_buttons: HFlowContainer
+var _bottom_box: BoxContainer
+## 表のときに「おまかせ」「選択終了」を置く右の欄の行（手帳のときは下の帯へ移す）
+var _right_line: HBoxContainer
 
 
 func setup(p: UiTheme.Palette) -> void:
@@ -141,6 +158,7 @@ func setup(p: UiTheme.Palette) -> void:
 	add_child(_body)
 	_body.add_child(_build_list())
 	_body.add_child(_build_right())
+	add_child(_build_book())
 	_picks_scroll = ScrollContainer.new()
 	_picks_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_picks_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -170,6 +188,16 @@ func _apply_layout(is_portrait: bool) -> void:
 			_right_panel.custom_minimum_size = Vector2(0, 180)
 		else:
 			_right_panel.custom_minimum_size = Vector2(RIGHT_WIDTH, 0)
+	if _notebook != null:
+		_notebook.set_spread(not is_portrait)
+		_board.set_rows_min_height(0.0)
+		_board.set_compact(not is_portrait)
+		_bottom_box.vertical = is_portrait
+		if not is_portrait and _mode == "board":
+			_mode = "book"
+		_shown_key = ""
+		if is_inside_tree():
+			refresh()
 
 
 # --- 外から ------------------------------------------------------------------------------
@@ -202,6 +230,11 @@ func back() -> bool:
 		else:
 			_skip_overlay()
 		return true
+	if _mode != "table":
+		if _mode == "board":  # 縦長の画面でボードを見ていたら手帳へ戻る
+			set_mode("book")
+			return true
+		return false
 	if _selected.is_empty():
 		return false
 	_selected = ""
@@ -211,8 +244,12 @@ func back() -> bool:
 	return true
 
 
+## LB/RB：手帳ならページをめくる、表ならタブ
 func switch_tab(delta: int) -> void:
 	if _overlay.visible:
+		return
+	if _mode != "table":
+		flip(delta)
 		return
 	var keys: Array = []
 	for t: Array in TABS:
@@ -224,6 +261,13 @@ func focus_first() -> void:
 	if _overlay.visible:
 		_overlay_next.grab_focus()
 		return
+	if _mode == "board":
+		UiInput.grab(_board.open_button() if not _board.open_button().disabled else _mode_buttons["book"])
+		return
+	if _mode == "book":
+		var go := _notebook.go_button()
+		UiInput.grab(go if not go.disabled else _mode_buttons["book"])
+		return
 	if _tab != "picks" and not _ids.is_empty():
 		var target: Control = _tags.get(_selected, _tags.get(_ids[0]))
 		if target != null:
@@ -234,9 +278,9 @@ func focus_first() -> void:
 
 func refresh() -> void:
 	var d := GameState.draft()
-	var key := "%s|%s|%s|%s|%s|%d|%s|%s|%s" % [_tab, _filter, _sort_key, str(_sort_desc), _selected,
+	var key := "%s|%s|%s|%s|%s|%d|%s|%s|%s|%s|%d|%s" % [_tab, _filter, _sort_key, str(_sort_desc), _selected,
 		d.picks.size() if d != null else -1, str(d.stage) if d != null else "", d.wave if d != null else 0,
-		_message]
+		_message, _mode, _board_version, str(d.bids.get(GameState.team, "")) if d != null else ""]
 	if key == _shown_key:
 		return
 	_shown_key = key
@@ -247,10 +291,17 @@ func refresh() -> void:
 			focused_id = id
 	_render_top(d)
 	_render_tabs()
-	var picks_mode := _tab == "picks"
-	_body.visible = not picks_mode
+	var table := _mode == "table"
+	var picks_mode := table and _tab == "picks"
+	_body.visible = table and not picks_mode
 	_picks_scroll.visible = picks_mode
-	if picks_mode:
+	_book_body.visible = not table
+	_place_pick_buttons()
+	# 手帳のときは説明の1行を出さない（同じ文言はハブの下の帯に出る。縦の場所を手帳に回す）
+	_status_label.visible = table
+	if not table:
+		_render_book(d)
+	elif picks_mode:
 		_render_picks(d)
 	else:
 		_render_header()
@@ -289,7 +340,10 @@ func list_ids() -> Array[String]:
 	return _ids
 
 
+## 候補を選ぶ（手帳ならそのページを開く。手帳では選んでいる候補をもう一度選んでも選手詳細は開かない）
 func select_candidate(id: String) -> void:
+	if _mode != "table" and _selected == id:
+		return
 	_on_tag_pressed(id)
 
 
@@ -356,9 +410,45 @@ func lottery_3d() -> Node:
 	return node if node != null and is_instance_valid(node) else null
 
 
-## 右の「入札する／指名する」を押す（テスト用）
+## 右の「入札する／指名する」（手帳の「この男でいく」）を押す（テスト用）
 func press_action() -> void:
 	_on_action_pressed()
+
+
+## 画面の形（"book"・"board"・"table"）。縦長でない画面の "board" は "book" と同じ（手帳とボードを並べる）
+func set_mode(mode: String) -> void:
+	_mode = mode
+	if _mode == "board" and not UiLayout.is_portrait:
+		_mode = "book"
+	_message = ""
+	refresh()
+	focus_first()
+
+
+func mode() -> String:
+	return _mode
+
+
+func notebook() -> ScoutNotebook:
+	return _notebook
+
+
+func pick_board() -> PickBoard:
+	return _board
+
+
+## 手帳のページをめくる（めくる順は一覧と同じ絞り込み・並び替え）
+func flip(delta: int) -> void:
+	var d := GameState.draft()
+	if d == null:
+		return
+	var ids := _book_ids(d)
+	if ids.is_empty():
+		return
+	var i := ids.find(_selected)
+	_selected = ids[posmod(i + delta, ids.size())] if i >= 0 else ids[0]
+	_message = ""
+	refresh()
 
 
 # --- 上の見出し ----------------------------------------------------------------------------
@@ -441,7 +531,23 @@ func _pick_word(d: Draft) -> String:
 func _build_tabs() -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
-	row.add_child(UiTheme.small_label("◀ LB", 17, UiTheme.TEXT, 800))
+	for m: Array in MODES:
+		var mb := Button.new()
+		mb.text = m[1]
+		mb.toggle_mode = true
+		mb.custom_minimum_size = Vector2(72, 42)
+		mb.add_theme_font_size_override("font_size", 18)
+		mb.add_theme_font_override("font", ScoutNotebook.hand_font(true))
+		UiTheme.style_toggle(mb, ScoutNotebook.RED, 8)
+		var mode_key: String = m[0]
+		mb.pressed.connect(func() -> void: set_mode(mode_key))
+		mb.tooltip_text = {"book": "スカウトの手帳（1人ずつめくる）と指名ボード", "board": "12球団の指名ボード",
+			"table": "能力の表（候補を並べて比べる）"}[mode_key]
+		row.add_child(mb)
+		_mode_buttons[mode_key] = mb
+	var lb := UiTheme.small_label("◀ LB", 17, UiTheme.TEXT, 800)
+	row.add_child(lb)
+	_table_only.append(lb)
 	for t: Array in TABS:
 		var b := Button.new()
 		b.text = t[1]
@@ -453,7 +559,10 @@ func _build_tabs() -> Control:
 		b.pressed.connect(func() -> void: _show_tab(key))
 		row.add_child(b)
 		_tab_buttons[key] = b
-	row.add_child(UiTheme.small_label("RB ▶", 17, UiTheme.TEXT, 800))
+		_table_only.append(b)
+	var rb := UiTheme.small_label("RB ▶", 17, UiTheme.TEXT, 800)
+	row.add_child(rb)
+	_table_only.append(rb)
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(spacer)
@@ -482,6 +591,12 @@ func _build_tabs() -> Control:
 
 
 func _render_tabs() -> void:
+	for key: String in _mode_buttons:
+		var mb: Button = _mode_buttons[key]
+		mb.set_pressed_no_signal(key == _mode)
+		mb.visible = key != "board" or UiLayout.is_portrait
+	for c: Control in _table_only:
+		c.visible = _mode == "table"
 	for key: String in _tab_buttons:
 		var b: Button = _tab_buttons[key]
 		b.set_pressed_no_signal(key == _tab)
@@ -571,8 +686,6 @@ func _render_header() -> void:
 		b.tooltip_text = "%sで並び替え（もう一度押すと逆順）" % col[1]
 		if col[0] == "yosou":
 			b.tooltip_text = "予想＝有識者3人の順位予想を合わせた順位（作戦会議で詳しく）\n" + b.tooltip_text
-		if col[0] == "first":
-			b.tooltip_text = "1年目＝入団1年目のシーズン後の総合（史実の成績から。ノイズなし）\n" + b.tooltip_text
 		b.pressed.connect(_on_header_pressed.bind(key))
 		_header_box.add_child(b)
 		_header_buttons[key] = b
@@ -643,8 +756,6 @@ func _row(d: Draft, c: Dictionary) -> Control:
 	tag.custom_minimum_size = Vector2(NAME_WIDTH, ROW_HEIGHT - 2)
 	tag.font_size = 18
 	var display_name := NameTag.family_name(c["name"])
-	if DraftMeetingView.is_breakout_rookie(c):
-		display_name = "★" + display_name
 	var p := GameData.player(id)
 	if p.is_empty():
 		tag.setup_plain(display_name, NameTag.pos_color(c["pos"]))
@@ -652,12 +763,7 @@ func _row(d: Draft, c: Dictionary) -> Control:
 		tag.setup_player(p, display_name)
 	tag.selected = id == _selected
 	tag.dimmed = not str(c["picked_by"]).is_empty()
-	var tips: Array[String] = ["%s（%s・%s）%s" % [c["name"], c["pos"], c["school"], _picked_text(c)]]
-	if DraftMeetingView.is_breakout_rookie(c):
-		var first: Dictionary = c.get("first", {})
-		tips.append("★【史実1年目ブレイク・即戦力】1年目シーズン後総合: %d（%s）" % [
-			int(first.get("overall", -1)), ability_rank(int(first.get("overall", -1)))])
-	tag.tooltip_text = "\n".join(tips)
+	tag.tooltip_text = "%s（%s・%s）%s" % [c["name"], c["pos"], c["school"], _picked_text(c)]
 	tag.pressed.connect(_on_tag_pressed.bind(id))
 	row.add_child(tag)
 	_tags[id] = tag
@@ -716,15 +822,11 @@ func _status_label_of(d: Draft, c: Dictionary) -> Label:
 
 
 func _cell(c: Dictionary, key: String, width: int) -> Control:
-	if key == "first":
-		return _first_cell(c, width)
 	if key == "yosou":
 		return DraftMeetingView.yosou_label(c, width)
-	if key in ["hyouka", "future"]:
-		var rank: String = c["hyouka_rank"] if key == "hyouka" else c["future_rank"]
-		var label := UiTheme.rank_label({"rank": rank, "value": 0}, 22)
-		label.tooltip_text = "当時の評価（史実の指名順位・競合数から）" if key == "hyouka" \
-			else "将来性（入団後の史実の活躍＋ノイズ）"
+	if key == "hyouka":
+		var label := UiTheme.rank_label({"rank": c["hyouka_rank"], "value": 0}, 22)
+		label.tooltip_text = "当時の評価（史実の指名順位・競合数から）"
 		label.custom_minimum_size = Vector2(width, 0)
 		return label
 	if key in ["overall", "stamina", "k9", "bb9", "meet", "power", "eye", "speed", "arm", "defense"]:
@@ -768,46 +870,6 @@ func _cell(c: Dictionary, key: String, width: int) -> Control:
 	return l
 
 
-## 一覧の「1年目」の列：1年目の総合のランク（2軍の成績だけで動いた値は小さく「2軍」、出場なしは「-」）
-func _first_cell(c: Dictionary, width: int) -> Control:
-	var first: Dictionary = c.get("first", {})
-	var value := int(first.get("overall", -1))
-	var box := HBoxContainer.new()
-	box.custom_minimum_size = Vector2(width, 0)
-	box.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.add_theme_constant_override("separation", 2)
-	box.tooltip_text = _first_text(c)
-	box.mouse_filter = Control.MOUSE_FILTER_PASS
-	if value < 0:
-		var none := "未来" if first.get("status") == "未来" else "-"
-		box.add_child(UiTheme.small_label(none, 14 if none == "未来" else 16, UiTheme.TEXT_SUB, 700))
-		return box
-	box.add_child(UiTheme.rank_label({"rank": ability_rank(value), "value": value}, 19))
-	if first.get("status") == "2軍":
-		box.add_child(UiTheme.small_label("2軍", 12, UiTheme.TEXT_SUB, 700))
-	return box
-
-
-## 1年目の説明の1行（要約・一覧のヒント）
-func _first_text(c: Dictionary) -> String:
-	var first: Dictionary = c.get("first", {})
-	var d := GameState.draft()
-	var entry_year: int = (d.year + 1) if d != null else 0
-	var text := "1年目（%d年）" % entry_year
-	match first.get("status", "なし"):
-		"1軍":
-			text += "のシーズン後の能力"
-		"2軍":
-			text += "：1軍出場なし（2軍の成績での能力）"
-		"未来":
-			text += "：未来の選手（%d年は史実のデータがありません）" % entry_year
-		_:
-			text += "：出場なし"
-	if first.get("partial", false):
-		text += "　※%d年はシーズン途中のデータ" % entry_year
-	return text
-
-
 ## 能力値のランク（tools/compute_ratings.py と同じしきい値）
 static func ability_rank(value: int) -> String:
 	if value >= 90:
@@ -849,7 +911,7 @@ func _build_right() -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 6)
 	_right_panel.add_child(box)
-	# 要約は長くなる（1年目の能力など）ので、枠を押し広げないようスクロールの中に入れる（作業8のスクショで見つけた）
+	# 要約は長くなる（能力・紹介文など）ので、枠を押し広げないようスクロールの中に入れる（作業8のスクショで見つけた）
 	var summary_scroll := ScrollContainer.new()
 	summary_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	summary_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -868,6 +930,7 @@ func _build_right() -> Control:
 	var line := HBoxContainer.new()
 	line.add_theme_constant_override("separation", 6)
 	box.add_child(line)
+	_right_line = line
 	_auto_pick_button = Button.new()
 	_auto_pick_button.text = "おまかせ"
 	_auto_pick_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -912,7 +975,6 @@ func _hint_text(d: Draft) -> String:
 		return "ドラフトはオフの「ドラフト」の段階で行います。"
 	var lines: Array[String] = ["候補を選ぶと、ここに要約が出ます（もう一度Ⓐで選手詳細）。"]
 	lines.append("評価＝当時の評価（史実の指名順位・1位の競合数）")
-	lines.append("将来性＝入団後の史実の活躍（ノイズあり。CPU球団も同じ見立てで指名します）")
 	lines.append("列の見出しを押すと並び替えます。")
 	var counts := GameState.draft_board.counts(d.year)
 	var marked: Array[String] = []
@@ -922,16 +984,11 @@ func _hint_text(d: Draft) -> String:
 	if not marked.is_empty():
 		lines.append("作戦会議の印：%s（絞り込み「目星だけ」）。印の上の順におすすめを選んでおきます（おまかせも印を優先）。" \
 			% "　".join(marked))
-	if d.year >= d.data_through - 2:
-		lines.append("※%d年のドラフトは入団後の成績がまだ少ないため、将来性は当てになりません（当時の評価で補っています）。" \
-			% d.year)
-	if d.year + 1 == Draft.IN_PROGRESS_YEAR:
-		lines.append("※%d年秋の新人の1年目（%d年）はシーズン途中のデータです。" % [d.year, d.year + 1])
 	if d.year >= FictionalDraft.FIRST_YEAR and not d.candidates.is_empty() and d.candidates[0].get("fictional", false):
 		lines.append("※%d年は史実のドラフトがありません。候補は架空の選手（出身校・所属は実在）で、" % d.year
-			+ "当時の評価・将来性は実在の選手と同じ見え方です。「転生」は引退した名選手の生まれ変わり。")
+			+ "当時の評価は実在の選手と同じ見え方です。「転生」は引退した名選手の生まれ変わり。")
 	elif d.year > Draft.LAST_HISTORY_YEAR:
-		lines.append("※%d年は史実のドラフトがありません。候補は実在のアマ選手（報道での評価が当時の評価）で、" % d.year 			+ "将来性は当てになりません。")
+		lines.append("※%d年は史実のドラフトがありません。候補は実在のアマ選手（報道での評価が当時の評価）です。" % d.year)
 	return "\n".join(lines)
 
 
@@ -965,27 +1022,6 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	info.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
 	_summary_box.add_child(info)
 
-	# 1年目ブレイク・即戦力バナー
-	if DraftMeetingView.is_breakout_rookie(c):
-		var first: Dictionary = c.get("first", {})
-		var f_ovr: int = int(first.get("overall", -1))
-		var banner := PanelContainer.new()
-		banner.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
-		var b_style := UiTheme.card(Color("ff9800"), 6, 2, 0.95)
-		b_style.bg_color = Color("fff8e1")
-		banner.add_theme_stylebox_override("panel", b_style)
-		var b_box := VBoxContainer.new()
-		b_box.add_theme_constant_override("separation", 1)
-		var b_title := UiTheme.small_label("★ 史実1年目から即戦力で大活躍！", 14, Color("e65100"), 800)
-		b_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		b_box.add_child(b_title)
-		var b_detail := UiTheme.small_label("1年目総合 %d（%sランク・%s）開幕即戦力！" % [
-			f_ovr, ability_rank(f_ovr), str(first.get("status", "1軍"))], 13, UiTheme.TEXT, 700)
-		b_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		b_box.add_child(b_detail)
-		banner.add_child(b_box)
-		_summary_box.add_child(banner)
-
 	# 二刀流バナー
 	var tw: Dictionary = c.get("two_way", {})
 	if bool(tw.get("active", false)):
@@ -1011,8 +1047,6 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	ranks.add_theme_constant_override("separation", 6)
 	ranks.add_child(UiTheme.small_label("当時の評価", 16, UiTheme.TEXT, 800))
 	ranks.add_child(UiTheme.rank_label({"rank": c["hyouka_rank"], "value": 0}, 30))
-	ranks.add_child(UiTheme.small_label("　将来性", 16, UiTheme.TEXT, 800))
-	ranks.add_child(UiTheme.rank_label({"rank": c["future_rank"], "value": 0}, 30))
 	_summary_box.add_child(ranks)
 	var board_text := _board_text(d, c)
 	if not board_text.is_empty():
@@ -1023,7 +1057,6 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 	_summary_box.add_child(_ability_grid(c))
 	if bool(c.get("two_way", {}).get("active", false)):
 		_summary_box.add_child(_two_way_grid(c))
-	_summary_box.add_child(_first_grid(c))
 	var intro := UiTheme.small_label("「%s」" % c["intro"], 15, Color("1e63c8"), 700)
 	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	intro.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
@@ -1186,37 +1219,6 @@ func _two_way_grid(c: Dictionary) -> Control:
 	return box
 
 
-## 要約の1年目の能力：見出しの1行と主要能力のランク（3組ずつ）
-func _first_grid(c: Dictionary) -> Control:
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 1)
-	var first: Dictionary = c.get("first", {})
-	var title := UiTheme.small_label(_first_text(c), 14, Color("8a5cc8"), 800)
-	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.custom_minimum_size = Vector2(SUMMARY_WIDTH, 0)
-	box.add_child(title)
-	if int(first.get("overall", -1)) < 0:
-		return box
-	var grid := GridContainer.new()
-	grid.columns = 6
-	grid.add_theme_constant_override("h_separation", 4)
-	grid.add_theme_constant_override("v_separation", 0)
-	var keys: Array = [["overall", "総合"], ["stamina", "スタミナ"], ["bb9", "制球"], ["k9", "奪三振"]] 		if c["pitcher"] else [["overall", "総合"], ["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"],
-		["speed", "走力"], ["defense", "守備"]]
-	for k: Array in keys:
-		var value := int(first["overall"]) if k[0] == "overall" and not c["pitcher"] 			else int(first.get("ratings", {}).get(k[0], -1))
-		grid.add_child(UiTheme.small_label(k[1], 14, UiTheme.TEXT, 800))
-		if value < 0:
-			grid.add_child(UiTheme.small_label("-", 15, UiTheme.TEXT_SUB, 700))
-		else:
-			grid.add_child(UiTheme.rank_label({"rank": ability_rank(value), "value": value}, 17))
-	if c["pitcher"] and int(first.get("velocity", 0)) > 0:
-		grid.add_child(UiTheme.small_label("球速", 14, UiTheme.TEXT, 800))
-		grid.add_child(UiTheme.small_label("%dkm" % int(first["velocity"]), 14, UiTheme.TEXT, 800))
-	box.add_child(grid)
-	return box
-
-
 func _render_actions(d: Draft, c: Dictionary) -> void:
 	var can_pick := false
 	var text := "指名する"
@@ -1239,9 +1241,126 @@ func _render_actions(d: Draft, c: Dictionary) -> void:
 					can_pick = true
 	_action_button.text = text
 	_action_button.disabled = not can_pick
+	if _notebook != null:
+		var go := text
+		if d != null and d.stage != Draft.Stage.DONE:
+			go = "この男でいく（%s）" % _pick_word(d)
+			if not c.is_empty() and not str(c["picked_by"]).is_empty():
+				go = "指名済み"
+			elif not user_turn:
+				go = "この男でいく"
+		_notebook.set_action(go, can_pick)
 	_auto_pick_button.disabled = not user_turn
 	_auto_pick_button.text = "おまかせで入札" if d != null and d.stage == Draft.Stage.FIRST else "おまかせ"
 	_finish_button.disabled = not (user_turn and d.stage != Draft.Stage.FIRST)
+
+
+# --- スカウトの手帳・指名ボード（作業51） ----------------------------------------------------
+
+func _build_book() -> Control:
+	_book_body = BoxContainer.new()
+	_book_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_book_body.add_theme_constant_override("separation", 10)
+	_book_body.visible = false
+	_notebook = ScoutNotebook.new()
+	_notebook.size_flags_stretch_ratio = 1.55
+	_notebook.flip_requested.connect(flip)
+	_notebook.go_pressed.connect(_on_action_pressed)
+	_notebook.mark_requested.connect(_on_book_mark)
+	_notebook.memo_changed.connect(_on_book_memo)
+	_notebook.detail_requested.connect(func() -> void:
+		if not _selected.is_empty():
+			PlayerDetail.open(_notebook, _selected, _ids))
+	_notebook.table_requested.connect(func() -> void: set_mode("table"))
+	_book_body.add_child(_notebook)
+	_board = PickBoard.new()
+	_board.candidate_pressed.connect(_on_board_candidate)
+	_board.notebook_requested.connect(_on_board_open)
+	_book_body.add_child(_board)
+	return _book_body
+
+
+## 手帳でめくる候補（一覧と同じ絞り込み・並び替え）
+func _book_ids(d: Draft) -> Array[String]:
+	var ids: Array[String] = []
+	for c in sorted_candidates(d):
+		ids.append(c["id"])
+	return ids
+
+
+func _render_book(d: Draft) -> void:
+	var portrait := UiLayout.is_portrait
+	_notebook.visible = not (portrait and _mode == "board")
+	_board.visible = not portrait or _mode == "board"
+	_board.show_board(d, GameState.team, _pick_word(d) if d != null else "1位")
+	_tags.clear()
+	_ids = _book_ids(d)
+	_notebook.clear_extra()
+	if d == null or _ids.is_empty():
+		_notebook.show_empty("ドラフトはオフの「ドラフト」の段階で行います。" if d == null \
+			else "この絞り込みの候補はいません。上の「絞り込み」を変えてください。")
+		_render_actions(d, {})
+		return
+	if not _ids.has(_selected):
+		var rec := d.user_recommend()
+		_selected = rec if _ids.has(rec) else _ids[0]
+	var c: Dictionary = d.by_id[_selected]
+	_notebook.show_page(d, c, _ids.find(_selected), _ids.size())
+	if c.get("mlb_intent", false):
+		_notebook.extra_box().add_child(_mlb_box(d, c))
+	_render_actions(d, c)
+
+
+## 手帳の◎○△☆✕（同じ印をもう一度押すと外す）。作戦会議と同じ DraftBoard に残り、おすすめ・おまかせにすぐ効く
+func _on_book_mark(mark: String) -> void:
+	var d := GameState.draft()
+	if d == null or not d.by_id.has(_selected):
+		return
+	var c: Dictionary = d.by_id[_selected]
+	var key := DraftBoard.key_of(c)
+	var board := GameState.draft_board
+	var next := "" if board.mark_of(d.year, key) == mark else mark
+	board.set_mark(d.year, key, next)
+	GameState.draft_board_changed()
+	_board_version += 1
+	_message = "%sの印を外しました。" % c["name"] if next.is_empty() \
+		else "%sに%s（%s）を付けました。" % [c["name"], next, DraftBoard.MARK_NAMES[next]]
+	refresh()
+
+
+func _on_book_memo(text: String) -> void:
+	var d := GameState.draft()
+	if d == null or not d.by_id.has(_selected):
+		return
+	GameState.draft_board.set_memo(d.year, DraftBoard.key_of(d.by_id[_selected]), text)
+
+
+## ボードの札・◎の候補を押した：その候補のページを開く（縦長なら手帳へ切り替える）
+func _on_board_candidate(id: String) -> void:
+	var d := GameState.draft()
+	if d == null or not d.by_id.has(id):
+		return
+	if not _book_ids(d).has(id):
+		_filter = "all"
+	_selected = id
+	_message = ""
+	if _mode == "board":
+		_mode = "book"
+	refresh()
+	focus_first()
+
+
+## 「手帳を開いて N位を選ぶ」：おすすめ（印の上の順）のページを開く
+func _on_board_open() -> void:
+	var d := GameState.draft()
+	if d == null:
+		return
+	var rec := d.user_recommend()
+	if not rec.is_empty():
+		_selected = rec
+	_mode = "book"
+	refresh()
+	focus_first()
 
 
 # --- 指名一覧 ------------------------------------------------------------------------------
@@ -1302,13 +1421,12 @@ func _team_card(d: Draft, team: String) -> Control:
 		else:
 			tag.setup_player(p, NameTag.family_name(c["name"]))
 		var pid: String = rec["id"]
-		tag.tooltip_text = "%s（%s・%s）評価%s 将来性%s" % [c["name"], c["pos"], c["school"], c["hyouka_rank"],
-			c["future_rank"]]
+		tag.tooltip_text = "%s（%s・%s）当時の評価%s" % [c["name"], c["pos"], c["school"], c["hyouka_rank"]]
 		tag.pressed.connect(func() -> void: PlayerDetail.open(tag, pid, _ids))
 		row.add_child(tag)
 		_tags[pid] = tag
 		_ids.append(pid)
-		row.add_child(UiTheme.rank_label({"rank": c["future_rank"], "value": 0}, 15))
+		row.add_child(UiTheme.rank_label({"rank": c["hyouka_rank"], "value": 0}, 15))
 		box.add_child(row)
 	if picks.is_empty():
 		box.add_child(UiTheme.small_label("（まだ指名なし）", 13, UiTheme.TEXT_SUB, 700))
@@ -1317,33 +1435,53 @@ func _team_card(d: Draft, team: String) -> Control:
 
 # --- 下の帯 --------------------------------------------------------------------------------
 
+## 下の帯：説明の1行と、早送り・自球団の番まで飛ばす・残りをおまかせ（手帳のときは「おまかせ」「選択終了」も）。
+## 縦長の画面では説明の下にボタンを折り返して並べる
 func _build_bottom() -> Control:
-	var bottom := HBoxContainer.new()
-	bottom.add_theme_constant_override("separation", 8)
+	_bottom_box = BoxContainer.new()
+	_bottom_box.add_theme_constant_override("separation", 8)
 	_status_label = UiTheme.small_label("", 16, UiTheme.TEXT, 700)
 	_status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	bottom.add_child(_status_label)
+	_bottom_box.add_child(_status_label)
+	_bottom_buttons = HFlowContainer.new()
+	_bottom_buttons.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_bottom_buttons.size_flags_stretch_ratio = 2.0
+	_bottom_buttons.alignment = FlowContainer.ALIGNMENT_END
+	_bottom_buttons.add_theme_constant_override("h_separation", 8)
+	_bottom_buttons.add_theme_constant_override("v_separation", 6)
+	_bottom_box.add_child(_bottom_buttons)
 	_fast_button = Button.new()
 	_fast_button.text = "早送り"
 	_fast_button.toggle_mode = true
-	_fast_button.custom_minimum_size = Vector2(110, 42)
+	_fast_button.custom_minimum_size = Vector2(96, 42)
 	UiTheme.style_button(_fast_button, Color("2f7fd8"), Color.WHITE, 8, 4)
 	_fast_button.toggled.connect(func(on: bool) -> void: _fast = on)
-	bottom.add_child(_fast_button)
+	_bottom_buttons.add_child(_fast_button)
 	_skip_button = Button.new()
 	_skip_button.text = "自球団の番まで飛ばす"
-	_skip_button.custom_minimum_size = Vector2(210, 42)
+	_skip_button.custom_minimum_size = Vector2(190, 42)
 	UiTheme.style_button(_skip_button, Color("2e9b48"), Color.WHITE, 8, 4)
 	_skip_button.pressed.connect(_on_skip_pressed)
-	bottom.add_child(_skip_button)
+	_bottom_buttons.add_child(_skip_button)
 	_complete_button = Button.new()
 	_complete_button.text = "残りをおまかせで終える"
-	_complete_button.custom_minimum_size = Vector2(230, 42)
+	_complete_button.custom_minimum_size = Vector2(210, 42)
 	UiTheme.style_button(_complete_button, Color("8a5cc8"), Color.WHITE, 8, 4)
 	_complete_button.pressed.connect(_on_complete_pressed)
-	bottom.add_child(_complete_button)
-	return bottom
+	_bottom_buttons.add_child(_complete_button)
+	return _bottom_box
+
+
+## 「おまかせ」「選択終了」を、表なら右の欄、手帳なら下の帯へ
+func _place_pick_buttons() -> void:
+	var target: Container = _right_line if _mode == "table" else _bottom_buttons
+	for b: Button in [_auto_pick_button, _finish_button]:
+		if b.get_parent() != target:
+			b.get_parent().remove_child(b)
+			target.add_child(b)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL if _mode == "table" else Control.SIZE_FILL
+		b.custom_minimum_size = Vector2(0, 40) if _mode == "table" else Vector2(110, 42)
 
 
 func _render_bottom(d: Draft) -> void:

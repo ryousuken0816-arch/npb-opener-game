@@ -62,7 +62,9 @@ func _check_offseasons() -> void:
 		_gs.advance_through(_gs.season_last_day())
 		_check(_gs.phase == _gs.Phase.AWARDS and _gs.date_text() == "%d年 オフ" % y,
 				"%d年 シーズン終了で日付は「%s」" % [y, _gs.date_text()])
-		_gs.advance()
+		# オフの順番（作業54）：表彰 → 契約更改・戦力外 → ドラフト → FA
+		while _gs.phase != _gs.Phase.FA_TRADE and _gs.phase != _gs.Phase.CAMP:
+			_gs.advance()
 		_check(_gs.phase == _gs.Phase.FA_TRADE, "%d年オフ：FA・トレード・ポスティングへ" % y)
 		var f: Variant = _gs.fa()
 		_check(f != null and _gs.fa_open() and _gs.button_text() == "FA・移籍交渉",
@@ -246,7 +248,14 @@ func _check_darvish(success: bool) -> void:
 	await _key(KEY_ENTER)
 	_check(hub.get("_open_key") == "awards", "可変ボタンでまず表彰の画面（%s）" % hub.get("_open_key"))
 	await _key(KEY_ESCAPE)
-	_check(_focus_key(hub) == "advance", "表彰の画面から戻ると可変ボタンにフォーカス")
+	# 新しいオフの順番（作業54）：契約更改・戦力外とドラフトを先に済ませる
+	while _gs.next_phase() != _gs.Phase.FA_TRADE:
+		_gs.advance()
+	_gs.draft_resolve()
+	await _frames(3)
+	hub.get("_buttons")["advance"].grab_button_focus()
+	_check(_focus_key(hub) == "advance" and _gs.button_text() == "FA/トレードへ",
+		"ドラフトのあと可変ボタンは「FA/トレードへ」（%s）" % _gs.button_text())
 	await _key(KEY_ENTER)
 	_check(_gs.phase == _gs.Phase.FA_TRADE and hub.get("_open_key") == "fa",
 			"可変ボタンで FA・ポスティングの画面（%s / %s）" % [_gs.phase_name(), hub.get("_open_key")])

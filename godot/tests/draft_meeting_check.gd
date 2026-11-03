@@ -127,6 +127,7 @@ func _check_season_meeting() -> void:
 	_check(view.call("list_ids").size() == 5, "絞り込み「目星だけ」で5人（%d）" % view.call("list_ids").size())
 	_check(board.memo_of(2024, _key(d, others[20])) == "球の回転が良い。下位で", "メモが残る")
 	view.call("set_filter", "all")
+	view.call("set_mode", "table")  # 手帳（作業51）では LB/RB がページをめくるので表にしてから
 	view.call("switch_tab", -1)  # 有識者の予想
 	await _frames(2)
 	var pred: Dictionary = board.prediction(2024)
