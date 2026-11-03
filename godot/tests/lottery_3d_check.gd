@@ -51,6 +51,7 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_gd = root.get_node("GameData")
 	_ds = load("res://sim/draft.gd")
+	_ds.lottery_seed = 1  # 抽選の当たりはテストのときだけ決めた種で引く（作業58。本番はその場で引く）
 	_dv = load("res://scenes/hub/draft_view.gd")
 	_first = _ds.Stage["FIRST"]
 	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP

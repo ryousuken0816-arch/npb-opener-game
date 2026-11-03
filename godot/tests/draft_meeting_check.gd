@@ -42,6 +42,7 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	_gd = root.get_node("GameData")
 	_ds = load("res://sim/draft.gd")
+	_ds.lottery_seed = 1  # 抽選の当たりはテストのときだけ決めた種で引く（作業58。本番はその場で引く）
 	_dx = load("res://sim/draft_experts.gd")
 	_db = load("res://sim/draft_board.gd")
 	_su = load("res://sim/save_util.gd")
