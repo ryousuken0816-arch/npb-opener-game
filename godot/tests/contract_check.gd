@@ -96,8 +96,12 @@ func _check_years() -> void:
 			_gs.advance()
 		_check(_gs.year == y + 1 and _gs.date_text().begins_with("%d年 " % (y + 1)) and _gs.month_text() != "オフ",
 				"%d年の開幕へ（%s）" % [y + 1, _gs.date_text()])
+		# 契約更改のあとの FA で残留・移籍した選手は FA の契約の額（作業54：FA が契約更改より後）
+		var fa_signed := {}
+		for e: Dictionary in league.events(y, "fa_stay") + league.events(y, "fa_move"):
+			fa_signed[e["id"]] = true
 		for id: String in expected:
-			if not league.team_of.has(id):
+			if not league.team_of.has(id) or fa_signed.has(id):
 				continue
 			_check(league.salary_of(id) == expected[id], "%d年：%sの年俸は調整した %s（%s）" % [y + 1,
 				league.names[id], Salary.text(expected[id]), Salary.text(league.salary_of(id))])
@@ -317,7 +321,10 @@ func _check_ui(y: int) -> void:
 	await _frames(3)
 	_check(hub.get("_year_label").text == str(y + 1) and hub.get("_month_label").text != "オフ",
 			"ハブの日付が%d年の開幕に追従（%s %s）" % [y + 1, hub.get("_year_label").text, hub.get("_month_label").text])
-	if league.team_of.has(target):
+	var fa_ids := {}
+	for e: Dictionary in league.events(y, "fa_stay") + league.events(y, "fa_move"):
+		fa_ids[e["id"]] = true
+	if league.team_of.has(target) and not fa_ids.has(target):
 		_check(league.salary_of(target) == after, "%d年：画面で調整した年俸 %s" % [y + 1, Salary.text(league.salary_of(target))])
 
 
