@@ -24,13 +24,12 @@ const TABS := [
 ]
 ## 画面の端からの余白
 const MARGIN := 20
-## 能力の行 [キー, 見出し]
+## 能力の行 [キー, 見出し]（作業72：ユーザーの選んだ並び。投手は球速の行のあと。総合は名前の横に大きく出す）
 const BATTER_ROWS := [
-	["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"], ["speed", "走力"],
-	["defense", "守備"], ["arm", "肩"],
+	["meet", "ミート"], ["power", "パワー"], ["speed", "走力"], ["arm", "肩"],
+	["defense", "守備"], ["eye", "選球眼"],
 ]
-const PITCHER_ROWS := [["overall", "総合"], ["bb9", "制球"], ["stamina", "スタミナ"],
-	["k9", "奪三振"], ["hr9", "被弾抑制"]]
+const PITCHER_ROWS := [["bb9", "制球"], ["stamina", "スタミナ"], ["k9", "奪三振"], ["hr9", "被弾抑制"]]
 ## 特殊能力で悪いもの（赤い札）。それ以外は青い札
 const BAD_ABILITIES := ["三振取れず", "四球病", "一発病"]
 const ABILITY_SLOTS := 8
@@ -376,6 +375,8 @@ func _render_header() -> void:
 	name_row.add_child(tag)
 	name_row.add_child(_number_box())
 	name_row.add_child(_team_chip())
+	if _data.get("is_pitcher", false):
+		name_row.add_child(_overall_box())
 
 	var info := GridContainer.new()
 	info.columns = 6
@@ -417,6 +418,27 @@ func _render_header() -> void:
 	sub_line.name = "SeasonSub"
 	sub_line.clip_text = true
 	season_box.add_child(sub_line)
+
+
+## 投手の総合（ランクと数値を大きく。作業72で能力の一覧から名前の横へ移した）
+func _overall_box() -> Control:
+	var rating: Variant = _dict(_dict(_data.get("pitching")).get("ratings")).get("overall")
+	var box := HBoxContainer.new()
+	box.name = "Overall"
+	box.add_theme_constant_override("separation", 6)
+	box.tooltip_text = "投手の総合（制球・スタミナ・奪三振・被弾抑制などからの見立て）"
+	box.add_child(pill("総合", 70, 19))
+	var rank := UiTheme.rank_label(rating, 40)
+	rank.custom_minimum_size = Vector2(44, 0)
+	box.add_child(rank)
+	var value := Label.new()
+	value.text = str(int(rating["value"])) if rating is Dictionary else "-"
+	UiTheme.heading(value, 34, UiTheme.rank_color(rating["rank"]).darkened(0.1) if rating is Dictionary
+		else UiTheme.TEXT, Color.WHITE, 5, false)
+	box.add_child(value)
+	for c: Control in box.get_children():
+		c.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	return box
 
 
 func _number_box() -> Control:
@@ -651,7 +673,7 @@ func _summary_page() -> Control:
 	row.add_theme_constant_override("separation", 12)
 	var is_pitcher: bool = _data.get("is_pitcher", false)
 	var abilities := card("投手能力" if is_pitcher else "野手能力")
-	abilities["panel"].custom_minimum_size = Vector2(620, 0)
+	abilities["panel"].custom_minimum_size = Vector2(520, 0)
 	row.add_child(abilities["panel"])
 	var body: VBoxContainer = abilities["body"]
 	body.add_theme_constant_override("separation", 5)
@@ -726,7 +748,7 @@ func _is_prospect() -> bool:
 		or player_id.begins_with("tmp:draft")
 
 
-## 能力の行：項目名 | ランク | 数値 | 棒 | 実数値
+## 能力の行：項目名 | ランク | 数値 | 実数値（棒は作業72で外した）
 func _ability_row(title: String, rating: Variant, note: String) -> Control:
 	var row := _row_frame()
 	var box: HBoxContainer = row.get_child(0)
@@ -742,13 +764,6 @@ func _ability_row(title: String, rating: Variant, note: String) -> Control:
 	UiTheme.heading(value, 32, UiTheme.rank_color(rating["rank"]).darkened(0.1) if rating is Dictionary
 		else UiTheme.TEXT, Color.WHITE, 5, false)
 	box.add_child(value)
-	var bar := ValueBar.new()
-	bar.custom_minimum_size = Vector2(96, 14)
-	bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	if rating is Dictionary:
-		bar.value = float(rating["value"]) / 100.0
-		bar.color = GameData.rank_color(rating["rank"])
-	box.add_child(bar)
 	box.add_child(note_label(note))
 	return row
 
@@ -760,12 +775,13 @@ func value_row(title: String, value_text: String, unit: String, note: String) ->
 	box.add_child(pill(title, 110, 19))
 	var value := Label.new()
 	value.text = value_text
-	value.custom_minimum_size = Vector2(114, 0)
+	# 数値＋単位で能力の行のランク＋数値（46＋10＋58）と同じ幅にして、右の実数値の位置をそろえる
+	value.custom_minimum_size = Vector2(64, 0)
 	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	UiTheme.heading(value, 32, _palette.ink, Color.WHITE, 5, false)
 	box.add_child(value)
 	var unit_label := UiTheme.small_label(unit, 17, UiTheme.TEXT, 800)
-	unit_label.custom_minimum_size = Vector2(96, 0)
+	unit_label.custom_minimum_size = Vector2(40, 0)
 	box.add_child(unit_label)
 	box.add_child(note_label(note))
 	return row

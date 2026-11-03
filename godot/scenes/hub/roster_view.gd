@@ -4,13 +4,14 @@ extends TabContainer
 ## 行をクリック（コントローラーは Ⓐ・キーボードは Enter）で選手詳細。十字キーの前後はその一覧の並び。
 ## 能力のマスは「B 74」（ランクと数値、ランクの色。作業64）。見出しをクリックすると数値の高い順に並び替え（もう一度で逆順）。
 
+## 並びは選手詳細と同じ（作業72）。投手の "velocity" は球速（km/h）の列
 const BATTER_COLUMNS := [
-	["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"],
-	["speed", "走力"], ["defense", "守備力"], ["arm", "肩力"],
+	["meet", "ミート"], ["power", "パワー"], ["speed", "走力"],
+	["arm", "肩力"], ["defense", "守備力"], ["eye", "選球眼"],
 ]
 const PITCHER_COLUMNS := [
-	["overall", "総合"], ["stamina", "スタミナ"], ["k9", "奪三振"],
-	["bb9", "制球"], ["hr9", "被弾抑制"],
+	["overall", "総合"], ["velocity", "球速"], ["bb9", "制球"], ["stamina", "スタミナ"],
+	["k9", "奪三振"], ["hr9", "被弾抑制"],
 ]
 const RANK_COLUMN_WIDTH := 80
 const SALARY_COLUMN_WIDTH := 120
@@ -115,7 +116,7 @@ func _make_batter_tree(players: Array) -> Tree:
 
 
 func _make_pitcher_tree(players: Array) -> Tree:
-	var tree := _make_tree(["名前", "役割", "投"], PITCHER_COLUMNS, ["球速", "特能", "年俸"])
+	var tree := _make_tree(["名前", "役割", "投"], PITCHER_COLUMNS, ["特能", "年俸"])
 	for p: Dictionary in players:
 		var pitching: Dictionary = p["pitching"] if p["pitching"] else {}
 		var item := tree.create_item()
@@ -124,11 +125,11 @@ func _make_pitcher_tree(players: Array) -> Tree:
 		item.set_text(2, "%s投" % p["throws"] if p["throws"] != null else "-")  # 投手は投げる手だけ（表を横にはみ出させない）
 		var ratings: Variant = pitching.get("ratings")
 		_set_ranks(item, 3, ratings if ratings is Dictionary else {}, PITCHER_COLUMNS)
-		_set_velocity(item, 3 + PITCHER_COLUMNS.size(), pitching)
+		_set_velocity(item, 3 + PITCHER_COLUMNS.find(["velocity", "球速"]), pitching)
 		var abilities := PackedStringArray(pitching.get("abilities", []))
-		item.set_text(4 + PITCHER_COLUMNS.size(), " ".join(abilities))
-		item.set_tooltip_text(4 + PITCHER_COLUMNS.size(), " ".join(abilities))
-		_set_salary(item, 5 + PITCHER_COLUMNS.size(), p["id"])
+		item.set_text(3 + PITCHER_COLUMNS.size(), " ".join(abilities))
+		item.set_tooltip_text(3 + PITCHER_COLUMNS.size(), " ".join(abilities))
+		_set_salary(item, 4 + PITCHER_COLUMNS.size(), p["id"])
 		item.set_metadata(0, p["id"])
 	return tree
 
@@ -248,7 +249,8 @@ func _make_tree(text_headers: Array, rank_columns: Array, trailing_headers: Arra
 	for rank_column: Array in rank_columns:
 		tree.set_column_title(col, rank_column[1])
 		tree.set_column_expand(col, false)
-		tree.set_column_custom_minimum_width(col, RANK_COLUMN_WIDTH)
+		tree.set_column_custom_minimum_width(col, VELOCITY_COLUMN_WIDTH if rank_column[0] == "velocity"
+			else RANK_COLUMN_WIDTH)
 		col += 1
 	for header: String in trailing_headers:
 		tree.set_column_title(col, header)
@@ -270,6 +272,8 @@ func _make_tree(text_headers: Array, rank_columns: Array, trailing_headers: Arra
 func _set_ranks(item: TreeItem, first_col: int, ratings: Dictionary, columns: Array) -> void:
 	for i in columns.size():
 		var col := first_col + i
+		if columns[i][0] == "velocity":
+			continue  # 球速は _set_velocity
 		item.set_text_alignment(col, HORIZONTAL_ALIGNMENT_CENTER)
 		var rating: Variant = ratings.get(columns[i][0])
 		if rating == null:

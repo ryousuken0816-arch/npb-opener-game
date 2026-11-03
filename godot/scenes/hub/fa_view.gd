@@ -1228,7 +1228,8 @@ func _render_stats(f: FreeAgency, id: String, p: Dictionary) -> void:
 	_stats_box.add_child(ranks)
 	var block: Variant = p.get("pitching") if pitcher else p.get("batting")
 	var ratings: Dictionary = block.get("ratings", {}) if block is Dictionary else {}
-	var rows: Array = PlayerDetail.PITCHER_ROWS if pitcher else PlayerDetail.BATTER_ROWS
+	# 投手の総合は詳細画面では名前の横（作業72）。ここでは球速の次に並べる
+	var rows: Array = ([["overall", "総合"]] + PlayerDetail.PITCHER_ROWS) if pitcher else PlayerDetail.BATTER_ROWS
 	if pitcher:
 		var velo: Variant = (block as Dictionary).get("velocity") if block is Dictionary else null
 		ranks.add_child(UiTheme.small_label("球速", 14, UiTheme.TEXT_SUB, 700))

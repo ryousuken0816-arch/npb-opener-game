@@ -769,6 +769,14 @@
    - 年俸の更改は来季の年を受け取るので、成績は今季（year − 1）の水準で査定する。テスト：quick＋contract_check・awards_check・season_blend_check・defense_war_check・records_check ALL OK
    - 係数（A_*）を変えたら `python tools/fit_run_env.py --rounds 2` で合わせ直す（約15分）。能力値を作り直したときも
 
+4.71 ~~選手の詳細画面の能力の並びを変え、棒グラフを外す~~ → 完了（2026-11-03、担当T）。docs/AUTORUN.md の作業72
+   - 投手：球速 → 制球 → スタミナ → 奪三振 → 被弾抑制。総合は一覧から外し、名前・背番号・球団の横に「総合 B 74」と大きく（`PlayerDetail._overall_box`）
+   - 野手：ミート → パワー → 走力 → 肩 → 守備 → 選球眼（弾道は今のまま先頭の別の行）
+   - 能力の行の棒グラフ（`ValueBar`）を外し、能力の枠を 620 → 520 に詰めた（ランク・数値・元の成績の数値は残す）。`value_bar.gd` は使われなくなったが残してある
+   - 名簿（`roster_view.gd`）：野手は同じ並び。投手は 総合 → 球速 → 制球 → スタミナ → 奪三振 → 被弾抑制（一覧なので総合の列は残し、球速を後ろから能力の並びへ）。
+     登録の画面（`register_page.gd`）の要約も同じ並び（投手は総合を残す）。FA の画面の小さな能力の表も同じ並び（総合は球速の次）
+   - 確認：player_detail_check・roster_year_check・quick（16本 ALL OK）。ヘッドレスの読み込みエラー0件。スクショ（`godot/tests/player_detail_capture.gd`、投手と野手）で見た目を確認
+
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。

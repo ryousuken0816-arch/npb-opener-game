@@ -389,7 +389,7 @@ func _pitcher_summary(p: SimPlayer, data: Dictionary) -> void:
 			16, UiTheme.TEXT, 700))
 	var ratings: Dictionary = pitching["ratings"] if pitching.get("ratings") is Dictionary else {}
 	_summary_box.add_child(_rank_grid(ratings, [
-		["overall", "総合"], ["stamina", "スタミナ"], ["k9", "奪三振"], ["bb9", "制球"], ["hr9", "被弾抑制"],
+		["overall", "総合"], ["bb9", "制球"], ["stamina", "スタミナ"], ["k9", "奪三振"], ["hr9", "被弾抑制"],
 	]))
 	var s: Dictionary = GameState.season.pitching.get(p.id, {}) if GameState.season != null else {}
 	var era := "%.2f" % Season.era(s) if s.get("outs", 0) > 0 else "-"
@@ -411,8 +411,8 @@ func _fielder_summary(p: SimPlayer, data: Dictionary) -> void:
 		str(int(batting["trajectory"])) if batting.get("trajectory") != null else "-"],
 		16, UiTheme.TEXT, 700))
 	_summary_box.add_child(_rank_grid(ratings, [
-		["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"],
-		["speed", "走力"], ["defense", "守備力"], ["arm", "肩力"],
+		["meet", "ミート"], ["power", "パワー"], ["speed", "走力"],
+		["arm", "肩力"], ["defense", "守備力"], ["eye", "選球眼"],
 	]))
 	var b: Dictionary = GameState.season.batting.get(p.id, {}) if GameState.season != null else {}
 	var avg := ("%.3f" % Season.batting_avg(b)).trim_prefix("0") if b.get("ab", 0) > 0 else "-"
