@@ -5,6 +5,9 @@ extends Node
 ## - voicevox：自分の PC で動かす VOICEVOX 互換の HTTP API（/audio_query → /synthesis）。URL と話者は設定。
 ##   つながらない・失敗したときは os に戻る（その起動の間は os のまま）
 ## - wav：録音のフォルダ（wav_dir）。部品ごとに <キー>.wav があればつないで再生し、無い部分だけ os で読む
+## Web 版は設定によらず、ページを出しているサーバーが voice/ で録音の部品を渡していれば（tools/serve_web.py の
+## --voice-dir）、部品ごとに取り寄せて wav と同じようにつなぐ（無い部品・取れない部品だけ os で読む）。
+## 録音はゲームにも GitHub Pages にも入れず、自分の PC から同じ Wi-Fi のスマホへ渡すため
 ## 部品＝{key, text}。キーは round_<N>・ikusei_round_<N>・team_<略称>・name_<名前>・pos_<守備位置>・school_<出身>
 ## （PickAnnounce.voice_parts が作る。差し込み方は godot/README.md「ドラフトの読み上げ」）。
 ## 実在のアナウンサーの声をまねることはしない。声のデータ・モデルはリポジトリに入れない（.gitignore）。
@@ -27,6 +30,9 @@ const TTS_SEC_PER_CHAR := 0.08
 const TTS_CUT_MARGIN := 0.8
 ## 前の OS の読み上げが終わるのを待つ上限（終わりの合図が来ないとき。過ぎたらその部品は読まない）
 const TTS_BUSY_WAIT := 5.0
+## Web 版の録音の部品の置き場（ページからの相対）と、置き場があるかを調べる URL（置き場からの相対）
+const WEB_VOICE_DIR := "voice/"
+const WEB_VOICE_PING := "ping"
 
 ## 音を出さない（テスト・ヘッドレス）
 var muted := false
@@ -38,6 +44,10 @@ var voicevox_down := false
 var tts_sim: Dictionary = {}
 ## テスト用：OS の音声合成への呼び出しの記録 [{op: speak/stop/hold, left（そのときの本当の残り秒。まねのときだけ）}]
 var tts_log: Array[Dictionary] = []
+## Web 版の録音の部品の置き場（末尾は /）。空なら無い（調べる前・サーバーが渡していない・Web 版でない）。テストでは直接入れる
+var web_voice_url := ""
+## Web 版の部品の取り寄せ {キー: {done: 取り寄せ終わったか, stream: 録音（取れなければ null）, http: 取り寄せ中の HTTPRequest}}
+var web_fetched: Dictionary = {}
 
 static var _chime: AudioStreamWAV
 
@@ -66,6 +76,8 @@ func _ready() -> void:
 	_http.timeout = HTTP_TIMEOUT
 	_http.request_completed.connect(_on_http_done)
 	add_child(_http)
+	if OS.has_feature("web") and not muted:
+		_probe_web_voice()
 
 
 func _process(delta: float) -> void:
@@ -80,6 +92,15 @@ func _process(delta: float) -> void:
 		"wav", "voicevox_play":
 			if not _player.playing:
 				_next()
+		"web_wav":
+			# 取り寄せが終わるのを待って鳴らす。取れない・待ちすぎたら OS の音声合成で読む
+			var got: Dictionary = web_fetched.get(_current["key"], {})
+			if got.get("done", false) and got.get("stream") != null:
+				_current["src"] = "wav"
+				_play(got["stream"])
+			elif got.get("done", false) or _elapsed >= HTTP_TIMEOUT:
+				_current = {"src": "tts", "text": _current["text"], "engine": "os", "started": false}
+				_elapsed = 0.0
 		"tts":
 			if muted:
 				_next()
@@ -103,9 +124,13 @@ func speak(parts: Array) -> void:
 	if not bool(GameSettings.get_value("voice", "enabled")):
 		last_plan = []
 		return
-	last_plan = plan(parts, str(GameSettings.get_value("voice", "backend")))
+	var backend := str(GameSettings.get_value("voice", "backend"))
+	var web := not web_voice_url.is_empty() and backend != "voicevox"
+	last_plan = plan_web(parts) if web else plan(parts, backend)
 	if muted:
 		return
+	if web:
+		fetch_web(parts)
 	_queue = last_plan.duplicate()
 	_next()
 
@@ -124,6 +149,7 @@ func stop() -> void:
 		_player.stop()
 	if _http != null:
 		_http.cancel_request()
+	_cancel_web_fetch()
 	if _tts_elapsed >= 0.0 or _tts_speaking():
 		if tts_cuttable():
 			_tts_stop()
@@ -166,6 +192,74 @@ func plan(parts: Array, backend: String) -> Array[Dictionary]:
 	return out
 
 
+## Web 版の段取り：部品ごとにサーバーから取り寄せた録音を、間を置いてつなぐ（取れなかった部品は鳴らすときに OS の声へ）
+func plan_web(parts: Array) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for part: Dictionary in parts:
+		if not out.is_empty():
+			out.append({"src": "pause"})
+		out.append({"src": "web_wav", "key": str(part["key"]), "text": str(part["text"]),
+			"url": web_part_url(str(part["key"]))})
+	return out
+
+
+## Web 版の部品の URL（キーは日本語を含むので % でくるむ）
+func web_part_url(key: String) -> String:
+	return web_voice_url + key.uri_encode() + ".wav"
+
+
+## 部品の録音を一度に取り寄せ始める（鳴らす順を待たずに。届いたものから web_fetched に入る）
+func fetch_web(parts: Array) -> void:
+	_cancel_web_fetch()
+	for part: Dictionary in parts:
+		var key := str(part["key"])
+		if web_fetched.has(key):
+			continue
+		var http := HTTPRequest.new()
+		http.timeout = HTTP_TIMEOUT
+		add_child(http)
+		web_fetched[key] = {"done": false, "stream": null, "http": http}
+		http.request_completed.connect(_on_web_part_done.bind(key, http))
+		if http.request(web_part_url(key)) != OK:
+			_on_web_part_done(HTTPRequest.RESULT_CANT_CONNECT, 0, PackedStringArray(), PackedByteArray(), key, http)
+
+
+func _on_web_part_done(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray,
+		key: String, http: HTTPRequest) -> void:
+	var stream: AudioStreamWAV = null
+	if result == HTTPRequest.RESULT_SUCCESS and code == 200:
+		stream = AudioStreamWAV.load_from_buffer(body)
+	if web_fetched.get(key, {}).get("http") == http:
+		web_fetched[key] = {"done": true, "stream": stream}
+	http.queue_free()
+
+
+## 取り寄せ中のものはやめ、取り寄せた録音も捨てる（指名ごとに部品が変わるので持ち越さない）
+func _cancel_web_fetch() -> void:
+	for got: Dictionary in web_fetched.values():
+		var http: Variant = got.get("http")
+		if http is HTTPRequest and is_instance_valid(http):
+			http.cancel_request()
+			http.queue_free()
+	web_fetched.clear()
+
+
+## Web 版：ページを出しているサーバーに録音の部品の置き場があるか調べる（あれば web_voice_url を入れる）
+func _probe_web_voice() -> void:
+	var base := str(JavaScriptBridge.eval("new URL('%s', location.href).href" % WEB_VOICE_DIR, true))
+	if not base.begins_with("http"):
+		return
+	var http := HTTPRequest.new()
+	http.timeout = HTTP_TIMEOUT
+	add_child(http)
+	http.request_completed.connect(func(result: int, code: int, _h: PackedStringArray, _b: PackedByteArray) -> void:
+		if result == HTTPRequest.RESULT_SUCCESS and code == 200:
+			web_voice_url = base
+		http.queue_free())
+	if http.request(base + WEB_VOICE_PING) != OK:
+		http.queue_free()
+
+
 ## 部品の録音のファイル（無ければ空）。出身は「〜大学」の録音が無ければ「〜大」も探す（録音は「法政大」のように略す。
 ## OS の声で読む部品が減れば、OS の音声合成を止める場面も減る）
 static func wav_path(dir: String, key: String) -> String:
@@ -203,6 +297,8 @@ func _next() -> void:
 			_current["started"] = false  # _process で前の読み上げが終わってから読む
 		"voicevox":
 			_voicevox_query(str(_current["text"]))
+		"web_wav":
+			pass  # _process で取り寄せが終わるのを待つ
 
 
 func _play(stream: AudioStream) -> void:
