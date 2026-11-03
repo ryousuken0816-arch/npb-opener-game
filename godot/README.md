@@ -342,6 +342,11 @@ Godot エディタで `godot/project.godot` を開いて実行（F5）。タイ�
   1回目の入札（抽選で外れた球団も。`actual_first_bids`）と1位予想の的中、順位予想の上位12人のうち1位で消えた人数、予想を覆した入札、自球団の予想と実際）
 - テスト：`tests/draft_meeting_check.gd`（ヘッドレス可、約1分半）
 
+## Web 版・スマホのドラフト（docs/AUTORUN.md 作業63）
+
+- Web 版（`DraftVoice.web_like()`。テストでは環境変数 `NPB_SIM_WEB=1`）とスマホ表示では抽選を2Dの演出にする（`DraftView.use_3d_lottery`）。Web 版は発表が読み上げの終わりを待たず、読み上げはいつでもすぐ止める
+- 演出を閉じたら中身（3Dの抽選の場面・発表の札）をすぐ解放する。テスト：`tests/draft_web_check.gd`
+
 ## ドラフトの抽選の乱数（docs/AUTORUN.md 作業58）
 
 - 抽選（1位・外れ1位の競合）の当たりだけは `Draft._lottery_rng` でその場で引く（セーブに入らない。同じセーブからやり直すと当たりが変わる）。CPU の入札・指名などは `Draft._rng`（セーブに入る）
