@@ -838,6 +838,12 @@ func draft_open() -> bool:
 	return d != null and not d.resolved
 
 
+## ドラフト会議は終わったが、自球団が指名したメジャー志望の選手の説得が残っているか（作業57・65）
+func draft_talk_pending() -> bool:
+	var d := draft()
+	return d != null and not d.resolved and d.stage == Draft.Stage.DONE and not d.pending_talks().is_empty()
+
+
 ## ドラフトの画面で指名を進めたあとに呼ぶ：終わっていれば入団させる（結果を反映）
 func draft_sync() -> void:
 	var d := draft()
@@ -1121,6 +1127,8 @@ func button_text() -> String:
 		return "契約更改・戦力外" if contract_with_release() else "契約更改"
 	if release_open():
 		return "戦力外・引退"
+	if draft_talk_pending():
+		return "説得の交渉へ"
 	if draft_open():
 		return "ドラフト会議"
 	if draft_meeting_due():
