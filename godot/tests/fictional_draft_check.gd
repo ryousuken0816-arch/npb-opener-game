@@ -330,6 +330,7 @@ func _check_balance() -> void:
 	var strong_not_monster := 0
 	var mon_cat := {}
 	var mon_weak := 0
+	var mon_weak_list: Array = []
 	var sa_bat := 0
 	var sa_all := 0
 	var legends := {}
@@ -352,7 +353,9 @@ func _check_balance() -> void:
 				var w := int(p["pitching"]["ratings"]["k9"]["value"]) if p["is_pitcher"] else maxi(
 					int(p["batting"]["ratings"]["power"]["value"]), maxi(int(p["batting"]["ratings"]["speed"]["value"]),
 					int(p["batting"]["ratings"]["arm"]["value"])))
-				mon_weak += 1 if (am["category"] == "高校" and w < 84) or (am["category"] != "高校" and lv < 79.5) else 0
+				if (am["category"] == "高校" and w < 84) or (am["category"] != "高校" and lv < 79.5):
+					mon_weak += 1
+					mon_weak_list.append("%s %s %s 武器%d 総合%.1f" % [p["name"], am["category"], am.get("type", ""), w, lv])
 			elif reg and not p.has("dream") and lv >= 79.6:
 				strong_not_monster += 1
 			if str(am.get("band", "")) == "1" and am["category"] != "高校" and not bool(p.get("is_monster", false)):
@@ -415,7 +418,7 @@ func _check_balance() -> void:
 	_check(hs_top_weak == 0 and hs_top > 0, "高卒の S・A は武器（奪三振・パワー・走力・肩）を1つ B 以上（武器なし %d／%d人）" % [hs_top_weak, hs_top])
 	_check(strong_not_monster == 0, "入団時の総合 A（80以上）は怪物だけ（怪物以外 %d人）" % strong_not_monster)
 	_check(int(mon_cat.get("大学", 0)) + int(mon_cat.get("社会人", 0)) + int(mon_cat.get("独立", 0)) >= 2 and mon_weak == 0,
-		"大学・社会人・独立からも怪物が出て、入団時から飛び抜けている（怪物 %s、足りない %d人）" % [mon_cat, mon_weak])
+		"大学・社会人・独立からも怪物が出て、入団時から飛び抜けている（怪物 %s、足りない %d人 %s）" % [mon_cat, mon_weak, mon_weak_list])
 	_check(float(sa_bat) / maxf(1, sa_all) >= 0.25, "S・A の野手もそれなりにいる（%.0f%%）" % (100.0 * sa_bat / maxf(1, sa_all)))
 	# 所属の区分：独立リーグ・くふうハヤテは「独立」、専門学校は「専門」、古い社名は無い
 	var bad_cat: Array = []
@@ -764,6 +767,8 @@ func _check_types() -> void:
 	var by_grade := {}
 	var named := 0
 	var all_n := 0
+	var same3 := 0
+	var no_c := 0
 	for y in range(2028, 2028 + years):
 		var cls: Array = fd.generate_year(y, rng)
 		themes[str(cls[0]["amateur"].get("year_theme", ""))] = int(themes.get(str(cls[0]["amateur"].get("year_theme", "")), 0)) + 1
@@ -784,11 +789,16 @@ func _check_types() -> void:
 			var hi := 0
 			var lo := 0
 			var shape := ""
+			var seen := {}
+			var has_c := false
 			for k: String in keys:
 				var v := int(r[k]["value"])
 				hi += 1 if v >= 70 else 0
 				lo += 1 if v < 50 else 0
 				shape += "B" if v >= 70 else ("e" if v < 50 else ".")
+				seen[v] = int(seen.get(v, 0)) + 1
+				has_c = has_c or (v >= 60 and v < 70)
+			same3 += 1 if seen.values().max() >= 3 else 0
 			var g := str(am["grade"])
 			if not by_grade.has(g):
 				by_grade[g] = [0, 0]
@@ -798,6 +808,7 @@ func _check_types() -> void:
 				bat_n += 1
 				bat_strong += 1 if hi >= 1 else 0
 				bat_weak += 1 if lo >= 1 else 0
+				no_c += 0 if has_c else 1
 				if group == "外野手":
 					of_n += 1
 					of_shapes[shape] = int(of_shapes.get(shape, 0)) + 1
@@ -822,5 +833,8 @@ func _check_types() -> void:
 		"評価の高い選手ほど長所が多い（S %.1f・A %.1f・B %.1f・D %.1f）" % [avg.call("S"), avg.call("A"), avg.call("B"), avg.call("D")])
 	_check(themes.size() >= 6 and int(themes.get("例年並み", 0)) <= years / 2,
 		"年の色は年ごとに変わる（%s）" % themes)
+	# 作業73（ユーザー：「まだちょとDB BDみたいなの多いな」）：同じ選手の中に同じ数字が3つ以上並ばない・C の能力も出る
+	_check(float(same3) / maxf(1, all_n) <= 0.02 and float(no_c) / maxf(1, bat_n) <= 0.42,
+		"同じ数字が3つ以上並ぶ選手はまれ（%d／%d人）、C の無い野手は少なめ（%d／%d人）" % [same3, all_n, no_c, bat_n])
 	_check(stories >= years * 4 and stories <= years * 12 and convert_weak == 0,
 		"物語は年に数人、元投手の野手は肩が強い（%d人、肩の弱い元投手 %d人）" % [stories, convert_weak])

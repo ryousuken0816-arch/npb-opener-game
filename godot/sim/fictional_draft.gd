@@ -360,6 +360,7 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 	# 一芸だけ S（作業67。確率で年に0〜2人。紹介文に「◯◯は世代随一」）
 	FictionalTypes.assign_one_skill(out, theme, rng)
 	for p: Dictionary in out:
+		FictionalTypes.untie(p, rng)  # 同じ選手の中で同じ数字が並ばないように（作業73）
 		fill_fielding(p)
 		set_trajectory(p)
 		_sync_peak(p)
