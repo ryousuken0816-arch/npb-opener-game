@@ -336,7 +336,8 @@ func _render_book(d: Draft) -> void:
 ## 架空の候補から、ドラフトと同じ Draft.setup で作る（今どこかに所属している選手は除く）
 func _build_preview(year: int) -> Draft:
 	var entries := {}
-	var next := GameData.peek_ratings(year + 1, "pre")
+	# シーズン中は来季のファイルを持っておかない（作戦会議の候補は _preview に残る。作業74：Web 版のメモリ）
+	var next := GameData.peek_ratings(year + 1, "pre", false)
 	for p: Dictionary in next.get("players", []):
 		entries[p["id"]] = p
 	for p: Dictionary in GameState.draft_class(year):

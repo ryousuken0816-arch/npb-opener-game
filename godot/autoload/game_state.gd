@@ -176,6 +176,8 @@ var _fast_forward_time := 0.0
 var _offseason_teams := {}
 ## オートセーブを次のフレームで書く（月替わり・段階の切り替わりで立てる。同じフレームで何度立っても1回）
 var _autosave_pending := false
+## 最後にオートセーブを頼んだときのドラフトの段階（draft_sync）
+var _draft_saved_stage := -1
 ## skip_to_phase などの自動処理の途中（セーブしない）
 var _busy := false
 ## 史実の無い年の来季に加える選手を返す（来季の年, LeagueRoster）→ 選手データの配列。hist_team（team）のある選手は
@@ -222,7 +224,9 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 
 
 func _process(delta: float) -> void:
-	if _autosave_pending and not _busy:
+	# オートセーブ：月替わり・段階の切り替わり・ドラフトの区切り。早送りの途中でも書く（Web 版は落ちると
+	# 早送りした月が全部消えていた。作業74）。書けないあいだは持ち越す
+	if _autosave_pending and can_autosave():
 		_autosave_pending = false
 		SaveGame.autosave()
 	if fast_forward_target < 0:
@@ -853,6 +857,10 @@ func draft_sync() -> void:
 	if d.stage == Draft.Stage.DONE and not d.resolved and d.pending_talks().is_empty():
 		league.apply_draft()
 		_sync_roster()
+	# ドラフトの区切り（1位が決まった・育成へ・終わり）でオートセーブ（Web 版でドラフトの途中に落ちても続きから。作業74）
+	if int(d.stage) != _draft_saved_stage:
+		_draft_saved_stage = int(d.stage)
+		_autosave_pending = true
 	changed.emit()
 
 
@@ -1789,15 +1797,13 @@ func career_base() -> Dictionary:
 		return _career_base
 	_career_base_year = first_year
 	_career_base = {"batting": {}, "pitching": {}}
-	var pages := GameData.all_player_pages(first_year)
-	for id: String in pages:
-		var page: Dictionary = pages[id]
+	GameData.each_year_page(first_year, func(id: String, page: Dictionary) -> void:
 		for kind: String in ["batting", "pitching"]:
 			for row: Variant in page.get(kind, []):
 				if not (row is Dictionary) or int(row.get("年度", 9999)) >= first_year:
 					continue
 				var line := Records.from_page_batting(row) if kind == "batting" else Records.from_page_pitching(row)
-				Records.add_into(_career_base[kind].get_or_add(id, {}), line)
+				Records.add_into(_career_base[kind].get_or_add(id, {}), line))
 	return _career_base
 
 
@@ -1826,6 +1832,11 @@ func depth_of(team_name: String) -> Dictionary:
 ## いまセーブできるか（早送り中・自動処理の途中はできない）
 func can_save() -> bool:
 	return save_block_reason().is_empty()
+
+
+## オートセーブしてよいか：手動のセーブと違い、早送りの途中でもよい（日の切れ目の _process で書くので中身はそろっている）
+func can_autosave() -> bool:
+	return not team.is_empty() and league != null and not _busy
 
 
 ## セーブできない理由（できるなら空）

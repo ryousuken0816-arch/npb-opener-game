@@ -986,7 +986,8 @@ func _fill_first_years() -> void:
 	var path := GameData.find_ratings_path(year + 1, "post")
 	# 史実の無い年（成長で作った能力値 "synthetic:<年>"）は1年目の答えが無い（下で「未来」にする）
 	var readable := not path.is_empty() and not path.begins_with("synthetic:") and year + 1 <= LAST_HISTORY_YEAR
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if readable else null
+	# 来季の準備（GameState._open_offseason）で読んだものがあればそれを使う（読み直すと Web 版でメモリの山になる。作業74）
+	var parsed: Variant = GameData.peek_ratings(year + 1, "post") if readable else null
 	var by_id_post := {}
 	var by_name_post := {}
 	if parsed is Dictionary:

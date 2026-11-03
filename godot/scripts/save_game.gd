@@ -68,7 +68,8 @@ static func info_path(slot: String) -> String:
 
 ## 枠に保存する。だめなら理由の文（成功は空）
 static func save(slot: String) -> String:
-	if not GameState.can_save():
+	# オートセーブの枠は早送りの途中でも書ける（GameState.can_autosave。作業74）
+	if not (GameState.can_autosave() if slot == AUTO else GameState.can_save()):
 		return GameState.save_block_reason()
 	var header := {"version": VERSION, "slot": slot,
 		"saved_at": Time.get_datetime_string_from_system(false, true), "summary": GameState.save_summary()}
@@ -83,7 +84,7 @@ static func save(slot: String) -> String:
 
 ## オートセーブ（書けないときは何もしない）
 static func autosave() -> void:
-	if is_autosave_enabled() and GameState.can_save():
+	if is_autosave_enabled() and GameState.can_autosave():
 		var error := save(AUTO)
 		if not error.is_empty():
 			push_warning("オートセーブできませんでした: " + error)

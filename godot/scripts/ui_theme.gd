@@ -60,8 +60,9 @@ class Palette:
 static var _fonts := {}
 ## 字を MSDF（1つの大きさで作った字の画像を拡大・縮小して使う）で描くか。Web 版だけ（作業55）。
 ## ふつうは字の大きさ×画面の倍率ごとに字の画像を作るので、iPhone（倍率3）では字の画像のメモリが大きく、
-## 描画が止められて落ちていた（WebGL context lost）。パソコン版は今までどおり（見た目を変えない）
-static var msdf_fonts := OS.has_feature("web")
+## 描画が止められて落ちていた（WebGL context lost）。パソコン版は今までどおり（見た目を変えない）。
+## Web 版のまねのテスト（NPB_SIM_WEB=1）でも MSDF にして、Web に近いメモリを測る（作業74）
+static var msdf_fonts := OS.has_feature("web") or OS.get_environment("NPB_SIM_WEB") == "1"
 
 
 static func team_palette(team: String) -> Palette:

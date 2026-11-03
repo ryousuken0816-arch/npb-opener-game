@@ -470,9 +470,18 @@ func page_debut_years(year: int) -> Dictionary:
 	if _page_debut_cache.has(year):
 		return _page_debut_cache[year]
 	var pages: Variant = _read_repo_json("%d/players.json" % year)
+	if not pages is Dictionary and has_player_shards():
+		# Web 版：書き出し時に作った 選手ID → 初出場の年（player_debut.json）から、その年の選手の分だけ
+		if _debut_all.is_empty():
+			_debut_all = _read_bundle_dict("player_debut.json")
+		var from_bundle := {}
+		for pid: Variant in _year_ids(year):
+			if _debut_all.has(str(pid)):
+				from_bundle[str(pid)] = int(_debut_all[str(pid)])
+		_page_debut_cache[year] = from_bundle
+		return from_bundle
 	if not pages is Dictionary:
-		_ensure_bundled_players()
-		pages = _all_players_master
+		pages = {}
 	var result := {}
 	for id: String in pages:
 		var page: Variant = pages[id]
@@ -518,59 +527,133 @@ func _roster_field(year: int, key: String) -> Dictionary:
 	return result
 
 
-var _all_players_master: Dictionary = {}
+## Web 版か（Web 版の動きをまねるテストでは環境変数 NPB_SIM_WEB=1。DraftVoice.web_like と同じ）
+static func web_like() -> bool:
+	return OS.has_feature("web") or OS.get_environment("NPB_SIM_WEB") == "1"
+
+
+## Web 版：選手ページは選手IDで PLAYER_SHARDS 個のファイル（res://data/players/<NN>.json）に分けてある
+## （tools/bundle_game_data.py。1つにまとめた全員分を持つと約90MB、読む瞬間は約120MBで iPhone が落ちた。作業74）。
+## 要る選手のファイルだけ読み、最近使ったものを SHARD_KEEP 個だけ持つ
+const PLAYER_SHARDS := 32
+const SHARD_KEEP := 2
+var _shards := {}  ## 番号 → {選手ID → ページ}
+var _shard_order: Array[int] = []
 var _players_by_year_map: Dictionary = {}
+var _debut_all: Dictionary = {}
 
 
 ## 選手ページ（data/<年>/players.json）の中身：bio（経歴・ドラフト）と batting/pitching（1軍の年度別成績）。
 ## **npb.jp の今の選手ページなので <年> より後の成績も入っている**（表示する側で年度を絞る）。
-## 5MB 前後あるので、選手詳細を初めて開いたときに1年分だけ読んで持っておく。無ければ空
+## 5MB 前後あるので、選手詳細を初めて開いたときに1年分だけ読んで持っておく。Web 版はその選手のファイルだけ読む。無ければ空
 func player_page(year: int, id: String) -> Dictionary:
 	if _pages_year != year:
 		_pages_year = year
 		var parsed: Variant = _read_repo_json("%d/players.json" % year)
-		if parsed is Dictionary:
-			_pages = parsed
-		else:
-			_ensure_bundled_players()
-			var y_ids: Array = _players_by_year_map.get(str(year), [])
-			if not y_ids.is_empty():
-				var sub := {}
-				for pid in y_ids:
-					var key := str(pid)
-					if _all_players_master.has(key):
-						sub[key] = _all_players_master[key]
-				_pages = sub
-			else:
-				_pages = _all_players_master
-	return _pages.get(id, {})
+		_pages = parsed if parsed is Dictionary else {}
+	if not _pages.is_empty() or id.is_empty() or not has_player_shards():
+		return _pages.get(id, {})
+	return _shard(shard_of(id)).get(id, {})
 
 
-func _ensure_bundled_players() -> void:
-	if not _all_players_master.is_empty():
-		return
-	var all_path := BUNDLE_DATA_DIR.path_join("all_players.json")
-	if FileAccess.file_exists(all_path):
-		var p1: Variant = JSON.parse_string(FileAccess.get_file_as_string(all_path))
-		if p1 is Dictionary:
-			_all_players_master = p1
-	var map_path := BUNDLE_DATA_DIR.path_join("players_by_year.json")
-	if FileAccess.file_exists(map_path):
-		var p2: Variant = JSON.parse_string(FileAccess.get_file_as_string(map_path))
-		if p2 is Dictionary:
-			_players_by_year_map = p2
-
-
-## その年の選手ページ全部（選手ID → player_page と同じ中身）。player_page と同じ1年分の持ち方を使う
+## その年の選手ページ全部（選手ID → player_page と同じ中身）。パソコン版は player_page と同じ1年分を持つ。
+## Web 版は分けたファイルを1つずつ読んでその年の選手だけ集める（持ち続けない。呼ぶ側が集計してから捨てる）
 func all_player_pages(year: int) -> Dictionary:
 	player_page(year, "")
-	return _pages
+	if not _pages.is_empty() or not has_player_shards():
+		return _pages
+	return _bundled_year_pages(year)
+
+
+## その年の選手ページを1人ずつ fn.call(選手ID, ページ) に渡す。Web 版は分けたファイルを1つずつ読み、全員分を同時に持たない
+## （all_player_pages で集めると1年分で約25MBの山になる。作業74）
+func each_year_page(year: int, fn: Callable) -> void:
+	player_page(year, "")
+	if not _pages.is_empty() or not has_player_shards():
+		for id: String in _pages:
+			fn.call(id, _pages[id])
+		return
+	var by_shard := {}
+	for pid: String in _year_ids(year):
+		by_shard.get_or_add(shard_of(pid), []).append(pid)
+	for index: int in by_shard:
+		var shard := _shard(index)
+		for pid: String in by_shard[index]:
+			if shard.has(pid):
+				fn.call(pid, shard[pid])
+
+
+## 選手ページを分けたファイルがあるか（Web 版の書き出し）
+func has_player_shards() -> bool:
+	return FileAccess.file_exists(_shard_path(0))
+
+
+## 選手IDのページが入っているファイルの番号（tools/bundle_game_data.py の shard_of と同じ）
+static func shard_of(id: String) -> int:
+	var total := 0
+	for i in id.length():
+		total += id.unicode_at(i)
+	return total % PLAYER_SHARDS
+
+
+func _shard_path(index: int) -> String:
+	return BUNDLE_DATA_DIR.path_join("players/%02d.json" % index)
+
+
+func _shard(index: int) -> Dictionary:
+	if _shards.has(index):
+		_shard_order.erase(index)
+		_shard_order.append(index)
+		return _shards[index]
+	var parsed: Variant = null
+	if FileAccess.file_exists(_shard_path(index)):
+		parsed = JSON.parse_string(FileAccess.get_file_as_string(_shard_path(index)))
+	var shard: Dictionary = parsed if parsed is Dictionary else {}
+	_shards[index] = shard
+	_shard_order.append(index)
+	while _shard_order.size() > SHARD_KEEP:
+		_shards.erase(_shard_order.pop_front())
+	return shard
+
+
+## Web 版：その年の選手ID（players_by_year.json。無い年は近い前の年）
+func _year_ids(year: int) -> Array:
+	if _players_by_year_map.is_empty():
+		_players_by_year_map = _read_bundle_dict("players_by_year.json")
+	for y in range(year, year - 30, -1):
+		if _players_by_year_map.has(str(y)):
+			return _players_by_year_map[str(y)]
+	return []
+
+
+func _read_bundle_dict(file: String) -> Dictionary:
+	var path := BUNDLE_DATA_DIR.path_join(file)
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else null
+	return parsed if parsed is Dictionary else {}
+
+
+## Web 版：その年の選手のページを、分けたファイルから集める
+func _bundled_year_pages(year: int) -> Dictionary:
+	if not has_player_shards():
+		return {}
+	var by_shard := {}
+	for pid: Variant in _year_ids(year):
+		by_shard.get_or_add(shard_of(str(pid)), []).append(str(pid))
+	var result := {}
+	for index: int in by_shard:
+		var shard := _shard(index)
+		for pid: String in by_shard[index]:
+			if shard.has(pid):
+				result[pid] = shard[pid]
+	return result
 
 
 func _read_repo_json(relative: String) -> Variant:
 	var bundled := BUNDLE_DATA_DIR.path_join(relative)
 	if FileAccess.file_exists(bundled):
 		return JSON.parse_string(FileAccess.get_file_as_string(bundled))
+	if web_like() and has_player_shards():
+		return null  # Web 版にリポジトリの data/ は無い（Web 用のデータを置いたテストのまねでも読まない。作業74）
 	var repo_path := ProjectSettings.globalize_path("res://").path_join(REPO_DATA_DIR)
 	var path := repo_path.path_join(relative).simplify_path()
 	if not FileAccess.file_exists(path):

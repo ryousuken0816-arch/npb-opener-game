@@ -624,7 +624,7 @@ func _name_of(id: String) -> String:
 	var p := GameData.player(id)
 	if not p.is_empty():
 		return str(p.get("name", ""))
-	return str(GameData.all_player_pages(GameState.first_year).get(id, {}).get("name", id))
+	return str(GameData.player_page(GameState.first_year, id).get("name", id))
 
 
 # --- デプス ------------------------------------------------------------------------------------

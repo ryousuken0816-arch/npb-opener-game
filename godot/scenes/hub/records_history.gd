@@ -156,9 +156,7 @@ static func pages_summary(y: int) -> Dictionary:
 	var names := {}
 	var bio := {}
 	var last := {}
-	var pages := GameData.all_player_pages(y)
-	for id: String in pages:
-		var page: Dictionary = pages[id]
+	GameData.each_year_page(y, func(id: String, page: Dictionary) -> void:
 		names[id] = str(page.get("name", ""))
 		bio[id] = {"birth": page.get("birth"), "throws": page.get("throws", ""), "bats": page.get("bats", "")}
 		for kind: String in ["batting", "pitching"]:
@@ -179,7 +177,7 @@ static func pages_summary(y: int) -> Dictionary:
 				if ry > 0 and ry < fy:
 					var c: Dictionary = career.get_or_add(id, {})
 					Records.add_into(c.get_or_add(k, {}), line)
-					last[id] = maxi(int(last.get(id, 0)), ry)
+					last[id] = maxi(int(last.get(id, 0)), ry))
 	cached = {"first_year": fy, "season": season, "career": career, "names": names, "bio": bio, "last": last}
 	_remember(_pages_cache, y, cached, PAGES_YEARS)
 	return cached

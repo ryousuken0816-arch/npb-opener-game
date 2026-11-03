@@ -7,6 +7,14 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 GODOT_DATA = os.path.join(ROOT, "godot", "data")
 
 
+## 選手ページを分けるファイルの数と分け方（godot/autoload/game_data.gd の PLAYER_SHARDS・shard_of と同じ）
+PLAYER_SHARDS = 32
+
+
+def shard_of(pid: str) -> int:
+    return sum(ord(c) for c in pid) % PLAYER_SHARDS
+
+
 def write_minified(src_path: str, dst_path: str, strip_rating_detail: bool = False) -> int:
     os.makedirs(os.path.dirname(dst_path), exist_ok=True)
     with open(src_path, "r", encoding="utf-8") as f:
@@ -80,7 +88,7 @@ def main() -> None:
         dst = os.path.join(GODOT_DATA, "amateur", fname)
         total_bytes += write_minified(src, dst)
 
-    # 6. Merge data/<year>/players.json -> godot/data/all_players.json & players_by_year.json
+    # 6. Merge data/<year>/players.json -> godot/data/players/<NN>.json & players_by_year.json
     merged_players = {}
     players_by_year = {}
     for src in sorted(glob.glob(os.path.join(ROOT, "data", "*", "players.json"))):
@@ -92,11 +100,32 @@ def main() -> None:
         players_by_year[year_dir] = list(d.keys())
         merged_players.update(d)
 
-    all_players_dst = os.path.join(GODOT_DATA, "all_players.json")
-    all_players_text = json.dumps(merged_players, ensure_ascii=False, separators=(",", ":"))
-    with open(all_players_dst, "w", encoding="utf-8") as f:
-        f.write(all_players_text)
-    total_bytes += len(all_players_text.encode("utf-8"))
+    # 選手IDで PLAYER_SHARDS 個のファイルに分ける（docs/AUTORUN.md 作業74）。1つにまとめると Web 版で読んだとき
+    # 約90MB（読む瞬間は120MB）になり、iPhone で落ちた。ゲームは要る選手のファイルだけ読む（GameData.shard_of と同じ分け方）
+    shards = [dict() for _ in range(PLAYER_SHARDS)]
+    for pid, page in merged_players.items():
+        shards[shard_of(pid)][pid] = page
+    shard_dir = os.path.join(GODOT_DATA, "players")
+    os.makedirs(shard_dir, exist_ok=True)
+    for i, shard in enumerate(shards):
+        text = json.dumps(shard, ensure_ascii=False, separators=(",", ":"))
+        with open(os.path.join(shard_dir, "%02d.json" % i), "w", encoding="utf-8") as f:
+            f.write(text)
+        total_bytes += len(text.encode("utf-8"))
+    # 選手ID → 1軍初出場の年（ページの年度別成績の最小。育成の判定 GameData.page_debut_years が Web 版で使う）
+    debut = {}
+    for pid, page in merged_players.items():
+        years = [int(r["年度"]) for part in ("batting", "pitching") for r in (page.get(part) or [])
+                 if isinstance(r, dict) and isinstance(r.get("年度"), (int, float)) and int(r["年度"]) > 0]
+        if years:
+            debut[pid] = min(years)
+    debut_text = json.dumps(debut, ensure_ascii=False, separators=(",", ":"))
+    with open(os.path.join(GODOT_DATA, "player_debut.json"), "w", encoding="utf-8") as f:
+        f.write(debut_text)
+    total_bytes += len(debut_text.encode("utf-8"))
+    old_all = os.path.join(GODOT_DATA, "all_players.json")
+    if os.path.exists(old_all):
+        os.remove(old_all)
 
     by_year_dst = os.path.join(GODOT_DATA, "players_by_year.json")
     by_year_text = json.dumps(players_by_year, ensure_ascii=False, separators=(",", ":"))

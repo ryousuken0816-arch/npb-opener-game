@@ -89,12 +89,11 @@ static func _pct(r: Dictionary) -> float:
 
 ## 史実のタイトル（リーグ → Awards の titles と同じ形）。その年の選手ページが無ければ空
 func hist_titles(year: int) -> Dictionary:
-	var pages: Dictionary = GameData.all_player_pages(year)
-	if pages.is_empty():
-		return {}
 	var s := Season.new(year, {"players": []}, [], 1)
-	for id: String in pages:
-		var page: Dictionary = pages[id]
+	var count := [0]
+	# 1人ずつ受け取る（Web 版で1年分のページを同時に持たない。作業74）
+	GameData.each_year_page(year, func(id: String, page: Dictionary) -> void:
+		count[0] += 1
 		var team := ""
 		for kind: String in ["batting", "pitching"]:
 			for row: Variant in page.get(kind, []):
@@ -104,7 +103,9 @@ func hist_titles(year: int) -> Dictionary:
 				Records.add_into((s.batting if kind == "batting" else s.pitching).get_or_add(id, {}), line)
 				team = GameData.resolve_team(str(row.get("所属球団", "")), year)
 		if not team.is_empty():
-			s.players[id] = {"name": str(page.get("name", id)), "team": team}
+			s.players[id] = {"name": str(page.get("name", id)), "team": team})
+	if count[0] == 0:
+		return {}
 	for lg: String in ["C", "P"]:
 		for r: Dictionary in hist_standings(year)[lg]:
 			s.records[r["team"]] = {"w": r["w"], "l": r["l"], "d": r["d"], "rs": 0, "ra": 0}

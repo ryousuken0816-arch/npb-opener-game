@@ -303,6 +303,19 @@ func _check_autosave() -> void:
 		var info: Dictionary = _sg.call("info", "auto")
 		_check(info.get("summary", {}).get("date", "") == _gs.date_text(),
 			"月替わりでオートセーブを更新（%s）" % info.get("summary", {}).get("date", "なし"))
+	# 早送りの途中の月替わりでもオートセーブする（Web 版で落ちると早送りした月が消えていた。作業74）
+	var before_ff: String = _sg.call("info", "auto").get("summary", {}).get("date", "")
+	var month0: int = _gs.month
+	_gs.start_fast_forward(_gs.season_last_day())
+	for i in 600:  # 1日0.12秒（並列で流すと遅くなるので長めに待つ）
+		if _gs.month != month0:
+			break
+		await create_timer(0.1).timeout
+	await _frames(3)
+	var ff_info: Dictionary = _sg.call("info", "auto")
+	_check(_gs.is_fast_forwarding() and ff_info.get("summary", {}).get("date", "") != before_ff,
+		"早送りの途中の月替わりでもオートセーブ（%s → %s）" % [before_ff, ff_info.get("summary", {}).get("date", "なし")])
+	_gs.stop_fast_forward()
 	_gs.skip_to_phase(4)  # CONTRACT（表彰を通る。作業54のオフの順番）
 	await _frames(3)
 	var info2: Dictionary = _sg.call("info", "auto")
@@ -312,6 +325,18 @@ func _check_autosave() -> void:
 	info2 = _sg.call("info", "auto")
 	_check(int(info2.get("summary", {}).get("phase", -1)) == 6, "段階の切り替わり（ドラフト）でオートセーブを更新（%s）"
 		% info2.get("summary", {}).get("text", ""))
+	# ドラフトの1位が決まったらオートセーブ（ドラフトの途中に落ちても1位のあとから。作業74）
+	var d: RefCounted = _gs.draft()
+	var guard := 0
+	while d != null and d.stage == 0 and guard < 12:
+		guard += 1
+		d.run_first_wave()
+	_gs.draft_sync()
+	await _frames(3)
+	_gs.new_game("広島東洋カープ", 2009)
+	var draft_err: String = _sg.call("load_slot", "auto")
+	_check(draft_err.is_empty() and _gs.draft() != null and int(_gs.draft().stage) == 1
+		and _gs.draft().teams_without_first().is_empty(), "ドラフトの1位が決まるとオートセーブ（ロードすると2位から）")
 	_gs.new_game("広島東洋カープ", 2009)
 	var error: String = _sg.call("load_slot", "auto")
 	_check(error.is_empty() and _gs.phase == 6 and _gs.team == "中日ドラゴンズ", "オートセーブをロードできる")
