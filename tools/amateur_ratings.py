@@ -17,6 +17,10 @@
 4. 最後に入団時の水準をそろえる（作業62。`calibrate`。rookies・carry も最後に呼ぶ）：評価（S〜D。2025年秋は順位と競合の数から）の順に、
    その年の一番上が78〜81、大卒・社会人の1位が B 前後、高卒の上位は総合 C の60台＋武器（奪三振・パワー・走力）1つを B〜A。
    能力の形は残して全体を上下する。ピーク（growth.peak）は入団時を下回らないようにだけする
+5. 守備（作業66。`calibrate` の中）：アマの選手には守備の記録が無いので、守備位置の書き方（pos_detail。2025年秋の新人は翌年の史実の守備位置）と
+   評価・長所の言葉・遠投から、本職と近い位置の fielding（守備力・肩）と batting の defense・arm を作る。投手にも投手の守備力を付ける。
+   架空の候補（godot/sim/fictional_draft.gd の fill_fielding）と同じ決め方
+6. 弾道（作業66の続き。`calibrate` の中）：入団時のパワー＋パワー型かミート型か（パワー−ミート）＋有識者の評判（長打・打球の角度／巧打・非力）から1〜4。投手は1
 入力は data/amateur/<年>.json（形式は data/amateur/README.md）。
 2026_pre の2025年秋の新人は下地（Templates）にも使うので、2025年秋をそろえるのは作り直しの最後（tools/rebuild_all_ratings.py）。
 """
@@ -27,6 +31,7 @@ import copy
 import json
 import re
 import unicodedata
+import zlib
 from collections import defaultdict
 from pathlib import Path
 
@@ -353,6 +358,46 @@ PITCH_KEYS = ("overall", "k9", "bb9", "hr9")
 BAT_MAIN = ("meet", "power", "eye")
 BAT_WEAPONS = ("power", "speed")
 
+## 守備位置・守備力・肩（作業66）。アマの選手には npb.jp・basement の守備の記録が無いので、守備位置の書き方と評価から作る。
+## 架空の候補（godot/sim/fictional_draft.gd の fill_fielding）と同じ決め方
+FIELD_POS = ("捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "外野手")
+INFIELD = ("一塁手", "二塁手", "三塁手", "遊撃手")
+## 能力値の fielding で肩がある位置（一塁・二塁は守備力だけ）
+ARM_POS = ("捕手", "三塁手", "遊撃手", "外野手")
+## 守備位置の書き方（「遊撃手・三塁手」「右翼手・中堅手」「捕手（内外野も可）」など）→ 位置
+POS_WORDS = (("捕手", "捕手"), ("一塁", "一塁手"), ("二塁", "二塁手"), ("三塁", "三塁手"), ("遊撃", "遊撃手"),
+             ("外野", "外野手"), ("左翼", "外野手"), ("中堅", "外野手"), ("右翼", "外野手"))
+## 書き方の無い内野手：守備力がこれ以上なら遊撃手、肩がこれ以上なら三塁手、守備力がこれ以上なら二塁手、ほかは一塁手（高校は FIELD_HS_GAP 下げる）
+INFIELD_SS_DEF, INFIELD_3B_ARM, INFIELD_2B_DEF = 60, 60, 52
+## 近い位置（本職の守備力からの差）。本職だけだと試合で控え・守備固めに回せないので、隣の位置も少し下げて守れるようにする。
+## 書き方にある2つ目からの位置は NAMED_SUB_GAP 下げる
+SUB_POS = {"遊撃手": {"二塁手": -3, "三塁手": -4}, "二塁手": {"遊撃手": -6, "一塁手": -2}, "三塁手": {"一塁手": -2}}
+NAMED_SUB_GAP = 3
+## 評価ごとの守備力・肩の見込み（大学・社会人など。高校は FIELD_HS_GAP 下げる）。2028年以降の架空の候補の入団時の中央（守備力・肩とも
+## 大学・社会人など S 62・A 60・B 58・C 56・D 54 前後、高校はおよそ5低い）に合わせた
+FIELD_LEVEL = {"S": 62, "A": 60, "B": 58, "C": 56, "D": 54}
+FIELD_HS_GAP = 5
+## 投手の守備力（npb.jp の失策率から。出場の少ない投手の中央は71）。高校は PITCH_FIELD_HS_GAP 下げる
+PITCH_FIELD_LEVEL = {"S": 73, "A": 72, "B": 71, "C": 70, "D": 69}
+PITCH_FIELD_HS_GAP = 2
+## 選手ごとのゆらぎ（名前から決まる ± の幅。何度作っても同じ）
+FIELD_SPREAD = 4
+## 長所・短所の言葉（守備・強肩など。1語 STRENGTH_BONUS）は守備力・肩をこの割合だけ動かす
+FIELD_TRAIT_SHARE = 0.7
+
+## 入団時の弾道（作業66の続き。架空の候補の FictionalDraft.set_trajectory と同じ決め方）：
+## 点 = パワー + TRAJ_SHAPE ×（パワー − ミート）+ TRAJ_WORD × 評判（長打・角度の評判 +1、巧打・コンパクト型や短所の非力 −1）。
+## 点が TRAJ_CUTS 以上なら 4・3・2、ほかは1（4 はパワー TRAJ_4_POWER 以上だけ）。
+## 2008〜2025年の新人の1年目（シーズン後）は 1 が15%・2 が80%・3 が4%・4 が0.4%（パワー 1:〜46、3:63〜、4:81〜。TRAJECTORY_CUTOFFS どおり）。
+## 入団時のパワーは46〜78に収まるので、そのままの区切りでは1と4が出ない。形（パワー型・ミート型）と評判を足して、1と4が少しだけ出るようにした
+TRAJ_SHAPE = 0.4
+TRAJ_WORD = 4
+TRAJ_CUTS = ((80, 4), (66, 3), (46, 2))
+TRAJ_4_POWER = 74
+TRAJ_UP_WORDS = ("長打", "パワー", "本塁打", "飛距離", "強打", "スラッガー", "長距離", "角度", "アーチ", "ホームラン", "大砲")
+TRAJ_DOWN_WORDS = ("コンパクト", "単打", "ゴロ", "ライナー", "バント", "小技", "つなぎ", "巧打")
+TRAJ_WEAK_WORDS = ("長打", "パワー", "非力")
+
 
 def _num(block: dict, key: str, fallback: float) -> float:
     r = block.get(key)
@@ -425,13 +470,171 @@ def _weapon_key(a: dict, r: dict) -> str:
     return max(BAT_WEAPONS, key=lambda k: _num(r, k, 0) - {"power": 52, "speed": 57}[k])
 
 
-def calibrate(ratings: dict, draft_year: int, scout: dict) -> list[dict]:
+def _spread(pid: str, key: str) -> int:
+    return zlib.crc32(f"{pid}:{key}".encode("utf-8")) % (2 * FIELD_SPREAD + 1) - FIELD_SPREAD
+
+
+def positions_of(text) -> list[str]:
+    """守備位置の書き方 → 位置（書かれた順）"""
+    t = str(text or "")
+    out = []
+    for _, pos in sorted((t.find(w), pos) for w, pos in POS_WORDS if w in t):
+        if pos not in out:
+            out.append(pos)
+    return out
+
+
+def infield_pos(d: float, arm: float, hs: bool) -> str:
+    gap = FIELD_HS_GAP if hs else 0
+    if d >= INFIELD_SS_DEF - gap:
+        return "遊撃手"
+    if arm >= INFIELD_3B_ARM - gap:
+        return "三塁手"
+    return "二塁手" if d >= INFIELD_2B_DEF - gap else "一塁手"
+
+
+def _field_entry(pos: str, d: float, arm: float) -> dict:
+    e = {"games": 0, "defense": {}, "gold_glove": False}
+    set_value(e, "defense", d)
+    if pos in ARM_POS:
+        set_value(e, "arm", arm)
+    return e
+
+
+def build_fielding(group: str, named: list[str], d: float, arm: float, hs: bool) -> tuple[str, dict]:
+    """区分の守備位置（捕手・内野手・外野手。決まった位置でもよい）と書き方の位置 → (本職, fielding)"""
+    named = [x for x in named if x in FIELD_POS]
+    if group in FIELD_POS:
+        primary = group
+    else:
+        same = [x for x in named if x in INFIELD] if group == "内野手" else named
+        primary = same[0] if same else infield_pos(d, arm, hs)
+    out = {primary: _field_entry(primary, d, arm)}
+    for x in named:
+        if x not in out:
+            out[x] = _field_entry(x, d - NAMED_SUB_GAP, arm)
+    for x, gap in SUB_POS.get(primary, {}).items():
+        if x not in out:
+            out[x] = _field_entry(x, d + gap, arm)
+    return primary, out
+
+
+def assign_fielding(p: dict, a: dict, grade: str, hs: bool, known: tuple | None = None) -> bool:
+    """守備の記録が無い新人・候補 p に守備位置・守備力・肩を付ける（付けたら True）。
+    a は有識者の評価（pos_detail・長所の言葉・遠投）、known は翌年の史実の (primary_pos, [守った位置])"""
+    if p.get("fielding"):
+        return False
+    pid = str(p.get("id") or p.get("name"))
+    br = p["batting"].get("ratings") if isinstance(p.get("batting"), dict) else None
+    if p.get("is_pitcher"):
+        e = {"games": 0, "defense": {}, "gold_glove": False}
+        set_value(e, "defense", PITCH_FIELD_LEVEL.get(grade, 70) - (PITCH_FIELD_HS_GAP if hs else 0) + _spread(pid, "defense"))
+        p["fielding"] = {"投手": e}
+        if isinstance(br, dict) and br:
+            br["defense"] = dict(e["defense"])  # 史実の投手と同じく打撃の側にも守備力
+        return True
+    if not isinstance(br, dict):
+        return False
+    deltas = trait_deltas(a, False) if a else {}
+    base = FIELD_LEVEL.get(grade, FIELD_LEVEL["C"]) - (FIELD_HS_GAP if hs else 0)
+    d = base + FIELD_TRAIT_SHARE * deltas.get("defense", 0) + _spread(pid, "defense")
+    arm = base + FIELD_TRAIT_SHARE * deltas.get("arm", 0) + _spread(pid, "arm")
+    if a and a.get("long_throw_m"):
+        arm += max(-NUMBER_CAP, min(NUMBER_CAP, THROW_PER_M * (float(a["long_throw_m"]) - 100)))
+    d, arm = (max(30.0, _soft_cap(x, RATING_CAP)) for x in (d, arm))
+    if known:
+        group, named = known
+    else:
+        group = (a or {}).get("pos") or p.get("primary_pos") or "内野手"
+        named = positions_of((a or {}).get("pos_detail"))
+    primary, fielding = build_fielding(group, named, d, arm, hs)
+    p["primary_pos"] = primary
+    p["fielding"] = fielding
+    set_value(br, "defense", d)
+    set_value(br, "arm", arm)
+    return True
+
+
+def trajectory_reputation(a: dict) -> int:
+    """長打・打球の角度の評判 +1、巧打・コンパクト型（長打の評判が無いとき）か短所の非力 −1"""
+    scout = (a or {}).get("scout") or {}
+    good = " ".join(str(x) for x in (scout.get("strengths") or [])) + " " + str(scout.get("type") or "")
+    weak = " ".join(str(x) for x in (scout.get("weaknesses") or []))
+    up = any(w in good for w in TRAJ_UP_WORDS)
+    down = (not up and any(w in good for w in TRAJ_DOWN_WORDS)) or any(w in weak for w in TRAJ_WEAK_WORDS)
+    return int(up) - int(down)
+
+
+def rookie_trajectory(r: dict, rep: int) -> int:
+    pw = _num(r, "power", 50)
+    score = pw + TRAJ_SHAPE * (pw - _num(r, "meet", 50)) + TRAJ_WORD * rep
+    for cut, t in TRAJ_CUTS:
+        if score >= cut and (t < 4 or pw >= TRAJ_4_POWER):
+            return t
+    return 1
+
+
+def known_positions(draft_year: int) -> dict:
+    """draft_year 年秋の新人が翌年に史実で守った位置（<年+2>_pre が史実の成績から作ったファイルのとき）。id と名前 → (本職, [位置])"""
+    path = RATINGS / f"{draft_year + 2}_pre.json"
+    if not path.exists():
+        return {}
+    r = load(path)
+    if r.get("carried_from"):
+        return {}
+    out = {}
+    for q in r["players"]:
+        if str(q.get("draft") or "").startswith(f"{draft_year}年") and not q.get("is_pitcher") \
+                and q.get("primary_pos") in FIELD_POS:
+            v = (q["primary_pos"], [k for k in (q.get("fielding") or {}) if k in FIELD_POS])
+            out[str(q.get("id"))] = out[norm_name(q["name"])] = v
+    return out
+
+
+def draftee_grade(p: dict, draft_year: int, a: dict, lottery: dict) -> tuple[str, bool, tuple]:
+    """新人・候補の評価（S〜D）、高卒か、並べる順の材料"""
+    text = str(p.get("draft") or "")
+    am = p.get("amateur") or {}
+    key = norm_name(p["name"])
+    rnd, ikusei = draft_round(text)
+    lot = lottery.get(key, {})
+    bids, wave = int(lot.get("bids", 0)), int(lot.get("wave", 9))
+    grade = (a.get("scout") or {}).get("grade") or am.get("grade") or a.get("eval_rank")
+    if grade not in GRADE_LEVEL:
+        grade = grade_from_draft(rnd, ikusei, bids, wave)
+    if TOP_OF_YEAR.get(draft_year) == key:
+        grade = "S"
+    school = str(p.get("career") or "").split(" - ")[-1]
+    hs = (am.get("category") or a.get("category") or category_of(school)) == "高校"
+    return grade, hs, (-GRADE_LEVEL[grade], not TOP_OF_YEAR.get(draft_year) == key, -bids, wave,
+                       rnd + (100 if ikusei else 0))
+
+
+def lottery_of(draft_year: int) -> dict:
+    if not LOTTERY.exists():
+        return {}
+    return {norm_name(x["name"]): x for x in load(LOTTERY) if x.get("draft_year") == draft_year}
+
+
+def fill_fielding(ratings: dict, draft_year: int, scout: dict, known: dict | None = None) -> int:
+    """draft_year 年秋の新人で守備の記録が無い選手に守備を付ける（史実の成績から作ったファイルで、2軍でも守っていない新人など）。付けた人数"""
+    lottery = lottery_of(draft_year)
+    n = 0
+    for p in ratings["players"]:
+        if not str(p.get("draft") or "").startswith(f"{draft_year}年") or p.get("fielding"):
+            continue
+        a = scout.get(norm_name(p["name"]), {})
+        grade, hs, _ = draftee_grade(p, draft_year, a, lottery)
+        k = (known or {}).get(str(p.get("id"))) or (known or {}).get(norm_name(p["name"]))
+        n += assign_fielding(p, a, grade, hs, k)
+    return n
+
+
+def calibrate(ratings: dict, draft_year: int, scout: dict, known: dict | None = None) -> list[dict]:
     """draft_year 年秋の新人・候補（draft が「<年>年」で始まる選手）の入団時の能力を、評価の順にそろえる。
     能力の形（長所・短所）は残し、全体を上下する。ピーク（growth.peak）は入団時を下回らないようにだけする。
     同じ能力値ファイルに何度かけても同じになる。そろえた選手の一覧（評価の順）を返す"""
-    lottery = {}
-    if LOTTERY.exists():
-        lottery = {norm_name(x["name"]): x for x in load(LOTTERY) if x.get("draft_year") == draft_year}
+    lottery = lottery_of(draft_year)
     rows = []
     for p in ratings["players"]:
         text = str(p.get("draft") or "")
@@ -440,21 +643,12 @@ def calibrate(ratings: dict, draft_year: int, scout: dict) -> list[dict]:
         am = p.get("amateur") or {}
         key = norm_name(p["name"])
         a = scout.get(key, {})
-        rnd, ikusei = draft_round(text)
-        lot = lottery.get(key, {})
-        bids, wave = int(lot.get("bids", 0)), int(lot.get("wave", 9))
-        grade = (a.get("scout") or {}).get("grade") or am.get("grade") or a.get("eval_rank")
-        if grade not in GRADE_LEVEL:
-            grade = grade_from_draft(rnd, ikusei, bids, wave)
-        if TOP_OF_YEAR.get(draft_year) == key:
-            grade = "S"
+        grade, hs, order = draftee_grade(p, draft_year, a, lottery)
         if am and grade in GRADE_LEVEL:
             am["grade"] = grade  # 当時の評価（ドラフト画面）も有識者の評価にそろえる
-        school = str(p.get("career") or "").split(" - ")[-1]
-        hs = (am.get("category") or a.get("category") or category_of(school)) == "高校"
-        rows.append({"p": p, "a": a, "grade": grade, "hs": hs,
-                     "order": (-GRADE_LEVEL[grade], not TOP_OF_YEAR.get(draft_year) == key, -bids, wave,
-                               rnd + (100 if ikusei else 0), -round(entry_level(p), 1))})
+        # 守備（作業66）。入団時の総合（野手は守備力も少し入る）より先に付ける
+        assign_fielding(p, a, grade, hs, (known or {}).get(str(p.get("id"))) or (known or {}).get(key))
+        rows.append({"p": p, "a": a, "grade": grade, "hs": hs, "order": order + (-round(entry_level(p), 1),)})
     rows.sort(key=lambda x: x["order"])
     seen: dict[tuple, int] = defaultdict(int)
     shift = YEAR_SHIFT.get(draft_year, 0)
@@ -487,6 +681,7 @@ def calibrate(ratings: dict, draft_year: int, scout: dict) -> list[dict]:
                 wk = _weapon_key(x["a"], r)
                 set_value(r, wk, max(_num(r, wk, 0), w_val))
                 _fit_batter(r, target, [k for k in keys if k != wk], cap)
+            p["batting"]["trajectory"] = rookie_trajectory(r, trajectory_reputation(x["a"]))
         g = p.get("growth")
         if isinstance(g, dict) and isinstance(g.get("peak"), dict):
             part = p["pitching"] if p.get("is_pitcher") and isinstance(p.get("pitching"), dict) else p["batting"]
@@ -517,13 +712,25 @@ def calibrate_files(draft_year: int) -> list[Path]:
 def cmd_calibrate(args) -> None:
     y = args.draft_year
     scout = scout_index(y)
+    known = known_positions(y)
     for path in calibrate_files(y):
         ratings = load(path)
-        rows = calibrate(ratings, y, scout)
+        rows = calibrate(ratings, y, scout, known)
         dump(path, ratings)
         top = sorted(rows, key=lambda x: -entry_level(x["p"]))[:5]
         print(f"[amateur] {y}年秋の新人・候補の入団時をそろえた -> {path.name}: {len(rows)}人。上位 "
               + "・".join(f"{x['p']['name']} {round(entry_level(x['p']))}" for x in top))
+    # 史実の成績から作った翌々年のファイル（2025年秋 → 2027_pre）と、それを引き継いだファイル（2027_post・2028_pre）でも、
+    # 守備の記録が無い新人に守備を付ける
+    for name in (f"{y + 2}_pre", f"{y + 2}_post", f"{y + 3}_pre"):
+        later = RATINGS / f"{name}.json"
+        if not later.exists() or later in calibrate_files(y):
+            continue
+        ratings = load(later)
+        n = fill_fielding(ratings, y, scout, known)
+        if n:
+            dump(later, ratings)
+            print(f"[amateur] {y}年秋の新人で守備の記録が無い {n}人に守備を付けた -> {later.name}")
 
 
 # ---------------------------------------------------------------- コマンド

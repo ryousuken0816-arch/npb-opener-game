@@ -59,6 +59,24 @@ const CAP_KNEE := 7.0
 const CAP_SOFTNESS := 0.4
 ## 高卒の野手の武器の選び方：元の値がこの中央よりいちばん上に出ているもの
 const WEAPON_MEDIAN := {"power": 52.0, "speed": 57.0, "arm": 64.0}
+## 守備位置・守備力・肩（作業66。fill_fielding。tools/amateur_ratings.py の同じ名前の定数と同じ値）
+const FIELD_POS := ["捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "外野手"]
+## 能力値の fielding で肩がある位置（一塁・二塁は守備力だけ）
+const ARM_POS := ["捕手", "三塁手", "遊撃手", "外野手"]
+const INFIELD_SS_DEF := 60.0
+const INFIELD_3B_ARM := 60.0
+const INFIELD_2B_DEF := 52.0
+const FIELD_HS_GAP := 5.0
+## 近い位置（本職の守備力からの差）
+const SUB_POS := {"遊撃手": {"二塁手": -3, "三塁手": -4}, "二塁手": {"遊撃手": -6, "一塁手": -2}, "三塁手": {"一塁手": -2}}
+## 投手の守備力（評価ごと。高校は PITCH_FIELD_HS_GAP 下げる）と、選手ごとのゆらぎの幅
+const PITCH_FIELD_LEVEL := {"S": 73, "A": 72, "B": 71, "C": 70, "D": 69}
+const PITCH_FIELD_HS_GAP := 2.0
+const FIELD_SPREAD := 4
+## 入団時の弾道（set_trajectory。tools/amateur_ratings.py の同じ名前の定数と同じ値）
+const TRAJ_SHAPE := 0.4
+const TRAJ_CUTS := [[80.0, 4], [66.0, 3], [46.0, 2]]
+const TRAJ_4_POWER := 74.0
 ## 転生選手の出現確率（人数分布）
 const REINCARNATION_ODDS := [0.65, 0.25, 0.08, 0.02]
 ## 転生選手の高校／大学の割合
@@ -310,6 +328,8 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 		if bool(tw.get("active", false)):
 			p["amateur"]["type"] = FictionalTalent.decide_player_type(p)
 			p["amateur"]["intro"] = intro_of(p)
+		fill_fielding(p)
+		set_trajectory(p)
 
 	return out
 
@@ -329,6 +349,75 @@ func _monster_slots(picks: Array, rng: RandomNumberGenerator) -> Dictionary:
 	while out.size() > MAX_MONSTERS:
 		out.erase(out.keys()[rng.randi_range(0, out.size() - 1)])
 	return out
+
+
+## 守備位置・守備力・肩（作業66。tools/amateur_ratings.py の assign_fielding と同じ決め方）。
+## 区分の守備位置（内野手）は守備力・肩から遊撃手・三塁手・二塁手・一塁手に分け（SimPlayer は「内野手」の位置を知らず、
+## 試合で本職の位置が不慣れの扱いになっていた）、近い位置も少し下げて守れるようにする。投手にも投手の守備力を付ける。
+## 選手ごとのゆらぎは id から決める（乱数を使わない。あとの抽選・指名の乱数をずらさない）
+static func fill_fielding(p: Dictionary) -> void:
+	var am: Dictionary = p.get("amateur", {})
+	var hs := str(am.get("category", p.get("category", ""))) == "高校"
+	if bool(p.get("is_pitcher", false)):
+		var e := {"games": 0, "defense": {}, "gold_glove": false}
+		_set_rating(e, "defense", float(PITCH_FIELD_LEVEL.get(str(am.get("grade", "C")), 70))
+			- (PITCH_FIELD_HS_GAP if hs else 0.0) + _field_spread(p))
+		p["fielding"] = {"投手": e}
+		return
+	var br: Dictionary = p["batting"]["ratings"]
+	var d := _rv(br, "defense", 50.0)
+	var arm := _rv(br, "arm", 50.0)
+	var primary := str(p.get("primary_pos", ""))
+	if not primary in FIELD_POS:
+		primary = infield_pos(d, arm, hs)
+	var out := {primary: _field_entry(primary, d, arm)}
+	var subs: Dictionary = SUB_POS.get(primary, {})
+	for x: String in subs:
+		out[x] = _field_entry(x, d + float(subs[x]), arm)
+	p["primary_pos"] = primary
+	p["fielding"] = out
+
+
+## 入団時の弾道（作業66の続き。tools/amateur_ratings.py の rookie_trajectory と同じ決め方。架空の候補には評判の言葉が無いので評判は0）：
+## 点 = パワー + TRAJ_SHAPE ×（パワー − ミート）が TRAJ_CUTS 以上なら 4・3・2、ほかは1（4 はパワー TRAJ_4_POWER 以上だけ）。
+## 投手は1のまま（二刀流の投手は打撃の能力から決める）
+static func set_trajectory(p: Dictionary) -> void:
+	var two_way: Variant = p.get("two_way")
+	var bats := not bool(p.get("is_pitcher", false)) or (two_way is Dictionary and bool(two_way.get("active", false)))
+	var bat: Variant = p.get("batting")
+	if not bats or not bat is Dictionary or not bat.get("ratings") is Dictionary or not bat["ratings"].has("power"):
+		return
+	var r: Dictionary = bat["ratings"]
+	var pw := _rv(r, "power", 50.0)
+	var score := pw + TRAJ_SHAPE * (pw - _rv(r, "meet", 50.0))
+	var t := 1
+	for c: Array in TRAJ_CUTS:
+		if score >= float(c[0]) and (int(c[1]) < 4 or pw >= TRAJ_4_POWER):
+			t = int(c[1])
+			break
+	bat["trajectory"] = t
+
+
+## 書き方の無い内野手の位置（守備力 → 遊撃手、肩 → 三塁手、守備力 → 二塁手、ほかは一塁手。高校は FIELD_HS_GAP 下げる）
+static func infield_pos(d: float, arm: float, hs: bool) -> String:
+	var gap := FIELD_HS_GAP if hs else 0.0
+	if d >= INFIELD_SS_DEF - gap:
+		return "遊撃手"
+	if arm >= INFIELD_3B_ARM - gap:
+		return "三塁手"
+	return "二塁手" if d >= INFIELD_2B_DEF - gap else "一塁手"
+
+
+static func _field_entry(pos: String, d: float, arm: float) -> Dictionary:
+	var e := {"games": 0, "defense": {}, "gold_glove": false}
+	_set_rating(e, "defense", d)
+	if pos in ARM_POS:
+		_set_rating(e, "arm", arm)
+	return e
+
+
+static func _field_spread(p: Dictionary) -> float:
+	return float(posmod(str(p.get("id", p.get("name", ""))).hash(), 2 * FIELD_SPREAD + 1) - FIELD_SPREAD)
 
 
 ## 入団時の総合（投手の総合の物差し。野手は換算。tools/amateur_ratings.py の entry_level と同じ）
