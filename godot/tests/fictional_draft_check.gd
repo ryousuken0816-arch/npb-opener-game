@@ -305,7 +305,7 @@ func _check_generator() -> void:
 
 ## 作業50：当時の評価・怪物・高校生の完成度・上位投手のスタミナ・名前・所属の区分（ドラフトの時点で見える情報だけを集計）
 func _check_balance() -> void:
-	print("== 作業50：架空の候補の手直し（30年分） ==")
+	print("== 作業50・62：架空の候補の手直し・入団時の水準（30年分） ==")
 	var fd: RefCounted = _fd.new()
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 2050
@@ -323,6 +323,15 @@ func _check_balance() -> void:
 	var top_p := 0
 	var top_p_starter := 0
 	var star_names := 0
+	var tops: Array = []
+	var ready1: Array = []
+	var hs_top := 0
+	var hs_top_weak := 0
+	var strong_not_monster := 0
+	var mon_cat := {}
+	var mon_weak := 0
+	var sa_bat := 0
+	var sa_all := 0
 	var legends := {}
 	for l: Dictionary in fd.data.get("legends", []):
 		legends[str(l["name"]).replace(" ", "")] = true
@@ -330,8 +339,33 @@ func _check_balance() -> void:
 		var s := 0
 		var a := 0
 		var mon := 0
+		var top := 0.0
 		for p: Dictionary in fd.generate_year(y, rng):
 			var am: Dictionary = p["amateur"]
+			# 作業62：入団時の水準（投手は総合、野手は換算。FictionalDraft.entry_level）
+			var lv: float = _fd.entry_level(p)
+			var reg := not bool(am["as_ikusei"]) and not p.has("reincarnation")
+			if reg:
+				top = maxf(top, lv)
+			if bool(p.get("is_monster", false)):
+				mon_cat[am["category"]] = int(mon_cat.get(am["category"], 0)) + 1
+				var w := int(p["pitching"]["ratings"]["k9"]["value"]) if p["is_pitcher"] else maxi(
+					int(p["batting"]["ratings"]["power"]["value"]), maxi(int(p["batting"]["ratings"]["speed"]["value"]),
+					int(p["batting"]["ratings"]["arm"]["value"])))
+				mon_weak += 1 if (am["category"] == "高校" and w < 84) or (am["category"] != "高校" and lv < 79.5) else 0
+			elif reg and not p.has("dream") and lv >= 79.6:
+				strong_not_monster += 1
+			if str(am.get("band", "")) == "1" and am["category"] != "高校" and not bool(p.get("is_monster", false)):
+				ready1.append(lv)
+			if am["grade"] in ["S", "A"]:
+				sa_all += 1
+				sa_bat += 0 if p["is_pitcher"] else 1
+				if am["category"] == "高校" and not bool(p.get("is_monster", false)):
+					hs_top += 1
+					var best := int(p["pitching"]["ratings"]["k9"]["value"]) if p["is_pitcher"] else maxi(
+						int(p["batting"]["ratings"]["power"]["value"]), maxi(int(p["batting"]["ratings"]["speed"]["value"]),
+						int(p["batting"]["ratings"]["arm"]["value"])))
+					hs_top_weak += 1 if best < 70 else 0
 			s += 1 if am["grade"] == "S" else 0
 			a += 1 if am["grade"] == "A" else 0
 			var monster := bool(p.get("is_monster", false))
@@ -340,22 +374,17 @@ func _check_balance() -> void:
 					or legends.has(str(p["name"]).replace(" ", "")):
 				star_names += 1
 			if am["category"] == "高校" and not bool(am["as_ikusei"]):
-				# 入団時の総合の目安（投手は総合、野手はミート・パワーの高いほう）
-				var ovr := 0
-				if p["is_pitcher"]:
-					ovr = int(p["pitching"]["ratings"]["overall"]["value"])
-				else:
-					ovr = maxi(int(p["batting"]["ratings"]["meet"]["value"]), int(p["batting"]["ratings"]["power"]["value"]))
 				hs_reg += 1
-				hs_cd += 1 if ovr >= 50 and ovr < 70 else 0
+				hs_cd += 1 if lv >= 40 and lv < 70 else 0
 				if monster:
 					hs_phenom += 1
-				elif ovr >= 70:
+				elif lv >= 70:
 					hs_strong += 1
 			if p["is_pitcher"] and am["grade"] in ["S", "A"]:
 				top_p += 1
 				if int(p["pitching"]["ratings"]["stamina"]["value"]) >= 60 and str(p["pitching"]["role"]) == "先発":
 					top_p_starter += 1
+		tops.append(roundi(top))
 		s_total += s
 		a_total += a
 		mon_total += mon
@@ -374,6 +403,20 @@ func _check_balance() -> void:
 	_check(float(top_p_starter) / maxf(1, top_p) >= 0.7, "当時の評価 S・A の投手の多くは先発型・スタミナ C 以上（%.0f%%）"
 		% (100.0 * top_p_starter / maxf(1, top_p)))
 	_check(star_names == 0, "名前に実在のスターの名前（大谷・朗希など、名選手と同じ姓名）を使わない（%d人）" % star_names)
+	# 作業62：2025〜2027年の実在の新人と同じ物差し
+	var ready_avg := 0.0
+	for v: float in ready1:
+		ready_avg += v / maxf(1, ready1.size())
+	var tops_bad := tops.filter(func(t: int) -> bool: return t < 76 or t > 84)
+	print("  その年の一番上 %s、1位の帯の大学・社会人など 平均 %.1f、怪物 %s、S・A の野手 %.0f%%"
+		% [tops, ready_avg, mon_cat, 100.0 * sa_bat / maxf(1, sa_all)])
+	_check(tops_bad.is_empty(), "その年の一番上は入団時の総合 78 前後〜82（怪物の年は 84 まで。外れた年 %s）" % [tops_bad])
+	_check(ready_avg >= 68 and ready_avg <= 76, "大卒・社会人などの1位の帯は B 前後（平均 %.1f）" % ready_avg)
+	_check(hs_top_weak == 0 and hs_top > 0, "高卒の S・A は武器（奪三振・パワー・走力・肩）を1つ B 以上（武器なし %d／%d人）" % [hs_top_weak, hs_top])
+	_check(strong_not_monster == 0, "入団時の総合 A（80以上）は怪物だけ（怪物以外 %d人）" % strong_not_monster)
+	_check(int(mon_cat.get("大学", 0)) + int(mon_cat.get("社会人", 0)) + int(mon_cat.get("独立", 0)) >= 2 and mon_weak == 0,
+		"大学・社会人・独立からも怪物が出て、入団時から飛び抜けている（怪物 %s、足りない %d人）" % [mon_cat, mon_weak])
+	_check(float(sa_bat) / maxf(1, sa_all) >= 0.25, "S・A の野手もそれなりにいる（%.0f%%）" % (100.0 * sa_bat / maxf(1, sa_all)))
 	# 所属の区分：独立リーグ・くふうハヤテは「独立」、専門学校は「専門」、古い社名は無い
 	var bad_cat: Array = []
 	var has_vocational := false
@@ -382,9 +425,10 @@ func _check_balance() -> void:
 		var cat := str(sc["category"])
 		has_vocational = has_vocational or cat == "専門"
 		if (("IL" in name or "BC" in name or "ハヤテ" in name or "インディゴ" in name) and cat != "独立") \
-				or ("専門学校" in name and cat != "専門") or name in ["JX-ENEOS", "新日鐵住金鹿島", "三菱日立パワーシステムズ"]:
+				or ("専門学校" in name and cat != "専門") or name in ["JX-ENEOS", "新日鐵住金鹿島", "三菱日立パワーシステムズ"] \
+				or "分校" in name or "準硬式" in name:
 			bad_cat.append("%s（%s）" % [name, cat])
-	_check(bad_cat.is_empty() and has_vocational, "所属の区分（独立・専門学校）と今の社名（区分の誤り %s）" % [bad_cat])
+	_check(bad_cat.is_empty() and has_vocational, "所属の区分（独立・専門学校）と今の社名、分校・準硬式は使わない（誤り %s）" % [bad_cat])
 	# ドラフト画面の経歴：独立・専門学校の区分がそのまま出る
 	_check(_draft.CATEGORY_CAREER.get("独立", "") == "独立" and _draft.career_of_row({"category": "専門", "school": "x専門学校"}) == "専門学校"
 		and _draft.career_of_row({"school": "明治大"}) == "大学生", "ドラフト画面の経歴は架空の候補の区分から（独立・専門学校）")

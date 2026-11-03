@@ -28,11 +28,37 @@ const A_EVAL := 0.98
 const A_COUNT := [4, 10]
 ## 競合の球団数（格付け S）
 const S_BIDS := [2, 5]
-## 怪物（is_monster。入団時から主力級で、まだ伸びる）の1年あたりの確率。年に0〜2人
-## 高校生の化け物（佐々木朗希のような。ユーザー了承 2026-11-02）は数年に1人
-const HS_PHENOM_RATE := 0.30
-## 大学・社会人の即戦力の怪物
-const READY_MONSTER_RATE := 0.35
+## 怪物（is_monster。入団時から飛び抜けていて、まだ伸びる）の区分ごとの1年あたりの確率。年に MAX_MONSTERS 人まで
+## 高校生の化け物（佐々木朗希のような。ユーザー了承 2026-11-02）は数年に1人。大学・社会人・独立からもたまに
+## （ユーザー 2026-11-03「たまの化け物もいるよね？高卒にも、どこにも」）
+const MONSTER_RATE := {"高校": 0.30, "大学": 0.20, "社会人": 0.12, "独立": 0.06}
+const MAX_MONSTERS := 2
+## 入団時の水準（作業62。tools/amateur_ratings.py の calibrate と同じ物差し）。投手は総合、野手は
+## 0.35ミート＋0.35パワー＋0.1選球眼＋0.1走力＋0.1（守備−13）を投手の総合に換算（62＋1.875×（野手−60））
+const BAT_MID := 60.0
+const PITCH_MID := 62.0
+const BAT_TO_PITCH := 1.875
+## 評価ごとの入団時の総合 [上, 下]。同じ評価の中は見た目の評価の順に LEVEL_STEP ずつ下げる（下の値より下げない）
+const LEVEL_READY := {"S": [79, 74], "A": [75, 70], "B": [69, 64], "C": [63, 57], "D": [56, 50]}
+const LEVEL_HS := {"S": [68, 64], "A": [64, 60], "B": [59, 55], "C": [54, 49], "D": [48, 43]}
+const LEVEL_STEP := 1.0
+## 高卒の S・A の武器 [上, 下]（投手は奪三振、野手はパワー・走力・肩のうち元の値がいちばん目立つもの）
+const WEAPON := {"S": [80, 77], "A": [76, 72]}
+## 怪物の入団時：大学・社会人・独立は総合 A（80〜84）、高校は総合 B（70〜75）＋武器 A（84〜88）
+const MONSTER_LEVEL_READY := [80.0, 84.0]
+const MONSTER_LEVEL_HS := [70.0, 75.0]
+const MONSTER_WEAPON := [84.0, 88.0]
+## 年の質（豊作・不作）→ その年の全員を quality × QUALITY_SHIFT（±QUALITY_SHIFT_MAX まで）上下。
+## 評価 B 以下はその倍（豊作の年は中位の層も厚い）。S・A は不作の年でも −1 まで（その年の一番上を78前後に保つ）
+const QUALITY_SHIFT := 8.0
+const QUALITY_SHIFT_MAX := 2.0
+## 個々の能力と総合の上限（入団時の A 以上は怪物だけ。上限の手前 CAP_KNEE から上は伸びを CAP_SOFTNESS に縮める）
+const RATING_CAP := 79.0
+const SPEED_CAP := 85.0
+const CAP_KNEE := 7.0
+const CAP_SOFTNESS := 0.4
+## 高卒の野手の武器の選び方：元の値がこの中央よりいちばん上に出ているもの
+const WEAPON_MEDIAN := {"power": 52.0, "speed": 57.0, "arm": 64.0}
 ## 転生選手の出現確率（人数分布）
 const REINCARNATION_ODDS := [0.65, 0.25, 0.08, 0.02]
 ## 転生選手の高校／大学の割合
@@ -187,6 +213,8 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 			s_n = maxi(s_n, i + 1)
 	a_n = clampi(a_n, A_COUNT[0], A_COUNT[1])
 
+	var level_seen := {}
+	var ready_top := false
 	for i in raw_candidates.size():
 		var p: Dictionary = raw_candidates[i]
 		var is_ikusei := (i >= reg_count)
@@ -222,6 +250,16 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 			grade = "C" if rng.randf() < 0.3 else "D"
 			as_round = rng.randi_range(6, 8)
 			projected = "下位候補"
+
+		# 入団時の水準。S が高卒だけの年は、大学・社会人などのいちばん上（A）を S の水準にする（その年の一番上を78前後に）
+		var lv_grade := grade
+		if p["category"] != "高校" and not is_ikusei:
+			if not ready_top and grade == "A":
+				lv_grade = "S"
+			ready_top = true
+		var lv_key := "%s/%s" % [p["category"] == "高校", lv_grade]
+		_calibrate_entry(p, lv_grade, int(level_seen.get(lv_key, 0)), quality, rng)
+		level_seen[lv_key] = int(level_seen.get(lv_key, 0)) + 1
 
 		var bids := rng.randi_range(S_BIDS[0], S_BIDS[1]) if grade == "S" else 1
 
@@ -279,16 +317,126 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 ## 本指名のひな形 picks のうち、怪物にする添字（高校生の化け物・大学／社会人の即戦力の怪物を、それぞれの確率で0〜1人）
 func _monster_slots(picks: Array, rng: RandomNumberGenerator) -> Dictionary:
 	var out := {}
-	for plan: Array in [[HS_PHENOM_RATE, ["高校"]], [READY_MONSTER_RATE, ["大学", "社会人"]]]:
-		if rng.randf() >= float(plan[0]):
+	for cat: String in MONSTER_RATE:
+		if rng.randf() >= float(MONSTER_RATE[cat]):
 			continue
 		var idx: Array = []
 		for i in picks.size():
-			if str(picks[i]["category"]) in plan[1]:
+			if str(picks[i]["category"]) == cat:
 				idx.append(i)
 		if not idx.is_empty():
 			out[idx[rng.randi_range(0, idx.size() - 1)]] = true
+	while out.size() > MAX_MONSTERS:
+		out.erase(out.keys()[rng.randi_range(0, out.size() - 1)])
 	return out
+
+
+## 入団時の総合（投手の総合の物差し。野手は換算。tools/amateur_ratings.py の entry_level と同じ）
+static func entry_level(p: Dictionary) -> float:
+	if bool(p.get("is_pitcher", false)) and p.get("pitching") is Dictionary:
+		return _rv(p["pitching"]["ratings"], "overall", 45.0)
+	var r: Dictionary = p["batting"]["ratings"] if p.get("batting") is Dictionary else {}
+	return PITCH_MID + BAT_TO_PITCH * (_bat_composite(r) - BAT_MID)
+
+
+static func _rv(r: Dictionary, k: String, fallback: float) -> float:
+	var x: Variant = r.get(k)
+	return float(x["value"]) if x is Dictionary and x.get("value") != null else fallback
+
+
+static func _bat_composite(r: Dictionary) -> float:
+	return 0.35 * _rv(r, "meet", 45.0) + 0.35 * _rv(r, "power", 45.0) + 0.1 * _rv(r, "eye", 45.0) \
+		+ 0.1 * _rv(r, "speed", 45.0) + 0.1 * (_rv(r, "defense", 63.0) - 13.0)
+
+
+static func _set_rating(r: Dictionary, k: String, v: float) -> void:
+	var iv := clampi(roundi(v), 1, 100)
+	r[k] = {"value": iv, "rank": FictionalTalent._ability_rank(iv)}
+
+
+static func _soft_cap(v: float, cap: float) -> float:
+	var knee := cap - CAP_KNEE
+	return minf(cap, v if v <= knee else knee + (v - knee) * CAP_SOFTNESS)
+
+
+static func _shift_ratings(r: Dictionary, keys: Array, delta: float, cap: float) -> void:
+	if absf(delta) < 0.5:
+		return
+	for k: String in keys:
+		if r.get(k) is Dictionary:
+			var lim := SPEED_CAP if k == "speed" else cap
+			_set_rating(r, k, maxf(20.0, _soft_cap(float(r[k]["value"]) + delta, lim)))
+
+
+## keys（走力は半分）を動かして野手の値を target（投手の物差し）に合わせる
+static func _fit_batter(r: Dictionary, target: float, keys: Array, cap: float) -> void:
+	var goal := BAT_MID + (target - PITCH_MID) / BAT_TO_PITCH
+	var weight := {"meet": 0.35, "power": 0.35, "eye": 0.1, "speed": 0.05}
+	for _i in 12:
+		var d := goal - _bat_composite(r)
+		if absf(d) < 0.3:
+			break
+		var w := 0.0
+		var main: Array = []
+		for k: String in keys:
+			w += float(weight.get(k, 0.0))
+			if k != "speed":
+				main.append(k)
+		var step := d / maxf(0.2, w)
+		_shift_ratings(r, main, step, cap)
+		if "speed" in keys:
+			_shift_ratings(r, ["speed"], step / 2.0, cap)
+
+
+## 入団時の能力を評価の水準にそろえる（作業62）。能力の形は残して全体を上下し、高卒の上位には武器を1つ付ける。
+## i は同じ区分（高校／それ以外）・同じ評価の中の順（見た目の評価の順）。ピークは入団時を下回らないようにだけする
+func _calibrate_entry(p: Dictionary, grade: String, i: int, quality: float, rng: RandomNumberGenerator) -> void:
+	var hs := str(p["category"]) == "高校"
+	var shift := clampf(quality * QUALITY_SHIFT, -QUALITY_SHIFT_MAX, QUALITY_SHIFT_MAX)
+	var target: float
+	var weapon := -1.0
+	if bool(p.get("is_monster", false)):
+		var mlv: Array = MONSTER_LEVEL_HS if hs else MONSTER_LEVEL_READY
+		target = rng.randf_range(mlv[0], mlv[1])
+		if hs:
+			weapon = rng.randf_range(MONSTER_WEAPON[0], MONSTER_WEAPON[1])
+	else:
+		var lv: Array = (LEVEL_HS if hs else LEVEL_READY)[grade]
+		var deep := grade in ["B", "C", "D"]
+		target = minf(RATING_CAP, maxf(lv[1], lv[0] - LEVEL_STEP * i) + (2.0 * shift if deep else maxf(shift, -1.0)))
+		if hs and WEAPON.has(grade):
+			weapon = maxf(WEAPON[grade][1], WEAPON[grade][0] - LEVEL_STEP * i) + shift
+	target = roundf(target)
+	var cap := maxf(RATING_CAP, target)
+	var part: Dictionary
+	if bool(p["is_pitcher"]):
+		part = p["pitching"]
+		var pr: Dictionary = part["ratings"]
+		_shift_ratings(pr, ["overall", "k9", "bb9", "hr9"], target - _rv(pr, "overall", 45.0), cap)
+		_set_rating(pr, "overall", target)
+		if weapon > 0.0:
+			_set_rating(pr, "k9", maxf(_rv(pr, "k9", 0.0), weapon))
+	else:
+		part = p["batting"]
+		var br: Dictionary = part["ratings"]
+		var keys: Array = ["meet", "power", "eye", "speed"]
+		_fit_batter(br, target, keys, cap)
+		if weapon > 0.0:
+			var wk := "power"
+			for k: String in WEAPON_MEDIAN:
+				if _rv(br, k, 0.0) - float(WEAPON_MEDIAN[k]) > _rv(br, wk, 0.0) - float(WEAPON_MEDIAN[wk]):
+					wk = k
+			_set_rating(br, wk, maxf(_rv(br, wk, 0.0), weapon))
+			keys.erase(wk)
+			_fit_batter(br, target, keys, cap)
+		var f: Dictionary = p.get("fielding", {}).get(p["primary_pos"], {})
+		for k: String in ["defense", "arm"]:
+			if not f.is_empty() and br.get(k) is Dictionary:
+				f[k] = br[k].duplicate()
+	var peak: Dictionary = p.get("growth", {}).get("peak", {})
+	for k: String in part["ratings"]:
+		if peak.has(k) and part["ratings"][k] is Dictionary:
+			peak[k] = maxf(float(peak[k]), float(part["ratings"][k]["value"]))
 
 
 func _pick_templates(n: int, ikusei: bool, rng: RandomNumberGenerator) -> Array:
