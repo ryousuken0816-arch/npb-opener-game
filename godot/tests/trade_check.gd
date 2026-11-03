@@ -202,7 +202,8 @@ func _check_offseason() -> void:
 	var league: RefCounted = _gs.league
 	var mine: Array = []
 	for id: String in league.players_of(USER):
-		if not _gd.player(id).get("is_pitcher", false):
+		# FA の段階なので FA 宣言中の選手は出せない（作業54：オフのトレードは FA の段階から）
+		if not _gd.player(id).get("is_pitcher", false) and not excluded.has(id):
 			mine.append(id)
 	mine.sort_custom(func(a: String, b: String) -> bool:
 		return _value(a) > _value(b))

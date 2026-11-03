@@ -738,7 +738,9 @@ func _ability_row(title: String, rating: Variant, note: String) -> Control:
 	value.text = str(int(rating["value"])) if rating is Dictionary else "-"
 	value.custom_minimum_size = Vector2(58, 0)
 	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	UiTheme.heading(value, 32, UiTheme.TEXT, Color.WHITE, 5, false)
+	# 数値もランクと同じ色（作業64）
+	UiTheme.heading(value, 32, UiTheme.rank_color(rating["rank"]).darkened(0.1) if rating is Dictionary
+		else UiTheme.TEXT, Color.WHITE, 5, false)
 	box.add_child(value)
 	var bar := ValueBar.new()
 	bar.custom_minimum_size = Vector2(96, 14)

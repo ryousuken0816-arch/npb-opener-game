@@ -432,13 +432,13 @@ func _summary_line(text: String, font_size: int, color: Color, weight: int) -> L
 func _rank_grid(ratings: Dictionary, columns: Array) -> GridContainer:
 	var grid := GridContainer.new()
 	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("h_separation", 4)
 	for col: Array in columns:
 		var name_label := UiTheme.small_label(col[1], 16, UiTheme.TEXT, 700)
-		name_label.custom_minimum_size = Vector2(68, 0)
+		name_label.custom_minimum_size = Vector2(60, 0)
 		grid.add_child(name_label)
-		var rank := UiTheme.rank_label(ratings.get(col[0]), 22)
-		rank.custom_minimum_size = Vector2(40, 0)
+		var rank := UiTheme.rank_value_box(ratings.get(col[0]), 22)  # ランクと数値（作業64）
+		rank.custom_minimum_size = Vector2(52, 0)
 		grid.add_child(rank)
 	return grid
 

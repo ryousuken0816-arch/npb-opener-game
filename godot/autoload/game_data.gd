@@ -63,18 +63,6 @@ const DEFAULT_TEAM_COLORS := ["1f5fae", "f2b705"]
 ## 守備位置の並び順（一覧のソート用）
 const POS_ORDER := ["捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "内野手", "外野手", "指名打者", "投手"]
 
-## ランクの文字色（明るい背景用）
-const RANK_COLORS := {
-	"S": Color("d81b60"),
-	"A": Color("e53935"),
-	"B": Color("f4511e"),
-	"C": Color("ef8a00"),
-	"D": Color("c49a00"),
-	"E": Color("43a047"),
-	"F": Color("1e88e5"),
-	"G": Color("8a9199"),
-}
-
 ## 球団の略称（史実のデータ：trades.json・mlb_moves.json の表記）→ 正式名。
 ## 「横浜」は2012年から DeNA（resolve_team で年を見て切り替える）
 const TEAM_ALIASES := {
@@ -653,7 +641,7 @@ func league_of(team: String) -> String:
 
 
 func rank_color(rank: String) -> Color:
-	return RANK_COLORS.get(rank, Color.WHITE)
+	return UiTheme.RANK_COLORS.get(rank, Color.WHITE)  # 色の決まりは UiTheme（作業64）
 
 
 func pos_index(pos: Variant) -> int:

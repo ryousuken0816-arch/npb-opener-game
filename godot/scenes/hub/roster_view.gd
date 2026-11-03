@@ -2,6 +2,7 @@ class_name RosterView
 extends TabContainer
 ## 球団の選手一覧（野手・投手タブ）。一覧はランク表示（docs/SPEC.md「共通ルール」）。
 ## 行をクリック（コントローラーは Ⓐ・キーボードは Enter）で選手詳細。十字キーの前後はその一覧の並び。
+## 能力のマスは「B 74」（ランクと数値、ランクの色。作業64）。見出しをクリックすると数値の高い順に並び替え（もう一度で逆順）。
 
 const BATTER_COLUMNS := [
 	["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"],
@@ -11,8 +12,10 @@ const PITCHER_COLUMNS := [
 	["overall", "総合"], ["stamina", "スタミナ"], ["k9", "奪三振"],
 	["bb9", "制球"], ["hr9", "被弾抑制"],
 ]
-const RANK_COLUMN_WIDTH := 72
-const SALARY_COLUMN_WIDTH := 150
+const RANK_COLUMN_WIDTH := 80
+const SALARY_COLUMN_WIDTH := 120
+const VELOCITY_COLUMN_WIDTH := 72
+const ABILITY_COLUMN_WIDTH := 72
 ## 今季の成績タブ（GameState.season）の列 [見出し, 幅]
 const BATTING_STAT_COLUMNS := [
 	["試合", 48], ["打席", 52], ["打率", 56], ["本塁打", 60], ["打点", 48],
@@ -112,18 +115,20 @@ func _make_batter_tree(players: Array) -> Tree:
 
 
 func _make_pitcher_tree(players: Array) -> Tree:
-	var tree := _make_tree(["名前", "役割", "投打"], PITCHER_COLUMNS, ["特殊能力", "年俸"])
+	var tree := _make_tree(["名前", "役割", "投"], PITCHER_COLUMNS, ["球速", "特能", "年俸"])
 	for p: Dictionary in players:
 		var pitching: Dictionary = p["pitching"] if p["pitching"] else {}
 		var item := tree.create_item()
 		item.set_text(0, p["name"])
 		item.set_text(1, _str(pitching.get("role")))
-		item.set_text(2, _throws_bats(p))
+		item.set_text(2, "%s投" % p["throws"] if p["throws"] != null else "-")  # 投手は投げる手だけ（表を横にはみ出させない）
 		var ratings: Variant = pitching.get("ratings")
 		_set_ranks(item, 3, ratings if ratings is Dictionary else {}, PITCHER_COLUMNS)
+		_set_velocity(item, 3 + PITCHER_COLUMNS.size(), pitching)
 		var abilities := PackedStringArray(pitching.get("abilities", []))
-		item.set_text(3 + PITCHER_COLUMNS.size(), " ".join(abilities))
-		_set_salary(item, 4 + PITCHER_COLUMNS.size(), p["id"])
+		item.set_text(4 + PITCHER_COLUMNS.size(), " ".join(abilities))
+		item.set_tooltip_text(4 + PITCHER_COLUMNS.size(), " ".join(abilities))
+		_set_salary(item, 5 + PITCHER_COLUMNS.size(), p["id"])
 		item.set_metadata(0, p["id"])
 	return tree
 
@@ -192,6 +197,29 @@ func _make_stats_tree(columns: Array) -> Tree:
 	return tree
 
 
+## 見出しのクリックで並び替え：並びの値（各マスのメタデータ）の高い順。同じ列をもう一度で逆順
+func _on_title_clicked(column: int, _mouse_button: int, tree: Tree) -> void:
+	var root := tree.get_root()
+	if root == null or root.get_first_child() == null or not root.get_first_child().get_metadata(column) is float:
+		return
+	var descending: bool = tree.get_meta("sort_column", -1) != column or not tree.get_meta("sort_desc", true)
+	tree.set_meta("sort_column", column)
+	tree.set_meta("sort_desc", descending)
+	var items: Array[TreeItem] = []
+	var row := root.get_first_child()
+	while row != null:
+		items.append(row)
+		row = row.get_next()
+	items.sort_custom(func(a: TreeItem, b: TreeItem) -> bool:
+		var ma: Variant = a.get_metadata(column)
+		var mb: Variant = b.get_metadata(column)
+		var va: float = ma if ma is float else -1.0
+		var vb: float = mb if mb is float else -1.0
+		return va > vb if descending else va < vb)
+	for i in range(items.size() - 1, -1, -1):
+		items[i].move_before(root.get_first_child())
+
+
 func _set_stat_texts(item: TreeItem, values: Array) -> void:
 	for i in values.size():
 		item.set_text(i + 1, str(values[i]))
@@ -215,7 +243,7 @@ func _make_tree(text_headers: Array, rank_columns: Array, trailing_headers: Arra
 		tree.set_column_title(col, header)
 		tree.set_column_expand(col, col == 0)
 		if col > 0:
-			tree.set_column_custom_minimum_width(col, 96)
+			tree.set_column_custom_minimum_width(col, 64 if header in ["役割", "投"] else 96)
 		col += 1
 	for rank_column: Array in rank_columns:
 		tree.set_column_title(col, rank_column[1])
@@ -224,11 +252,18 @@ func _make_tree(text_headers: Array, rank_columns: Array, trailing_headers: Arra
 		col += 1
 	for header: String in trailing_headers:
 		tree.set_column_title(col, header)
-		tree.set_column_expand(col, header != "年俸")
+		tree.set_column_expand(col, header != "年俸" and header != "球速" and header != "特能")
 		if header == "年俸":
 			tree.set_column_custom_minimum_width(col, SALARY_COLUMN_WIDTH)
+		elif header == "球速":
+			tree.set_column_custom_minimum_width(col, VELOCITY_COLUMN_WIDTH)
+		elif header == "特能":
+			# 特殊能力は長いと表が横にはみ出すので幅を決めて切る（全部はツールチップ）
+			tree.set_column_custom_minimum_width(col, ABILITY_COLUMN_WIDTH)
+			tree.set_column_clip_content(col, true)
 		col += 1
 	tree.create_item()  # 非表示のルート
+	tree.column_title_clicked.connect(_on_title_clicked.bind(tree))
 	return tree
 
 
@@ -240,11 +275,33 @@ func _set_ranks(item: TreeItem, first_col: int, ratings: Dictionary, columns: Ar
 		if rating == null:
 			item.set_text(col, "-")
 			continue
-		item.set_text(col, rating["rank"])
-		item.set_custom_color(col, GameData.rank_color(rating["rank"]))
+		item.set_text(col, "%s %d" % [rating["rank"], int(rating["value"])])
+		item.set_metadata(col, float(rating["value"]))
+		_paint_rank(item, col, rating["rank"])
 		item.set_custom_font(col, UiTheme.font(800))
-		item.set_custom_font_size(col, 22)
-		item.set_tooltip_text(col, str(int(rating["value"])))
+		item.set_custom_font_size(col, 20)
+		item.set_tooltip_text(col, "%s %d" % [rating["rank"], int(rating["value"])])
+
+
+## ランクの色：文字は濃い色、マスの背景は薄い同じ色（作業64。色の決まりは UiTheme.RANK_COLORS）
+static func _paint_rank(item: TreeItem, col: int, rank: String) -> void:
+	item.set_custom_color(col, UiTheme.rank_color(rank).darkened(0.08))
+	item.set_custom_bg_color(col, UiTheme.rank_bg(rank))
+
+
+## 球速（km/h）：目安のランク（UiTheme.velocity_rank）の色を付ける
+func _set_velocity(item: TreeItem, col: int, pitching: Dictionary) -> void:
+	item.set_text_alignment(col, HORIZONTAL_ALIGNMENT_CENTER)
+	var v: Variant = pitching.get("velocity")
+	var kmh := float(v.get("kmh", 0.0)) if v is Dictionary and v.get("kmh") != null else 0.0
+	if kmh <= 0.0:
+		item.set_text(col, "-")
+		return
+	item.set_text(col, str(roundi(kmh)))
+	item.set_metadata(col, kmh)
+	item.set_tooltip_text(col, "%dkm/h" % roundi(kmh))
+	_paint_rank(item, col, UiTheme.velocity_rank(kmh))
+	item.set_custom_font(col, UiTheme.font(800))
 
 
 ## 年俸（GameState.league）

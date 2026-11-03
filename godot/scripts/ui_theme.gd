@@ -378,6 +378,60 @@ static func titled_panel(p: Palette, title: String) -> Dictionary:
 	return {"panel": panel, "body": body, "title": label}
 
 
+## 能力のランク（S〜G）の色（明るい背景用。作業64でここにまとめた。パワプロ風：S＝桃、A＝赤、B＝赤みの橙、
+## C＝オレンジ、D＝黄、E＝黄緑、F＝水色、G＝灰）。GameData.rank_color もこれを返す
+const RANK_COLORS := {
+	"S": Color("d81b60"),
+	"A": Color("e53935"),
+	"B": Color("f4511e"),
+	"C": Color("ef8a00"),
+	"D": Color("c9a400"),
+	"E": Color("6fa82a"),
+	"F": Color("1a9fd6"),
+	"G": Color("8a9199"),
+}
+## 表のマスの背景の薄さ（ランクの色を白にどれだけ寄せるか）
+const RANK_BG_MIX := 0.78
+## 球速（km/h）の目安のランク：この速さ以上ならそのランク（どれにも届かなければ G）
+const VELOCITY_RANKS := [[155, "S"], [150, "A"], [147, "B"], [144, "C"], [141, "D"], [138, "E"], [135, "F"]]
+
+
+static func rank_color(rank: String) -> Color:
+	return RANK_COLORS.get(rank, TEXT)
+
+
+## 表のマスの背景用の薄いランクの色
+static func rank_bg(rank: String) -> Color:
+	return rank_color(rank).lerp(Color.WHITE, RANK_BG_MIX)
+
+
+## 球速の目安のランク（色付けに使う）
+static func velocity_rank(kmh: float) -> String:
+	for row: Array in VELOCITY_RANKS:
+		if kmh >= float(row[0]):
+			return row[1]
+	return "G"
+
+
+## ランクと数値を並べた札（「B 74」。数値は小さめの字で同じ色。作業64）。rating は {value, rank}（null なら「-」）
+static func rank_value_box(rating: Variant, font_size: int = 20) -> HBoxContainer:
+	var box := HBoxContainer.new()
+	box.add_theme_constant_override("separation", 3)
+	box.mouse_filter = Control.MOUSE_FILTER_PASS
+	box.add_child(rank_label(rating, font_size))
+	if rating is Dictionary and rating.get("rank") != null:
+		var value := Label.new()
+		value.text = str(int(rating["value"]))
+		value.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		value.size_flags_vertical = Control.SIZE_FILL
+		value.add_theme_font_override("font", font(800))
+		value.add_theme_font_size_override("font_size", maxi(12, roundi(font_size * 0.68)))
+		value.add_theme_color_override("font_color", rank_color(rating["rank"]).darkened(0.1))
+		value.mouse_filter = Control.MOUSE_FILTER_PASS
+		box.add_child(value)
+	return box
+
+
 ## ランク（S〜G）の色付きラベル（太字＋白と濃い色の二重の縁取り）。rating は能力値データの {value, rank}（null なら「-」）
 static func rank_label(rating: Variant, font_size: int = 20) -> Label:
 	var label := Label.new()
@@ -386,7 +440,7 @@ static func rank_label(rating: Variant, font_size: int = 20) -> Label:
 	label.add_theme_font_size_override("font_size", font_size)
 	if rating is Dictionary and rating.get("rank") != null:
 		label.text = rating["rank"]
-		var color := GameData.rank_color(rating["rank"])
+		var color := rank_color(rating["rank"])
 		label.add_theme_color_override("font_color", color)
 		# 色付きの太字に白の縁取り、その外側に濃い色の縁（影を縁取りとして使う）
 		label.add_theme_color_override("font_outline_color", Color.WHITE)
