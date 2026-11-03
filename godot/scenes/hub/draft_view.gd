@@ -122,6 +122,10 @@ var _complete_button: Button
 ## ドラフトのあとの「次へ」（説得が残っていれば「説得せずに次へ」。作業65）と、その確かめの1回目を押したか
 var _next_button: Button
 var _skip_armed := false
+## ドラフトのあと、説得が残っているときに上に出す帯（「メジャー志望の◯◯の説得が残っています」と「説得のページへ」。作業65）
+var _talk_banner: PanelContainer
+var _talk_label: Label
+var _talk_button: Button
 var _overlay: Control
 var _overlay_box: VBoxContainer
 var _overlay_next: Button
@@ -156,6 +160,7 @@ func setup(p: UiTheme.Palette) -> void:
 	_palette = p
 	add_theme_constant_override("separation", 6)
 	add_child(_build_top())
+	add_child(_build_talk_banner())
 	add_child(_build_tabs())
 	_body = HBoxContainer.new()
 	_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -317,10 +322,60 @@ func refresh() -> void:
 		_render_list(d)
 		_render_summary(d)
 	_render_bottom(d)
+	_render_talk_banner(d)
 	if not focused_id.is_empty() and _tags.has(focused_id):
 		_tags[focused_id].grab_focus()
 	if d != null and d.stage == Draft.Stage.DONE:
 		_reveal_done.call_deferred()
+
+
+func _build_talk_banner() -> Control:
+	_talk_banner = PanelContainer.new()
+	var style := UiTheme.card(Color("b3261e"), 8, 3, 1.0)
+	style.bg_color = Color("fdecea")
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	_talk_banner.add_theme_stylebox_override("panel", style)
+	_talk_banner.visible = false
+	var line := HFlowContainer.new()
+	line.add_theme_constant_override("h_separation", 10)
+	_talk_banner.add_child(line)
+	_talk_label = UiTheme.small_label("", 17, Color("b3261e"), 800)
+	_talk_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_talk_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_talk_label.custom_minimum_size = Vector2(260, 0)
+	line.add_child(_talk_label)
+	_talk_button = Button.new()
+	_talk_button.text = "説得のページへ ▶"
+	_talk_button.custom_minimum_size = Vector2(180, 40)
+	_talk_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	UiTheme.style_button(_talk_button, Color("b3261e"), Color.WHITE, 8, 4)
+	_talk_button.pressed.connect(show_talk)
+	line.add_child(_talk_button)
+	return _talk_banner
+
+
+## 説得が残っていれば上の帯に名前を出す（手帳・表・指名一覧のどれを見ていても目に入るように）
+func _render_talk_banner(d: Draft) -> void:
+	var talks: Array[String] = []
+	if d != null and d.stage == Draft.Stage.DONE and not d.resolved:
+		talks = d.pending_talks()
+	_talk_banner.visible = not talks.is_empty()
+	if talks.is_empty():
+		return
+	var names: Array[String] = []
+	for id in talks:
+		names.append(d.by_id[id]["name"])
+	_talk_label.text = "メジャー志望の%sの説得が残っています。説得しないまま次へ進むと、期限切れでメジャーへ挑戦します" 		% "・".join(names)
+	# 手帳ですでに説得のページを開いていれば、ボタンは出さない（帯の文だけ）
+	_talk_button.visible = not (_mode == "book" and talks.has(_selected))
+
+
+## 説得の帯のボタン（テスト用）
+func talk_banner_button() -> Button:
+	return _talk_button
 
 
 ## ドラフトのあと：縦長の画面（ハブのサブ画面が縦に流れる）でも「次へ」と手帳の「説得する」が画面の中に来るよう流す（作業65）
@@ -333,6 +388,9 @@ func _reveal_done() -> void:
 		scroll = n as ScrollContainer
 		n = n.get_parent()
 	if scroll == null or not is_visible_in_tree():
+		return
+	if _talk_banner.visible and _talk_button.visible:
+		scroll.ensure_control_visible(_talk_banner)  # 説得のページを開いていなければ、上の帯（説得のページへ）を見せる
 		return
 	if _next_button.is_visible_in_tree():
 		scroll.ensure_control_visible(_next_button)
@@ -557,6 +615,8 @@ func _render_top(d: Draft) -> void:
 				_turn_label.text = "%sが指名中…" % GameData.short_name(team) if not team.is_empty() else ""
 		_:
 			_turn_label.text = "全球団の指名が終わりました。指名した選手は来季、各球団に入団します"
+			if not d.pending_talks().is_empty():
+				_turn_label.text = "全球団の指名が終わりました。メジャー志望の選手の説得が残っています"
 	var ink: Color = MINE_COLOR if d.is_user_turn() else UiTheme.TEXT
 	_turn_label.label_settings.font_color = ink
 

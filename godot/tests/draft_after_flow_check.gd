@@ -2,9 +2,10 @@ extends SceneTree
 ## ドラフトのあと先へ進める（docs/AUTORUN.md 作業65）の確認。ヘッドレス、数分。
 ## 2026年（巨人）のドラフトを画面で最後まで進め（自球団の番は「選択終了」、ほかは「自球団の番まで飛ばす」）、
 ## 可変ボタン（パソコンはハブのボタン、スマホは下の帯の「▶」）だけで FA → 現役ドラフト → 春季キャンプ → 2027年の開幕まで進める。
-##   - パソコン（1280x720）と Web（環境変数 NPB_SIM_WEB=1 でスマホの配置。横 844x390・縦 390x844）
+##   - パソコン（1280x720）と Web（環境変数 NPB_SIM_WEB=1 でスマホの配置。横 844x390・縦 390x844。縦・横とも織田の指名あり）
 ##   - メジャー志望の織田翔希を1位で指名した場合：ドラフトのあと可変ボタンは「説得の交渉へ」、押すと手帳の説得のページ。
 ##     「説得する」のボタンと「説得せずに次へ」が画面の中に見えて押せる。説得して成功・説得せずに次へ（期限切れで渡米）の両方
+##     説得が残っている間は、表・指名一覧・ボードを見ていても上の帯に「メジャー志望の◯◯の説得が残っています」と「説得のページへ」
 ##   - 指名しない場合：ドラフトのあと、ドラフトの画面の下の帯に「次へ」のボタンがあり、押すと FA の画面
 ##   - 先へ進むボタン（可変ボタン・ドラフトの「次へ」・FA の「締め切る」）がどの段階でも画面の中に見えて押せる
 ##
@@ -16,6 +17,7 @@ const CASES := [
 	{"name": "パソコン・メジャー志望なし", "layout": "pc", "mlb": false, "talk": false},
 	{"name": "Web 縦・織田を指名・説得せずに次へ", "layout": "portrait", "mlb": true, "talk": false},
 	{"name": "Web 横・メジャー志望なし", "layout": "landscape", "mlb": false, "talk": false},
+	{"name": "Web 横・織田を指名・説得する", "layout": "landscape", "mlb": true, "talk": true},
 ]
 
 var _failures := 0
@@ -111,6 +113,20 @@ func _check_case(c: Dictionary) -> void:
 			"%s：手帳の織田のページに「説得する」が見えて押せる（%s・%s）" % [tag, go.text, _rect_text(go)])
 		_check(next.text.contains("説得せずに") and _in_view(next),
 			"%s：「説得せずに次へ」が見えて押せる（%s・%s）" % [tag, next.text, _rect_text(next)])
+		# 表・ボード（指名一覧）を見ていても上の帯に説得が残っていると出て、そこから説得のページへ
+		view.call("set_mode", "board" if layout == "portrait" else "table")
+		if layout != "portrait":
+			view.call("_show_tab", "picks")
+		await _frames(3)
+		var banner: Button = view.call("talk_banner_button")
+		var banner_label: Label = view.get("_talk_label")
+		_check(banner_label.is_visible_in_tree() and banner_label.text.contains("織田 翔希の説得が残っています") and _in_view(banner),
+			"%s：%sを見ていても上の帯に「%s」と「説得のページへ」（%s）" % [tag, "ボード" if layout == "portrait" else "指名一覧",
+				banner_label.text.left(24), _rect_text(banner)])
+		banner.pressed.emit()
+		await _frames(3)
+		_check(view.call("mode") == "book" and view.call("selected_id") == target and go.text.begins_with("説得する"),
+			"%s：帯のボタンで手帳の説得のページ（%s）" % [tag, view.call("mode")])
 		# 可変ボタンを押しても説得のページのまま（同じ画面を開き直すだけにならない）
 		view.call("set_mode", "board" if layout == "portrait" else "table")
 		await _frames(2)

@@ -284,7 +284,17 @@ func _check_fictional() -> void:
 					break
 		d.run_first_wave()
 	d.run_until_user()
-	var error: String = d.user_pick(target) if str(d.by_id[target]["picked_by"]).is_empty() else "ほかの球団が指名"
+	if not str(d.by_id[target]["picked_by"]).is_empty():
+		# CPU 球団が先に指名した（乱数しだい）：残りの架空の候補でいちばん評価の高い選手に、同じ形でメジャー志望を付けて続ける
+		var taken: String = d.by_id[target]["name"]
+		target = ""
+		for c: Dictionary in d.remaining():
+			if c.get("fictional", false) and not bool(c.get("as_ikusei", false)) 					and (target.is_empty() or float(c["hyouka"]) > float(d.by_id[target]["hyouka"])):
+				target = c["id"]
+		if not target.is_empty():
+			d.by_id[target]["mlb_intent"] = true
+			print("  %sはほかの球団が先に指名したので、残りの%sにメジャー志望を付けて続ける" % [taken, d.by_id[target]["name"]])
+	var error: String = "ほかの球団が指名" if target.is_empty() or not str(d.by_id[target]["picked_by"]).is_empty() 		else d.user_pick(target)
 	_check(error.is_empty() and d.pick_of(target).get("team", "") == user, "架空のメジャー志望の候補を%sで指名（%s）"
 		% [d.pick_of(target).get("label", "-"), error if not error.is_empty() else d.by_id[target]["name"]])
 	if not error.is_empty():
