@@ -1041,7 +1041,7 @@ func can_persuade(id: String) -> bool:
 
 
 ## 自球団が指名して、まだ説得していないメジャー志望の選手（ドラフト会議が終わっても、これが残っていれば入団の
-## 処理を待つ。可変ボタンで次へ進むと約束なしの扱いで決まる）
+## 処理を待つ。説得しないまま次の段階へ進むと期限切れで渡米する。作業57）
 func pending_talks() -> Array[String]:
 	var result: Array[String] = []
 	for rec in picks:
@@ -1063,11 +1063,15 @@ func persuade(id: String, promise: int) -> Dictionary:
 
 
 ## まだ決まっていない交渉をすべて決める（ドラフト会議の結果で入団させる前に LeagueRoster.apply_draft から）。
-## 自球団で説得しなかった選手は約束なし、CPU球団は CPU_PROMISE_RATE の確率で約束を付ける
+## 自球団で説得しなかった選手は交渉の期限切れで失敗（渡米。勝手に成功にしない。作業57）、
+## CPU球団は CPU_PROMISE_RATE の確率で約束を付けて確率で決める
 func resolve_talks() -> void:
 	for rec in picks:
 		var id: String = rec["id"]
 		if talks.has(id) or not bool(by_id[id].get("mlb_intent", false)):
+			continue
+		if rec["team"] == user_team:
+			talks[id] = {"team": user_team, "promise": 0, "chance": 0.0, "ok": false, "expired": true}
 			continue
 		var promise := 0
 		if rec["team"] != user_team and _rng.randf() < MlbPersuasion.CPU_PROMISE_RATE:
