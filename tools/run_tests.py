@@ -82,6 +82,7 @@ QUICK = [
     "mobile_fit_check",      # スマホの縦横で全画面（約2分なので軽い版は作らずそのまま）
     "layout_fit_check:quick",
     "rookie_fielding_check", # 新人・ドラフト候補の守備位置・守備力・肩（作業66。約10秒）
+    "draft_first_bid_check", # CPU球団の1位入札の競合の分布（30年分、作業68。約20秒）
 ]
 
 ## 見込みの時間（秒。並列で流したときの目安）。覚えた時間（TIMES_PATH）が無いときに使う。無いものは DEFAULT_EST
