@@ -6,6 +6,9 @@ extends SceneTree
 ##   3) 2026年（巨人）：約束（3年）ありで成功 → 入団し、約束の年のオフにポスティングでメジャーへ
 ##   4) 2025年（DeNA）：佐々木麟太郎（海外の大学。期限は翌年7月末）も同じ交渉になり、成功すると入団する
 ##   5) CPU球団は史実で強行指名した球団以外はふだん避ける（メジャー志望の候補の評価が下がる）
+##   6) 作業57：画面で進める（2026年・巨人）。手帳に「メジャー志望」の札、絞り込み「未指名」・「残りをおまかせで終える」でも
+##      ドラフトのあと織田のページで説得へ（勝手に入団しない）、ハブの可変ボタンも説得へ戻る。
+##      ①「説得する」で成功 ②説得しないまま次の段階へ進むと期限切れで渡米（出来事に残る）。オフの新しい順番で春季キャンプまで
 ##
 ##   godot --headless --path godot --script res://tests/mlb_draftee_check.gd
 ##
@@ -31,6 +34,8 @@ func _run() -> void:
 	_check_oda(false)
 	_check_oda(true)
 	_check_rintaro()
+	await _check_ui(true)
+	await _check_ui(false)
 	print("ALL OK" if _failures == 0 else "FAILED (%d)" % _failures)
 	quit(1 if _failures > 0 else 0)
 
@@ -90,7 +95,7 @@ func _check_oda(success: bool) -> void:
 			if e["kind"] == "mlb_draftee" and e["id"] == oda:
 				logged = true
 		_check(logged, "失敗：出来事に「メジャーへ挑戦」が残る")
-		_gs.advance()
+		_to_camp()
 		_check(_gs.year == 2027 and not league.team_of.has(oda), "2027年の春季キャンプでも NPB にいない")
 		return
 	_check(league.team_of.get(oda, "") == user, "成功：巨人に入団")
@@ -139,9 +144,91 @@ func _check_rintaro() -> void:
 	_check(result["ok"], "約束ありで説得：%s" % result["text"])
 	_gs.draft_sync()
 	_check(_gs.league.team_of.get(rin, "") == user, "成功：DeNA に入団")
-	_gs.advance()
+	_to_camp()
 	_check(_gs.year == 2026 and _gs.league.team_of.get(rin, "") == user and not _gd.call("player", rin).is_empty(),
 		"2026年の春季キャンプで DeNA にいる（能力値データあり）")
+
+
+## オフの残りの段階を進めて春季キャンプへ（作業54でドラフトのあとに FA・現役ドラフトが来るようになった）
+func _to_camp() -> void:
+	var guard := 0
+	while _gs.phase != _gs.Phase.CAMP and guard < 10:
+		guard += 1
+		_gs.advance()
+
+
+## 作業57：画面（ハブ・ドラフトの手帳）で進める。talk＝「説得する」を押す（false なら押さずに次の段階へ進む）
+func _check_ui(talk: bool) -> void:
+	var user := "読売ジャイアンツ"
+	print("== 画面で進める 2026年 織田翔希（%s） ==" % ("説得する" if talk else "説得しないまま次へ"))
+	var d: RefCounted = null
+	var oda := ""
+	for attempt in 4:
+		_gs.new_game(user, 2026)
+		_gs.skip_to_phase(_gs.Phase.DRAFT)
+		d = _gs.draft()
+		oda = _find(d, "織田 翔希")
+		d.user_bid(oda)
+		d.run_first_wave()
+		if d.first_pick_of(user) == oda:
+			break
+	if d == null or d.first_pick_of(user) != oda:
+		_check(false, "織田翔希を1位で獲得できない（抽選に4回外れた）")
+		return
+	change_scene_to_file("res://scenes/hub/hub.tscn")
+	await _frames(6)
+	var hub: Node = current_scene
+	hub.call("_open_sub_screen", "draft")
+	await _frames(4)
+	var view: Node = hub.get("_draft_view")
+	view.call("finish_overlays")
+	var traits: Array = load("res://sim/scout_notes.gd").traits(d, d.by_id[oda])
+	_check(not traits.is_empty() and traits[0]["text"] == "メジャー志望", "手帳の札の先頭に「メジャー志望」（%s）"
+		% (traits[0]["text"] if not traits.is_empty() else "なし"))
+	view.call("set_filter", "left")
+	view.call("_on_complete_pressed")  # 残りをおまかせで終える
+	view.call("finish_overlays")
+	await _frames(4)
+	_check(d.stage == _ds.Stage["DONE"] and not d.resolved and oda in d.pending_talks()
+		and not _gs.league.team_of.has(oda), "「残りをおまかせで終える」でも勝手に入団・渡米しない（説得待ち）")
+	var nb: Control = view.call("notebook")
+	var go: Button = nb.call("go_button")
+	_check(view.call("mode") == "book" and view.call("selected_id") == oda and nb.is_visible_in_tree(),
+		"絞り込み「未指名」でも手帳に織田のページ（%s）" % d.by_id.get(view.call("selected_id"), {}).get("name", "?"))
+	_check(go.text.begins_with("説得する") and not go.disabled, "ページのボタンが「%s」" % go.text)
+	_check((view.get("_complete_button") as Button).disabled, "説得が残っている間は「残りをおまかせで終える」は押せない")
+	hub.call("_close_sub_screen")
+	await _frames(2)
+	hub.call("_on_menu_chosen", "advance")  # ハブの可変ボタン
+	await _frames(4)
+	_check(hub.get("_open_key") == "draft" and not d.resolved and _gs.phase == _gs.Phase.DRAFT,
+		"ハブの可変ボタンはドラフト（説得）へ戻る（%s）" % hub.get("_open_key"))
+	var league: RefCounted = _gs.league
+	if talk:
+		d.force_roll = 0.0
+		nb.emit_signal("go_pressed")
+		await _frames(4)
+		_check(d.talks.has(oda) and d.talks[oda]["ok"] and d.resolved and league.team_of.get(oda, "") == user,
+			"「説得する」で成功して入団（%s）" % str(d.talks.get(oda, {})))
+		_check(nb.get("_state_label").text.contains("成功"), "手帳に説得の結果（%s）" % nb.get("_state_label").text)
+	else:
+		hub.call("_close_sub_screen")
+		_gs.advance()  # 説得しないまま次の段階へ
+		_check(d.resolved and d.talks.get(oda, {}).get("expired", false) and not league.team_of.has(oda),
+			"説得しないまま次へ進むと期限切れで入団しない（%s）" % str(d.talks.get(oda, {})))
+		var logged := ""
+		for e: Dictionary in league.log:
+			if e["kind"] == "mlb_draftee" and e["id"] == oda:
+				logged = str(e.get("text", e))
+		_check(logged.contains("期限が切れ"), "出来事に「期限が切れ、メジャーへ挑戦」（%s）" % logged)
+	_to_camp()
+	_check(_gs.year == 2027 and _gs.phase == _gs.Phase.CAMP and league.team_of.has(oda) == talk,
+		"オフの新しい順番で2027年の春季キャンプへ（織田は%s）" % ("巨人" if league.team_of.has(oda) else "NPB にいない"))
+
+
+func _frames(n: int) -> void:
+	for i in n:
+		await process_frame
 
 
 func _find(d: RefCounted, name: String) -> String:

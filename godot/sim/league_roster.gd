@@ -861,8 +861,10 @@ func apply_draft() -> void:
 			# メジャー志望の説得に失敗：入団せず渡米（ゲームの NPB には出てこない）
 			draft_unsigned[norm_name(c["name"])] = draft.year
 			names[id] = c["name"]
-			_log("", "mlb_draftee", id, c["name"], team, "", "%s：%sの説得に応じず、メジャーへ挑戦（ドラフト%s）" % [
-				c["name"], GameData.short_name(team), rec["label"]])
+			var why := "%sと交渉しないまま期限が切れ" % GameData.short_name(team) if talk.get("expired", false) \
+				else "%sの説得に応じず" % GameData.short_name(team)
+			_log("", "mlb_draftee", id, c["name"], team, "", "%s：%s、メジャーへ挑戦（ドラフト%s）" % [
+				c["name"], why, rec["label"]])
 			continue
 		if int(talk.get("promise", 0)) > 0:
 			posting_promise[id] = draft.year + int(talk["promise"])
