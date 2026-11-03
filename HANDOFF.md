@@ -606,6 +606,12 @@
    - 古いセーブ（`offseason_order` が無い）：オフの途中ならそのオフだけ前の順番（現役ドラフト → FA → 契約更改 → 戦力外 → ドラフト）で進み、春季キャンプから新しい順番
    - テスト：contract_check・release_check・fa_check・save_check・start_year_check・trade_check の期待値を新しい順番に直した
 
+4.60 ~~契約更改・戦力外の画面に「引退を勧める」~~ → 完了（2026-11-03、担当U）。docs/AUTORUN.md の作業56
+   - 契約更改・戦力外の画面（`ContractView`）で33歳以上（`LeagueRoster.RETIRE_OFFER_MIN_AGE`）の選手を選ぶと「引退を勧める　受け入れ ★★★☆☆」（`GameState.retire_offer`）。受け入れればその場で引退（`LeagueRoster.retire_by_offer`：所属から外し `retired`・`released`（`retire_offer: true`）に入れる。市場に出ず、翌年の新加入にもならない）、自球団の速報「〇〇、現役引退を表明」（ニュースの種類 `retire`）、出来事の記録は `retire`（「現役引退（引退の勧めを受け入れ）」）、選手詳細は「引退（〇年・球団）」。断られたら契約か戦力外を選び直す。1人1オフ1回（`Releases.retire_asked`、セーブに入る）
+   - 受け入れる確率（`retire_offer_chance`、5〜95%）：0.35＋0.08×（年齢−33）−0.18×能力の実力z −0.12×今季の成績の実力z×出場量 −0.06×年俸（億円）。定数は `RETIRE_OFFER_*`
+   - CPU球団：史実の無い年（来季の能力値を作った年）だけ、市場へ出すはずのベテランの戦力外に勧め、受け入れる確率×`CPU_RETIRE_OFFER_SHARE`（0.5）で引退。史実のある年は今までどおり（2027年オフの試しで戦力外35人のうち5人）
+   - 確認：`godot/tests/retire_offer_check.gd`（新、ヘッドレス約3分）ALL OK。release_check・contract_check＋quick
+
 ## 2026-11-01 追記：アマニュースの文面・大会結果（Codex 作成、Claude がレビュー・main へ取り込み済み）
 
 - 作業フォルダ `npb-opener-game-2`。ユーザーの指示で `git pull --ff-only origin main`（最新だった）のあと `antigravity/amateur-news-text` を作成。commit まで。push・main への取り込みは行わない。

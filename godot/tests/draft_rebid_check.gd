@@ -208,8 +208,15 @@ func _finish_draft(hub: Node, year: int, team: String) -> void:
 		"%d年：おまかせを使わずにドラフトの最後まで進む（自球団の指名 %d人）" % [year, d.picks_of(team).size()])
 	hub.call("_close_sub_screen")
 	await _frames(2)
-	hub.call("_on_menu_chosen", "advance")
-	await _frames(4)
+	# ドラフトのあとは FA → 現役ドラフト → 春季キャンプ（作業54）。翌年になるまで可変ボタンで進める
+	for i in 6:
+		if _gs.year == year + 1:
+			break
+		hub.call("_close_sub_screen")
+		_gs.fa_resolve()
+		_gs.comp_resolve()
+		hub.call("_on_menu_chosen", "advance")
+		await _frames(4)
 	var year_text: String = hub.get_node("%YearLabel").text
 	_check(_gs.year == year + 1 and year_text.contains(str(year + 1)),
 		"可変ボタンで翌年へ進み、ハブの年が追従（%s／%s）" % [year_text, _gs.phase_name()])

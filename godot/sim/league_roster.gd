@@ -35,6 +35,17 @@ const TEAM_SUCCESSOR := {"横浜ベイスターズ": "横浜DeNAベイスター�
 const ROSTER_LIMIT := 70
 ## 育成の契約年数（満了したら育成で再契約。_renew_ikusei）
 const IKUSEI_CONTRACT_YEARS := 3
+## 引退を勧められる年齢（来季の年齢ではなく今季の年齢。作業56）
+const RETIRE_OFFER_MIN_AGE := 33
+## 引退を勧めたときに受け入れる確率：基本（33歳）＋1歳ごと、能力（実力 z）・今季の成績（z）・年俸（1億円ごと）で下げる
+const RETIRE_OFFER_BASE := 0.35
+const RETIRE_OFFER_PER_AGE := 0.08
+const RETIRE_OFFER_ABILITY := 0.18
+const RETIRE_OFFER_SEASON := 0.12
+const RETIRE_OFFER_SALARY := 0.06
+const RETIRE_OFFER_RANGE := [0.05, 0.95]
+## 史実の無い年に、CPU球団が市場へ出すはずのベテランの戦力外のうち、引退を勧めて受け入れた選手は引退にする割合
+const CPU_RETIRE_OFFER_SHARE := 0.5
 ## 選手ページの無い選手の育成の判定で、ドラフト会議の一覧をさかのぼる年数（_tmp_ikusei）
 const TMP_DRAFT_LOOKBACK := 12
 ## CPU球団の育成からの昇格：支配下の実力の下からこの割合の選手より良ければ上げる。23歳以下は実力に足す
@@ -1276,8 +1287,58 @@ func open_releases(season_year: int) -> Releases:
 		if team == user_team:
 			continue
 		for id in _cpu_cuts(team, season_year, -room(team)):
+			if _cpu_offers_retirement(id, season_year):
+				retire_by_offer(id)
+				rel.cpu_rows.append({"id": id, "name": names.get(id, id), "team": team, "market": false,
+					"retire_offer": true})
+				continue
 			rel.cpu_rows.append(release_player(id))
 	return rel
+
+
+## CPU球団がベテランの戦力外を引退にするか（作業56）。史実のある年は史実どおり（市場に出る選手は史実で翌年もいる）
+## なので勧めない。史実の無い年だけ、市場へ出るはずのベテランに勧めて、受け入れる確率 × CPU_RETIRE_OFFER_SHARE で引退
+func _cpu_offers_retirement(id: String, season_year: int) -> bool:
+	if not GameData.synthetic.has(_count_year()) or not _plan.get("entries", {}).has(id):
+		return false
+	if not retire_offer_block(id, season_year).is_empty():
+		return false
+	return _rng.randf() < retire_offer_chance(id, season_year) * CPU_RETIRE_OFFER_SHARE
+
+
+## 引退を勧めて受け入れる確率（0.05〜0.95）。stats：今季のゲーム内成績（無ければ空）
+func retire_offer_chance(id: String, season_year: int, stats: Dictionary = {}) -> float:
+	var p := GameData.player(id)
+	if p.is_empty():
+		return 0.0
+	var age := FreeAgency.age_of(p, season_year)
+	var chance := RETIRE_OFFER_BASE + RETIRE_OFFER_PER_AGE * (age - RETIRE_OFFER_MIN_AGE)
+	chance -= RETIRE_OFFER_ABILITY * float(Salary.ability(p)[0])
+	if not stats.is_empty():
+		var s := Salary.season_ability(p, stats)
+		chance -= RETIRE_OFFER_SEASON * float(s[0]) * clampf(float(s[1]), 0.0, 1.0)
+	chance -= RETIRE_OFFER_SALARY * salary_of(id) / 10000.0
+	return clampf(chance, RETIRE_OFFER_RANGE[0], RETIRE_OFFER_RANGE[1])
+
+
+## 引退を勧められるか（33歳以上・所属している）。だめなら理由
+func retire_offer_block(id: String, season_year: int) -> String:
+	if not team_of.has(id):
+		return "所属していません"
+	var age := FreeAgency.age_of(GameData.player(id), season_year)
+	if age < RETIRE_OFFER_MIN_AGE:
+		return "引退を勧められるのは%d歳以上の選手です（%d歳）" % [RETIRE_OFFER_MIN_AGE, age]
+	return ""
+
+
+## 引退を勧めて受け入れた選手をその場で引退させる（市場に出ず、どの球団にも行かない）
+func retire_by_offer(id: String) -> void:
+	var from: String = team_of.get(id, "")
+	team_of.erase(id)
+	retired[id] = year
+	released[id] = {"year": year, "from": from, "market": false, "retire_offer": true}
+	var name: String = names.get(id, id)
+	_log("", "retire", id, name, from, "", "%s（%s）現役引退（引退の勧めを受け入れ）" % [name, GameData.short_name(from)])
 
 
 ## CPU球団が戦力外にする選手（count 人。keep_score の低い順、投手・野手の最低人数は残す）
