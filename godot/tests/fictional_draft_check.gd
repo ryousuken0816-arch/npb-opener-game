@@ -793,9 +793,10 @@ func _check_types() -> void:
 			var has_c := false
 			for k: String in keys:
 				var v := int(r[k]["value"])
-				hi += 1 if v >= 70 else 0
+				# 長所は 66 以上・短所は 55 以下（作業73。ほかの能力は 50〜65）
+				hi += 1 if v >= FictionalTypes.STRENGTH_MIN else 0
 				lo += 1 if v < 50 else 0
-				shape += "B" if v >= 70 else ("e" if v < 50 else ".")
+				shape += "B" if v >= FictionalTypes.STRENGTH_MIN else ("e" if v < 50 else ".")
 				seen[v] = int(seen.get(v, 0)) + 1
 				has_c = has_c or (v >= 60 and v < 70)
 			same3 += 1 if seen.values().max() >= 3 else 0
@@ -821,14 +822,14 @@ func _check_types() -> void:
 	for g: String in types:
 		counts[g] = types[g].size()
 	print("  型の数 %s、年の色 %s、物語 %d人" % [counts, themes, stories])
-	print("  長所（B 以上）の数の平均 S %.1f・A %.1f・B %.1f・C %.1f・D %.1f" % [avg.call("S"), avg.call("A"), avg.call("B"), avg.call("C"), avg.call("D")])
+	print("  長所（66 以上）の数の平均 S %.1f・A %.1f・B %.1f・C %.1f・D %.1f" % [avg.call("S"), avg.call("A"), avg.call("B"), avg.call("C"), avg.call("D")])
 	_check(int(counts.get("投手", 0)) >= 9 and int(counts.get("捕手", 0)) >= 6 and int(counts.get("内野手", 0)) >= 8
 		and int(counts.get("外野手", 0)) >= 8, "型は守備位置ごとに10前後（%s）" % counts)
 	_check(float(named) / maxf(1, all_n) >= 0.9, "紹介文（手帳の札・作戦会議・ニュース）に型の名前（%d／%d人）" % [named, all_n])
 	_check(float(top_shape) / maxf(1, of_n) <= 0.25,
 		"外野手の能力の形がばらける（いちばん多い形 %d／%d人）" % [top_shape, of_n])
 	_check(float(bat_strong) / maxf(1, bat_n) >= 0.95 and float(bat_weak) / maxf(1, bat_n) >= 0.7,
-		"野手は長所 B 以上を持ち、短所 E 以下も多い（長所 %d・短所 %d／%d人）" % [bat_strong, bat_weak, bat_n])
+		"野手は長所（66 以上）を持ち、短所（50 未満）も多い（長所 %d・短所 %d／%d人）" % [bat_strong, bat_weak, bat_n])
 	_check(avg.call("S") >= 2.0 and avg.call("A") >= 2.0 and avg.call("B") > avg.call("D") + 0.5,
 		"評価の高い選手ほど長所が多い（S %.1f・A %.1f・B %.1f・D %.1f）" % [avg.call("S"), avg.call("A"), avg.call("B"), avg.call("D")])
 	_check(themes.size() >= 6 and int(themes.get("例年並み", 0)) <= years / 2,

@@ -13,6 +13,8 @@ const BAT_KEYS := ["meet", "power", "eye", "speed", "defense", "arm"]
 const PIT_KEYS := ["k9", "bb9", "hr9", "stamina"]
 ## 野手の入団時の総合の重み（FictionalDraft._bat_composite と同じ。守備は −13 の分を含めて1次）
 const BAT_WEIGHT := {"meet": 0.35, "power": 0.35, "eye": 0.1, "speed": 0.1, "defense": 0.1}
+## 投手の総合は奪三振・制球・被本塁打の平均
+const PIT_WEIGHT := {"k9": 1.0 / 3.0, "bb9": 1.0 / 3.0, "hr9": 1.0 / 3.0}
 
 ## 型：名前 → {pos：守備位置の区分（投手・捕手・内野手・外野手。共通は "共通"）, w：選ばれやすさ, s：長所（強い順）, d：短所（弱い順）, 付け足し}
 ## 付け足し：bats（打席）・throws（投げる手）・role（投手の役割）・wild（長所1つを極端に・短所を3つ）・flat（短所なし・長所は控えめ）・
@@ -79,8 +81,12 @@ const KEY_WORD := {"meet": "ミート", "power": "パワー", "eye": "選球眼"
 ## 未完の大器（野手）の長所は、パワーか走力か肩（どれか1つを極端に）
 const WILD_BAT_KEYS := ["power", "speed", "arm"]
 ## 長所の上乗せ（中央からの差。強い順）。短所の下げ幅（弱い順）。wild は長所1つを WILD_STRENGTH、flat は FLAT_STRENGTH
-const STRENGTH := [16.0, 12.0, 9.0]
+const STRENGTH := [18.0, 14.0, 10.0]
 const WEAKNESS := [16.0, 13.0, 11.0]
+## 短所をさらに深くする幅（作業73。30台は未完の大器・高卒・評価の低い選手に多め）
+const WEAK_DEEPER_WILD := 6.0
+const WEAK_DEEPER_HS := 3.0
+const WEAK_DEEPER_GRADE := {"C": 2.0, "D": 4.0}
 const WILD_STRENGTH := 24.0
 const FLAT_STRENGTH := [8.0, 7.0, 6.0]
 ## 総合を戻すときの許容のずれ（野手の物差し。投手の物差しで約0.3）
@@ -88,10 +94,26 @@ const SETTLE_TOL := 0.15
 ## 総合の重い能力（野手）と、長所を両方に置ける中央（野手の物差し）の下限
 const HEAVY_KEYS := ["meet", "power"]
 const HEAVY_BOTH_GOAL := 62.0
-## 長所は B 以上（70）、短所は E 以下（49）。怪物以外の上限は FictionalDraft.RATING_CAP（走力は SPEED_CAP）、短所の下限
-const STRENGTH_MIN := 70.0
-const WEAKNESS_MAX := 49.0
+## 作業73（ユーザー決定）：長所は 66 以上（B〜A が中心）、上限は評価ごと（STRENGTH_CAP。怪物は MONSTER_CAP）。
+## 短所は 30〜55（E〜D が中心）。長所でも短所でもない能力は 50〜65（C〜D）
+const STRENGTH_MIN := 66.0
+const STRENGTH_CAP := {"S": 89.0, "A": 88.0, "B": 86.0, "C": 84.0, "D": 82.0}
+const WEAKNESS_MAX := 55.0
 const WEAKNESS_MIN := 30.0
+const FREE_MIN := 50.0
+const FREE_MAX := 65.0
+## 一芸 S・怪物のほかの S（90以上）はごくたまに（年に0〜1人）：評価 S・A の長所の1つ目を RARE_S_VALUE に
+const RARE_S_RATE := 0.04
+## 長所・短所が範囲の端に近いときの縮め方：端からこの幅の内側で、はみ出しを KNEE_SLOPE 倍にする
+const STRONG_KNEE := 8.0
+const WEAK_KNEE := 10.0
+const KNEE_SLOPE := 0.5
+## 総合を戻すときの短所の分担（ほかの能力の何倍か）
+const WEAK_SETTLE_SHARE := 0.25
+## 総合を戻すときに短所を下げる下限（範囲を守るとき）と、範囲を守れないときの長所の下限
+const WEAK_SETTLE_FLOOR := 40.0
+const LOOSE_STRENGTH_MIN := 58.0
+const RARE_S_VALUE := [90.0, 92.0]
 ## 怪物の長所の上限
 const MONSTER_CAP := 90.0
 ## 長所の数（評価ごと [最小, 最大]）と短所の数の上限。評価の高い選手ほど長所が多く、短所が少ない
@@ -106,17 +128,15 @@ const NOISE := 3.0
 const AMP_SCALE := [0.7, 1.2]
 const FREE_SPREAD := 6.0
 const EDGE_JITTER := 3.0
-## 評価 B〜D の2つ目からの長所・短所は、SOFT_RATE の確率で「ゆるい長所・短所」にする（中央からの上乗せ・下げ幅はそのまま、
-## B 以上・E 以下に収めない。長所でも短所でもない能力の範囲で C の高め・D の低めになる）。1つ目の長所・短所はそのまま
-const SOFT_RATE := 0.35
 ## 長所でも短所でもない能力が下限を下回ったときに、下限から上へ跳ね返す割合（下限に同じような数字が固まらないように）
 const FREE_REFLECT := 0.6
-const SOFT_GRADES := ["B", "C", "D"]
 ## それでも並んだ数字は、同じランクの中で UNTIE_STEP ずらす。総合の重みが同じ能力どうしを逆向きに同じだけ動かす
 ## （重みの無い肩・スタミナは1つだけ）ので総合は変わらない
 const UNTIE_STEP := [1, 3]
 const UNTIE_ROUNDS := 12
-const UNTIE_KEEP := 80
+## これ以上の能力は動かさない（一芸 S・まれな S。怪物は武器を守るため UNTIE_KEEP_MONSTER 以上）
+const UNTIE_KEEP := 90
+const UNTIE_KEEP_MONSTER := 80
 const UNTIE_PARTNERS := {"meet": ["power"], "power": ["meet"], "eye": ["speed", "defense"], "speed": ["eye", "defense"],
 	"defense": ["eye", "speed"], "arm": [], "k9": ["bb9", "hr9"], "bb9": ["k9", "hr9"], "hr9": ["k9", "bb9"], "stamina": []}
 ## 球速（km/h）の上限・下限（怪物以外）
@@ -322,25 +342,31 @@ static func apply_shape(p: Dictionary, type_name: String, grade: String, target:
 			strong.erase("meet" if strong.find("meet") > strong.find("power") else "power")
 	strong = strong.slice(0, mini(n_s, strong.size()))
 	weak = weak.slice(0, mini(n_d, weak.size()))
-	var soft: Array = []
-	if grade in SOFT_GRADES and not monster and not bool(t.get("wild", false)) and not bool(t.get("flat", false)):
-		for k: String in strong.slice(1) + weak.slice(1):
-			if k != "velocity" and rng.randf() < SOFT_RATE:
-				soft.append(k)
+	# 長所の上限は評価ごと（作業73）。短所は未完の大器・高卒・評価の低い選手ほど深く
+	var scap := float(STRENGTH_CAP.get(grade, 84.0))
+	var deeper := float(WEAK_DEEPER_GRADE.get(grade, 0.0))
+	deeper += WEAK_DEEPER_WILD if bool(t.get("wild", false)) else 0.0
+	deeper += WEAK_DEEPER_HS if str(p.get("amateur", {}).get("category", "")) == "高校" else 0.0
 	if bool(p["is_pitcher"]):
-		_shape_pitcher(p, t, strong, weak, amp, target, weapon, cap, monster, rng, soft)
+		_shape_pitcher(p, t, strong, weak, amp, target, weapon, scap, monster, rng, deeper)
 	else:
-		_shape_batter(p, t, strong, weak, amp, target, weapon, cap, monster, rng, soft)
+		_shape_batter(p, t, strong, weak, amp, target, weapon, scap, monster, rng, deeper)
+	# まれな S（一芸 S・怪物のほか）
+	var keys: Array = strong.filter(func(k: String) -> bool: return k != "velocity")
+	var hs := str(p.get("amateur", {}).get("category", "")) == "高校"  # 高卒は武器を崩さない
+	if grade in ["S", "A"] and not monster and not hs and not keys.is_empty() and rng.randf() < RARE_S_RATE:
+		p["amateur"]["rare_s"] = keys[0]
+		_lift(p, str(keys[0]), rng.randf_range(RARE_S_VALUE[0], RARE_S_VALUE[1]))
 
 
 static func _cap_of(k: String, cap: float, monster: bool, is_strength: bool) -> float:
 	if monster and is_strength:
 		return MONSTER_CAP
-	return FictionalDraft.SPEED_CAP if k == "speed" else cap
+	return maxf(FictionalDraft.SPEED_CAP, cap) if k == "speed" else cap
 
 
 static func _shape_batter(p: Dictionary, t: Dictionary, strong: Array, weak: Array, amp: Array, target: float,
-		weapon: float, cap: float, monster: bool, rng: RandomNumberGenerator, soft: Array = []) -> void:
+		weapon: float, cap: float, monster: bool, rng: RandomNumberGenerator, deeper := 0.0) -> void:
 	var br: Dictionary = p["batting"]["ratings"]
 	var goal := FictionalDraft.BAT_MID + (target - FictionalDraft.PITCH_MID) / FictionalDraft.BAT_TO_PITCH
 	var orig_mean := 0.0
@@ -356,19 +382,16 @@ static func _shape_batter(p: Dictionary, t: Dictionary, strong: Array, weak: Arr
 		if i >= 0:
 			off[k] = float(amp[mini(i, amp.size() - 1)]) * scale + rng.randf_range(-NOISE, NOISE)
 		elif j >= 0:
-			off[k] = -float(WEAKNESS[mini(j, WEAKNESS.size() - 1)]) * scale - rng.randf_range(-NOISE, NOISE)
+			off[k] = -float(WEAKNESS[mini(j, WEAKNESS.size() - 1)]) * scale - deeper - rng.randf_range(-NOISE, NOISE)
 		else:
 			off[k] = KEEP_SHAPE * (FictionalDraft._rv(br, k, 50.0) - orig_mean) + rng.randfn(0.0, FREE_SPREAD)
-	# ゆるい長所・短所：上乗せ・下げ幅は付けたまま、範囲は長所でも短所でもない能力と同じ
-	for k: String in soft:
-		strong.erase(k)
-		weak.erase(k)
 	# 総合（重みの合計は1）が goal になる中央
 	var base := goal - _bat_score(off)
 	var val := {}
 	for k: String in BAT_KEYS:
 		val[k] = base + float(off[k])
-	# 長所は B 以上・短所は E 以下に収め、ずれた総合は長所でも短所でもない能力で戻す（無ければ武器のほかの全体で）
+	_knee_all(val, strong, weak, cap, monster, jit)
+	# 長所・短所をそれぞれの範囲に収め、ずれた総合は長所でも短所でもない能力で戻す（無ければ武器のほかの全体で）
 	var wk := ""
 	for _round in 3:
 		for k: String in strong + weak:
@@ -393,7 +416,7 @@ static func _shape_batter(p: Dictionary, t: Dictionary, strong: Array, weak: Arr
 		for k: String in free:
 			val[k] = float(val[k]) + diff * float(share[k])
 	for k: String in BAT_KEYS:
-		# 長所は B 以上、短所は E 以下、どちらでもない能力は B と E の間（長所・短所の区別をはっきりさせる）。境目は能力ごとに少しずらす
+		# 長所は 66 以上、短所は 55 以下、どちらでもない能力は 50〜65（長所・短所の区別をはっきりさせる）。境目は能力ごとに少しずらす
 		var lh := _range_of(k, strong, weak, cap, monster, false, jit)
 		if k == wk:
 			lh[1] = maxf(lh[1], minf(weapon, _cap_of(k, cap, monster, true)))
@@ -412,7 +435,7 @@ static func _shape_batter(p: Dictionary, t: Dictionary, strong: Array, weak: Arr
 
 
 static func _shape_pitcher(p: Dictionary, t: Dictionary, strong: Array, weak: Array, amp: Array, target: float,
-		weapon: float, cap: float, monster: bool, rng: RandomNumberGenerator, soft: Array = []) -> void:
+		weapon: float, cap: float, monster: bool, rng: RandomNumberGenerator, deeper := 0.0) -> void:
 	var pit: Dictionary = p["pitching"]
 	var pr: Dictionary = pit["ratings"]
 	# 得意・不得意の幅は選手ごとに scale 倍、境目は能力ごとにずらす（作業73）
@@ -425,12 +448,9 @@ static func _shape_pitcher(p: Dictionary, t: Dictionary, strong: Array, weak: Ar
 		if i >= 0:
 			off[k] = float(amp[mini(i, amp.size() - 1)]) * scale + rng.randf_range(-NOISE, NOISE)
 		elif j >= 0:
-			off[k] = -float(WEAKNESS[mini(j, WEAKNESS.size() - 1)]) * scale - rng.randf_range(-NOISE, NOISE)
+			off[k] = -float(WEAKNESS[mini(j, WEAKNESS.size() - 1)]) * scale - deeper - rng.randf_range(-NOISE, NOISE)
 		else:
 			off[k] = KEEP_SHAPE * (FictionalDraft._rv(pr, k, target) - target) + rng.randfn(0.0, FREE_SPREAD)
-	for k: String in soft:
-		strong.erase(k)
-		weak.erase(k)
 	# 奪三振・制球・被本塁打の平均が総合になる中央（スタミナは別。先発・救援の目安）
 	var base := target - (float(off["k9"]) + float(off["bb9"]) + float(off["hr9"])) / 3.0
 	var val := {}
@@ -441,6 +461,7 @@ static func _shape_pitcher(p: Dictionary, t: Dictionary, strong: Array, weak: Ar
 		val["stamina"] = maxf(float(val["stamina"]), 72.0)
 	elif str(t.get("role", "")) == "救援" or "stamina" in weak:
 		val["stamina"] = minf(float(val["stamina"]), 45.0)
+	_knee_all(val, strong, weak, cap, monster, jit)
 	for k: String in strong + weak:
 		if k != "velocity":
 			var lh := _range_of(k, strong, weak, cap, monster, false, jit)
@@ -448,11 +469,22 @@ static func _shape_pitcher(p: Dictionary, t: Dictionary, strong: Array, weak: Ar
 	if weapon > 0.0:
 		val["k9"] = maxf(float(val["k9"]), weapon)
 	for k: String in PIT_KEYS:
-		var lo := WEAKNESS_MIN if k in weak else 30.0
-		var hi := _cap_of(k, cap, monster, k in strong) - (float(jit[k][1]) if k in strong else 0.0)
+		# 奪三振・制球・被本塁打は長所・短所・それ以外の範囲に。スタミナは先発・救援の目安なので長所・短所のときだけ
+		var lh := [30.0, _cap_of(k, cap, monster, false)]
+		if k in strong or k in weak or k != "stamina":
+			lh = _range_of(k, strong, weak, cap, monster, false, jit)
 		if k == "k9" and weapon > 0.0:
-			hi = maxf(hi, weapon)  # 高卒の武器（怪物は84〜88）は上限で削らない
-		FictionalDraft._set_rating(pr, k, clampf(float(val[k]), lo, hi))
+			lh[1] = maxf(lh[1], weapon)  # 高卒の武器（怪物は84〜88）は上限で削らない
+		var v := float(val[k])
+		if k != "stamina" and not k in strong and not k in weak and v < lh[0]:
+			v = lh[0] + (lh[0] - v) * FREE_REFLECT
+		elif k == "stamina" and v < lh[0] + WEAK_KNEE:
+			v = lh[0] + WEAK_KNEE - (lh[0] + WEAK_KNEE - v) * KNEE_SLOPE
+		FictionalDraft._set_rating(pr, k, clampf(v, lh[0], lh[1]))
+	# 奪三振・制球・被本塁打の平均を総合に戻す（作業73。範囲で丸めた分）
+	var wkeep := "k9" if weapon > 0.0 else ""
+	_settle_pitcher(pr, target, strong, weak, cap, monster, false, jit, rng, wkeep)
+	_settle_pitcher(pr, target, strong, weak, cap, monster, true, jit, rng, wkeep)
 	FictionalDraft._set_rating(pr, "overall", target)
 	# 球速：型の長所・短所の分だけ動かす
 	var velo: Variant = pit.get("velocity")
@@ -480,28 +512,69 @@ static func _settle_batter(br: Dictionary, goal: float, strong: Array, weak: Arr
 		for k: String in BAT_WEIGHT:
 			if k == keep:
 				continue
-			var lo_hi := _range_of(k, strong, weak, cap, monster, loose, jit)
+			var lo_hi := _range_of(k, strong, weak, cap, monster, loose, jit, true)
 			if (diff > 0.0 and float(cur[k]) < lo_hi[1]) or (diff < 0.0 and float(cur[k]) > lo_hi[0]):
 				movable.append(k)
 		if movable.is_empty():
 			return
-		var share := _random_share(movable, rng)
+		var share := _random_share(movable, rng, BAT_WEIGHT, weak)
 		for k: String in movable:
-			var lo_hi := _range_of(k, strong, weak, cap, monster, loose, jit)
-			FictionalDraft._set_rating(br, k, clampf(float(cur[k]) + diff * float(share[k]), lo_hi[0], lo_hi[1]))
+			var lo_hi := _range_of(k, strong, weak, cap, monster, loose, jit, true)
+			FictionalDraft._set_rating(br, k, clampf(float(cur[k]) + diff * float(share[k]), minf(lo_hi[0], float(cur[k])), maxf(lo_hi[1], float(cur[k]))))
+
+
+## 投手：奪三振・制球・被本塁打の平均が target になるように、範囲の中で動かせる能力で戻す（作業73）
+static func _settle_pitcher(pr: Dictionary, target: float, strong: Array, weak: Array, cap: float, monster: bool,
+		loose: bool, jit: Dictionary, rng: RandomNumberGenerator, keep := "") -> void:
+	for _round in 8:
+		var cur := {}
+		for k: String in PIT_WEIGHT:
+			cur[k] = FictionalDraft._rv(pr, k, target)
+		var diff := target - (float(cur["k9"]) + float(cur["bb9"]) + float(cur["hr9"])) / 3.0
+		if absf(diff) < SETTLE_TOL:
+			return
+		var movable: Array = []
+		for k: String in PIT_WEIGHT:
+			var lo_hi := _range_of(k, strong, weak, cap, monster, loose, jit, true)
+			if k != keep and ((diff > 0.0 and float(cur[k]) < lo_hi[1]) or (diff < 0.0 and float(cur[k]) > lo_hi[0])):
+				movable.append(k)
+		if movable.is_empty():
+			return
+		var share := _random_share(movable, rng, PIT_WEIGHT, weak)
+		for k: String in movable:
+			var lo_hi := _range_of(k, strong, weak, cap, monster, loose, jit, true)
+			FictionalDraft._set_rating(pr, k, clampf(float(cur[k]) + diff * float(share[k]), minf(lo_hi[0], float(cur[k])), maxf(lo_hi[1], float(cur[k]))))
 
 
 ## 総合のずれ1あたりに各能力を動かす量（重み × 量の合計が1）。rng があれば能力ごとにばらつかせる（作業73）
-static func _random_share(keys: Array, rng: RandomNumberGenerator) -> Dictionary:
+## weak：短所の能力は分担を WEAK_SETTLE_SHARE 倍にする（下限に張り付かないように）
+static func _random_share(keys: Array, rng: RandomNumberGenerator, weight: Dictionary = BAT_WEIGHT, weak: Array = []) -> Dictionary:
 	var f := {}
 	var wsum := 0.0
 	for k: String in keys:
 		f[k] = rng.randf_range(0.4, 1.6) if rng != null else 1.0
-		wsum += float(BAT_WEIGHT.get(k, 0.0)) * float(f[k])
+		if k in weak:
+			f[k] = float(f[k]) * WEAK_SETTLE_SHARE
+		wsum += float(weight.get(k, 0.0)) * float(f[k])
 	var out := {}
 	for k: String in keys:
 		out[k] = float(f[k]) / wsum if wsum > 0.0 else 0.0
 	return out
+
+
+## 長所・短所を範囲の端の手前（KNEE）からなめらかに縮める（作業73。端で切って同じような数字が固まらないように）
+static func _knee_all(val: Dictionary, strong: Array, weak: Array, cap: float, monster: bool, jit: Dictionary) -> void:
+	for k: String in strong + weak:
+		if not val.has(k):
+			continue
+		var lh := _range_of(k, strong, weak, cap, monster, false, jit)
+		var knee := STRONG_KNEE if k in strong else WEAK_KNEE
+		var v := float(val[k])
+		if v < lh[0] + knee:
+			v = lh[0] + knee - (lh[0] + knee - v) * KNEE_SLOPE
+		if v > lh[1] - knee:
+			v = lh[1] - knee + (v - lh[1] + knee) * KNEE_SLOPE
+		val[k] = v
 
 
 ## 能力ごとの境目のずらし（作業73）：[下の境目を上げる幅, 上の境目を下げる幅]
@@ -513,15 +586,18 @@ static func _edge_jitter(keys: Array, rng: RandomNumberGenerator) -> Dictionary:
 
 
 ## loose：総合が届かないとき（型の形より入団時の総合を優先する）の広い範囲。jit：能力ごとの境目のずらし（作業73）
-static func _range_of(k: String, strong: Array, weak: Array, cap: float, monster: bool, loose := false, jit := {}) -> Array:
+## settle：総合を戻すときの範囲（短所は WEAK_SETTLE_FLOOR より下げない。loose では2つ目からの長所も LOOSE_STRENGTH_MIN まで下げる）
+static func _range_of(k: String, strong: Array, weak: Array, cap: float, monster: bool, loose := false, jit := {},
+		settle := false) -> Array:
 	var j: Array = jit.get(k, [0.0, 0.0])
 	if k in strong:
-		return [STRENGTH_MIN + float(j[0]), _cap_of(k, cap, monster, true) - float(j[1])]
+		var lo := LOOSE_STRENGTH_MIN if loose and strong.find(k) > 0 else STRENGTH_MIN + float(j[0])  # 1つ目の長所は下げない
+		return [lo, _cap_of(k, cap, monster, true) - float(j[1])]
 	if k in weak:
-		return [WEAKNESS_MIN, STRENGTH_MIN - 1.0 if loose else WEAKNESS_MAX - float(j[1])]
+		return [WEAK_SETTLE_FLOOR if settle and not loose else WEAKNESS_MIN, FREE_MAX if loose else WEAKNESS_MAX - float(j[1])]
 	if loose:
 		return [WEAKNESS_MIN, _cap_of(k, cap, monster, false)]
-	return [WEAKNESS_MAX + 1.0 + float(j[0]), STRENGTH_MIN - 1.0 - float(j[1])]
+	return [FREE_MIN + float(j[0]), FREE_MAX - float(j[1])]
 
 
 ## 完成型：どの能力も中央の近く（短所なし）。伸びしろは小さめ（早熟。ピークは入団時 + COMPLETE_GROWTH）
@@ -575,6 +651,7 @@ static func untie(p: Dictionary, rng: RandomNumberGenerator) -> void:
 	if bool(p.get("is_pitcher", false)) and p.get("pitching") is Dictionary and p["pitching"].get("ratings") is Dictionary:
 		parts.append([p["pitching"]["ratings"], PIT_KEYS])
 	var story := str(p.get("amateur", {}).get("story_key", ""))
+	var keep := UNTIE_KEEP_MONSTER if bool(p.get("is_monster", false)) else UNTIE_KEEP
 	for part: Array in parts:
 		var r: Dictionary = part[0]
 		var keys: Array = (part[1] as Array).filter(func(k: String) -> bool: return r.get(k) is Dictionary)
@@ -589,7 +666,7 @@ static func untie(p: Dictionary, rng: RandomNumberGenerator) -> void:
 			_shuffle(tied, rng)
 			var moved := false
 			for k: String in tied:
-				if _nudge(r, k, keys, story, rng):
+				if _nudge(r, k, keys, story, rng, keep):
 					moved = true
 					break
 			if not moved:
@@ -597,7 +674,7 @@ static func untie(p: Dictionary, rng: RandomNumberGenerator) -> void:
 
 
 ## k を ±UNTIE_STEP ずらす（相手がいれば相手を逆向きに同じだけ）。ずらした先がほかの能力と並ばないときだけ。動かせたら true
-static func _nudge(r: Dictionary, k: String, keys: Array, story: String, rng: RandomNumberGenerator) -> bool:
+static func _nudge(r: Dictionary, k: String, keys: Array, story: String, rng: RandomNumberGenerator, keep: int) -> bool:
 	var v := int(r[k]["value"])
 	var steps: Array = []
 	for s in range(int(UNTIE_STEP[0]), int(UNTIE_STEP[1]) + 1):
@@ -608,7 +685,7 @@ static func _nudge(r: Dictionary, k: String, keys: Array, story: String, rng: Ra
 	_shuffle(partners, rng)
 	for s: int in steps:
 		var nv := v + s
-		if not _untie_ok(k, v, nv, story) or _clashes(r, keys, nv, [k]):
+		if not _untie_ok(k, v, nv, story, keep) or _clashes(r, keys, nv, [k]):
 			continue
 		if partners.is_empty():
 			FictionalDraft._set_rating(r, k, nv)
@@ -616,7 +693,7 @@ static func _nudge(r: Dictionary, k: String, keys: Array, story: String, rng: Ra
 		for q: String in partners:
 			var qv := int(r[q]["value"])
 			var nq := qv - s
-			if nq == nv or not _untie_ok(q, qv, nq, story) or _clashes(r, keys, nq, [k, q]):
+			if nq == nv or not _untie_ok(q, qv, nq, story, keep) or _clashes(r, keys, nq, [k, q]):
 				continue
 			FictionalDraft._set_rating(r, k, nv)
 			FictionalDraft._set_rating(r, q, nq)
@@ -631,13 +708,12 @@ static func _clashes(r: Dictionary, keys: Array, v: int, skip: Array) -> bool:
 	return false
 
 
-## ずらしてよいか：A 以上でない・ランクが同じ・上限を超えない・下限（短所の下限）を下回らない・先発と救援の境目をまたがない・物語の条件
-static func _untie_ok(k: String, v: int, nv: int, story: String) -> bool:
-	# A 以上（怪物の武器・一芸 S・俊足）は動かさない
-	if v >= UNTIE_KEEP or FictionalTalent._ability_rank(nv) != FictionalTalent._ability_rank(v):
+## ずらしてよいか：keep 以上でない（一芸 S・まれな S・怪物の武器）・ランクが同じ・上限を超えない・下限（短所の下限）を下回らない・
+## 先発と救援の境目をまたがない・物語の条件
+static func _untie_ok(k: String, v: int, nv: int, story: String, keep: int) -> bool:
+	if v >= keep or FictionalTalent._ability_rank(nv) != FictionalTalent._ability_rank(v):
 		return false
-	var cap := FictionalDraft.SPEED_CAP if k == "speed" else FictionalDraft.RATING_CAP
-	if nv > maxf(v, cap) or nv < minf(v, WEAKNESS_MIN):
+	if nv > maxf(v, STRENGTH_CAP["S"]) or nv < minf(v, WEAKNESS_MIN):
 		return false
 	if k == "stamina" and (nv >= Growth.STARTER_STAMINA) != (v >= Growth.STARTER_STAMINA):
 		return false
@@ -667,7 +743,7 @@ static func assign_one_skill(cls: Array, theme: String, rng: RandomNumberGenerat
 		return (not bool(p.get("is_monster", false)) and not bool(am.get("as_ikusei", false))
 			and str(am.get("grade", "")) in ["A", "B", "C"] and not is_complete(str(am.get("type_key", "")))
 			and not (str(am.get("category", "")) == "高校" and str(am.get("grade", "")) == "A")
-			and not p.has("reincarnation") and not bool(p.get("two_way", {}).get("active", false))))
+			and not p.has("reincarnation") and not bool(p.get("two_way", {}).get("active", false)) and not am.has("rare_s")))
 	var n := 0
 	while n < want and not pool.is_empty():
 		var p: Dictionary = pool[rng.randi_range(0, pool.size() - 1)]
@@ -694,10 +770,17 @@ static func _one_skill(p: Dictionary, key: String, rng: RandomNumberGenerator) -
 	am["one_skill"] = key
 	if key == "velocity":
 		p["pitching"]["velocity"]["kmh"] = rng.randi_range(ONE_SKILL_KMH[0], ONE_SKILL_KMH[1])
-	elif bool(p["is_pitcher"]):
+	else:
+		_lift(p, key, rng.randf_range(ONE_SKILL_VALUE[0], ONE_SKILL_VALUE[1]))
+	var word := str(KEY_WORD.get(key, key))
+	am["intro"] = str(am.get("intro", "")) + "。%sは世代随一" % word
+
+
+## 能力1つを v にし、総合はほかの能力で戻す（一芸 S・まれな S）
+static func _lift(p: Dictionary, key: String, v: float) -> void:
+	if bool(p["is_pitcher"]):
 		var pr: Dictionary = p["pitching"]["ratings"]
 		var before := FictionalDraft._rv(pr, key, 50.0)
-		var v := rng.randf_range(ONE_SKILL_VALUE[0], ONE_SKILL_VALUE[1])
 		FictionalDraft._set_rating(pr, key, v)
 		# 奪三振・制球・被本塁打の平均は総合のまま（ほかの2つで戻す）
 		if key in ["k9", "bb9", "hr9"]:
@@ -711,21 +794,19 @@ static func _one_skill(p: Dictionary, key: String, rng: RandomNumberGenerator) -
 		for k: String in BAT_WEIGHT:
 			cur[k] = FictionalDraft._rv(br, k, 50.0)
 		goal = _bat_score(cur)
-		FictionalDraft._set_rating(br, key, rng.randf_range(ONE_SKILL_VALUE[0], ONE_SKILL_VALUE[1]))
+		FictionalDraft._set_rating(br, key, v)
 		# 総合はほかの能力で戻す（S にした能力は動かさない）
 		var weak: Array = []
 		var strong: Array = [key]
 		for k: String in BAT_WEIGHT:
-			if FictionalDraft._rv(br, k, 50.0) < 50.0:
+			if FictionalDraft._rv(br, k, 50.0) < FREE_MIN:
 				weak.append(k)
-			elif FictionalDraft._rv(br, k, 50.0) >= 70.0 and k != key:
+			elif FictionalDraft._rv(br, k, 50.0) > FREE_MAX and k != key:
 				strong.append(k)
 		_settle_one(br, goal, key, weak, strong)
-	var word := str(KEY_WORD.get(key, key))
-	am["intro"] = str(am.get("intro", "")) + "。%sは世代随一" % word
 
 
-## 一芸を S にしたあと、S の能力は動かさずに総合を戻す（長所は B 以上、短所は E 以下、ほかは C〜D の範囲で）
+## 一芸を S にしたあと、S の能力は動かさずに総合を戻す（長所は 66 以上、短所は 30 以上、ほかは 50 以上の範囲で）
 static func _settle_one(br: Dictionary, goal: float, key: String, weak: Array, strong: Array) -> void:
 	for _round in 8:
 		var cur := {}
@@ -739,14 +820,14 @@ static func _settle_one(br: Dictionary, goal: float, key: String, weak: Array, s
 		for k: String in BAT_WEIGHT:
 			if k == key:
 				continue
-			var lo := WEAKNESS_MIN if k in weak else (STRENGTH_MIN if k in strong else WEAKNESS_MAX + 1.0)
+			var lo := WEAKNESS_MIN if k in weak else (STRENGTH_MIN if k in strong else FREE_MIN)
 			if (diff < 0.0 and float(cur[k]) > lo) or diff > 0.0:
 				movable.append(k)
 				wsum += float(BAT_WEIGHT[k])
 		if movable.is_empty():
 			return
 		for k: String in movable:
-			var lo := WEAKNESS_MIN if k in weak else (STRENGTH_MIN if k in strong else WEAKNESS_MAX + 1.0)
+			var lo := WEAKNESS_MIN if k in weak else (STRENGTH_MIN if k in strong else FREE_MIN)
 			FictionalDraft._set_rating(br, k, maxf(lo, float(cur[k]) + diff / wsum))
 
 
