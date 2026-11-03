@@ -45,6 +45,17 @@ const TARGET_ROUNDS := 2
 ## 1位入札：先に入札した球団1つごとに評価から引く値（競合を嫌う）と、入札ごとの迷い
 const COMPETE_PENALTY := 0.4
 const FIRST_BID_NOISE := 0.15
+## 1位入札の球団の性格（作業68）：強気＝競合でも目玉を狙う、堅実＝競合を避けて単独で獲れる選手、補強重視＝手薄な位置を優先。
+## 球団ごとの下地があり、毎年 STYLE_KEEP の割合で下地のまま、ほかの年は別の性格になる（setup で決めてセーブに残す）
+const BID_STYLES := ["強気", "堅実", "補強重視"]
+const STYLE_KEEP := 0.6
+## 性格ごとの、見込みの競合数（の対数）で引く重みと、守備位置の不足（_need_bonus）にかける倍率
+const STYLE_COMPETE := {"強気": 0.3, "堅実": 1.6, "補強重視": 1.0}
+const STYLE_NEED := {"強気": 1.0, "堅実": 1.0, "補強重視": 2.5}
+## 性格ごとの、先に入札を決めた球団（噂で聞こえる）1つごとに引く値（強気は今までの COMPETE_PENALTY と同じ）
+const STYLE_RIVAL := {"強気": 0.4, "堅実": 2.0, "補強重視": 1.3}
+## 見込みの競合数：各球団に見えている評価（当時の評価・将来性）の高さを、この温度でならした割合で12球団を配る
+const EXPECT_TEMP := 0.7
 ## 守備位置の不足をどれだけ評価に足すか（最大・最小）
 const NEED_WEIGHT := 0.8
 const NEED_MAX := 0.5
@@ -153,6 +164,8 @@ var _lottery_rng := RandomNumberGenerator.new()
 ## テストのときだけ抽選の種を決める（-1＝その場で引く）。0以上なら、年・入札の回・候補から決まった種で引く
 static var lottery_seed := -1
 var _team_noise := {}
+## 球団 → 1位入札の性格（BID_STYLES。作業68）
+var team_style := {}
 ## 球団 → {候補ID: true}：メジャー志望の候補を避けない（たまの強行指名・史実で強行指名した球団）
 var _team_dare := {}
 var _need := {}  ## 球団 → {守備位置: 今の人数}
@@ -268,6 +281,51 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 				_team_dare[t][c["id"]] = true
 	_compute_scale()
 	_choose_targets()
+	_choose_styles(seed_value)
+
+
+## 球団ごとの1位入札の性格（作業68）。抽選・指名の乱数（_rng）とは別の種で決める（今までの指名の流れを変えない）
+func _choose_styles(seed_value: int) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("style|%d|%d" % [year, seed_value])
+	team_style = {}
+	for t in teams:
+		var base: String = BID_STYLES[posmod(hash(t), BID_STYLES.size())]
+		team_style[t] = base if rng.randf() < STYLE_KEEP else BID_STYLES[rng.randi_range(0, BID_STYLES.size() - 1)]
+
+
+func style_of(team: String) -> String:
+	if not team_style.has(team):
+		return BID_STYLES[posmod(hash("%s|%d" % [team, year]), BID_STYLES.size())]  # 性格の無い古いセーブ
+	return str(team_style[team])
+
+
+## 1位入札で各候補に何球団来そうか（作業68）：各球団に見えている評価（当時の評価・将来性。球団ごとの見立ての違いは入れない）
+## が高いほど多い。まだ1位が決まっていない球団の数を、評価をならした割合で配る（最低1球団）
+func expected_bidders() -> Dictionary:
+	var pool: Array[Dictionary] = []
+	var top := -INF
+	for c in _remaining():
+		if c.get("mlb_intent", false):
+			continue
+		pool.append(c)
+		top = maxf(top, _public_first_value(c))
+	var weights := {}
+	var total := 0.0
+	for c in pool:
+		var w := exp((_public_first_value(c) - top) / EXPECT_TEMP)
+		weights[c["id"]] = w
+		total += w
+	var n := float(teams_without_first().size())
+	var result := {}
+	for id: String in weights:
+		result[id] = maxf(1.0, n * float(weights[id]) / maxf(total, 0.0001))
+	return result
+
+
+func _public_first_value(c: Dictionary) -> float:
+	var hyouka_z := (float(c["hyouka"]) - 1.5) / 1.2
+	return FIRST_FUTURE_WEIGHT * float(c["future_seen"]) + FIRST_HYOUKA_WEIGHT * hyouka_z
 
 
 ## 2位以降の評価に使う、当時の評価・将来性（ノイズ入り）の平均と標準偏差
@@ -363,11 +421,19 @@ func cpu_first_bids() -> Dictionary:
 	for t: String in bids:
 		if t != user_team:
 			rivals[bids[t]] = int(rivals.get(bids[t], 0)) + 1
+	# 何球団来そうかの見込みと球団の性格で、競合を避けて単独で獲れる選手を選ぶこともある（作業68。外れ1位も同じ）
+	var expect := expected_bidders()
 	for t in order_now:
 		var best := ""
 		var best_value := -INF
+		var style := style_of(t)
+		var compete: float = STYLE_COMPETE[style]
+		var rival: float = STYLE_RIVAL[style]
+		var need_extra: float = float(STYLE_NEED[style]) - 1.0
 		for c in _remaining():
-			var v := evaluate(t, c, true) - COMPETE_PENALTY * int(rivals.get(c["id"], 0)) 				+ _rng.randfn(0.0, FIRST_BID_NOISE)
+			var v := evaluate(t, c, true) - rival * int(rivals.get(c["id"], 0)) \
+				- compete * log(float(expect.get(c["id"], 1.0))) + need_extra * _need_bonus(t, c["pos"]) \
+				+ _rng.randfn(0.0, FIRST_BID_NOISE)
 			if v > best_value:
 				best_value = v
 				best = c["id"]
@@ -1236,6 +1302,7 @@ func to_save() -> Dictionary:
 		"resolved": resolved, "data_through": data_through, "rng": SaveUtil.rng_state(_rng),
 		"team_noise": _team_noise, "need": _need, "cpu_targets": cpu_targets, "talks": talks,
 		"team_dare": _team_dare, "user_marks": user_marks, "user_favorites": user_favorites,
+		"team_style": team_style,
 	}
 
 
@@ -1273,5 +1340,6 @@ static func from_save(d: Dictionary) -> Draft:
 	dr.cpu_targets = d.get("cpu_targets", {})
 	dr.user_marks = d.get("user_marks", {})
 	dr.user_favorites = d.get("user_favorites", [])
+	dr.team_style = d.get("team_style", {})
 	dr._compute_scale()
 	return dr
