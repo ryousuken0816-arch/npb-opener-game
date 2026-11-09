@@ -268,6 +268,15 @@ func _check_game() -> void:
 	_check(view.call("selected_id") == target and go.text.begins_with("説得する") and not go.disabled,
 		"手帳に入団交渉のページ（%s）" % go.text)
 	_check(notice.contains("意中の球団が別の%s" % tname) and notice.contains("通常の交渉"), "案内：%s" % notice)
+	var next_text: String = (view.get("_next_button") as Button).text
+	_check(next_text.contains("通常の交渉") and not next_text.contains("渡米"), "次へのボタン：%s" % next_text)
+	var box: Control = view.call("_intent_box", d, d.by_id[target])
+	var option: OptionButton = null
+	for n: Node in box.find_children("*", "OptionButton", true, false):
+		option = n
+	_check(option != null and option.item_count == 3 and option.get_item_text(2).contains("3000万円"),
+		"表の要約の欄に誠意の選び方（%s）" % (option.get_item_text(2) if option != null else "なし"))
+	box.free()
 	hub.call("_close_sub_screen")
 	for outcome: String in ["成功", "失敗", "交渉しない"]:
 		_gs.load_state(JSON.parse_string(JSON.stringify(saved)))

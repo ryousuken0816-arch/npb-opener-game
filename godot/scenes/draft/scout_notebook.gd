@@ -470,6 +470,13 @@ func show_page(d: Draft, c: Dictionary, index: int, total: int) -> void:
 		if not talk.is_empty():
 			mlb = "説得：%s" % ("成功・入団" if talk["ok"] else ("期限切れ・渡米" if talk.get("expired", false) else "失敗・渡米"))
 		state = mlb if state.is_empty() else state + "／" + mlb
+	elif not c.get("intent", {}).is_empty() or d.talks.has(c["id"]):
+		# 意中の球団（作業77）：意中ではない球団が指名したら入団の交渉。拒否されることも
+		var talk: Dictionary = d.talks.get(c["id"], {})
+		var it_text := DraftIntent.short_text(c["intent"]) if not c.get("intent", {}).is_empty() else ""
+		if not talk.is_empty():
+			it_text = "入団交渉：%s" % ("成功・入団" if talk["ok"] else "入団拒否")
+		state = it_text if state.is_empty() else state + "／" + it_text
 	_state_label.text = state
 	_state_label.visible = not state.is_empty()
 	_stamp.rank = _stamp_text(str(c["hyouka_rank"]))
