@@ -1570,7 +1570,10 @@ func draft_class(draft_year: int) -> Array:
 	if draft_year < FictionalDraft.FIRST_YEAR or GameData.read_data("amateur/%d.json" % draft_year) != null:
 		return []
 	if GameData.draft_classes.has(draft_year):
-		return GameData.draft_classes[draft_year]
+		var have: Array = GameData.draft_classes[draft_year]
+		if _add_draft_returns(draft_year, have):
+			GameData.set_draft_class(draft_year, have)
+		return have
 	if _fictional == null:
 		_fictional = FictionalDraft.new()
 	if not _fictional.is_ready():
@@ -1581,8 +1584,16 @@ func draft_class(draft_year: int) -> Array:
 	for y: int in GameData.draft_classes:
 		for p: Dictionary in GameData.draft_classes[y]:
 			taken[LeagueRoster.norm_name(p["name"])] = true
+	if league != null:
+		for r: Dictionary in league.draft_returns:
+			taken[LeagueRoster.norm_name(str(r["player"]["name"]))] = true
 	var players := _fictional.generate_year(draft_year, rng, {"hits": fictional_hits,
 		"legends": reincarnation_pool() if reincarnation_on else [], "taken_names": taken})
+	# 意中の球団（作業77）。候補を作る乱数とは別の種（候補の顔ぶれを変えない）
+	var irng := RandomNumberGenerator.new()
+	irng.seed = hash("intent:%d:%d:%s" % [draft_year, first_year, team])
+	DraftIntent.assign(players, GameData.teams(), irng)
+	_add_draft_returns(draft_year, players)
 	for p: Dictionary in players:
 		var rei := FictionalDraft.reincarnation_of(p)
 		if not rei.is_empty():
@@ -1592,6 +1603,30 @@ func draft_class(draft_year: int) -> Array:
 		if y < draft_year - 1:
 			GameData.set_draft_class(y, [])
 	return players
+
+
+## 意中の球団ではない指名を拒否した選手（作業77、LeagueRoster.draft_returns）のうち、draft_year 年に候補へ戻る選手を
+## players に足す（足したら draft_returns から消す）。足した選手がいれば true
+func _add_draft_returns(draft_year: int, players: Array) -> bool:
+	if league == null or league.draft_returns.is_empty():
+		return false
+	if _fictional == null:
+		_fictional = FictionalDraft.new()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("draft_return:%d:%d:%s" % [draft_year, first_year, team])
+	var growth := Growth.new()
+	var kept: Array = []
+	var added := false
+	for r: Dictionary in league.draft_returns:
+		if int(r["due"]) != draft_year:
+			kept.append(r)
+			continue
+		var alt := str(r.get("intent", {}).get("alt", ""))
+		var school: String = _fictional._school("大学" if alt == "大学" else "社会人", rng)[0]
+		players.append(DraftIntent.make_return(r, draft_year, players, school, growth, rng))
+		added = true
+	league.draft_returns = kept
+	return added
 
 
 ## 転生のもとにできる選手（ひな形の legends のうち、ゲーム内で引退していて＝今どの球団にもいない、まだ転生していない選手）
