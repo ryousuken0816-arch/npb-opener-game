@@ -188,6 +188,15 @@ static func career_line(c: Dictionary) -> String:
 static func rumor_text(d: Draft, c: Dictionary) -> String:
 	if c.get("mlb_intent", false):
 		return "メジャー志望を公言。指名には覚悟が要る（他球団スカウト談）"
+	var it: Dictionary = c.get("intent", {})
+	if not it.is_empty():
+		var team := GameData.short_name(str(it["team"]))
+		if bool(it.get("hard", false)):
+			return "「%s」と公言。強行指名には覚悟が要る（他球団スカウト談）" % DraftIntent.short_text(it)
+		return "%s志望らしい。ほかの球団なら交渉が要る（他球団スカウト談）" % team
+	var ref: Dictionary = c.get("refused", {})
+	if not ref.is_empty():
+		return "%d年に%sの指名を拒否した経緯がある（他球団スカウト談）" % [int(ref["year"]), GameData.short_name(str(ref["team"]))]
 	var n := 0
 	if d != null:
 		for t: String in d.cpu_targets:
@@ -212,6 +221,10 @@ static func traits(d: Draft, c: Dictionary) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if c.get("mlb_intent", false):
 		out.append({"text": "メジャー志望", "kind": "mlb"})  # いちばん前に（作業57）
+	elif not c.get("intent", {}).is_empty():
+		out.append({"text": DraftIntent.short_text(c["intent"]), "kind": "mlb"})  # 意中の球団（作業77）
+	if not c.get("refused", {}).is_empty():
+		out.append({"text": "%d年 指名拒否" % int(c["refused"]["year"]), "kind": "special"})
 	if bool(c.get("two_way", {}).get("active", false)):
 		out.append({"text": "二刀流", "kind": "special"})
 	if not c.get("reincarnation", {}).is_empty():

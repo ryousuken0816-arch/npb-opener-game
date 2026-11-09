@@ -1162,6 +1162,13 @@ func _render_summary(d: Draft) -> void:
 	var notes: Array[String] = []
 	if c.get("mlb_intent", false):
 		notes.append("メジャー志望（指名したら説得の交渉）")
+	var it: Dictionary = c.get("intent", {})
+	if not it.is_empty():
+		# 意中の球団（作業77）
+		notes.append("%s（%s）" % [DraftIntent.short_text(it), "自球団が意中" if str(it["team"]) == GameState.team
+			else "指名したら入団の交渉。拒否されることも"])
+	if not c.get("refused", {}).is_empty():
+		notes.append("%d年に%sの指名を拒否" % [int(c["refused"]["year"]), GameData.short_name(str(c["refused"]["team"]))])
 	if not c.get("reincarnation", {}).is_empty():
 		notes.append("転生選手：%sの生まれ変わり" % c["reincarnation"]["name"])
 	if not str(c["picked_by"]).is_empty():

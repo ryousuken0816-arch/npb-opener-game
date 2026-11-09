@@ -51,6 +51,8 @@ const ROW_HEIGHT := 36
 const RIGHT_WIDTH := 330
 ## 抽選の演出の封筒を1行に並べる数（それより多い競合は2行にする）
 const LOTTERY_COLUMNS := 6
+## 演出（開幕・抽選・発表）の後ろの色。透かさない（作業81）
+const OVERLAY_BACKDROP := Color("0d1a33")
 ## 右の要約の中身の幅（要約のスクロールバーの分を空ける）
 const SUMMARY_WIDTH := RIGHT_WIDTH - 40
 ## CPU球団の指名を自動で進める間隔（秒）。早送り中は FAST
@@ -311,8 +313,9 @@ func refresh() -> void:
 	_picks_scroll.visible = picks_mode
 	_book_body.visible = not table
 	_place_pick_buttons()
-	# 手帳のときは説明の1行を出さない（同じ文言はハブの下の帯に出る。縦の場所を手帳に回す）
-	_status_label.visible = table
+	# スマホの手帳のときは説明の1行を出さない（同じ文言は下の操作の帯に出る。縦の場所を手帳に回す）。
+	# パソコンはドラフトの間ハブの下の帯を隠す（作業81：後ろを見せない）ので、手帳のときも1行を出す
+	_status_label.visible = table or not UiLayout.is_mobile
 	if not table:
 		_render_book(d)
 	elif picks_mode:
@@ -357,6 +360,22 @@ func _build_talk_banner() -> Control:
 	return _talk_banner
 
 
+## 残っている交渉の案内（メジャー志望の説得・意中の球団が別の選手との入団交渉。作業26・77）
+static func talk_notice(d: Draft, talks: Array[String]) -> String:
+	var mlb: Array[String] = []
+	var intent: Array[String] = []
+	for id in talks:
+		(mlb if d.talk_kind(id) == "mlb" else intent).append(str(d.by_id[id]["name"]))
+	var parts: Array[String] = []
+	if not mlb.is_empty():
+		parts.append("メジャー志望の%sの説得が残っています。説得しないまま次へ進むと、期限切れでメジャーへ挑戦します"
+			% "・".join(mlb))
+	if not intent.is_empty():
+		parts.append("意中の球団が別の%sとの入団交渉が残っています。交渉しないまま次へ進むと、通常の交渉で決まります（入団拒否もあります）"
+			% "・".join(intent))
+	return "\n".join(parts)
+
+
 ## 説得が残っていれば上の帯に名前を出す（手帳・表・指名一覧のどれを見ていても目に入るように）
 func _render_talk_banner(d: Draft) -> void:
 	var talks: Array[String] = []
@@ -365,10 +384,7 @@ func _render_talk_banner(d: Draft) -> void:
 	_talk_banner.visible = not talks.is_empty()
 	if talks.is_empty():
 		return
-	var names: Array[String] = []
-	for id in talks:
-		names.append(d.by_id[id]["name"])
-	_talk_label.text = "メジャー志望の%sの説得が残っています。説得しないまま次へ進むと、期限切れでメジャーへ挑戦します" 		% "・".join(names)
+	_talk_label.text = talk_notice(d, talks)
 	# 手帳ですでに説得のページを開いていれば、ボタンは出さない（帯の文だけ）
 	_talk_button.visible = not (_mode == "book" and talks.has(_selected))
 
@@ -616,7 +632,7 @@ func _render_top(d: Draft) -> void:
 		_:
 			_turn_label.text = "全球団の指名が終わりました。指名した選手は来季、各球団に入団します"
 			if not d.pending_talks().is_empty():
-				_turn_label.text = "全球団の指名が終わりました。メジャー志望の選手の説得が残っています"
+				_turn_label.text = "全球団の指名が終わりました。入団の交渉（説得）が残っています"
 	var ink: Color = MINE_COLOR if d.is_user_turn() else UiTheme.TEXT
 	_turn_label.label_settings.font_color = ink
 
@@ -921,6 +937,11 @@ func _status_label_of(d: Draft, c: Dictionary) -> Label:
 		label.tooltip_text = "メジャー志望を表明（指名したら説得の交渉。成功率は低め）"
 		label.mouse_filter = Control.MOUSE_FILTER_PASS
 		label.add_theme_color_override("font_color", MLB_COLOR)
+	elif not c.get("intent", {}).is_empty():
+		label.text = "意中"
+		label.tooltip_text = "%s（意中ではない球団が指名すると入団の交渉。拒否されることも）" % DraftIntent.short_text(c["intent"])
+		label.mouse_filter = Control.MOUSE_FILTER_PASS
+		label.add_theme_color_override("font_color", MLB_COLOR)
 	return label
 
 
@@ -1151,6 +1172,8 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 		_summary_box.add_child(banner)
 	if c.get("mlb_intent", false):
 		_summary_box.add_child(_mlb_box(d, c))  # 説得の約束を選ぶ欄が隠れないよう上のほうに
+	elif not c.get("intent", {}).is_empty() or not c.get("refused", {}).is_empty():
+		_summary_box.add_child(_intent_box(d, c))  # 意中の球団（作業77）
 	var ranks := HBoxContainer.new()
 	ranks.add_theme_constant_override("separation", 6)
 	ranks.add_child(UiTheme.small_label("当時の評価", 16, UiTheme.TEXT, 800))
@@ -1251,6 +1274,8 @@ func _mlb_box(d: Draft, c: Dictionary) -> Control:
 		_promise_option.add_item("約束なし", 0)
 		for y: int in MlbPersuasion.PROMISE_YEARS:
 			_promise_option.add_item("%d年後にポスティングを認める" % y, y)
+		if _promise_option.get_item_index(_promise) < 0:
+			_promise = 0
 		_promise_option.select(maxi(0, _promise_option.get_item_index(_promise)))
 		_promise_option.add_theme_font_size_override("font_size", 14)
 		_promise_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1260,6 +1285,64 @@ func _mlb_box(d: Draft, c: Dictionary) -> Control:
 		line.add_child(_promise_option)
 		box.add_child(line)
 	return box
+
+
+## 意中の球団の欄（作業77）：意中の球団・指名を拒否した経緯・入団交渉の誠意・結果
+func _intent_box(d: Draft, c: Dictionary) -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 2)
+	var id: String = c["id"]
+	var it: Dictionary = c.get("intent", {})
+	var lines: Array[String] = []
+	if not it.is_empty():
+		lines.append("意中の球団：%s" % DraftIntent.short_text(it))
+	var ref: Dictionary = c.get("refused", {})
+	if not ref.is_empty():
+		lines.append("%d年に%sの%s指名を拒否" % [int(ref["year"]), GameData.short_name(str(ref["team"])), str(ref.get("label", ""))])
+	var talk: Dictionary = d.talks.get(id, {})
+	if not talk.is_empty():
+		lines.append("入団交渉：%s（成功率 %d%%・%s）" % ["成功・入団" if talk["ok"] else "入団拒否",
+			roundi(float(talk["chance"]) * 100.0), DraftIntent.offer_of(int(talk.get("offer", 0)))["label"]])
+	elif not it.is_empty() and str(c["picked_by"]) == str(it["team"]):
+		lines.append("意中の球団の指名。交渉なしで入団")
+	var label := UiTheme.small_label("\n".join(lines), 14, MLB_COLOR, 800)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+	label.tooltip_text = str(it.get("note", ""))
+	label.mouse_filter = Control.MOUSE_FILTER_PASS
+	box.add_child(label)
+	if d.can_persuade(id):
+		var warn := UiTheme.small_label("交渉しないまま次の段階へ進むと、通常の交渉で決まります（入団拒否もあります）", 13,
+			Color("b3261e"), 800)
+		warn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		warn.custom_minimum_size = Vector2(RIGHT_WIDTH - 20, 0)
+		box.add_child(warn)
+		var line := HBoxContainer.new()
+		line.add_theme_constant_override("separation", 6)
+		line.add_child(UiTheme.small_label("誠意", 14, UiTheme.TEXT, 800))
+		_promise_option = OptionButton.new()
+		for o: Dictionary in d.talk_options(id):
+			_promise_option.add_item("%s（成功率 %d%%）" % [o["label"], roundi(float(o["chance"]) * 100.0)], int(o["value"]))
+		if _promise_option.get_item_index(_promise) < 0:
+			_promise = 0
+		_promise_option.select(maxi(0, _promise_option.get_item_index(_promise)))
+		_promise_option.add_theme_font_size_override("font_size", 14)
+		_promise_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_promise_option.item_selected.connect(func(index: int) -> void:
+			_promise = _promise_option.get_item_id(index)
+			_render_actions(d, c))
+		line.add_child(_promise_option)
+		box.add_child(line)
+	return box
+
+
+## 選んでいる条件（約束・誠意）での説得の成功率
+static func talk_chance(d: Draft, id: String, value: int) -> float:
+	var opts := d.talk_options(id)
+	for o: Dictionary in opts:
+		if int(o["value"]) == value:
+			return float(o["chance"])
+	return float(opts[0]["chance"]) if not opts.is_empty() else 0.0
 
 
 func _ability_grid(c: Dictionary) -> Control:
@@ -1349,7 +1432,7 @@ func _render_actions(d: Draft, c: Dictionary) -> void:
 			_:
 				text = "ドラフトは終了しました"
 				if not c.is_empty() and d.can_persuade(c["id"]):
-					var chance := MlbPersuasion.chance(d.pick_of(c["id"]), _promise)
+					var chance := talk_chance(d, c["id"], _promise)
 					text = "説得する　%s" % MlbPersuasion.star_text(chance)
 					can_pick = true
 	_action_button.text = text
@@ -1632,14 +1715,17 @@ func _render_bottom(d: Draft) -> void:
 		elif _skip_armed:
 			_next_button.text = "もう一度押すと説得せずに次へ"
 		else:
-			_next_button.text = "説得せずに次へ（渡米）"
+			var mlb_left := false
+			for id in d.pending_talks():
+				mlb_left = mlb_left or d.talk_kind(id) == "mlb"
+			# メジャー志望は期限切れで渡米、意中の球団が別の選手は通常の交渉で決まる（作業77）
+			_next_button.text = "説得せずに次へ（渡米）" if mlb_left else "説得せずに次へ（通常の交渉）"
 	if not _message.is_empty():
 		_status_label.text = _message
 	elif d == null:
 		_status_label.text = ""
 	elif d.stage == Draft.Stage.DONE and not d.pending_talks().is_empty():
-		_status_label.text = "メジャー志望の%sの説得が残っています。約束を選んで「説得する」（説得しないまま次へ進むと期限切れで渡米）。" \
-			% d.by_id[d.pending_talks()[0]]["name"]
+		_status_label.text = talk_notice(d, d.pending_talks()) + "。条件を選んで「説得する」"
 	elif d.resolved:
 		var mine := d.picks_of(GameState.team)
 		var names: Array[String] = []
@@ -1802,10 +1888,11 @@ func _after_change(d: Draft) -> void:
 		_selected = ""
 		var talks := d.pending_talks()
 		if not talks.is_empty():
-			# メジャー志望の選手を指名していれば、手帳のその選手のページで説得へ（表・ボードを見ていても。作業65）
+			# メジャー志望・意中の球団が別の選手を指名していれば、手帳のその選手のページで説得へ（表・ボードを見ていても。作業65・77）
 			_selected = talks[0]
 			_mode = "book"
-			_message += "メジャー志望の%sを説得してください（約束を選んで「説得する」）。" % d.by_id[talks[0]]["name"]
+			_message += "%sを説得してください（%sを選んで「説得する」）。" % [d.by_id[talks[0]]["name"],
+				"約束" if d.talk_kind(talks[0]) == "mlb" else "誠意"]
 		_tab = "picks"  # _show_tab は案内の文を消すので使わない
 		refresh()
 		focus_first()
@@ -1865,8 +1952,9 @@ func _build_overlay() -> void:
 	_overlay.visible = false
 	_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(_overlay)
+	# 後ろ（候補の表の「済」＋入団先・手帳・ボード）が透けると、発表の前にネタバレになる（作業81）。透かさずに塗りつぶす
 	var dim := ColorRect.new()
-	dim.color = Color(0.05, 0.1, 0.2, 0.55)
+	dim.color = OVERLAY_BACKDROP
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_overlay.add_child(dim)

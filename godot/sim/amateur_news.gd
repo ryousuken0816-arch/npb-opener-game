@@ -177,11 +177,14 @@ func post_stage(year: int, stage: Dictionary) -> int:
 			chosen.append(item[0])
 			break
 	var mlb: Array = []
+	var intents: Array = []  # 意中の球団・指名を拒否して戻ってきた候補（作業77）
 	if stage["key"] == "fall":
 		for c: Dictionary in all:
 			if c["mlb"]:
 				mlb.append(c)
-	if chosen.is_empty() and mlb.is_empty():
+			elif not c.get("intent", {}).is_empty() or not c.get("refused", {}).is_empty():
+				intents.append(c)
+	if chosen.is_empty() and mlb.is_empty() and intents.is_empty():
 		return 0
 	var key := "%d-amateur-%s" % [year, stage["key"]]
 	var date := "%d-%s" % [year, stage["date"]]
@@ -199,6 +202,10 @@ func post_stage(year: int, stage: Dictionary) -> int:
 		body += "\nドラフトで指名した球団は、入団の説得に臨むことになる。"
 		gs.post_news(News.article(date, "amateur", "%sの%s、メジャー挑戦を表明" % [c["school"], c["name"]], body,
 			_ids(c)), key, n == 0)
+		n += 1
+	for c: Dictionary in intents:
+		var ia := intent_article(c)
+		gs.post_news(News.article(date, "amateur", ia[0], ia[1], _ids(c)), key, n == 0)
 		n += 1
 	# 全文は選手と号の固定シード。見出し・導入の型は号内で重複させない。
 	var styles: Array[int] = []
@@ -221,6 +228,27 @@ func post_stage(year: int, stage: Dictionary) -> int:
 			gs.post_news(News.article(date, "draft", a[0], a[1]), key)
 			n += 1
 	return n
+
+
+## 意中の球団・指名を拒否して戻ってきた候補の記事 [見出し, 本文]（作業77。ドラフト直前号）
+static func intent_article(c: Dictionary) -> Array:
+	var it: Dictionary = c.get("intent", {})
+	var ref: Dictionary = c.get("refused", {})
+	var head := ""
+	var body := "%s（%s）の%s。" % [c["name"], c["school"], c["pos"]]
+	if not ref.is_empty():
+		var gap := int(c.get("year", 0)) - int(ref["year"])
+		head = "%sの%s、%d年越しのプロ入りへ" % [c["school"], c["name"], gap] if gap > 1 \
+			else "%sの%s、再びドラフト候補に" % [c["school"], c["name"]]
+		body += "%d年秋に%sの%s指名を拒否してから、%sで力を磨いてきた。" % [int(ref["year"]),
+			GameData.short_name(str(ref["team"])), str(ref.get("label", "")), c["school"]]
+	if not it.is_empty():
+		if head.is_empty():
+			head = "%sの%s、%s" % [c["school"], c["name"], DraftIntent.short_text(it)]
+		body += str(it.get("note", "")) + "。"
+		body += "\n意中ではない球団が強行指名すれば、入団拒否もありうる。" if bool(it.get("hard", false)) \
+			else "\nほかの球団の指名なら、交渉が難航する可能性もある。"
+	return [head, body]
 
 
 ## 1本分 [見出し, 本文]
@@ -325,7 +353,8 @@ func _from_fictional(p: Dictionary) -> Dictionary:
 		"projected": am.get("projected", ""), "mlb": mi is Dictionary and bool(mi.get("stated", false)),
 		"mlb_note": str(mi.get("note", "")) if mi is Dictionary else "", "id": p["id"], "fictional": true,
 		"reincarnation": am.get("reincarnation", {}), "peak": p.get("growth", {}).get("peak", {}),
-		"type": am.get("type", ""), "theme": am.get("year_theme", ""), "story": am.get("story", "")}
+		"type": am.get("type", ""), "theme": am.get("year_theme", ""), "story": am.get("story", ""),
+		"intent": am.get("team_intent", {}), "refused": am.get("refused", {}), "year": int(am.get("draft_year", 0))}
 
 
 func _from_amateur(a: Dictionary, year: int) -> Dictionary:

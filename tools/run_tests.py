@@ -74,6 +74,7 @@ QUICK = [
     "order_page_check",      # 起用設定
     "start_year_check",      # 開始年・すぐドラフトへ（オフの段階の入口）
     "draft_rebid_check",     # ドラフトの入札・外れ1位
+    "draft_fullscreen_check",  # ドラフトの画面いっぱい・後ろが見えない（作業81）
     "save_check",            # セーブ／ロード
     "ikusei_roster_check",   # 育成の判定（開始年・2026年から3年・ロード後の支配下と育成の人数）
     "trade_check",           # トレード交渉（オフの段階）
@@ -85,6 +86,7 @@ QUICK = [
     "draft_first_bid_check", # CPU球団の1位入札の競合の分布（30年分、作業68。約20秒）
     "lite_mode_check",       # サブ画面を開くときに作る・軽量モードで閉じたら捨てる（作業75。約1分）
     "pitch_arsenal_check",   # 投手の持ち球（作業79。実在の投手の奪三振・被弾抑制に合う・球種がばらける。約10秒）
+    "draft_intent_check",    # ドラフトの意中の球団・入団拒否・説得・数年後に候補へ戻る（作業77。約1分40秒）
 ]
 
 ## 見込みの時間（秒。並列で流したときの目安）。覚えた時間（TIMES_PATH）が無いときに使う。無いものは DEFAULT_EST

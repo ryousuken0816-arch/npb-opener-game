@@ -32,6 +32,9 @@ const SUB_SCREEN_BOTTOM := 104.0
 const WIDE_LEFT := 24.0
 ## 采配を広げたときの上端（操作ガイドは見出しの行の「戻る」の左へ移す）
 const WIDE_TOP := 20.0
+## 画面いっぱいに広げて、後ろ（ハブ・下の帯・速報の帯）を一切見せない画面。ドラフトは後ろに入団先などのネタバレが
+## 透けるので（作業81）、表・手帳・指名の確認・抽選・発表のどれを開いている間もこれ
+const FULLSCREEN_KEYS := ["draft"]
 const TITLE_SCENE := "res://scenes/title/title.tscn"
 ## 表の多い画面（ドラフトの候補一覧・FAの表・記録室・順位表など）は、スマホの縦向きのとき横向きをすすめる
 ## （iOS の Safari は向きを固定できない）
@@ -83,6 +86,9 @@ var _postseason_view: PostseasonView:
 var _news_view: NewsView:
 	get: return _view("news")
 var _ticker := NewsTicker.new()
+## サブ画面の枠（ふつう）と、画面いっぱいのとき（角・縁・影なしで、後ろが透けない）
+var _screen_style: StyleBox
+var _full_style: StyleBox
 ## ハブの右下（順位表の下）のニュースの札。押すと新聞の画面
 var _news_card: Button
 var _news_lines: Array[Label] = []
@@ -380,6 +386,11 @@ func _style_labels() -> void:
 	screen.content_margin_top = 12
 	screen.content_margin_bottom = 16
 	_sub_screen.add_theme_stylebox_override("panel", screen)
+	_screen_style = screen
+	var full := UiTheme.card(_palette.main, 0, 0, 1.0)
+	full.shadow_size = 0
+	full.set_content_margin_all(0)
+	_full_style = full
 	# サブ画面の中身が枠より大きくなっても、パネルを画面の外へ広げずにスクロールさせる（余白は包みの内側へ）
 	UiTheme.fit_scroll(%Fit, %VBox, screen)
 
@@ -494,7 +505,7 @@ func _description(key: String) -> String:
 			return "支配下の上限（70人）に合わせて自球団の戦力外を選びます。史実の引退と他球団の戦力外も見られます。"
 		if GameState.draft_open() and GameState.draft().stage == Draft.Stage.DONE \
 				and not GameState.draft().pending_talks().is_empty():
-			return "ドラフト会議のあと：指名したメジャー志望の選手の説得が残っています（説得しないまま進むと期限切れで渡米）。"
+			return "ドラフト会議のあと：" + DraftView.talk_notice(GameState.draft(), GameState.draft().pending_talks()) + "。"
 		if GameState.draft_open():
 			return "ドラフト会議：史実のドラフト指名選手から、1位入札（重複は抽選）・2位以降のウェーバー・育成の指名をします。"
 		return "オフシーズンを進めます。次は「%s」です。" % GameState.PHASE_NAMES[GameState.next_phase()]
@@ -657,7 +668,8 @@ func _open_sub_screen(key: String) -> void:
 	_schedule_view.visible = is_schedule
 	_placeholder_label.visible = not is_tactics and not is_schedule and not has_view
 	# 采配は画面いっぱいに広げる（パワプロの采配画面のように、ハブのメニューを隠す）
-	_set_wide(is_tactics or is_fa or is_trade or is_comp or is_contract or is_release or is_draft or is_meeting or is_awards or is_records or is_postseason or is_news)
+	_set_wide(is_tactics or is_fa or is_trade or is_comp or is_contract or is_release or is_draft or is_meeting or is_awards or is_records or is_postseason or is_news,
+		key in FULLSCREEN_KEYS)
 	UiFx.slide_in(_sub_screen)
 	if is_tactics:
 		_tactics_view.open()
@@ -736,27 +748,37 @@ func _on_back() -> void:
 
 ## サブ画面の配置。切り替えの演出を止めてから四辺の余白をすべて置き直す
 ## （演出の途中の位置が余白に残ると、開く・閉じるのたびに右へずれて画面の外へはみ出していった。作業11）
-func _set_wide(wide: bool) -> void:
+func _set_wide(wide: bool, full := false) -> void:
 	UiFx.stop_slide(_sub_screen)
+	_sub_screen.add_theme_stylebox_override("panel", _full_style if full else _screen_style)
+	_ticker.visible = not full  # 速報の帯も後ろに出さない（ドラフトの最中は入団先などが載る）
 	if UiLayout.is_mobile:
 		# スマホ：どの画面も広げる（縦は画面いっぱい、横はパソコンの広げた配置）。下は操作の帯の分を空ける
 		var side := 6.0 if UiLayout.is_portrait else WIDE_LEFT
+		var top := 4.0 if UiLayout.is_portrait else 8.0
+		var bottom := 4.0
+		if full:
+			side = 0.0
+			top = 0.0
+			bottom = 0.0
 		_sub_screen.offset_left = side
-		_sub_screen.offset_top = UiLayout.safe_area_top + (4.0 if UiLayout.is_portrait else 8.0)
+		_sub_screen.offset_top = UiLayout.safe_area_top + top
 		_sub_screen.offset_right = -side
-		_sub_screen.offset_bottom = -UiLayout.bottom_inset() - 4.0
+		_sub_screen.offset_bottom = -UiLayout.bottom_inset() - bottom
 		_set_fit_side_margin(8.0 if UiLayout.is_portrait else 16.0)
 		_menu_box.visible = not UiLayout.is_portrait and _open_key.is_empty()
 		_event_label.visible = _menu_box.visible
 		_guide.visible = false
 	else:
-		_sub_screen.offset_left = WIDE_LEFT if wide else SUB_SCREEN_LEFT
-		_sub_screen.offset_top = WIDE_TOP if wide else SUB_SCREEN_TOP
-		_sub_screen.offset_right = -SUB_SCREEN_RIGHT
-		_sub_screen.offset_bottom = -SUB_SCREEN_BOTTOM
+		_sub_screen.offset_left = 0.0 if full else (WIDE_LEFT if wide else SUB_SCREEN_LEFT)
+		_sub_screen.offset_top = 0.0 if full else (WIDE_TOP if wide else SUB_SCREEN_TOP)
+		_sub_screen.offset_right = 0.0 if full else -SUB_SCREEN_RIGHT
+		_sub_screen.offset_bottom = 0.0 if full else -SUB_SCREEN_BOTTOM
 		_set_fit_side_margin(16.0)
 		_menu_box.visible = not wide
 		_event_label.visible = not wide
+		if full:
+			_bottom_bar.visible = false  # 下の帯の説明文は、ドラフトでは画面の中の1行に出す
 		_guide.visible = true
 		_move_guide(wide)
 
@@ -773,7 +795,7 @@ func _close_sub_screen() -> void:
 	# 早送りは日程表を開いている間だけ（閉じたら止める）
 	GameState.stop_fast_forward()
 	_stop = {}
-	_set_wide(false)
+	_set_wide(false, false)
 	var key := _open_key
 	_open_key = ""
 	if key == "records":
@@ -1005,7 +1027,7 @@ func _apply_layout(is_portrait: bool, is_mobile: bool) -> void:
 	_sub_screen.visible = not top
 	if not top:
 		var wide := _open_key in ["tactics", "fa", "trade", "comp", "contract", "release", "draft", "meeting", "awards", "records", "postseason", "news"]
-		_set_wide(wide)
+		_set_wide(wide, _open_key in FULLSCREEN_KEYS)
 
 
 func _build_mobile_dashboard() -> void:

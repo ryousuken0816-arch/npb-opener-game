@@ -108,12 +108,15 @@ var drafted := {}
 var draft_synth := {}
 ## ドラフトで指名されなかった候補（名前（norm_name）→ ドラフトの年）。以後の年に新加入として来ない
 var draft_unsigned := {}
+## 意中の球団ではない指名を拒否した選手（作業77）。[{due（候補に戻るドラフトの年）, draft_year, team, label, intent,
+## player（拒否したときの選手データ）}]。GameState.draft_class が due の年の候補に戻す（戻したら消す）
+var draft_returns: Array = []
 ## 支配下の上限を守る（最初の戦力外・引退の段階から。2008年の開幕時点の編成はそのまま）
 var limit_active := false
 ## 出来事の記録 {year, date, kind, id, name, from, to, text}。kind: trade / trade_skipped / mlb_leave /
 ## mlb_return / retire / rookie / join / foreign_candidate / foreign_sign / foreign_unsigned /
 ## rename / fa_declare / fa_move / fa_stay / mlb_keep / mlb_keep_failed / release / release_sign / release_unsigned /
-## release_trim
+## release_trim / mlb_draftee / draft_refused（作業77）
 var log: Array[Dictionary] = []
 
 ## 自球団のトレード交渉を断った球団 → 断った日（シーズン中は日付、オフは「年-段階」。同じ日にはもう交渉できない）
@@ -868,6 +871,9 @@ func apply_draft() -> void:
 		var c: Dictionary = draft.by_id[id]
 		var team: String = rec["team"]
 		var talk: Dictionary = draft.talks.get(id, {})
+		if not talk.is_empty() and not talk["ok"] and str(talk.get("kind", "mlb")) == "intent":
+			_refuse_draft(c, rec)
+			continue
 		if not talk.is_empty() and not talk["ok"]:
 			# メジャー志望の説得に失敗：入団せず渡米（ゲームの NPB には出てこない）
 			draft_unsigned[norm_name(c["name"])] = draft.year
@@ -889,7 +895,7 @@ func apply_draft() -> void:
 			draft_synth[id] = synth[id]
 		var amount := Salary.rookie({"round": rec["round"], "high_school": c["career"] == "高校生",
 			"ikusei": rec["ikusei"]}, next_year)
-		_set_salary(id, amount, next_year)
+		_set_salary(id, amount + int(talk.get("bonus_man", 0)), next_year)
 		var hist := "" if c["hist_team"] == team and c["hist_label"] == rec["label"] else "、史実は%s%s" % [
 			GameData.short_name(c["hist_team"]), c["hist_label"]]
 		_log("", "rookie", id, c["name"], "", team, "%s：%s（ドラフト%s%s）" % [c["name"],
@@ -898,6 +904,26 @@ func apply_draft() -> void:
 		draft_unsigned[norm_name(c["name"])] = draft.year
 		_log("", "draft_unsigned", c["id"], c["name"], "", "", "%s：ドラフトで指名されず（史実は%s%s）" % [
 			c["name"], GameData.short_name(c["hist_team"]), c["hist_label"]])
+
+
+## 意中の球団ではない指名を拒否した（作業77）：入団せず、進路に応じた年にまた候補に戻る（架空の候補だけ）
+func _refuse_draft(c: Dictionary, rec: Dictionary) -> void:
+	var id: String = rec["id"]
+	var team: String = rec["team"]
+	var it: Dictionary = c.get("intent", {})
+	draft_unsigned[norm_name(c["name"])] = draft.year
+	names[id] = c["name"]
+	var alt := str(DraftIntent.ALT_WORDS.get(str(it.get("alt", "")), "別の道"))
+	_log("", "draft_refused", id, c["name"], team, "", "%s：%sの%s指名を拒否、%s（%s志望）" % [c["name"],
+		GameData.short_name(team), rec["label"], alt, GameData.short_name(str(it.get("team", "")))])
+	var p := {}
+	for q: Dictionary in GameData.draft_classes.get(draft.year, []):
+		if q["id"] == id:
+			p = q
+	if p.is_empty() or not FictionalDraft.is_fictional_amateur(p):
+		return
+	draft_returns.append({"due": DraftIntent.return_year(it, draft.year), "draft_year": draft.year, "team": team,
+		"label": rec["label"], "intent": it, "player": p.duplicate(true)})
 
 
 ## GameData に足す選手（能力値ファイルにいない選手）：所属している・引退した仮の新人と、ドラフト中の仮の候補
@@ -1632,6 +1658,7 @@ func to_save() -> Dictionary:
 		"in_mlb": in_mlb, "posting_promise": posting_promise, "market": market, "market_info": market_info, "cpu_demand": cpu_demand,
 		"contract_until": contract_until, "fa_year": fa_year, "kept_mlb": kept_mlb, "released": released,
 		"drafted": drafted, "promoted": promoted, "draft_synth": draft_synth, "draft_unsigned": draft_unsigned,
+		"draft_returns": draft_returns,
 		"limit_active": limit_active, "log": log, "trade_index": _trade_index, "plan": plan,
 		"trade_refused": trade_refused, "draft_pick_comp": draft_pick_comp,
 		"compensation": compensation.to_save() if compensation != null else null,
@@ -1666,6 +1693,7 @@ func from_save(d: Dictionary) -> void:
 	promoted = d.get("promoted", {})
 	draft_synth = d.get("draft_synth", {})
 	draft_unsigned = d.get("draft_unsigned", {})
+	draft_returns = d.get("draft_returns", [])
 	limit_active = bool(d.get("limit_active", false))
 	log.assign(d.get("log", []))
 	_trade_index = int(d.get("trade_index", 0))

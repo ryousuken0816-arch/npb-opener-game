@@ -240,6 +240,13 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 		if c["mlb_intent"]:
 			c["mlb_overseas"] = bool(mlb[key].get("overseas", false))
 			c["mlb_note"] = str(mlb[key].get("note", ""))
+		else:
+			# 意中の球団（作業77。架空の候補のみ）
+			var it: Variant = d.get("team_intent", {})
+			if it is Dictionary and not it.is_empty():
+				c["intent"] = it
+		if not d.get("refused", {}).is_empty():
+			c["refused"] = d["refused"]
 		c["future"] = _future_value(future.get(key, {}), c["hyouka"])
 		if d.has("future_score"):
 			c["future"] = float(d["future_score"])  # 架空の候補：隠れたピーク（難易度のノイズは下で足す）
@@ -278,6 +285,16 @@ func setup(season_year: int, user: String, team_names: Array[String], entries: D
 			continue
 		for t in teams:
 			if t == c["hist_team"] or _rng.randf() < MlbPersuasion.CPU_DARE_RATE:
+				_team_dare[t][c["id"]] = true
+	# 意中の球団（作業77）：意中ではない球団がたまにあえて強行する。指名の流れの乱数（_rng）とは別の種
+	var irng := RandomNumberGenerator.new()
+	irng.seed = hash("intent|%d|%d" % [year, seed_value])
+	for c in candidates:
+		var it: Dictionary = c.get("intent", {})
+		if it.is_empty():
+			continue
+		for t in teams:
+			if t != str(it["team"]) and irng.randf() < float(DraftIntent.DARE[bool(it.get("hard", false))]):
 				_team_dare[t][c["id"]] = true
 	_compute_scale()
 	_choose_targets()
@@ -885,6 +902,13 @@ func evaluate(team: String, c: Dictionary, first: bool) -> float:
 		v += TARGET_BONUS
 	if c.get("mlb_intent", false) and (team == user_team or not _team_dare.get(team, {}).has(c["id"])):
 		v -= MlbPersuasion.CPU_AVOID  # メジャー志望はふだん避ける（自球団のおまかせも）
+	var it: Dictionary = c.get("intent", {})
+	if not it.is_empty():
+		if str(it["team"]) == team:
+			if team != user_team:
+				v += DraftIntent.FAVORITE_BONUS  # 意中の球団は喜んで指名する
+		elif team == user_team or not _team_dare.get(team, {}).has(c["id"]):
+			v -= float(DraftIntent.AVOID[bool(it.get("hard", false))])  # 意中ではない球団はふだん避ける（作業77）
 	if c.get("two_way", {}).get("active", false):
 		var tw_type: String = str(c.get("two_way", {}).get("type", ""))
 		match tw_type:
@@ -1119,14 +1143,27 @@ func pick_of(id: String) -> Dictionary:
 	return {}
 
 
-## 自球団が指名したメジャー志望の選手で、まだ説得していない（できる）か
+## 指名した球団との入団の交渉の種類："mlb"（メジャー志望の説得。作業26）・"intent"（意中ではない球団の指名。作業77）・""（要らない）
+func talk_kind(id: String) -> String:
+	var rec := pick_of(id)
+	if rec.is_empty() or not by_id.has(id):
+		return ""
+	var c: Dictionary = by_id[id]
+	if bool(c.get("mlb_intent", false)):
+		return "mlb"
+	if DraftIntent.needs_talk(c, str(rec["team"])):
+		return "intent"
+	return ""
+
+
+## 自球団が指名した、交渉の要る選手（メジャー志望・意中の球団が別）で、まだ説得していない（できる）か
 func can_persuade(id: String) -> bool:
 	var rec := pick_of(id)
-	return stage == Stage.DONE and not resolved and not rec.is_empty() and rec["team"] == user_team 		and bool(by_id[id].get("mlb_intent", false)) and not talks.has(id)
+	return stage == Stage.DONE and not resolved and not rec.is_empty() and rec["team"] == user_team 		and not talk_kind(id).is_empty() and not talks.has(id)
 
 
-## 自球団が指名して、まだ説得していないメジャー志望の選手（ドラフト会議が終わっても、これが残っていれば入団の
-## 処理を待つ。説得しないまま次の段階へ進むと期限切れで渡米する。作業57）
+## 自球団が指名して、まだ説得していない選手（ドラフト会議が終わっても、これが残っていれば入団の
+## 処理を待つ。メジャー志望は説得しないまま次の段階へ進むと期限切れで渡米する。作業57）
 func pending_talks() -> Array[String]:
 	var result: Array[String] = []
 	for rec in picks:
@@ -1135,12 +1172,36 @@ func pending_talks() -> Array[String]:
 	return result
 
 
-## 自球団の説得（1人1回）。promise：ポスティングを認める年数（0＝約束なし）。{ok, chance, text}
+## 説得の選び方 [{value, label, chance}]。メジャー志望は約束（ポスティングの年数）、意中の球団が別なら誠意（年俸の上乗せ）
+func talk_options(id: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var kind := talk_kind(id)
+	var rec := pick_of(id)
+	if kind == "mlb":
+		result.append({"value": 0, "label": "約束なし", "chance": MlbPersuasion.chance(rec, 0)})
+		for y: int in MlbPersuasion.PROMISE_YEARS:
+			result.append({"value": y, "label": "%d年後のポスティングを約束" % y, "chance": MlbPersuasion.chance(rec, y)})
+	elif kind == "intent":
+		for o: Dictionary in DraftIntent.OFFERS:
+			result.append({"value": int(o["value"]), "label": str(o["label"]),
+				"chance": DraftIntent.chance(by_id[id]["intent"], rec, int(o["value"]))})
+	return result
+
+
+## 自球団の説得（1人1回）。promise：メジャー志望はポスティングを認める年数（0＝約束なし）、意中の球団が別の選手は
+## 誠意（DraftIntent.OFFERS の value）。{ok, chance, text}
 func persuade(id: String, promise: int) -> Dictionary:
 	if not can_persuade(id):
 		return {"ok": false, "chance": 0.0, "text": "説得できる選手ではありません"}
+	var kind := talk_kind(id)
 	var t := _talk(id, user_team, promise)
 	var name: String = by_id[id]["name"]
+	if kind == "intent":
+		var it: Dictionary = by_id[id]["intent"]
+		if t["ok"]:
+			return {"ok": true, "chance": t["chance"], "text": "%sの説得に成功！入団します" % name}
+		return {"ok": false, "chance": t["chance"], "text": "%sは入団を拒否しました。%sへ進みます。" % [name,
+			DraftIntent.ALT_WORDS.get(str(it.get("alt", "")), "別の道")]}
 	if t["ok"]:
 		var cond := "（%d年後のポスティングを約束）" % promise if promise > 0 else ""
 		return {"ok": true, "chance": t["chance"], "text": "%sの説得に成功！入団します%s" % [name, cond]}
@@ -1148,15 +1209,24 @@ func persuade(id: String, promise: int) -> Dictionary:
 
 
 ## まだ決まっていない交渉をすべて決める（ドラフト会議の結果で入団させる前に LeagueRoster.apply_draft から）。
-## 自球団で説得しなかった選手は交渉の期限切れで失敗（渡米。勝手に成功にしない。作業57）、
-## CPU球団は CPU_PROMISE_RATE の確率で約束を付けて確率で決める
+## メジャー志望：自球団で説得しなかった選手は交渉の期限切れで失敗（渡米。勝手に成功にしない。作業57）、
+## CPU球団は CPU_PROMISE_RATE の確率で約束を付けて確率で決める。
+## 意中の球団が別の選手：自球団で説得しなかった選手は通常の交渉で、CPU球団はあえて強行した球団なら最大限の誠意、
+## ほかは年俸の上乗せで決める
 func resolve_talks() -> void:
 	for rec in picks:
 		var id: String = rec["id"]
-		if talks.has(id) or not bool(by_id[id].get("mlb_intent", false)):
+		var kind := talk_kind(id)
+		if talks.has(id) or kind.is_empty():
+			continue
+		if kind == "intent":
+			var offer := 0
+			if rec["team"] != user_team:
+				offer = 2 if _team_dare.get(rec["team"], {}).has(id) else 1
+			_talk(id, rec["team"], offer)
 			continue
 		if rec["team"] == user_team:
-			talks[id] = {"team": user_team, "promise": 0, "chance": 0.0, "ok": false, "expired": true}
+			talks[id] = {"team": user_team, "promise": 0, "chance": 0.0, "ok": false, "expired": true, "kind": "mlb"}
 			continue
 		var promise := 0
 		if rec["team"] != user_team and _rng.randf() < MlbPersuasion.CPU_PROMISE_RATE:
@@ -1164,10 +1234,20 @@ func resolve_talks() -> void:
 		_talk(id, rec["team"], promise)
 
 
+## 交渉を1回決める。メジャー志望は promise（ポスティングの約束の年数）、意中の球団が別なら誠意（offer に入れ、promise は0）
 func _talk(id: String, team: String, promise: int) -> Dictionary:
-	var chance := MlbPersuasion.chance(pick_of(id), promise)
+	var kind := talk_kind(id)
+	var t := {"team": team, "promise": promise, "kind": kind}
+	if kind == "intent":
+		var o := DraftIntent.offer_of(promise)
+		t["promise"] = 0
+		t["offer"] = int(o["value"])
+		t["bonus_man"] = int(o["bonus_man"])
+		t["chance"] = DraftIntent.chance(by_id[id]["intent"], pick_of(id), promise)
+	else:
+		t["chance"] = MlbPersuasion.chance(pick_of(id), promise)
 	var roll := force_roll if force_roll >= 0.0 else _rng.randf()
-	var t := {"team": team, "promise": promise, "chance": chance, "ok": roll < chance}
+	t["ok"] = roll < float(t["chance"])
 	talks[id] = t
 	return t
 
@@ -1214,7 +1294,8 @@ static func fictional_rows(draft_year: int) -> Array[Dictionary]:
 			"as_round": int(am["as_round"]), "as_ikusei": bool(am["as_ikusei"]), "bids": int(am.get("bids", 1)),
 			"future_score": float(am["future_score"]), "reincarnation": am.get("reincarnation", {}),
 			"category": str(am.get("category", "")),
-			"two_way": am.get("two_way", p.get("two_way", {}))})
+			"two_way": am.get("two_way", p.get("two_way", {})),
+			"team_intent": am.get("team_intent", {}), "refused": am.get("refused", {})})
 	return result
 
 

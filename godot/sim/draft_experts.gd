@@ -65,7 +65,8 @@ static func prospects(year: int) -> Array[Dictionary]:
 		var school := str(d.get("school", ""))
 		hyouka += AmateurTournament.bonus(GameState.amateur_results, year, d["name"], school)
 		result.append({"key": key, "name": d["name"], "pos": str(d.get("pos", "")), "school": school,
-			"career": Draft.career_of_row(d), "hyouka": hyouka, "ikusei": ikusei})
+			"career": Draft.career_of_row(d), "hyouka": hyouka, "ikusei": ikusei,
+			"intent": d.get("team_intent", {})})
 	return result
 
 
@@ -73,12 +74,14 @@ static func prospects(year: int) -> Array[Dictionary]:
 ## {year, date, names: {key: 名前}, info: {key: {school, pos, career}}, experts: [{ranking: [key], firsts: {球団: key}}]}
 static func predict(year: int, date: String, counts: Dictionary, teams: Array) -> Dictionary:
 	var pros := prospects(year)
-	var result := {"year": year, "date": date, "names": {}, "info": {}, "experts": []}
+	var result := {"year": year, "date": date, "names": {}, "info": {}, "experts": [], "intents": {}}
 	if pros.is_empty():
 		return result
 	for c in pros:
 		result["names"][c["key"]] = c["name"]
 		result["info"][c["key"]] = {"school": c["school"], "pos": c["pos"], "career": c["career"]}
+		if not c["intent"].is_empty() and not c["ikusei"]:
+			result["intents"][c["key"]] = c["intent"]
 	for i in EXPERTS.size():
 		var ex: Dictionary = EXPERTS[i]
 		var rng := RandomNumberGenerator.new()
@@ -89,7 +92,7 @@ static func predict(year: int, date: String, counts: Dictionary, teams: Array) -
 				continue
 			var s: float = float(c["hyouka"]) + float(ex["career"].get(c["career"], 0.0)) \
 				+ (float(ex["pitcher"]) if c["pos"] == "投手" else 0.0) + rng.randfn(0.0, float(ex["noise"]))
-			scored.append([c["key"], s, c["pos"]])
+			scored.append([c["key"], s, c["pos"], c["intent"]])
 		scored.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0] if a[1] == b[1] else a[1] > b[1])
 		var ranking: Array = []
 		for item: Array in scored.slice(0, RANK_COUNT):
@@ -103,6 +106,10 @@ static func predict(year: int, date: String, counts: Dictionary, teams: Array) -
 			for item: Array in pool:
 				var v: float = float(item[1]) + float(ex["need"]) * need_bonus(counts.get(t, {}), item[2]) \
 					+ rng.randfn(0.0, FIRST_NOISE) - FIRST_COMPETE * int(taken.get(item[0], 0))
+				var it: Dictionary = item[3]
+				if not it.is_empty():  # 意中の球団（作業77）：意中の球団は推し、ほかは避けると読む
+					v += DraftIntent.FAVORITE_BONUS if str(it["team"]) == t \
+						else -float(DraftIntent.AVOID[bool(it.get("hard", false))])
 				if v > best_v:
 					best_v = v
 					best = item[0]
@@ -221,6 +228,11 @@ static func preview_articles(pred: Dictionary) -> Array:
 	headline += "に最大%d球団の競合か" % most if most >= 2 else "が軸"
 	var body := "%d年のドラフト会議を前に、評論家3人が12球団の1位指名を予想した（カッコ内は予想した評論家）。\n" % year
 	body += "\n".join(lines)
+	var intent_lines: Array[String] = []
+	for key: String in pred.get("intents", {}):
+		intent_lines.append("%s（%s）" % [names.get(key, key), DraftIntent.short_text(pred["intents"][key])])
+	if not intent_lines.is_empty():
+		body += "\n※意中の球団を公言している候補：%s。意中ではない球団は指名を見送るとの見方が多い。" % "、".join(intent_lines)
 	body += "\n※予想は評判（当時の評価）が中心。実際の指名は各球団の補強ポイントや将来性の見立てで変わることも多い。"
 	var result: Array = [[headline, body]]
 	var rank_lines: Array[String] = []
