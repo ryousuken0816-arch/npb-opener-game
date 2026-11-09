@@ -32,7 +32,16 @@ func _run() -> void:
 	var batter := ""
 	for id: String in ids:
 		if gd.player(id).get("is_pitcher", false):
-			if pitcher.is_empty():
+			# 作業79：持ち球の目盛りが横の球と落ちる球の両方を見せられる投手を選ぶ
+			var ps: Variant = gd.player(id).get("pitching", {}).get("pitches")
+			var down := false
+			var side := 0
+			if ps is Array:
+				for x: Dictionary in ps:
+					var dir := str(PitchArsenal.TYPES.get(str(x["name"]), {}).get("dir", ""))
+					down = down or dir == "下"
+					side += 0 if dir == "下" else 1
+			if pitcher.is_empty() and down and side >= 2:
 				pitcher = id
 		elif batter.is_empty():
 			batter = id

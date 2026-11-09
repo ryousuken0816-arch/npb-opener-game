@@ -389,8 +389,11 @@ func _pitcher_summary(p: SimPlayer, data: Dictionary) -> void:
 			16, UiTheme.TEXT, 700))
 	var ratings: Dictionary = pitching["ratings"] if pitching.get("ratings") is Dictionary else {}
 	_summary_box.add_child(_rank_grid(ratings, [
-		["overall", "総合"], ["bb9", "制球"], ["stamina", "スタミナ"], ["k9", "奪三振"], ["hr9", "被弾抑制"],
+		["overall", "総合"], ["bb9", "制球"], ["stamina", "スタミナ"],
 	]))
+	# 作業79：奪三振・被弾抑制の代わりに持ち球（★は決め球）
+	PitchArsenal.ensure(data)
+	_summary_box.add_child(_summary_line("持ち球 %s" % PitchArsenal.summary(data), 15, UiTheme.TEXT, 700))
 	var s: Dictionary = GameState.season.pitching.get(p.id, {}) if GameState.season != null else {}
 	var era := "%.2f" % Season.era(s) if s.get("outs", 0) > 0 else "-"
 	_summary_box.add_child(_summary_line("今季　%d登板 %d勝%d敗%dS　防御率 %s" % [

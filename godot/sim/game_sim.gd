@@ -32,6 +32,9 @@ const A_K9_K := 0.30        ## 奪三振 → 三振（作業70で 0.18 から。
 const A_POW_HR := 0.60      ## パワー → 本塁打（作業70で 0.36 から。パワー99・弾道4で本塁打率 8%＝600打席で50本前後）
 const A_TRAJ_HR := 0.08     ## 弾道 → 本塁打
 const A_HR9_HR := 0.44      ## 被弾抑制 → 本塁打（減）（作業70で 0.20 から。HR9 の z と実際の被本塁打率の関係）
+## 持ち球（作業79。PitchArsenal）：左右の打者による奪三振の上下は A_K9_K で効かせる。ゴロの多い投手は凡打のゴロの割合・併殺が増える
+const A_GB_SHARE := 0.04    ## ゴロの多さ（z）1あたりの凡打のゴロの割合
+const A_GB_DP := 0.25       ## ゴロの多さ（z）1あたりの併殺（ロジット）
 
 ## 打球の質（鋭い当たりの割合）
 const BASE_SHARP := 0.363
@@ -268,7 +271,7 @@ func _plate_appearance(batting: int, fielding: int) -> void:
 
 	var fat := _fatigue(fielding)
 	var bb_p := _sig(_base_bb + A_EYE_BB * batter.eye - A_CTL_BB * (pitcher.bb9 - fat))
-	var k_p := _sig(_base_k - A_MEET_K * batter.meet + A_K9_K * (pitcher.k9 - fat))
+	var k_p := _sig(_base_k - A_MEET_K * batter.meet + A_K9_K * (pitcher.k9 + pitcher.k_vs(batter) - fat))
 	var hr_p := _sig(_base_hr + A_POW_HR * batter.power
 			+ A_TRAJ_HR * (batter.trajectory - 2.5) - A_HR9_HR * (pitcher.hr9 - fat))
 	var r := rng.randf()
@@ -330,7 +333,8 @@ func _ball_in_play(batting: int, fielding: int, batter: SimPlayer, line: Diction
 ## 段階5：凡打球。内野の守備範囲でアウトか内野安打か、アウトなら失策の判定
 func _weak_ball(batting: int, fielding: int, batter: SimPlayer, line: Dictionary,
 		pline: Dictionary) -> void:
-	if rng.randf() >= WEAK_GROUNDER:
+	var gb: float = _pitcher[fielding].gb
+	if rng.randf() >= clampf(WEAK_GROUNDER + A_GB_SHARE * gb, 0.4, 0.8):
 		# 凡フライ・ポップ
 		if rng.randf() < WEAK_FLY_OUT:
 			if rng.randf() < FLY_ERROR:
@@ -366,7 +370,7 @@ func _weak_ball(batting: int, fielding: int, batter: SimPlayer, line: Dictionary
 		return
 	# 併殺
 	if _bases[0] != null and _outs < 2:
-		var dp_p := _sig(_logit(BASE_DP) - 0.35 * batter.speed - 0.2 * _bases[0].p.speed)
+		var dp_p := _sig(_logit(BASE_DP) - 0.35 * batter.speed - 0.2 * _bases[0].p.speed + A_GB_DP * gb)
 		if rng.randf() < dp_p:
 			line["gdp"] += 1
 			_bases[0] = null
