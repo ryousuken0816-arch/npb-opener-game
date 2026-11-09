@@ -5,7 +5,7 @@ extends Control
 ## どの画面からでも `PlayerDetail.open(呼び出し元のノード, 選手ID, 前後に送る選手IDの並び)` で画面の上に重ねて開く
 ## （並びを省くと同じ球団の全選手：投手→野手の順）。上に名前札・背番号・球団・投打・年齢・身長体重・守備位置・
 ## 登録状況・今季成績の見出し、その下に4つのタブ：
-##   概要 … 参考画像の「選手能力／投手能力／野手能力／守備・起用」。能力はランク＋数値＋実数値、特殊能力、守備適性
+##   概要 … 野手は能力のランク＋数値。投手は投手能力の画面（選手能力／投手能力／野手能力／守備・起用／プロフィール）
 ##   成績 … 今季（GameState.season）と史実の年度別1軍成績（data/<年>/players.json。今の年より前だけ）、通算
 ##   経歴 … 参考画像の「プロフィール」。生年月日・出身校〜経歴・ドラフト（年・順位）・所属球団の推移
 ##   契約 … 年俸（GameState.league）・在籍年数・所属の状態と、ゲーム内の年俸の推移
@@ -29,9 +29,9 @@ const BATTER_ROWS := [
 	["meet", "ミート"], ["power", "パワー"], ["speed", "走力"], ["arm", "肩"],
 	["defense", "守備"], ["eye", "選球眼"],
 ]
-## 作業79：奪三振・被弾抑制は持ち球（PitchChart）から出るので行にしない
+## 作業79：奪三振・被弾抑制は持ち球から出るので、投手能力の一覧の行にはしない（マスと「選手能力」で見る）
 const PITCHER_ROWS := [["bb9", "制球"], ["stamina", "スタミナ"]]
-const PITCH_CHART := preload("res://scenes/player_detail/pitch_chart.tscn")
+const PITCHER_BOARD := preload("res://scenes/player_detail/pitcher_board.gd")
 ## 特殊能力で悪いもの（赤い札）。それ以外は青い札
 const BAD_ABILITIES := ["三振取れず", "四球病", "一発病"]
 const ABILITY_SLOTS := 8
@@ -66,6 +66,9 @@ var _body: Control
 var _scroll: ScrollContainer = null
 ## スマホの縦で表の多いタブ（成績）のときの、横向きをすすめる案内
 var _rotate_hint: Label
+## 投手能力の中のタブ（選手能力／投手能力／野手能力／守備・起用／プロフィール）。選手を変えると投手能力に戻す
+var _pitch_sub := 1
+var _pitch_sub_for := ""
 
 
 ## 選手詳細を開く（もう開いていればその選手に切り替える）。ids は十字キーで送る選手IDの並び
@@ -223,6 +226,17 @@ func show_tab(i: int) -> void:
 	tab = i
 	if _rotate_hint != null:
 		_rotate_hint.visible = TABS[i][0] in ["stats", "career"]
+	_render_header()
+	_render_body()
+	UiFx.fade_in(_body)
+
+
+## 投手能力の中のタブ（PitcherBoard から。外側の概要／成績／経歴／契約とは別）
+func set_pitch_sub(i: int) -> void:
+	if not is_inside_tree() or TABS[tab][0] != "summary":
+		return
+	_pitch_sub = i
+	_pitch_sub_for = player_id
 	_render_body()
 	UiFx.fade_in(_body)
 
@@ -362,6 +376,11 @@ func _style_tabs() -> void:
 
 func _render_header() -> void:
 	_clear(_header)
+	# 投手の概要は PitcherBoard が見出し（名前・適性・成績）を持つ
+	var board_header := bool(_data.get("is_pitcher", false)) and str(TABS[tab][0]) == "summary"
+	_header.visible = not board_header
+	if board_header:
+		return
 	var left := VBoxContainer.new()
 	left.add_theme_constant_override("separation", 6)
 	_header.add_child(left)
@@ -674,28 +693,26 @@ func _summary_page() -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	var is_pitcher: bool = _data.get("is_pitcher", false)
-	var abilities := card("投手能力" if is_pitcher else "野手能力")
+	if is_pitcher:
+		if _pitch_sub_for != player_id:
+			_pitch_sub = 1
+			_pitch_sub_for = player_id
+		var board: PitcherBoard = PITCHER_BOARD.new()
+		board.name = "PitcherBoard"
+		board.setup(self, _pitch_sub)
+		return board
+	var abilities := card("野手能力")
 	abilities["panel"].custom_minimum_size = Vector2(520, 0)
 	row.add_child(abilities["panel"])
 	var body: VBoxContainer = abilities["body"]
 	body.add_theme_constant_override("separation", 5)
-	if is_pitcher:
-		var pitching := _dict(_data.get("pitching"))
-		var velocity := _dict(pitching.get("velocity"))
-		var kmh := "%d" % int(velocity["kmh"]) if velocity.get("kmh") != null else "-"
-		body.add_child(value_row("球速", kmh, "km/h", _velocity_note(velocity), 40))
-		var ratings := _dict(pitching.get("ratings"))
-		for r: Array in PITCHER_ROWS:
-			body.add_child(_ability_row(r[1], ratings.get(r[0]), _pitching_note(r[0])))
-		body.add_child(_pitch_chart_row())
-	else:
-		var batting := _dict(_data.get("batting"))
-		var trajectory: Variant = batting.get("trajectory")
-		body.add_child(value_row("弾道", str(int(trajectory)) if trajectory != null else "-", "",
-			"打球の上がりやすさ（1〜4）"))
-		var ratings := _dict(batting.get("ratings"))
-		for r: Array in BATTER_ROWS:
-			body.add_child(_ability_row(r[1], ratings.get(r[0]), _batting_note(r[0])))
+	var batting := _dict(_data.get("batting"))
+	var trajectory: Variant = batting.get("trajectory")
+	body.add_child(value_row("弾道", str(int(trajectory)) if trajectory != null else "-", "",
+		"打球の上がりやすさ（1〜4）"))
+	var ratings := _dict(batting.get("ratings"))
+	for r: Array in BATTER_ROWS:
+		body.add_child(_ability_row(r[1], ratings.get(r[0]), _batting_note(r[0])))
 
 	var right := VBoxContainer.new()
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -705,14 +722,83 @@ func _summary_page() -> Control:
 	var special := card("特殊能力")
 	right.add_child(special["panel"])
 	special["body"].add_child(_ability_tiles())
-	var aptitude := card("起用・適性" if is_pitcher else "守備適性")
+	var aptitude := card("守備適性")
 	aptitude["panel"].size_flags_vertical = Control.SIZE_EXPAND_FILL
 	right.add_child(aptitude["panel"])
-	if is_pitcher:
-		_pitcher_aptitude(aptitude["body"])
-	else:
-		_fielder_aptitude(aptitude["body"])
+	_fielder_aptitude(aptitude["body"])
 	return row
+
+
+## 投手の「選手能力」（数値の一覧。変化の図は「投手能力」）
+func pitcher_overview() -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 5)
+	box.add_child(_outlook_row())
+	var pitching := _dict(_data.get("pitching"))
+	var velocity := _dict(pitching.get("velocity"))
+	var kmh := "%d" % int(velocity["kmh"]) if velocity.get("kmh") != null else "-"
+	box.add_child(value_row("球速", kmh, "km/h", _velocity_note(velocity), 32))
+	var ratings := _dict(pitching.get("ratings"))
+	for r: Array in PITCHER_ROWS:
+		box.add_child(_ability_row(r[1], ratings.get(r[0]), _pitching_note(r[0])))
+	box.add_child(_ability_row("奪三振", ratings.get("k9"), _pitching_note("k9")))
+	box.add_child(_ability_row("打たれ強さ", ratings.get("hr9"), _pitching_note("hr9")))
+	box.add_child(note_label("変化の向きと変化量は「投手能力」。奪三振・打たれ強さは球速と持ち球から計算した値"))
+	return box
+
+
+## 投手の「野手能力」（打撃・守備の能力値）
+func pitcher_batting_view() -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 5)
+	var batting := _dict(_data.get("batting"))
+	var trajectory: Variant = batting.get("trajectory")
+	box.add_child(value_row("弾道", str(int(trajectory)) if trajectory != null else "-", "",
+		"打球の上がりやすさ（1〜4）"))
+	var ratings := _dict(batting.get("ratings"))
+	for r: Array in BATTER_ROWS:
+		box.add_child(_ability_row(r[1], ratings.get(r[0]), _batting_note(r[0])))
+	return box
+
+
+## 投手の「守備・起用」
+func pitcher_usage_view() -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 6)
+	_pitcher_aptitude(box)
+	return box
+
+
+## 投手の「プロフィール」（短い一覧。年度の推移は外側の「経歴」）
+func pitcher_profile_view() -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 6)
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 6)
+	box.add_child(grid)
+	var birth := str(_data.get("birth", ""))
+	var draft := str(_data.get("draft", ""))
+	for pair: Array in [
+		["生年月日", birth if birth.length() >= 10 else "-"],
+		["年齢", _age_text()],
+		["身長／体重", body_text()],
+		["投打", throws_bats()],
+		["ドラフト", draft if not draft.is_empty() else "-"],
+		["登録", _status_text()],
+	]:
+		grid.add_child(pill(pair[0], 110, 15))
+		var value := UiTheme.small_label(pair[1], 17, UiTheme.TEXT, 700)
+		value.clip_text = true
+		value.custom_minimum_size = Vector2(160, 0)
+		value.tooltip_text = pair[1]
+		grid.add_child(value)
+	box.add_child(UiTheme.small_label("出身校〜経歴", 15, _palette.ink, 800))
+	var career := str(_data.get("career", ""))
+	box.add_child(note_label(career if not career.is_empty() else "経歴の記録がありません"))
+	box.add_child(note_label("所属の推移・受賞は「経歴」タブ"))
+	return box
 
 
 ## 現在の能力と将来性のランク（記録室のデプスと同じ見立て。Depth）
@@ -772,32 +858,6 @@ func _ability_row(title: String, rating: Variant, note: String) -> Control:
 
 
 ## 数値だけの行（球速・弾道。パワプロと同じくランクなし）
-## 持ち球の目盛り（作業79。PitchArsenal・PitchChart）。見出しに決め球と、元の成績の K/9・HR/9
-func _pitch_chart_row() -> Control:
-	PitchArsenal.ensure(_data)
-	var row := _row_frame()
-	var box: HBoxContainer = row.get_child(0)
-	var col := VBoxContainer.new()
-	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col.add_theme_constant_override("separation", 2)
-	box.add_child(col)
-	var head := HBoxContainer.new()
-	head.add_theme_constant_override("separation", 10)
-	col.add_child(head)
-	head.add_child(pill("持ち球", 110, 19))
-	var best := PitchArsenal.best_pitch(_data)
-	var note := "決め球：%s" % best["name"] if not best.is_empty() else "持ち球の記録なし"
-	var stats := "%s　%s" % [_pitching_note("k9"), _pitching_note("hr9")]
-	head.add_child(note_label(note + ("　" + stats if not stats.strip_edges().is_empty() else "")))
-	var pitches: Variant = _dict(_data.get("pitching")).get("pitches")
-	if pitches is Array and not pitches.is_empty():
-		var chart: PitchChart = PITCH_CHART.instantiate()
-		chart.set_pitches(pitches, str(best.get("name", "")))
-		chart.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		col.add_child(chart)
-	return row
-
-
 func value_row(title: String, value_text: String, unit: String, note: String, value_size := 32) -> Control:
 	var row := _row_frame()
 	var box: HBoxContainer = row.get_child(0)
