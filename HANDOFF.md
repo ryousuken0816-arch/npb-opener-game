@@ -897,6 +897,15 @@
      - 表示：新 `scenes/player_detail/pitch_chart.tscn`（`PitchChart`、_draw で描く）。選手の詳細の投手の欄は 球速（40の大きな字）・制球・スタミナ・持ち球（見出しに決め球と元の K/9・HR/9）。
        名簿は 奪三振・被弾抑制の列 → 「決め球」（例「フォーク 6」、色は変化量、ツールチップに持ち球の全部）。1軍登録の要約は「持ち球 スライダー5・フォーク6★」。
        FA・トレード・戦力外・外国人の調査の短い能力の文は 奪三振 → 決め球。**ドラフトの画面（draft_view・作戦会議）はまだ 奪三振**（作業81のあとで）
+     - **持ち球の目盛りの図はユーザーが別の道具で作り直す**（2026-11-09 司令塔より。`scenes/player_detail/pitch_chart.gd`・`pitch_chart.tscn` はユーザーの担当、こちらでは触らない）。
+       差し替えるときの決まり（今の部品に渡しているデータの形）：
+       - 呼び出し側は `player_detail.gd` の `_pitch_chart_row()`。`PITCH_CHART.instantiate()` したノードに `set_pitches(pitches: Array, best_name: String)` を1回呼ぶだけ（同じ名前の関数があれば中身は自由）。
+         大きさは部品が `custom_minimum_size` で決める（呼び出し側は `size_flags_horizontal = SIZE_SHRINK_CENTER`）
+       - `pitches`：選手の `pitching.pitches` そのまま。`[{"name": "スライダー", "move": 5}, ...]`（2〜5個、表示の順に並べ済み）。move は変化量 1〜7（`PitchArsenal.MOVE_MIN`〜`MOVE_MAX`）
+       - `best_name`：決め球の球種名（`PitchArsenal.best_pitch(p)["name"]`。空のこともある）
+       - 曲がる向きは球種名から引く：`PitchArsenal.TYPES[name]["dir"]` が "左"（シュート側）・"右"（スライダー側）・"下"（落ちる球）。球種は9つ（`PitchArsenal.ORDER` の順）
+       - ほかの情報が要るときは `PitchArsenal.TYPES[name]`（k 空振り・h 被弾の抑え・gb ゴロ・plat 左右の得意・slow 遅い球）
+       - 見出しの行（「持ち球」の札と、決め球・K/9・HR/9 の文）は `player_detail.gd` 側。図と一緒に直すなら司令塔に言ってもらえればこちらで直す
      - ④ 完了（2026-11-09）：新しい球種（`PitchArsenal.maybe_learn`。`FutureYear.build` で成長のあと、23歳以下 12%・27歳以下 8%・31歳以下 4%、持ち球5種まで。
        覚えた球（変化量2〜4）の分だけ k9・hr9・総合を上げ、架空の選手はピークも上げる。成長の正規化が次の年にリーグ全体をならす）。能力値に new_pitches を残し、
        春季キャンプ（`GameState._new_pitch_news`）で「〇〇（球団）、新球△△を習得」（自球団は全員・ほかは総合の高い順に3人。種類「キャンプ」）。2027〜2033年で年に約35人
