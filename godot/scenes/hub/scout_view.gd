@@ -198,14 +198,14 @@ func _render_market(league: LeagueRoster) -> void:
 	_sign_button.visible = GameState.phase not in [GameState.Phase.SEASON, GameState.Phase.AWARDS]
 
 
-## 主な能力のランク（投手は総合・スタミナ・奪三振・制球、野手はミート・パワー・走力）。
+## 主な能力のランク（投手は総合・スタミナ・制球・決め球、野手はミート・パワー・走力）。
 ## scout（項目 → 見立ての値）があればそれを出す（架空の外国人は本当の能力に誤差を足した見立て。LeagueRoster._add_candidate）
 func _ability_text(p: Dictionary, pitcher: bool, scout: Dictionary = {}) -> String:
 	var parts: Array[String] = []
 	var ratings: Variant = (p.get("pitching") if pitcher else p.get("batting"))
 	if not ratings is Dictionary or not ratings.get("ratings") is Dictionary:
 		return "-"
-	var keys := [["overall", "総"], ["stamina", "ス"], ["k9", "三"], ["bb9", "制"]] if pitcher \
+	var keys := [["overall", "総"], ["stamina", "ス"], ["bb9", "制"]] if pitcher \
 		else [["meet", "ミ"], ["power", "パ"], ["speed", "走"]]
 	for k: Array in keys:
 		if scout.has(k[0]):
@@ -213,6 +213,8 @@ func _ability_text(p: Dictionary, pitcher: bool, scout: Dictionary = {}) -> Stri
 			continue
 		var r: Variant = ratings["ratings"].get(k[0])
 		parts.append("%s%s" % [k[1], r["rank"] if r is Dictionary else "-"])
+	if pitcher:
+		parts.append("決" + PitchArsenal.best_label(p))  # 作業79：奪三振の代わりに持ち球の決め球
 	return " ".join(parts)
 
 

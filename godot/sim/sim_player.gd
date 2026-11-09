@@ -67,6 +67,10 @@ var bb9 := 0.0
 var hr9 := 0.0
 var stamina := 0.0  ## 能力値（1〜100）のまま
 var role := ""  ## "先発" / "救援" / ""
+## 持ち球の効き方（作業79。PitchArsenal）：左右の打者による奪三振の上下（z）とゴロの多さ（z。0が平均）
+var k_same := 0.0
+var k_opp := 0.0
+var gb := 0.0
 var pitching_sample := 0.0
 
 
@@ -118,6 +122,7 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 
 	var pitching: Variant = p.get("pitching")
 	if pitching is Dictionary:
+		PitchArsenal.ensure(p)  # 持ち球（作業79）：合わせ直すと k9・hr9 を書き戻すので、能力を読む前に
 		s.has_pitching = true
 		var pr: Variant = pitching.get("ratings")
 		if pr is Dictionary:
@@ -131,6 +136,7 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 			for key in ["overall", "k9", "bb9", "hr9"]:
 				s.set(key, z_of(null, UNKNOWN_PITCHING))
 			s.stamina = UNKNOWN_STAMINA
+		_read_arsenal(s, p)
 		var role_value: Variant = pitching.get("role")
 		s.role = role_value if role_value != null else ""
 		s.pitching_sample = float(pitching.get("sample", {}).get("outs_1", 0.0))
@@ -142,8 +148,24 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 func refresh_from(p: Dictionary) -> void:
 	var s := SimPlayer.from_rating(p)
 	for key in ["meet", "power", "eye", "speed", "trajectory", "defense", "arm", "familiarity",
-			"overall", "k9", "bb9", "hr9", "stamina"]:
+			"overall", "k9", "bb9", "hr9", "stamina", "k_same", "k_opp", "gb"]:
 		set(key, s.get(key))
+
+
+## 持ち球（from_rating で ensure 済み）から、左右の打者による上下とゴロの多さ
+static func _read_arsenal(s: SimPlayer, p: Dictionary) -> void:
+	var ps: Variant = p["pitching"].get("pitches")
+	if not ps is Array or ps.is_empty():
+		return
+	var pl: Array = PitchArsenal.platoon(ps, s.throws)
+	s.k_same = float(pl[0])
+	s.k_opp = float(pl[1])
+	s.gb = PitchArsenal.groundball(ps)
+
+
+## 打者 batter に対する左右の奪三振の上下（両打ちは反対の打席に立つ）
+func k_vs(batter: SimPlayer) -> float:
+	return k_same if batter.bats == throws else k_opp
 
 
 ## 能力値の守備位置の項目（fielding.<位置>）→ 慣れ（0〜1）。detail の weight（basement の年）か detail.err.weight

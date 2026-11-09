@@ -138,6 +138,9 @@ func load_ratings(year: int, phase: String) -> bool:
 	_parsed_cache.erase(path)
 	_loaded_file = path
 	_supplement.clear()
+	# 投手の持ち球（作業79）：無い・今の奪三振・被弾抑制と合わないときに作る（実在の選手は能力値ファイルに無いので読むたびに作る）
+	PitchArsenal.ensure_all(ratings.get("players", []), year)
+	PitchArsenal.ensure_all(ratings.get("mlb_players", []), year)
 	_index_players()
 	return true
 
@@ -675,6 +678,7 @@ func set_draft_class(draft_year: int, players: Array) -> void:
 		draft_classes.erase(draft_year)
 	else:
 		draft_classes[draft_year] = players
+		PitchArsenal.ensure_all(players, draft_year + 1)  # 候補の持ち球（作業79。型で球種を選びやすくする）
 	_drafts_cache.erase(draft_year)
 	_prospects.clear()
 	for y: int in draft_classes:

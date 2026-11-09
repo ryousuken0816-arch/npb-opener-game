@@ -10,12 +10,13 @@ const BATTER_COLUMNS := [
 	["arm", "肩力"], ["defense", "守備力"], ["eye", "選球眼"],
 ]
 const PITCHER_COLUMNS := [
-	["overall", "総合"], ["velocity", "球速"], ["bb9", "制球"], ["stamina", "スタミナ"],
-	["k9", "奪三振"], ["hr9", "被弾抑制"],
+	["overall", "総合"], ["velocity", "球速"], ["bb9", "制球"], ["stamina", "スタミナ"], ["best_pitch", "決め球"],
 ]
+## 決め球の列（作業79：奪三振・被弾抑制の代わり。PitchArsenal）の幅
 const RANK_COLUMN_WIDTH := 80
 const SALARY_COLUMN_WIDTH := 120
 const VELOCITY_COLUMN_WIDTH := 72
+const BEST_PITCH_COLUMN_WIDTH := 150
 const ABILITY_COLUMN_WIDTH := 72
 ## 今季の成績タブ（GameState.season）の列 [見出し, 幅]
 const BATTING_STAT_COLUMNS := [
@@ -126,6 +127,7 @@ func _make_pitcher_tree(players: Array) -> Tree:
 		var ratings: Variant = pitching.get("ratings")
 		_set_ranks(item, 3, ratings if ratings is Dictionary else {}, PITCHER_COLUMNS)
 		_set_velocity(item, 3 + PITCHER_COLUMNS.find(["velocity", "球速"]), pitching)
+		_set_best_pitch(item, 3 + PITCHER_COLUMNS.find(["best_pitch", "決め球"]), p)
 		var abilities := PackedStringArray(pitching.get("abilities", []))
 		item.set_text(3 + PITCHER_COLUMNS.size(), " ".join(abilities))
 		item.set_tooltip_text(3 + PITCHER_COLUMNS.size(), " ".join(abilities))
@@ -250,7 +252,7 @@ func _make_tree(text_headers: Array, rank_columns: Array, trailing_headers: Arra
 		tree.set_column_title(col, rank_column[1])
 		tree.set_column_expand(col, false)
 		tree.set_column_custom_minimum_width(col, VELOCITY_COLUMN_WIDTH if rank_column[0] == "velocity"
-			else RANK_COLUMN_WIDTH)
+			else (BEST_PITCH_COLUMN_WIDTH if rank_column[0] == "best_pitch" else RANK_COLUMN_WIDTH))
 		col += 1
 	for header: String in trailing_headers:
 		tree.set_column_title(col, header)
@@ -272,8 +274,8 @@ func _make_tree(text_headers: Array, rank_columns: Array, trailing_headers: Arra
 func _set_ranks(item: TreeItem, first_col: int, ratings: Dictionary, columns: Array) -> void:
 	for i in columns.size():
 		var col := first_col + i
-		if columns[i][0] == "velocity":
-			continue  # 球速は _set_velocity
+		if columns[i][0] in ["velocity", "best_pitch"]:
+			continue  # 球速は _set_velocity、決め球は _set_best_pitch
 		item.set_text_alignment(col, HORIZONTAL_ALIGNMENT_CENTER)
 		var rating: Variant = ratings.get(columns[i][0])
 		if rating == null:
@@ -291,6 +293,23 @@ func _set_ranks(item: TreeItem, first_col: int, ratings: Dictionary, columns: Ar
 static func _paint_rank(item: TreeItem, col: int, rank: String) -> void:
 	item.set_custom_color(col, UiTheme.rank_color(rank).darkened(0.08))
 	item.set_custom_bg_color(col, UiTheme.rank_bg(rank))
+
+
+## 決め球（作業79）：「フォーク 6」。色は変化量（6〜7 A・5 B・4 C・3 D・ほか E）。並び替えは変化量 × 空振り。ツールチップに持ち球の全部
+func _set_best_pitch(item: TreeItem, col: int, p: Dictionary) -> void:
+	item.set_text_alignment(col, HORIZONTAL_ALIGNMENT_CENTER)
+	PitchArsenal.ensure(p)
+	var b := PitchArsenal.best_pitch(p)
+	if b.is_empty():
+		item.set_text(col, "-")
+		return
+	var move := int(b["move"])
+	item.set_text(col, "%s %d" % [b["name"], move])
+	item.set_metadata(col, float(PitchArsenal.TYPES.get(str(b["name"]), {}).get("k", 1.0)) * move)
+	item.set_tooltip_text(col, "持ち球 " + PitchArsenal.summary(p))
+	_paint_rank(item, col, "A" if move >= 6 else ("B" if move == 5 else ("C" if move == 4 else ("D" if move == 3 else "E"))))
+	item.set_custom_font(col, UiTheme.font(800))
+	item.set_custom_font_size(col, 18)
 
 
 ## 球速（km/h）：目安のランク（UiTheme.velocity_rank）の色を付ける

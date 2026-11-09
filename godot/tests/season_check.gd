@@ -16,6 +16,7 @@ func _init() -> void:
 	var seed_value := int(args[1]) if args.size() > 1 else 0
 	var root := ProjectSettings.globalize_path("res://").path_join("..").simplify_path()
 	var ratings: Dictionary = _load_json(root.path_join("generated/ratings/%d_pre.json" % year))
+	PitchArsenal.ensure_all(ratings.get("players", []), year)  # 投手の持ち球（作業79。ゲームの GameData.load_ratings と同じ）
 	var schedule: Array = _load_json(root.path_join("data/%d/schedule.json" % year))
 	var actual_rows: Array = _load_json(root.path_join("data/%d/teamstats_linked.json" % year))
 
@@ -26,6 +27,7 @@ func _init() -> void:
 			debut_years[r["player_id"]] = r["debut_year"]
 	var season := Season.new(year, ratings, schedule, seed_value, debut_years)
 	var post: Dictionary = _load_json(root.path_join("generated/ratings/%d_post.json" % year))
+	PitchArsenal.ensure_all(post.get("players", []), year)  # 投手の持ち球（作業79。ゲームの GameData.load_ratings と同じ）
 	var blend := not (args.size() > 2 and args[2] == "noblend") and SeasonBlend.applies(ratings, post)
 	var n := 0
 	if blend:

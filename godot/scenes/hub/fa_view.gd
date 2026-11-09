@@ -1467,9 +1467,11 @@ func _ability_text(p: Dictionary) -> String:
 	var ratings: Variant = (p.get("pitching") if pitcher else p.get("batting"))
 	if not ratings is Dictionary or not ratings.get("ratings") is Dictionary:
 		return ""
-	var keys := [["overall", "総合"], ["stamina", "スタミナ"], ["k9", "奪三振"], ["bb9", "制球"]] if pitcher \
+	var keys := [["overall", "総合"], ["stamina", "スタミナ"], ["bb9", "制球"]] if pitcher \
 		else [["meet", "ミート"], ["power", "パワー"], ["speed", "走力"], ["defense", "守備"]]
 	for k: Array in keys:
 		var r: Variant = ratings["ratings"].get(k[0])
 		parts.append("%s%s" % [k[1], r["rank"] if r is Dictionary else "-"])
+	if pitcher:
+		parts.append("決め球%s" % PitchArsenal.best_label(p))  # 作業79：奪三振の代わりに持ち球の決め球
 	return " ".join(parts)

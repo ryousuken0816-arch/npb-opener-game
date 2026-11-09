@@ -29,7 +29,9 @@ const BATTER_ROWS := [
 	["meet", "ミート"], ["power", "パワー"], ["speed", "走力"], ["arm", "肩"],
 	["defense", "守備"], ["eye", "選球眼"],
 ]
-const PITCHER_ROWS := [["bb9", "制球"], ["stamina", "スタミナ"], ["k9", "奪三振"], ["hr9", "被弾抑制"]]
+## 作業79：奪三振・被弾抑制は持ち球（PitchChart）から出るので行にしない
+const PITCHER_ROWS := [["bb9", "制球"], ["stamina", "スタミナ"]]
+const PITCH_CHART := preload("res://scenes/player_detail/pitch_chart.tscn")
 ## 特殊能力で悪いもの（赤い札）。それ以外は青い札
 const BAD_ABILITIES := ["三振取れず", "四球病", "一発病"]
 const ABILITY_SLOTS := 8
@@ -681,10 +683,11 @@ func _summary_page() -> Control:
 		var pitching := _dict(_data.get("pitching"))
 		var velocity := _dict(pitching.get("velocity"))
 		var kmh := "%d" % int(velocity["kmh"]) if velocity.get("kmh") != null else "-"
-		body.add_child(value_row("球速", kmh, "km/h", _velocity_note(velocity)))
+		body.add_child(value_row("球速", kmh, "km/h", _velocity_note(velocity), 40))
 		var ratings := _dict(pitching.get("ratings"))
 		for r: Array in PITCHER_ROWS:
 			body.add_child(_ability_row(r[1], ratings.get(r[0]), _pitching_note(r[0])))
+		body.add_child(_pitch_chart_row())
 	else:
 		var batting := _dict(_data.get("batting"))
 		var trajectory: Variant = batting.get("trajectory")
@@ -769,7 +772,33 @@ func _ability_row(title: String, rating: Variant, note: String) -> Control:
 
 
 ## 数値だけの行（球速・弾道。パワプロと同じくランクなし）
-func value_row(title: String, value_text: String, unit: String, note: String) -> Control:
+## 持ち球の目盛り（作業79。PitchArsenal・PitchChart）。見出しに決め球と、元の成績の K/9・HR/9
+func _pitch_chart_row() -> Control:
+	PitchArsenal.ensure(_data)
+	var row := _row_frame()
+	var box: HBoxContainer = row.get_child(0)
+	var col := VBoxContainer.new()
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.add_theme_constant_override("separation", 2)
+	box.add_child(col)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 10)
+	col.add_child(head)
+	head.add_child(pill("持ち球", 110, 19))
+	var best := PitchArsenal.best_pitch(_data)
+	var note := "決め球：%s" % best["name"] if not best.is_empty() else "持ち球の記録なし"
+	var stats := "%s　%s" % [_pitching_note("k9"), _pitching_note("hr9")]
+	head.add_child(note_label(note + ("　" + stats if not stats.strip_edges().is_empty() else "")))
+	var pitches: Variant = _dict(_data.get("pitching")).get("pitches")
+	if pitches is Array and not pitches.is_empty():
+		var chart: PitchChart = PITCH_CHART.instantiate()
+		chart.set_pitches(pitches, str(best.get("name", "")))
+		chart.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		col.add_child(chart)
+	return row
+
+
+func value_row(title: String, value_text: String, unit: String, note: String, value_size := 32) -> Control:
 	var row := _row_frame()
 	var box: HBoxContainer = row.get_child(0)
 	box.add_child(pill(title, 110, 19))
@@ -778,7 +807,7 @@ func value_row(title: String, value_text: String, unit: String, note: String) ->
 	# 数値＋単位で能力の行のランク＋数値（46＋10＋58）と同じ幅にして、右の実数値の位置をそろえる
 	value.custom_minimum_size = Vector2(64, 0)
 	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	UiTheme.heading(value, 32, _palette.ink, Color.WHITE, 5, false)
+	UiTheme.heading(value, value_size, _palette.ink, Color.WHITE, 5, false)
 	box.add_child(value)
 	var unit_label := UiTheme.small_label(unit, 17, UiTheme.TEXT, 800)
 	unit_label.custom_minimum_size = Vector2(40, 0)

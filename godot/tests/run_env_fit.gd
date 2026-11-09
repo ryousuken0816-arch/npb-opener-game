@@ -50,6 +50,7 @@ func _init() -> void:
 
 func _sim_year(root: String, year: int, env: Dictionary, seed_value: int) -> Dictionary:
 	var ratings: Dictionary = _load_json(root.path_join("generated/ratings/%d_pre.json" % year))
+	PitchArsenal.ensure_all(ratings.get("players", []), year)  # 投手の持ち球（作業79。ゲームの GameData.load_ratings と同じ）
 	var schedule: Array = _load_json(root.path_join("data/%d/schedule.json" % year))
 	var debut_years := {}
 	for r: Dictionary in _load_json(root.path_join("data/%d/rosters.json" % year)):
