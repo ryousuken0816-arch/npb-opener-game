@@ -154,22 +154,25 @@ func _run() -> void:
 	var order: Node = tactics.get("_order")
 	tag_id = str(_focused().get("player_id")) if _is_tag(_focused()) else ""
 	await _key(KEY_ENTER)
-	await _key(KEY_ENTER)
 	detail = _detail()
-	_check("起用設定：スタメンの札で Enter 2回で選手詳細",
-		detail != null and not tag_id.is_empty() and detail.get("player_id") == tag_id, tag_id)
+	_check("起用設定：スタメンの札で Enter 1回で選手詳細（入れ替えにならない）",
+		detail != null and not tag_id.is_empty() and detail.get("player_id") == tag_id
+		and order.get("_sel_index") == -1, tag_id)
 	await _key(KEY_ESCAPE)
+	await _frames(2)
+	_check("起用設定：詳細を閉じても画面はそのまま・入れ替え中ではない",
+		_detail() == null and order.get("_sel_index") == -1 and tactics.get("_page") == "order", "")
+	await _key(KEY_X)
+	_check("起用設定：X（パッドの Ⓧ）でフォーカス中の札が入れ替えの元になる", int(order.get("_sel_index")) >= 0, str(order.get("_sel_index")))
 	await _key(KEY_ESCAPE)
-	_check("起用設定：Esc で選択を取り消す", order.get("_sel_index") == -1 and tactics.get("_page") == "order", "")
+	_check("起用設定：Esc で入れ替えを取り消す（画面はそのまま）", order.get("_sel_index") == -1 and tactics.get("_page") == "order", "")
 	var bench_tags := _tags(order.get("_bench_grid"))
 	var bench_id := str(bench_tags[0].get("player_id"))
 	var bench_pos: Vector2 = bench_tags[0].get_global_rect().get_center()
 	await _click_at(bench_pos)
-	await _click_at(bench_pos)
 	detail = _detail()
-	_check("起用設定：控えの札を2回クリックで選手詳細", detail != null
+	_check("起用設定：控えの札を1回クリックで選手詳細", detail != null
 		and detail.get("player_id") == bench_id, bench_id)
-	await _key(KEY_ESCAPE)
 	await _key(KEY_ESCAPE)
 
 	# --- 選手一覧（起用設定 → 思考設定 → 情報 → 選手一覧）---

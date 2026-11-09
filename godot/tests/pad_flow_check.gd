@@ -150,7 +150,9 @@ func _run() -> void:
 		_describe(_focused()))
 	await _key(KEY_ENTER)
 	var chosen: SimPlayer = pitchers.get("_selected")
-	_check("Enter で2軍の投手を選ぶ", chosen != null, "")
+	_check("Enter で2軍の投手を選ぶ（見るだけ。入れ替え中ではない）", chosen != null and not pitchers.call("is_swapping"), "")
+	await _key(KEY_X)
+	_check("X（Ⓧ）で入れ替え中になる", pitchers.call("is_swapping"), "")
 	# ← で1軍の札（先発ローテ）へ戻って Enter で入れ替え
 	for i in 6:
 		if _focused() != null and active_box.is_ancestor_of(_focused()) \
@@ -161,7 +163,7 @@ func _run() -> void:
 	await _shot("p6_register_selected")
 	await _key(KEY_ENTER)
 	var team: SimTeam = game_state.my_team()
-	_check("Enter で1軍の投手と入れ替え", chosen != null and team.is_active(chosen),
+	_check("入れ替え中に Enter で1軍の投手と入れ替え", chosen != null and team.is_active(chosen),
 		str(pitchers.get("_message")))
 	_check("入れ替えたあともフォーカスは同じ位置",
 		int(root.get_node("UiInput").call("focus_index", active_box)) == focus_before,

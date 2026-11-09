@@ -5,19 +5,22 @@ extends HBoxContainer
 ## 左で DHあり／DHなし を切り替え、中央にスターティングオーダー（打順・名前札・守備位置）、右に控え（1軍の野手）。
 ## - 中央上部に「守備充足インジケーター」：どの守備位置を誰が守っているか／空き／重複をひと目で表示する。
 ##   DHありのときは投手は打順に入らない（先発投手が投げる）ので投手は警告の対象外。
-## - スタメンの札 → 控えの札：その打順・守備位置に控えの選手を入れる（元の選手は控えへ）
-## - スタメンの札 → スタメンの札：打順を入れ替える（守備位置は選手についていく）
+## 操作（作業82）：**札を押す＝選手詳細**（見るだけ。何も入れ替わらない）。入れ替えは札の横の「⇄」から：
+## - 「⇄」を押す → 入れ替え中（その札が色つきになり、上の1行に「入れ替え中：〇〇」と出る）→ 相手の札（か相手の「⇄」）を押すと入れ替わる
+## - 入れ替え中にもう一度同じ「⇄」（またはその札・Ⓑ・Ⓧ）を押すと取り消し
+## - スタメン ⇄ 控え：その打順・守備位置に控えの選手を入れる（元の選手は控えへ）
+## - スタメン ⇄ スタメン：打順を入れ替える（守備位置は選手についていく）
 ## - 各行の [▲][▼]：クリックで前後の打順と即座に入れ替え
 ## - 守備位置の欄：選ぶと、その位置を守っていた選手と守備位置を入れ替える
 ## 対左投手用のオーダーは未実装。2軍の選手は「野手1軍登録」で上げてから使う。
-## コントローラー：十字キーで札・守備位置の欄を選び Ⓐ。作り直してもフォーカスは同じ位置に残る。
-## 選んでいる札をもう一度 Ⓐ・クリック（または右クリック）で選手詳細。Ⓑ はまず選択を取り消す。
-## オフシーズン（編成を変えられない間）は札を押すとすぐ選手詳細。
+## コントローラー：十字キーで札・守備位置の欄を選び、Ⓐ＝選手詳細、Ⓧ＝入れ替え（相手の札で Ⓐ か Ⓧ）、Ⓑ＝入れ替えの取り消し。
+## 作り直してもフォーカスは同じ位置に残る。
+## オフシーズン（編成を変えられない間）は「⇄」が押せず、札を押すと選手詳細だけ。
 
 signal roster_changed
 
 const TAG_SIZE := Vector2(136, 32)
-const BENCH_TAG_SIZE := Vector2(120, 32)
+const BENCH_TAG_SIZE := Vector2(84, 32)
 const RANK_COLUMNS := [["meet", "ミ"], ["power", "パ"], ["speed", "走"]]
 const FIELD_POSITIONS := ["投手", "捕手", "一塁手", "二塁手", "三塁手", "遊撃手", "左翼手", "中堅手", "右翼手"]
 const FIELD_SHORT := {
@@ -29,6 +32,7 @@ var _palette: UiTheme.Palette
 var _team: SimTeam
 var _names := {}
 var _use_dh := true
+## 入れ替え中の「元」の札（スタメンの打順の位置か、控えの選手）。どちらも空なら入れ替え中ではない
 var _sel_index := -1
 var _sel_bench: SimPlayer = null
 var _message := ""
@@ -66,7 +70,7 @@ func setup(p: UiTheme.Palette) -> void:
 	auto.pressed.connect(_on_auto)
 	left.add_child(auto)
 	var hint := UiTheme.small_label(
-			"札を選んでから、入れ替える相手をクリック。\n▲▼で打順をワンタッチ入れ替え。\n\n控え → その打順・守備位置に入る\nスタメン → 打順を入れ替え\n\n"
+			"札を押すと選手詳細（何も変わりません）。\n入れ替えは「⇄」→相手の札（もう一度「⇄」で取り消し）。\n▲▼で打順を入れ替え。\n\n控え ⇄ スタメン → その打順に入る\n\n"
 			+ "守備位置は右の欄で変えられます。\n\nDHなしはセ・リーグ主催、DHありはパ・リーグ主催の試合で使います。", 13)
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	left.add_child(hint)
@@ -145,9 +149,14 @@ func refresh(reset_selection: bool = false) -> void:
 		UiInput.focus_nth(focus_box, focus_at)
 
 
-## 選んでいる札を取り消す（取り消したら true）
+## 入れ替え中か
+func is_swapping() -> bool:
+	return _sel_index >= 0 or _sel_bench != null
+
+
+## 入れ替えを取り消す（取り消したら true。Ⓑ・Esc で画面を戻る前に呼ぶ）
 func clear_selection() -> bool:
-	if _sel_index < 0 and _sel_bench == null:
+	if not is_swapping():
 		return false
 	_sel_index = -1
 	_sel_bench = null
@@ -179,11 +188,25 @@ func _refresh_body() -> void:
 	if not GameState.can_edit_roster():
 		_message_label.text = "オフシーズンは編成を変えられません（見るだけ）"
 	else:
-		_message_label.text = _message if not _message.is_empty() else "札をクリックで選択／▲▼で打順を入れ替え"
+		_message_label.text = _swap_message() if is_swapping() \
+				else (_message if not _message.is_empty() else "札＝選手詳細／入れ替えは ⇄ から（▲▼で打順）")
+	_message_label.add_theme_color_override("font_color",
+			Color("e65100") if is_swapping() and GameState.can_edit_roster() else UiTheme.TEXT_SUB)
 	_lineup_title.text = "%s・スターティングオーダー" % ("DHあり" if _use_dh else "DHなし")
 	_render_coverage()
 	_render_lineup()
 	_render_bench()
+
+
+## 入れ替え中の案内の1行
+func _swap_message() -> String:
+	var who := ""
+	if _sel_bench != null:
+		who = _sel_bench.name
+	elif _sel_index >= 0:
+		var here: SimPlayer = _team.lineup(_use_dh)[_sel_index][0]
+		who = "%d番 %s" % [_sel_index + 1, here.name if here != null else "投手"]
+	return "入れ替え中：%s → 相手を選択（⇄・Ⓑで取り消し）" % who
 
 
 func _clear(box: Container) -> void:
@@ -276,7 +299,7 @@ func _render_lineup() -> void:
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 4)
 	var pad := Control.new()
-	pad.custom_minimum_size = Vector2(22 + 4 + TAG_SIZE.x + 4 + 96 + 4 + 42, 0)
+	pad.custom_minimum_size = Vector2(22 + 4 + TAG_SIZE.x + 4 + 96 + 4 + 66, 0)
 	header.add_child(pad)
 	for col: Array in RANK_COLUMNS + [["def", "守"]]:
 		var l := UiTheme.small_label(col[1], 13, UiTheme.TEXT_SUB, 700)
@@ -309,6 +332,7 @@ func _render_lineup() -> void:
 			if _is_breakout(p):
 				tag.tooltip_text += "\n★ブレイク（この年の主力・好成績選手）"
 		tag.selected = i == _sel_index
+		tag.set_meta("swap_index", i)
 		tag.pressed.connect(_on_lineup_pressed.bind(i))
 		row.add_child(tag)
 		if p != null and _is_breakout(p):
@@ -341,8 +365,11 @@ func _render_lineup() -> void:
 func _move_buttons(i: int, count: int) -> Control:
 	var box := HBoxContainer.new()
 	box.add_theme_constant_override("separation", 2)
-	box.custom_minimum_size = Vector2(42, 0)
+	box.custom_minimum_size = Vector2(66, 0)
 	var editable := GameState.can_edit_roster()
+	var swap := _swap_button(editable, i == _sel_index)
+	swap.pressed.connect(_on_lineup_swap.bind(i))
+	box.add_child(swap)
 	var up := _arrow_button("▲", editable and i > 0)
 	up.tooltip_text = "1つ前の打順と入れ替え"
 	up.pressed.connect(_on_move.bind(i, i - 1))
@@ -352,6 +379,15 @@ func _move_buttons(i: int, count: int) -> Control:
 	down.pressed.connect(_on_move.bind(i, i + 1))
 	box.add_child(down)
 	return box
+
+
+## 「⇄」入れ替えボタン（押すと入れ替え中。入れ替え中の元の札のは色が変わり、押すと取り消し）。十字キーを阻害しないようフォーカス対象外（パッドは Ⓧ）
+func _swap_button(enabled: bool, active: bool) -> Button:
+	var b := _arrow_button("⇄", enabled)
+	b.custom_minimum_size = Vector2(22, 24)
+	b.tooltip_text = "入れ替え中です。もう一度押すと取り消し" if active else "入れ替える：押したあと、相手の札を押します"
+	UiTheme.style_button(b, Color("e65100") if active else Color("1e88e5"), Color.WHITE, 4, 2)
+	return b
 
 
 func _arrow_button(text: String, enabled: bool) -> Button:
@@ -445,8 +481,12 @@ func _render_bench() -> void:
 		if _is_breakout(p):
 			tag.tooltip_text += "\n★ブレイク（この年の主力・好成績選手）"
 		tag.selected = p == _sel_bench
+		tag.set_meta("swap_bench", p)
 		tag.pressed.connect(_on_bench_pressed.bind(p))
 		row.add_child(tag)
+		var swap := _swap_button(GameState.can_edit_roster(), p == _sel_bench)
+		swap.pressed.connect(_on_bench_swap.bind(p))
+		row.add_child(swap)
 		var pos_text: String = RegisterPage.POS_SHORT.get(p.primary_pos, "-")
 		var pos := UiTheme.small_label(pos_text, 15, UiTheme.TEXT_SUB, 800)
 		pos.custom_minimum_size = Vector2(22, 0)
@@ -473,48 +513,87 @@ func _on_move(from: int, to: int) -> void:
 	roster_changed.emit()
 
 
+## スタメンの札：入れ替え中でなければ選手詳細（何も変わらない）。入れ替え中なら相手として選ぶ
 func _on_lineup_pressed(i: int) -> void:
-	var here: SimPlayer = _team.lineup(_use_dh)[i][0]
-	if here != null and (_sel_index == i or not GameState.can_edit_roster()):
-		_open_detail(here)
+	if is_swapping():
+		_swap_with_lineup(i)
 		return
+	var here: SimPlayer = _team.lineup(_use_dh)[i][0]
+	if here != null:
+		_open_detail(here)
+
+
+## スタメンの「⇄」（パッドは Ⓧ）：入れ替えを始める／同じ札なら取り消し／別の札なら相手として入れ替える
+func _on_lineup_swap(i: int) -> void:
 	if not GameState.can_edit_roster():
 		return
-	if _sel_bench != null:
-		var p := _sel_bench
-		if _team.lineup(_use_dh)[i][0] == null:
-			_message = "投手の打順には野手を入れられません"
-		else:
-			_team.lineup_replace(_use_dh, i, p)
-			_message = "%sを%d番に入れました" % [p.name, i + 1]
-			roster_changed.emit()
-		_sel_bench = null
-		_sel_index = -1
-	elif _sel_index == -1:
-		_sel_index = i
-		_message = ""
-	elif _sel_index == i:
-		_sel_index = -1
-	else:
-		_team.lineup_swap_order(_use_dh, _sel_index, i)
-		_message = "%d番と%d番を入れ替えました" % [_sel_index + 1, i + 1]
-		_sel_index = -1
-		roster_changed.emit()
+	if is_swapping():
+		_swap_with_lineup(i)
+		return
+	_sel_index = i
+	_message = ""
 	refresh()
 
 
-func _on_bench_pressed(p: SimPlayer) -> void:
-	if _sel_bench == p or not GameState.can_edit_roster():
-		_open_detail(p)
-		return
-	if _sel_index >= 0:
-		var i := _sel_index
-		_sel_index = -1
+func _swap_with_lineup(i: int) -> void:
+	if _sel_bench != null:
+		var p := _sel_bench
 		_on_bench_into(i, p)
+		return
+	if _sel_index == i:
+		clear_selection()
+		return
+	var from := _sel_index
+	_team.lineup_swap_order(_use_dh, from, i)
+	_message = "%d番と%d番を入れ替えました" % [from + 1, i + 1]
+	_sel_index = -1
+	refresh()
+	roster_changed.emit()
+
+
+## 控えの札：入れ替え中でなければ選手詳細。入れ替え中ならスタメンの元の札に入れる
+func _on_bench_pressed(p: SimPlayer) -> void:
+	if is_swapping():
+		_swap_with_bench(p)
+		return
+	_open_detail(p)
+
+
+## 控えの「⇄」（パッドは Ⓧ）
+func _on_bench_swap(p: SimPlayer) -> void:
+	if not GameState.can_edit_roster():
+		return
+	if is_swapping():
+		_swap_with_bench(p)
 		return
 	_sel_bench = p
 	_message = ""
 	refresh()
+
+
+func _swap_with_bench(p: SimPlayer) -> void:
+	if _sel_bench == p:
+		clear_selection()
+	elif _sel_bench != null:
+		_message = "控えの選手どうしは入れ替えられません（スタメンの札を選んでください）"
+		refresh()
+	else:
+		_on_bench_into(_sel_index, p)
+
+
+## パッドの Ⓧ（ui_swap）：フォーカス中の札の「⇄」と同じ
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or not event.is_action_pressed(UiInput.SWAP):
+		return
+	var f := get_viewport().gui_get_focus_owner()
+	if f == null:
+		return
+	if f.has_meta("swap_index") and _lineup_box.is_ancestor_of(f):
+		_on_lineup_swap(int(f.get_meta("swap_index")))
+		get_viewport().set_input_as_handled()
+	elif f.has_meta("swap_bench") and _bench_grid.is_ancestor_of(f):
+		_on_bench_swap(f.get_meta("swap_bench") as SimPlayer)
+		get_viewport().set_input_as_handled()
 
 
 func _open_detail(p: SimPlayer) -> void:
@@ -523,6 +602,8 @@ func _open_detail(p: SimPlayer) -> void:
 
 
 func _on_bench_into(i: int, p: SimPlayer) -> void:
+	_sel_index = -1
+	_sel_bench = null
 	if _team.lineup(_use_dh)[i][0] == null:
 		_message = "投手の打順には野手を入れられません"
 	else:

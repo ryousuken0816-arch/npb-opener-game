@@ -3,6 +3,7 @@ extends Node
 ##
 ## - 十字キー／左スティック＝フォーカス移動（Godot 標準の ui_up/down/left/right）
 ## - Ⓐ＝決定（ui_accept）、Ⓑ＝戻る（ui_cancel、Esc と同じ）。PS なら ○×
+## - Ⓧ（キーボードは X）＝入れ替え（起用設定・1軍登録で、フォーカス中の札を入れ替えの対象にする）
 ## - LB/RB（L1/R1）＝タブ切り替え（ui_tab_prev / ui_tab_next。キーボードは Q / E・PageUp / PageDown）
 ## - Switch 配置向けに決定と戻るのボタンを入れ替えられる（SWAP_CONFIRM_CANCEL。システム設定ができたらそちらへ）
 ## - マウスを乗せたときだけ出るツールチップを、十字キー・キーボードでフォーカスしたときにも出す
@@ -17,6 +18,8 @@ extends Node
 const SWAP_CONFIRM_CANCEL := false
 const TAB_PREV := "ui_tab_prev"
 const TAB_NEXT := "ui_tab_next"
+## 入れ替え（作業82）：起用設定・1軍登録で、フォーカス中の札を入れ替えの対象にする／取り消す（キーボードは X、パッドは Ⓧ）
+const SWAP := "ui_swap"
 const TOOLTIP_DELAY := 0.35
 ## 押しっぱなしの連続移動：最初の待ち時間と、その後の間隔（秒）
 const REPEAT_DELAY := 0.35
@@ -90,6 +93,7 @@ func _ready() -> void:
 func _setup_actions() -> void:
 	_add_action(TAB_PREV, [KEY_Q, KEY_PAGEUP], [JOY_BUTTON_LEFT_SHOULDER])
 	_add_action(TAB_NEXT, [KEY_E, KEY_PAGEDOWN], [JOY_BUTTON_RIGHT_SHOULDER])
+	_add_action(SWAP, [KEY_X], [JOY_BUTTON_X])
 	_set_joy_button("ui_accept", JOY_BUTTON_B if SWAP_CONFIRM_CANCEL else JOY_BUTTON_A)
 	_set_joy_button("ui_cancel", JOY_BUTTON_A if SWAP_CONFIRM_CANCEL else JOY_BUTTON_B)
 	for dir: String in DIRECTIONS:

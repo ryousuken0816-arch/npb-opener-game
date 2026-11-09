@@ -3,12 +3,14 @@ extends VBoxContainer
 ## 采配 → 投手1軍登録／野手1軍登録（docs/references/README.md「register_pitchers / register_fielders」）。
 ##
 ## 左に1軍（投手は 先発／中継ぎ／抑え の枠、空き枠は「あき」）、中央に2軍、右に選んだ選手の要約。
-## 選手の札をクリックして選び、続けて入れ替える相手をクリックする：
+## 操作（作業82）：**札を押す＝選手を見る**（右に能力と今季の成績。もう一度押すと選手詳細。何も入れ替わらない）。
+## 入れ替えは右の要約の「⇄ 入れ替える」（パッドは Ⓧ）から：押すと入れ替え中になり、続けて相手の札を押す（もう一度押すと取り消し）：
 ##   1軍 ⇔ 2軍 … 登録の入れ替え（上げた選手は落とした選手の持ち場・打順に入る）
 ##   1軍 ⇔ 1軍（投手）… 持ち場の入れ替え ／ 「あき」… その持ち場へ移す・2軍から上げる
+## 「▲ 1軍へ上げる」「▼ 2軍へ落とす」は入れ替えずに登録だけ変えるボタン（そのまま）。
 ## 人数の上限・外国人枠・抹消後10日間の再登録制限は SimTeam（RosterRules）が判定し、できないときは理由を表示する。
-## コントローラー：十字キーで札を選び Ⓐ で選択→相手の札で Ⓐ。入れ替えて作り直しても、フォーカスは同じ位置に残る。
-## 選んでいる札をもう一度 Ⓐ・クリック（または右クリック、右の「詳細」）で選手詳細。Ⓑ はまず選択を取り消す。
+## コントローラー：十字キーで札を選び、Ⓐ＝選んで見る（もう一度で選手詳細）、Ⓧ＝その札を入れ替えの元にする（相手の札で Ⓐ か Ⓧ）。
+## Ⓑ はまず入れ替え中を取り消し、次に選択を取り消す。入れ替えて作り直しても、フォーカスは同じ位置に残る。
 
 signal roster_changed
 
@@ -38,6 +40,8 @@ var _palette: UiTheme.Palette
 var _team: SimTeam
 var _names := {}
 var _selected: SimPlayer = null
+## 入れ替え中か（_selected を元にして相手の札を待っている）
+var _swapping := false
 var _message := ""
 var _message_error := false
 
@@ -91,12 +95,15 @@ func refresh(reset_selection: bool = false) -> void:
 	_team = GameState.my_team()
 	if reset_selection:
 		_selected = null
+		_swapping = false
 		_message = ""
 	if _team == null:
 		_count_label.text = "日程データのない年は編成できません"
 		return
 	if _selected != null and not _team.by_id.has(_selected.id):
 		_selected = null
+	if _selected == null:
+		_swapping = false
 	# 作り直す前のフォーカスの位置（1軍・2軍の枠の何番目か）を覚えておく
 	var focus_box: Control = null
 	var focus_at := -1
@@ -115,10 +122,20 @@ func refresh(reset_selection: bool = false) -> void:
 		UiInput.focus_nth(focus_box, focus_at)
 
 
-## 選んでいる札を取り消す（取り消したら true。Ⓑ で画面を戻る前に呼ぶ）
+## 入れ替え中か
+func is_swapping() -> bool:
+	return _swapping and _selected != null
+
+
+## 入れ替え中ならそれを、そうでなければ選んでいる札を取り消す（取り消したら true。Ⓑ で画面を戻る前に呼ぶ）
 func clear_selection() -> bool:
 	if _selected == null:
 		return false
+	if _swapping:
+		_swapping = false
+		_message = ""
+		refresh()
+		return true
 	_selected = null
 	_message = ""
 	refresh()
@@ -159,8 +176,11 @@ func _render_counts() -> void:
 	if not GameState.can_edit_roster():
 		_message_label.text = "オフシーズンは編成を変えられません（見るだけ）"
 		_message_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
+	elif is_swapping():
+		_message_label.text = "入れ替え中：%s → 相手の札か「あき」を選択（⇄・Ⓑで取り消し）" % _selected.name
+		_message_label.add_theme_color_override("font_color", Color("e65100"))
 	elif _message.is_empty():
-		_message_label.text = "選手を選んでから、入れ替える相手（1軍⇔2軍）か「あき」をクリック"
+		_message_label.text = "札を押すと選手の能力を表示（何も変わりません）／入れ替えは右の「⇄ 入れ替える」から"
 		_message_label.add_theme_color_override("font_color", UiTheme.TEXT_SUB)
 	else:
 		_message_label.text = _message
@@ -258,6 +278,7 @@ func _player_item(p: SimPlayer, flags: String) -> Control:
 	tag.selected = p == _selected
 	tag.tooltip_text = _tooltip(p)
 	tag.dimmed = _is_waiting(p)
+	tag.set_meta("swap_player", p)
 	tag.pressed.connect(_on_player_pressed.bind(p))
 	row.add_child(tag)
 	_order_ids.append(p.id)
@@ -307,7 +328,7 @@ func _render_summary() -> void:
 	_clear(_summary_box)
 	if _selected == null:
 		var hint := UiTheme.small_label(
-				"札をクリックすると選手の能力と今季の成績を表示します。\n\n"
+				"札をクリックすると選手の能力と今季の成績を表示します（何も入れ替わりません）。入れ替えるときは、選んだあと「⇄ 入れ替える」を押して、相手の札を選びます。\n\n"
 				+ "札の色は守備位置：投手＝赤、捕手＝水色、内野手＝黄、外野手＝緑（右側の色は他に守れる位置）。\n"
 				+ "薄い札は登録抹消から10日たっていない選手です。札の右の「育」は育成選手（支配下に登録すると1軍に上げられます）。", 15)
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -338,14 +359,30 @@ func _render_summary() -> void:
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_summary_box.add_child(spacer)
+	# 「詳細を見る」と「⇄ 入れ替える」は横に並べる（縦に積むと采配の画面の高さに収まらない）
+	var buttons := HBoxContainer.new()
+	buttons.add_theme_constant_override("separation", 6)
+	_summary_box.add_child(buttons)
 	var detail := Button.new()
 	detail.text = "詳細を見る"
 	detail.custom_minimum_size = Vector2(0, 38)
-	detail.tooltip_text = "選手詳細（能力・成績・経歴）。札をもう一度押しても開きます"
+	detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	detail.tooltip_text = "選手詳細（能力・成績・経歴）。選んでいる札をもう一度押しても開きます"
 	detail.focus_mode = Control.FOCUS_NONE
 	UiTheme.style_button(detail, Color("1e88e5"), Color.WHITE, 8, 3)
 	detail.pressed.connect(_open_detail.bind(p))
-	_summary_box.add_child(detail)
+	buttons.add_child(detail)
+	if GameState.can_edit_roster():
+		var swap := Button.new()
+		swap.text = "⇄ 取り消し" if _swapping else "⇄ 入れ替え"
+		swap.focus_mode = Control.FOCUS_NONE
+		swap.custom_minimum_size = Vector2(0, 38)
+		swap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		swap.tooltip_text = ("入れ替えを取り消します" if _swapping
+				else "押したあと、入れ替える相手の札（1軍⇔2軍）か「あき」を選びます。パッドは Ⓧ")
+		UiTheme.style_button(swap, Color("e65100") if _swapping else Color("43a047"), Color.WHITE, 8, 3)
+		swap.pressed.connect(_toggle_swap)
+		buttons.add_child(swap)
 	if p.is_ikusei and not _team.is_active(p):
 		_ikusei_button()
 	elif GameState.can_edit_roster():
@@ -511,15 +548,18 @@ func _age(birth: String) -> int:
 
 # --- 操作 --------------------------------------------------------------------------
 
+## 札：入れ替え中でなければ「見る」だけ（選ぶと右に要約、選んでいる札をもう一度で選手詳細）。入れ替え中なら相手として選ぶ
 func _on_player_pressed(p: SimPlayer) -> void:
-	if _selected == p:
-		# 選んでいる札をもう一度：選手詳細（選択はそのまま）
-		_open_detail(p)
-		return
-	if not GameState.can_edit_roster() or _selected == null:
+	if not is_swapping():
+		if _selected == p:
+			_open_detail(p)
+			return
 		_selected = p
 		_message = ""
 		refresh()
+		return
+	if _selected == p:
+		_toggle_swap()
 		return
 	var a := _selected
 	var a_active := _team.is_active(a)
@@ -529,13 +569,10 @@ func _on_player_pressed(p: SimPlayer) -> void:
 			_team.swap_pitcher_roles(a, p)
 			_done("%sと%sの持ち場を入れ替えました" % [a.name, p.name])
 		else:
-			_selected = p
-			refresh()
+			_fail("野手の1軍どうしは入れ替えられません（打順・守備位置は起用設定で）")
 		return
 	if not a_active and not b_active:
-		_selected = p
-		_message = ""
-		refresh()
+		_fail("2軍どうしは入れ替えられません（1軍の札を選んでください）")
 		return
 	var out := a if a_active else p
 	var in_p := p if a_active else a
@@ -546,8 +583,37 @@ func _on_player_pressed(p: SimPlayer) -> void:
 		_fail(err)
 
 
+## 「⇄ 入れ替える」（パッドは Ⓧ）：選んでいる札を入れ替えの元にする／入れ替え中なら取り消す
+func _toggle_swap() -> void:
+	if _selected == null or not GameState.can_edit_roster():
+		return
+	_swapping = not _swapping
+	_message = ""
+	refresh()
+
+
+## パッドの Ⓧ（ui_swap）：フォーカス中の札を選んで入れ替えを始める。入れ替え中なら、その札を相手にする（元の札なら取り消し）
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or not event.is_action_pressed(UiInput.SWAP):
+		return
+	var f := get_viewport().gui_get_focus_owner()
+	if f == null or not f.has_meta("swap_player") or not (_active_box.is_ancestor_of(f) or _farm_box.is_ancestor_of(f)):
+		return
+	get_viewport().set_input_as_handled()
+	if not GameState.can_edit_roster():
+		return
+	var p: SimPlayer = f.get_meta("swap_player")
+	if is_swapping():
+		_on_player_pressed(p)
+		return
+	_selected = p
+	_swapping = true
+	_message = ""
+	refresh()
+
+
 func _on_empty_pressed(role: String) -> void:
-	if not GameState.can_edit_roster() or _selected == null:
+	if not GameState.can_edit_roster() or not is_swapping():
 		return
 	var p := _selected
 	if _team.is_active(p):
@@ -602,6 +668,7 @@ func _demote_selected() -> void:
 
 func _done(message: String) -> void:
 	_selected = null
+	_swapping = false
 	_message = message
 	_message_error = false
 	refresh()
