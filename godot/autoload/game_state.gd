@@ -1352,6 +1352,7 @@ func _enter(new_phase: Phase) -> void:
 			year += 1
 			GameData.load_ratings(year, "pre")
 			league.begin_year(year, GameData.ratings)
+			_new_pitch_news()
 			team = league.user_team
 			league.cpu_market_round(-1)
 			league.cpu_release_round(2)
@@ -1365,6 +1366,30 @@ func _enter(new_phase: Phase) -> void:
 		_last_draft = null
 	_autosave_pending = true
 	changed.emit()
+
+
+## 春季キャンプ：新しい球種を覚えた投手（作業79。FutureYear の new_pitches）のニュース。自球団の投手は全員、
+## ほかの球団は総合の高い順に NEW_PITCH_NEWS_OTHERS 人まで
+const NEW_PITCH_NEWS_OTHERS := 3
+
+
+func _new_pitch_news() -> void:
+	var mine: Array = []
+	var others: Array = []
+	for e: Dictionary in GameData.ratings.get("new_pitches", []):
+		var p := GameData.player(str(e["id"]))
+		var t := str(league.team_of.get(str(e["id"]), ""))
+		if p.is_empty() or t.is_empty():
+			continue
+		var ov: Variant = PitchArsenal._rv(p["pitching"]["ratings"], "overall")
+		(mine if t == team else others).append([p, t, str(e["name"]), float(ov) if ov != null else 0.0])
+	others.sort_custom(func(a: Array, b: Array) -> bool: return float(a[3]) > float(b[3]))
+	for x: Array in mine + others.slice(0, NEW_PITCH_NEWS_OTHERS):
+		var p: Dictionary = x[0]
+		var short := GameData.short_name(str(x[1]))
+		post_news(News.article("%d-02-15" % year, "camp", "%s（%s）、新球%sを習得" % [p["name"], short, x[2]],
+			"春季キャンプで%sを覚えた。持ち球は %s（数字は変化量、★は決め球）。" % [x[2], PitchArsenal.summary(p)],
+			[p["id"]], [x[1]]))
 
 
 ## 所属が変わった・能力値ファイルを読み替えたとき：能力値データに所属を書き込み、オフの編成を作り直す

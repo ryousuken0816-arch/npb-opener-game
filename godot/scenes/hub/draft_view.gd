@@ -29,14 +29,14 @@ const TABS := [["info", "情報", Color("1e88e5")], ["pitch", "投手能力", Co
 const COLUMNS := {
 	"info": [["pos", "位置", 52], ["career", "経歴", 70], ["school", "出身", 150], ["age", "年齢", 50], ["type", "型", 90]],
 	"pitch": [["pos", "位置", 52], ["velocity", "球速", 80], ["overall", "総合", 62], ["stamina", "スタミナ", 78],
-		["k9", "奪三振", 70], ["bb9", "制球", 62]],
+		["best", "決め球", 108], ["bb9", "制球", 62]],
 	"bat": [["pos", "位置", 52], ["meet", "ミート", 62], ["power", "パワー", 62], ["eye", "選球眼", 62],
 		["speed", "走力", 56], ["arm", "肩力", 56], ["defense", "守備", 56]],
 }
 ## 予想＝有識者の予想順位（作業38）。1年目・将来性の列は作業51で消した（入団前に見えるのは今の能力だけ）
 const TAIL_COLUMNS := [["hyouka", "評価", 56], ["yosou", "予想", 48]]
 ## 並び替えのキー（テスト用にまとめて）。名前・出身校以外は大きい順が先
-const SORT_KEYS := ["pos", "career", "age", "school", "type", "name", "velocity", "overall", "stamina", "k9", "bb9",
+const SORT_KEYS := ["pos", "career", "age", "school", "type", "name", "velocity", "overall", "stamina", "best", "bb9",
 	"meet", "power", "eye", "speed", "arm", "defense", "hyouka", "yosou"]
 ## 小さい順が自然なキー（最初に押したとき小さい順）
 const ASCENDING_FIRST := ["pos", "career", "age", "school", "type", "name"]
@@ -945,7 +945,28 @@ func _status_label_of(d: Draft, c: Dictionary) -> Label:
 	return label
 
 
+## 決め球のマス（作業79。「フォーク6」。色は変化量。ツールチップに持ち球の全部）。作戦会議の表でも使う
+static func best_cell(c: Dictionary, width: int, font_size := 16) -> Control:
+	var b: Dictionary = c.get("best_pitch", {})
+	if b.is_empty():
+		var none := UiTheme.small_label("-", font_size, UiTheme.TEXT_SUB, 700)
+		none.custom_minimum_size = Vector2(width, 0)
+		none.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		return none
+	var move := int(b.get("move", 0))
+	var rank := "A" if move >= 6 else ("B" if move == 5 else ("C" if move == 4 else ("D" if move == 3 else "E")))
+	var l := UiTheme.small_label("%s%d" % [b["name"], move], font_size, UiTheme.rank_color(rank).darkened(0.1), 800)
+	l.custom_minimum_size = Vector2(width, 0)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.clip_text = true
+	l.tooltip_text = "持ち球 " + str(c.get("pitches_text", ""))
+	l.mouse_filter = Control.MOUSE_FILTER_PASS
+	return l
+
+
 func _cell(c: Dictionary, key: String, width: int) -> Control:
+	if key == "best":
+		return best_cell(c, width)
 	if key == "yosou":
 		return DraftMeetingView.yosou_label(c, width)
 	if key == "hyouka":
@@ -1351,13 +1372,16 @@ func _ability_grid(c: Dictionary) -> Control:
 	grid.add_theme_constant_override("h_separation", 6)
 	grid.add_theme_constant_override("v_separation", 2)
 	var keys: Array = [["velocity", "球速"], ["overall", "総合"], ["stamina", "スタミナ"], ["bb9", "制球"],
-		["k9", "奪三振"]] if c["pitcher"] else [["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"],
+		["best", "決め球"]] if c["pitcher"] else [["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"],
 		["speed", "走力"], ["arm", "肩力"], ["defense", "守備"]]
 	for k: Array in keys:
 		grid.add_child(UiTheme.small_label(k[1], 15, UiTheme.TEXT, 800))
 		if k[0] == "velocity":
 			var v := int(c["velocity"])
 			grid.add_child(UiTheme.small_label("%dkm/h" % v if v > 0 else "-", 16, UiTheme.TEXT, 800))
+			continue
+		if k[0] == "best":
+			grid.add_child(best_cell(c, 120, 16))
 			continue
 		var value := int(c["ratings"].get(k[0], -1))
 		if value < 0:

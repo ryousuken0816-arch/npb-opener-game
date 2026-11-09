@@ -44,6 +44,8 @@ func _run() -> void:
 	var target := float(ForeignPlayers.new().data["per_team_foreigners"])
 	var rows: Array = []
 	var prev_values := _values()
+	var new_pitch_total := 0
+	var new_pitch_news := ""
 	for i in _years:
 		var y: int = _gs.year
 		_check(_gs.season != null and _all_143(_gs.season), "%d年：日程があり12球団すべて143試合" % y)
@@ -63,6 +65,13 @@ func _run() -> void:
 		_gs.skip_to_phase(_gs.Phase.CAMP)
 		print("  … %d年 春季キャンプ（%d秒）" % [y + 1, Time.get_ticks_msec() / 1000])
 		_check(_gs.year == y + 1 and bool(_gd.ratings.get("synthetic", false)), "%d年の春季キャンプ：作った能力値に切り替わった" % (y + 1))
+		# 作業79：新しい球種を覚えた投手（毎年数十人）と、キャンプのニュース
+		var learned: Array = _gd.ratings.get("new_pitches", [])
+		new_pitch_total += learned.size()
+		if _gs.news != null:
+			for art: Dictionary in _gs.news.articles:
+				if str(art.get("headline", "")).contains("新球"):
+					new_pitch_news = art["headline"]
 		var values := _values()
 		var changed := 0
 		var both := 0
@@ -110,6 +119,8 @@ func _run() -> void:
 		prev_values = values
 		_gs.advance()
 		_check(_gs.phase == _gs.Phase.SEASON and _gs.date_text().begins_with("%d年" % (y + 1)), "%d年の開幕（%s）" % [y + 1, _gs.date_text()])
+	_check(new_pitch_total >= _years * 10 and new_pitch_total <= _years * 80 and not new_pitch_news.is_empty(),
+		"新しい球種を覚えた投手が毎年いて、キャンプのニュースになる（%d年で %d人。例「%s」）" % [_years, new_pitch_total, new_pitch_news])
 	# 年をまたいでほぼ一定
 	var first: Dictionary = rows[0]
 	var last: Dictionary = rows[-1]

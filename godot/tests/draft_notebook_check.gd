@@ -88,8 +88,8 @@ func _check_2026() -> void:
 	var batter := _first_where(d, func(c: Dictionary) -> bool: return not c["pitcher"])
 	var cells: Array = _sn.sheet(d, d.by_id[pitcher])
 	_check(cells.size() == 6 and cells[0]["label"] == "球速" and str(cells[0]["text"]).is_valid_int()
-		and cells[3]["label"] == "被本塁打" and cells[3]["text"] != "-",
-		"投手の採点表：球速の数字と奪三振・制球・被本塁打・スタミナ・総合（%s）" % _cells_text(cells))
+		and cells[1]["label"] == "決め球" and cells[1]["text"] != "-" and cells[3]["label"] == "球種" and cells[3]["text"] != "-",
+		"投手の採点表：球速の数字と決め球・制球・球種・スタミナ・総合（作業79。%s）" % _cells_text(cells))
 	var bcells: Array = _sn.sheet(d, d.by_id[batter])
 	_check(bcells.size() == 6 and bcells[5]["label"] == "肩", "野手の採点表：ミート・パワー・選球眼・走力・守備・肩（%s）"
 		% _cells_text(bcells))

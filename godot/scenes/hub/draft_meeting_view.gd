@@ -859,6 +859,8 @@ static func mark_label(mark: String, width: int, height: int, memo := "") -> Lab
 
 
 func _cell(c: Dictionary, key: String, width: int) -> Control:
+	if key == "best":
+		return DraftView.best_cell(c, width, 15)
 	if key == "hyouka":
 		var label := UiTheme.rank_label({"rank": c["hyouka_rank"], "value": 0}, 21)
 		label.custom_minimum_size = Vector2(width, 0)
@@ -1185,7 +1187,7 @@ func _add_text(text: String, font_size: int, color: Color) -> void:
 
 
 static func _ability_text(c: Dictionary) -> String:
-	var keys: Array = [["overall", "総合"], ["stamina", "ス"], ["k9", "三振"], ["bb9", "制球"]] if c["pitcher"] \
+	var keys: Array = [["overall", "総合"], ["stamina", "ス"], ["bb9", "制球"]] if c["pitcher"] \
 		else [["meet", "ミ"], ["power", "パ"], ["eye", "眼"], ["speed", "走"], ["arm", "肩"], ["defense", "守"]]
 	var parts: Array[String] = []
 	if c["pitcher"] and int(c.get("velocity", 0)) > 0:
@@ -1193,6 +1195,9 @@ static func _ability_text(c: Dictionary) -> String:
 	for k: Array in keys:
 		var v := int(c["ratings"].get(k[0], -1))
 		parts.append("%s%s" % [k[1], DraftView.ability_rank(v) if v >= 0 else "-"])
+	var b: Dictionary = c.get("best_pitch", {})
+	if c["pitcher"] and not b.is_empty():
+		parts.append("決め球%s%d" % [b["name"], int(b["move"])])  # 作業79
 	return " ".join(parts)
 
 

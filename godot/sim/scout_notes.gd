@@ -8,8 +8,11 @@ extends RefCounted
 ## オートロードは GameState.news（切り抜き）だけを読む
 
 ## 採点表の項目 [キー, 見出し]。球速は数字、ほかはランク
-const PITCH_SHEET := [["velocity", "球速"], ["k9", "奪三振"], ["bb9", "制球"], ["hr9", "被本塁打"],
+## 作業79：投手は 奪三振・被本塁打 の代わりに 決め球（名前と変化量）・球種（持ち球の数）
+const PITCH_SHEET := [["velocity", "球速"], ["best", "決め球"], ["bb9", "制球"], ["count", "球種"],
 	["stamina", "スタミナ"], ["overall", "総合"]]
+## 寸評の言葉を選ぶ能力（投手は持ち球から出した奪三振・被本塁打も使う。言葉は STRONG・WEAK）
+const PITCH_COMMENT_KEYS := ["velocity", "k9", "bb9", "hr9", "stamina"]
 const BAT_SHEET := [["meet", "ミート"], ["power", "パワー"], ["eye", "選球眼"], ["speed", "走力"],
 	["defense", "守備"], ["arm", "肩"]]
 ## 良い（上位30%）・弱点（下位30%）のしきい値（パーセンタイル）
@@ -66,7 +69,12 @@ static func sheet(d: Draft, c: Dictionary) -> Array[Dictionary]:
 		var text := "-"
 		if value >= 0:
 			text = str(value) if key == "velocity" else DraftView.ability_rank(value)
-		cells.append({"key": key, "label": k[1], "text": text, "value": value, "tier": tier(d, c, key)})
+		if key == "best" and not c.get("best_pitch", {}).is_empty():
+			text = "%s%d" % [c["best_pitch"]["name"], int(c["best_pitch"]["move"])]
+		elif key == "count" and value >= 0:
+			text = "%d種" % value
+		cells.append({"key": key, "label": k[1], "text": text, "value": value, "tier": tier(d, c, key),
+			"small": key == "best"})
 	return cells
 
 
@@ -75,6 +83,10 @@ static func value_of(c: Dictionary, key: String) -> int:
 	if key == "velocity":
 		var v := int(c.get("velocity", 0))
 		return v if v > 0 else -1
+	if key == "best":
+		return roundi(float(c.get("best_value", -0.1)) * 10.0) if c.has("best_value") else -1
+	if key == "count":
+		return int(c.get("pitch_count", -1))
 	return int(c.get("ratings", {}).get(key, -1))
 
 
@@ -132,9 +144,10 @@ static func _values(d: Draft, pitcher: bool, key: String) -> Array:
 ## スカウトの寸評（3〜4行）[{text, rumor}]：長所・2つ目の長所か経歴のひとこと・弱点・他球団の噂（rumor＝赤字）
 static func comments(d: Draft, c: Dictionary) -> Array[Dictionary]:
 	var keys: Array = []
-	for k: Array in (PITCH_SHEET if c["pitcher"] else BAT_SHEET):
-		if k[0] != "overall" and value_of(c, k[0]) >= 0:
-			keys.append(k[0])
+	var keys_src: Array = PITCH_COMMENT_KEYS if c["pitcher"] else BAT_SHEET.map(func(k: Array) -> String: return k[0])
+	for k: String in keys_src:
+		if k != "overall" and value_of(c, k) >= 0:
+			keys.append(k)
 	var ranked: Array = []
 	for key: String in keys:
 		ranked.append([key, percentile(d, c, key)])
@@ -149,7 +162,13 @@ static func comments(d: Draft, c: Dictionary) -> Array[Dictionary]:
 			lines.append({"text": _phrase(STRONG[best[0]], seed_text), "rumor": false})
 		else:
 			lines.append({"text": "全体にまとまっているが、これという武器はまだ無い", "rumor": false})
-		if ranked.size() >= 2 and float(ranked[1][1]) >= GOOD_PCT:
+		var bp: Dictionary = c.get("best_pitch", {})
+		if c["pitcher"] and not bp.is_empty():
+			# 作業79：投手の2行目は決め球（変化量の大きさで言い方を変える）
+			var mv := int(bp.get("move", 0))
+			var how := "プロでも一級品" if mv >= 6 else ("キレがあり勝負できる" if mv >= 4 else "まだ磨く余地がある")
+			lines.append({"text": "決め球は%s。%s" % [bp["name"], how], "rumor": false})
+		elif ranked.size() >= 2 and float(ranked[1][1]) >= GOOD_PCT:
 			lines.append({"text": _phrase(STRONG[ranked[1][0]], seed_text + "2"), "rumor": false})
 		else:
 			lines.append({"text": career_line(c), "rumor": false})

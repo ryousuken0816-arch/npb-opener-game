@@ -405,3 +405,69 @@ static func best_label(p: Dictionary) -> String:
 	ensure(p)
 	var b := best_pitch(p)
 	return "%s%d" % [b["name"], int(b["move"])] if not b.is_empty() else "-"
+
+
+## 新しい球種を覚える（作業79：春季キャンプ・オフ。化けるきっかけ）。年齢ごとの確率（その年齢以下）
+const LEARN_RATE := [[23, 0.12], [27, 0.08], [31, 0.04]]
+## 覚えた球の変化量
+const LEARN_MOVE := [2, 4]
+
+
+## 確率で新しい球種を1つ覚える。覚えた球の分だけ奪三振・被弾抑制（と総合）を上げ、架空の選手はピークも上げる。覚えた球種の名前（無ければ ""）
+static func maybe_learn(p: Dictionary, age: int, year: int, rng: RandomNumberGenerator, hint := "") -> String:
+	ensure(p, year, hint)
+	if not p.get("pitching") is Dictionary or not p["pitching"].get("pitches") is Array:
+		return ""
+	var pit: Dictionary = p["pitching"]
+	var have: Array = pit.get("pitches", [])
+	if have.is_empty() or have.size() >= MAX_PITCHES:
+		return ""
+	var rate := 0.0
+	for x: Array in LEARN_RATE:
+		if age <= int(x[0]):
+			rate = float(x[1])
+			break
+	if rng.randf() >= rate:
+		return ""
+	var names: Array = have.map(func(x: Dictionary) -> String: return str(x["name"]))
+	var pool: Array = []
+	var ws: Array = []
+	var mult: Dictionary = TYPE_HINT.get(hint, {})
+	for name: String in ORDER:
+		if name in names or _excluded(name, names):
+			continue
+		pool.append(name)
+		ws.append(float(TYPES[name]["w"]) * float(mult.get(name, 1.0)))
+	if pool.is_empty():
+		return ""
+	var learned: String = pool[_pick_index(rng, ws)]
+	var sig: Dictionary = pit["arsenal"]
+	var ref := float(sig.get("ref", velo_ref(year)))
+	var kmh := float(sig.get("kmh", ref))
+	var before := derive(have, kmh, ref)
+	var after_list: Array = have.duplicate(true)
+	after_list.append({"name": learned, "move": rng.randi_range(LEARN_MOVE[0], LEARN_MOVE[1])})
+	after_list.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return ORDER.find(a["name"]) < ORDER.find(b["name"]))
+	var after := derive(after_list, kmh, ref)
+	var dk := float(after[0]) - float(before[0])
+	var dh := float(after[1]) - float(before[1])
+	var r: Dictionary = pit["ratings"]
+	var k1 := clampi(roundi(float(_rv(r, "k9")) + dk), 1, 100)
+	var h1 := clampi(roundi(float(_rv(r, "hr9")) + dh), 1, 100)
+	_write(r, "k9", k1)
+	_write(r, "hr9", h1)
+	if _rv(r, "overall") != null:
+		_write(r, "overall", clampi(roundi(float(_rv(r, "overall")) + (dk + dh) / 3.0), 1, 100))
+	var peak: Variant = p.get("growth", {}).get("peak") if p.get("growth") is Dictionary else null
+	if peak is Dictionary:
+		for kv: Array in [["k9", dk], ["hr9", dh], ["overall", (dk + dh) / 3.0]]:
+			if peak.has(kv[0]):
+				peak[kv[0]] = minf(100.0, float(peak[kv[0]]) + float(kv[1]))
+	pit["pitches"] = after_list
+	# 合わせ直しで覚えた球が消えないように、今の値で合わせ直しておく
+	pit.erase("arsenal")
+	ensure(p, year, hint)
+	return learned
+
+
+const MAX_PITCHES := 5

@@ -515,9 +515,9 @@ func _render_sheet(d: Draft, c: Dictionary) -> void:
 		var l := UiTheme.small_label(cell["label"], 12, INK_SUB, 700)
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		box.add_child(l)
-		var v := hand_label(cell["text"], 25, ScoutNotes.TIER_COLORS[cell["tier"]], true)
+		var v := hand_label(cell["text"], 17 if bool(cell.get("small", false)) else 25, ScoutNotes.TIER_COLORS[cell["tier"]], true)
 		v.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		if int(cell["value"]) >= 0 and cell["key"] != "velocity":
+		if int(cell["value"]) >= 0 and not cell["key"] in ["velocity", "best", "count"]:
 			v.tooltip_text = "%s %d" % [cell["label"], int(cell["value"])]
 			v.mouse_filter = Control.MOUSE_FILTER_PASS
 		box.add_child(v)

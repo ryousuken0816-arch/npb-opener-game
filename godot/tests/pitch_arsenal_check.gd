@@ -23,6 +23,7 @@ func _run() -> void:
 	_check_stable(by_year[2025], by_year[2026])
 	_check_velocity()
 	_check_refit(by_year[2026])
+	_check_learn(by_year[2026])
 	print("（%d秒）" % ((Time.get_ticks_msec() - t0) / 1000))
 	print("ALL OK" if _failures == 0 else "FAILED (%d)" % _failures)
 	quit(1 if _failures > 0 else 0)
@@ -184,3 +185,38 @@ func _check(ok: bool, message: String) -> void:
 	print("  %s  %s" % ["OK" if ok else "NG", message])
 	if not ok:
 		_failures += 1
+
+
+## 新しい球種（maybe_learn）：若い投手ほど覚えやすい・覚えると球種が1つ増えて奪三振か被弾抑制が上がる・合わせ直しても消えない
+func _check_learn(players: Dictionary) -> void:
+	print("== 新しい球種 ==")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 79
+	var young := [0, 0]
+	var old := [0, 0]
+	var ok := 0
+	var tried := 0
+	var example := ""
+	for p0: Dictionary in players.values():
+		var p: Dictionary = p0.duplicate(true)
+		var age := Growth.age_at(p, 2026)
+		var n0: int = p["pitching"]["pitches"].size()
+		var r: Dictionary = p["pitching"]["ratings"]
+		var before := int(r["k9"]["value"]) + int(r["hr9"]["value"])
+		var name := PitchArsenal.maybe_learn(p, age, 2026, rng)
+		var bucket: Array = young if age <= 23 else old
+		bucket[0] += 1
+		if name.is_empty():
+			continue
+		bucket[1] += 1
+		tried += 1
+		var after := int(r["k9"]["value"]) + int(r["hr9"]["value"])
+		PitchArsenal.ensure(p, 2026)
+		var names: Array = p["pitching"]["pitches"].map(func(x: Dictionary) -> String: return x["name"])
+		if p["pitching"]["pitches"].size() == n0 + 1 and name in names and after > before:
+			ok += 1
+			if example.is_empty():
+				example = "%s %d歳：%s を覚えた（%s）" % [p["name"], age, name, PitchArsenal.summary(p)]
+	print("  23歳以下 %d／%d人、24歳以上 %d／%d人が覚えた。例：%s" % [young[1], young[0], old[1], old[0], example])
+	_check(tried > 0 and ok == tried, "覚えると球種が1つ増え、奪三振か被弾抑制が上がり、合わせ直しても残る（%d／%d人）" % [ok, tried])
+	_check(float(young[1]) / maxf(1, young[0]) > float(old[1]) / maxf(1, old[0]), "若い投手ほど覚えやすい")

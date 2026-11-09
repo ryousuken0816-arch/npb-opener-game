@@ -92,8 +92,20 @@ func build(season_year: int, league: LeagueRoster, season: Season, base: Diction
 		q["hist_team"] = team
 		if team.is_empty() and ForeignPlayers.is_fictional_foreign(q):
 			q["league"] = null
+	# 新しい球種（作業79。春季キャンプのニュースは GameState が new_pitches から出す）。入ったばかりの選手は除く
+	var new_pitches: Array = []
+	var learn_rng := RandomNumberGenerator.new()
+	learn_rng.seed = rng.randi()
+	for q: Dictionary in players:
+		if fresh.has(q["id"]) or not q.get("pitching") is Dictionary or not bool(q.get("is_pitcher", false)):
+			continue
+		var hint := str(q["amateur"].get("type_key", "")) if q.get("amateur") is Dictionary else ""
+		var learned := PitchArsenal.maybe_learn(q, Growth.age_at(q, next_year), next_year, learn_rng, hint)
+		if not learned.is_empty():
+			new_pitches.append({"id": q["id"], "name": learned})
 	var mlb_players := _grow_mlb_players(season_year, next_year, league, base, rng, mlb_returns)
 	return {
+		"new_pitches": new_pitches,
 		"schema_version": base.get("schema_version", 4), "year": next_year, "phase": "pre", "synthetic": true,
 		"players": players, "mlb_players": mlb_players,
 		"foreign_target": float(foreign.data.get("per_team_foreigners", 7.0)),

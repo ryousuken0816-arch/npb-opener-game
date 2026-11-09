@@ -695,6 +695,8 @@ static func sort_value(c: Dictionary, key: String) -> Variant:
 			return str(c["name"])
 		"velocity":
 			return int(c.get("velocity", 0))
+		"best":
+			return float(c.get("best_value", -1.0))
 		"first":
 			return int(c.get("first", {}).get("overall", -1))
 		"yosou":
@@ -970,6 +972,14 @@ func _fill_profile(c: Dictionary, p: Dictionary) -> void:
 					ratings[k] = int(r["value"])
 		if pit.get("velocity") is Dictionary:
 			c["velocity"] = int(pit["velocity"].get("kmh", 0))
+		# 持ち球の決め球（作業79。表の「決め球」の列・寸評）
+		if bool(p.get("is_pitcher", false)):
+			PitchArsenal.ensure(p)
+			var b := PitchArsenal.best_pitch(p)
+			c["best_pitch"] = b.duplicate()
+			c["best_value"] = float(PitchArsenal.TYPES.get(str(b.get("name", "")), {}).get("k", 0.0)) * float(b.get("move", 0))
+			c["pitches_text"] = PitchArsenal.summary(p)
+			c["pitch_count"] = (p["pitching"].get("pitches", []) as Array).size()
 	c["ratings"] = ratings
 	var ama: Variant = p.get("amateur")
 	c["two_way"] = ama.get("two_way", {}) if ama is Dictionary and ama.get("two_way") is Dictionary else p.get("two_way", {})
