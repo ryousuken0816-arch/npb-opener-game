@@ -1224,8 +1224,10 @@ func _fill_summary(d: Draft, c: Dictionary) -> void:
 			GameData.short_name(str(rei["peak_team"]))]
 	elif c.get("amateur", false):
 		state += "　（%s）" % ("架空の選手" if c.get("fictional", false) else "実在のアマ選手・報道の評価から推定")
-	else:
+	elif d != null and d.stage == Draft.Stage.DONE:
 		state += "　（史実：%s %s）" % [GameData.short_name(c["hist_team"]), c["hist_label"]]
+	else:
+		state += "　（実在の選手）"  # ドラフトの最中は史実の入団先を出さない（作業81。ネタバレになる）
 	if c.get("synthetic", false):
 		state += "\n※能力値データが無いため、近い候補の能力を仮に使っています"
 	var state_label := UiTheme.small_label(state, 14, UiTheme.TEXT_SUB, 700)

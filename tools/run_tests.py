@@ -75,6 +75,7 @@ QUICK = [
     "start_year_check",      # 開始年・すぐドラフトへ（オフの段階の入口）
     "draft_rebid_check",     # ドラフトの入札・外れ1位
     "draft_fullscreen_check",  # ドラフトの画面いっぱい・後ろが見えない（作業81）
+    "draft_spoiler_check",     # ドラフトの最中は史実の入団先を出さない（作業81）
     "save_check",            # セーブ／ロード
     "ikusei_roster_check",   # 育成の判定（開始年・2026年から3年・ロード後の支配下と育成の人数）
     "trade_check",           # トレード交渉（オフの段階）
