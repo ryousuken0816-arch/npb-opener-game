@@ -46,6 +46,7 @@ func _run() -> void:
 	_check_generator()
 	_check_balance()
 	_check_types()
+	_check_spread()
 	_check_news_text()
 	_check_tournaments()
 	_check_amateur_news_2026()
@@ -353,7 +354,7 @@ func _check_balance() -> void:
 				var w := int(p["pitching"]["ratings"]["k9"]["value"]) if p["is_pitcher"] else maxi(
 					int(p["batting"]["ratings"]["power"]["value"]), maxi(int(p["batting"]["ratings"]["speed"]["value"]),
 					int(p["batting"]["ratings"]["arm"]["value"])))
-				if (am["category"] == "高校" and w < 84) or (am["category"] != "高校" and lv < 79.5):
+				if (am["category"] == "高校" and w < 88) or (am["category"] != "高校" and lv < 79.5):
 					mon_weak += 1
 					mon_weak_list.append("%s %s %s 武器%d 総合%.1f" % [p["name"], am["category"], am.get("type", ""), w, lv])
 			elif reg and not p.has("dream") and lv >= 79.6:
@@ -400,7 +401,7 @@ func _check_balance() -> void:
 	_check(s_bad == 0, "当時の評価 S は毎年2〜4人（外れた年 %d）" % s_bad)
 	_check(a_bad == 0, "当時の評価 A は毎年4〜10人（外れた年 %d）" % a_bad)
 	_check(mon_bad == 0 and mon_total <= years, "怪物は年に0〜2人（多すぎた年 %d、30年で %d人）" % [mon_bad, mon_total])
-	_check(hs_phenom >= 3 and hs_phenom <= 18, "高校生の化け物は数年に1人（30年で %d人）" % hs_phenom)
+	_check(hs_phenom >= 1 and hs_phenom <= 12, "高校生の化け物は数年に1人（30年で %d人。作業80で約半分に）" % hs_phenom)
 	_check(hs_strong <= years / 3, "化け物以外の高校生は入団時 B 以上がまれ（30年で %d人）" % hs_strong)
 	_check(float(hs_cd) / maxf(1, hs_reg) >= 0.45, "高校生（本指名）の入団時は C〜D が中心（%.0f%%）" % (100.0 * hs_cd / maxf(1, hs_reg)))
 	_check(float(top_p_starter) / maxf(1, top_p) >= 0.7, "当時の評価 S・A の投手の多くは先発型・スタミナ C 以上（%.0f%%）"
@@ -788,6 +789,7 @@ func _check_types() -> void:
 			var keys: Array = ["k9", "bb9", "hr9", "stamina"] if p["is_pitcher"] else bat_keys
 			var hi := 0
 			var lo := 0
+			var top_v := 0
 			var shape := ""
 			var seen := {}
 			var has_c := false
@@ -796,6 +798,7 @@ func _check_types() -> void:
 				# 長所は 66 以上・短所は 55 以下（作業73。ほかの能力は 50〜65）
 				hi += 1 if v >= FictionalTypes.STRENGTH_MIN else 0
 				lo += 1 if v < 50 else 0
+				top_v = maxi(top_v, v)
 				shape += "B" if v >= FictionalTypes.STRENGTH_MIN else ("e" if v < 50 else ".")
 				seen[v] = int(seen.get(v, 0)) + 1
 				has_c = has_c or (v >= 60 and v < 70)
@@ -807,7 +810,7 @@ func _check_types() -> void:
 			by_grade[g][1] += hi
 			if not p["is_pitcher"] and not p.has("reincarnation"):
 				bat_n += 1
-				bat_strong += 1 if hi >= 1 else 0
+				bat_strong += 1 if top_v >= 60 else 0
 				bat_weak += 1 if lo >= 1 else 0
 				no_c += 0 if has_c else 1
 				if group == "外野手":
@@ -829,7 +832,7 @@ func _check_types() -> void:
 	_check(float(top_shape) / maxf(1, of_n) <= 0.25,
 		"外野手の能力の形がばらける（いちばん多い形 %d／%d人）" % [top_shape, of_n])
 	_check(float(bat_strong) / maxf(1, bat_n) >= 0.95 and float(bat_weak) / maxf(1, bat_n) >= 0.7,
-		"野手は長所（66 以上）を持ち、短所（50 未満）も多い（長所 %d・短所 %d／%d人）" % [bat_strong, bat_weak, bat_n])
+		"野手は長所（60 以上。作業80で評価 D は C どまり）を持ち、短所（50 未満）も多い（長所 %d・短所 %d／%d人）" % [bat_strong, bat_weak, bat_n])
 	_check(avg.call("S") >= 2.0 and avg.call("A") >= 2.0 and avg.call("B") > avg.call("D") + 0.5,
 		"評価の高い選手ほど長所が多い（S %.1f・A %.1f・B %.1f・D %.1f）" % [avg.call("S"), avg.call("A"), avg.call("B"), avg.call("D")])
 	_check(themes.size() >= 6 and int(themes.get("例年並み", 0)) <= years / 2,
@@ -839,3 +842,60 @@ func _check_types() -> void:
 		"同じ数字が3つ以上並ぶ選手はまれ（%d／%d人）、C の無い野手は少なめ（%d／%d人）" % [same3, all_n, no_c, bat_n])
 	_check(stories >= years * 4 and stories <= years * 12 and convert_weak == 0,
 		"物語は年に数人、元投手の野手は肩が強い（%d人、肩の弱い元投手 %d人）" % [stories, convert_weak])
+
+
+## 作業80（ユーザー 2026-11-09「5位評価ぐらいでもBBの選手とかいるから特別感感じなかった」「怪物みたいなのまだ出てない気がする」）：
+## 長所の高さが当時の評価に結びつく（D は C どまり、C は B が1つ出るかどうか、B は B が1〜2つ、A は A が1つ以上、S は A が複数）。
+## 怪物は約3年に1人（1人以上いる年が約3割）で、武器は入団時から S（90前後）。数え方は tests/draft_spread_dump.gd と同じ
+func _check_spread() -> void:
+	print("== 作業80：評価ごとの長所の高さ・怪物（30年分） ==")
+	var fd: RefCounted = _fd.new()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 2080
+	var years := 30
+	var acc := {}
+	var mon_years := 0
+	var mon_n := 0
+	var mon_weak: Array = []
+	for y in range(2028, 2028 + years):
+		var mons := 0
+		for p: Dictionary in fd.generate_year(y, rng):
+			var am: Dictionary = p["amateur"]
+			if p.has("reincarnation") or bool(am.get("as_ikusei", false)):
+				continue
+			var r: Dictionary = p["pitching"]["ratings"] if p["is_pitcher"] else p["batting"]["ratings"]
+			var keys: Array = ["k9", "bb9", "hr9", "stamina"] if p["is_pitcher"] else ["meet", "power", "eye", "speed", "defense", "arm"]
+			var g := "怪物" if bool(p.get("is_monster", false)) else str(am["grade"])
+			if not acc.has(g):
+				acc[g] = [0, 0, 0, 0]
+			acc[g][0] += 1
+			var top := 0
+			for k: String in keys:
+				var v := int(r[k]["value"])
+				top = maxi(top, v)
+				acc[g][1] += 1 if v >= 70 else 0
+				acc[g][2] += 1 if v >= 80 else 0
+				acc[g][3] += 1 if v >= 90 else 0
+			if g == "怪物":
+				mons += 1
+				if top < 88:
+					mon_weak.append("%s %s 最高%d" % [p["name"], am["category"], top])
+		mon_years += 1 if mons > 0 else 0
+		mon_n += mons
+	var avg := func(g: String, i: int) -> float:
+		var a: Array = acc.get(g, [0, 0, 0, 0])
+		return float(a[i]) / maxf(1, a[0])
+	var line := ""
+	for g: String in ["怪物", "S", "A", "B", "C", "D"]:
+		line += "%s B以上 %.2f・A以上 %.2f・S %.2f　" % [g, avg.call(g, 1), avg.call(g, 2), avg.call(g, 3)]
+	print("  1人あたりの能力の数：" + line)
+	print("  怪物：1人以上いる年 %d／%d年・%d人" % [mon_years, years, mon_n])
+	_check(avg.call("D", 1) <= 0.3 and avg.call("D", 2) <= 0.05, "評価 D の長所は C どまり（B 以上 %.2f・A 以上 %.2f）" % [avg.call("D", 1), avg.call("D", 2)])
+	_check(avg.call("C", 1) >= 0.4 and avg.call("C", 1) <= 1.0 and avg.call("C", 2) <= 0.15,
+		"評価 C は B が1つ出るかどうか（B 以上 %.2f・A 以上 %.2f）" % [avg.call("C", 1), avg.call("C", 2)])
+	_check(avg.call("B", 1) >= 1.2 and avg.call("B", 1) <= 2.2 and avg.call("B", 2) <= 0.3,
+		"評価 B は B が1〜2つ（B 以上 %.2f・A 以上 %.2f）" % [avg.call("B", 1), avg.call("B", 2)])
+	_check(avg.call("A", 2) >= 0.9, "評価 A は A が1つ以上（A 以上 %.2f）" % avg.call("A", 2))
+	_check(avg.call("S", 2) >= 1.5, "評価 S（目玉）は A が複数（A 以上 %.2f）" % avg.call("S", 2))
+	_check(mon_years >= 4 and mon_years <= 14 and mon_n <= 18, "怪物は約3年に1人（1人以上いる年 %d／%d年・%d人）" % [mon_years, years, mon_n])
+	_check(mon_weak.is_empty() and avg.call("怪物", 3) >= 0.9, "怪物の武器は入団時から S の90前後（S %.2f、足りない %s）" % [avg.call("怪物", 3), mon_weak])
