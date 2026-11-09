@@ -94,8 +94,17 @@ const DREAM_MIN_SCORE := 1.6
 ## 無名校の掘り出し物（GEM_RATE で下位に A級の選手を1人混ぜる）
 const GEM_RATE := 0.20
 const GEM_MIN_SCORE := 0.8
-## 上位の目玉がメジャー志望を表明する確率
-const MLB_INTENT_ODDS := [0.80, 0.16, 0.04]
+## メジャー志望を表明する人数の確率（0人・1人・2人・3人。作業78：平均 約1人／年。もとは [0.80, 0.16, 0.04]＝平均0.24人）
+const MLB_INTENT_ODDS := [0.36, 0.36, 0.20, 0.08]
+## 表明する1人ごとに、目玉（当時の評価 S・A）ではなく中位（B・C の大学生・社会人・独立）から選ぶ確率（「メジャー一本」）
+const MLB_INTENT_MID := 0.3
+const MLB_MID_CATEGORIES := ["大学", "社会人", "独立"]
+const MLB_MID_NOTES := ["{school}の{name}、「メジャー一本」を公言。NPB の指名は望まない構え",
+	"{school}の{name}、マイナー契約からのメジャー挑戦を目指すと表明",
+	"{school}の{name}がメジャー球団の入団テストへ。NPB 入りより海を渡る道を選ぶ意向"]
+const MLB_TOP_NOTES := ["{school}の{name}、高校・大学からのメジャー挑戦を表明",
+	"{school}の{name}、プロ入りの舞台にメジャーを選ぶと表明。複数のメジャー球団が視察",
+	"{school}の{name}が直接のメジャー挑戦を明言。NPB 球団は指名するか難しい判断に"]
 ## 強豪校判定
 const STRONG_SCHOOL := 8
 const SCHOOL_WEIGHT_POWER := 0.6
@@ -817,14 +826,27 @@ func _add_gem(out: Array, rng: RandomNumberGenerator) -> void:
 func _mark_mlb_intent(out: Array, rng: RandomNumberGenerator) -> void:
 	var n := _count_from(MLB_INTENT_ODDS, rng)
 	var top: Array = []
+	var mid: Array = []
 	for p: Dictionary in out:
-		if p["amateur"]["grade"] in ["S", "A"]:
+		var am: Dictionary = p["amateur"]
+		if bool(am.get("as_ikusei", false)):
+			continue
+		if am["grade"] in ["S", "A"]:
 			top.append(p)
-	for i in mini(n, top.size()):
-		var j := rng.randi_range(0, top.size() - 1)
-		var am: Dictionary = top[j]["amateur"]
-		am["mlb_intent"] = {"stated": true, "note": "%sの%s、高校・大学からのメジャー挑戦を表明" % [am["school"], top[j]["name"]]}
-		top.remove_at(j)
+		elif am["grade"] in ["B", "C"] and str(am.get("category", "")) in MLB_MID_CATEGORIES:
+			mid.append(p)
+	for i in n:
+		var from_mid := (rng.randf() < MLB_INTENT_MID and not mid.is_empty()) or top.is_empty()
+		var pool: Array = mid if from_mid else top
+		if pool.is_empty():
+			break
+		var j := rng.randi_range(0, pool.size() - 1)
+		var p: Dictionary = pool[j]
+		var notes: Array = MLB_MID_NOTES if from_mid else MLB_TOP_NOTES
+		var note := str(notes[rng.randi_range(0, notes.size() - 1)]).format({"school": p["amateur"]["school"],
+			"name": p["name"]})
+		p["amateur"]["mlb_intent"] = {"stated": true, "note": note}
+		pool.remove_at(j)
 
 
 func _entry_of(category: String, rng: RandomNumberGenerator) -> Dictionary:
