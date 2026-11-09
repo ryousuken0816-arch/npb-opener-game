@@ -31,7 +31,8 @@ const S_BIDS := [2, 5]
 ## 怪物（is_monster。入団時から飛び抜けていて、まだ伸びる）の区分ごとの1年あたりの確率。年に MAX_MONSTERS 人まで
 ## 高校生の化け物（佐々木朗希のような。ユーザー了承 2026-11-02）は数年に1人。大学・社会人・独立からもたまに
 ## （ユーザー 2026-11-03「たまの化け物もいるよね？高卒にも、どこにも」）
-const MONSTER_RATE := {"高校": 0.30, "大学": 0.20, "社会人": 0.12, "独立": 0.06}
+## 作業80（ユーザー 2026-11-09「もう少し低くてもいい」）：約半分に（1人以上いる年が約3割・約3年に1人）。そのぶん武器は入団時から S
+const MONSTER_RATE := {"高校": 0.15, "大学": 0.10, "社会人": 0.06, "独立": 0.03}
 const MAX_MONSTERS := 2
 ## 入団時の水準（作業62。tools/amateur_ratings.py の calibrate と同じ物差し）。投手は総合、野手は
 ## 0.35ミート＋0.35パワー＋0.1選球眼＋0.1走力＋0.1（守備−13）を投手の総合に換算（62＋1.875×（野手−60））
@@ -39,15 +40,16 @@ const BAT_MID := 60.0
 const PITCH_MID := 62.0
 const BAT_TO_PITCH := 1.875
 ## 評価ごとの入団時の総合 [上, 下]。同じ評価の中は見た目の評価の順に LEVEL_STEP ずつ下げる（下の値より下げない）
-const LEVEL_READY := {"S": [79, 74], "A": [75, 70], "B": [69, 64], "C": [63, 57], "D": [56, 50]}
-const LEVEL_HS := {"S": [68, 64], "A": [64, 60], "B": [59, 55], "C": [54, 49], "D": [48, 43]}
+## 作業80：中位・下位（C・D）は2下げた（上位との差を広げる）
+const LEVEL_READY := {"S": [79, 74], "A": [75, 70], "B": [69, 64], "C": [61, 55], "D": [54, 48]}
+const LEVEL_HS := {"S": [68, 64], "A": [64, 60], "B": [59, 55], "C": [52, 47], "D": [46, 41]}
 const LEVEL_STEP := 1.0
 ## 高卒の S・A の武器 [上, 下]（投手は奪三振、野手はパワー・走力・肩のうち元の値がいちばん目立つもの）
-const WEAPON := {"S": [80, 77], "A": [76, 72]}
-## 怪物の入団時：大学・社会人・独立は総合 A（80〜84）、高校は総合 B（70〜75）＋武器 A（84〜88）
+const WEAPON := {"S": [86, 81], "A": [80, 75]}
+## 怪物の入団時：大学・社会人・独立は総合 A（80〜84）、高校は総合 B（70〜75）＋武器 S（89〜93。作業80）
 const MONSTER_LEVEL_READY := [80.0, 84.0]
 const MONSTER_LEVEL_HS := [70.0, 75.0]
-const MONSTER_WEAPON := [84.0, 88.0]
+const MONSTER_WEAPON := [89.0, 93.0]
 ## 年の質（豊作・不作）→ その年の全員を quality × QUALITY_SHIFT（±QUALITY_SHIFT_MAX まで）上下。
 ## 評価 B 以下はその倍（豊作の年は中位の層も厚い）。S・A は不作の年でも −1 まで（その年の一番上を78前後に保つ）
 const QUALITY_SHIFT := 8.0
@@ -92,8 +94,17 @@ const DREAM_MIN_SCORE := 1.6
 ## 無名校の掘り出し物（GEM_RATE で下位に A級の選手を1人混ぜる）
 const GEM_RATE := 0.20
 const GEM_MIN_SCORE := 0.8
-## 上位の目玉がメジャー志望を表明する確率
-const MLB_INTENT_ODDS := [0.80, 0.16, 0.04]
+## メジャー志望を表明する人数の確率（0人・1人・2人・3人。作業78：平均 約1人／年。もとは [0.80, 0.16, 0.04]＝平均0.24人）
+const MLB_INTENT_ODDS := [0.36, 0.36, 0.20, 0.08]
+## 表明する1人ごとに、目玉（当時の評価 S・A）ではなく中位（B・C の大学生・社会人・独立）から選ぶ確率（「メジャー一本」）
+const MLB_INTENT_MID := 0.3
+const MLB_MID_CATEGORIES := ["大学", "社会人", "独立"]
+const MLB_MID_NOTES := ["{school}の{name}、「メジャー一本」を公言。NPB の指名は望まない構え",
+	"{school}の{name}、マイナー契約からのメジャー挑戦を目指すと表明",
+	"{school}の{name}がメジャー球団の入団テストへ。NPB 入りより海を渡る道を選ぶ意向"]
+const MLB_TOP_NOTES := ["{school}の{name}、高校・大学からのメジャー挑戦を表明",
+	"{school}の{name}、プロ入りの舞台にメジャーを選ぶと表明。複数のメジャー球団が視察",
+	"{school}の{name}が直接のメジャー挑戦を明言。NPB 球団は指名するか難しい判断に"]
 ## 強豪校判定
 const STRONG_SCHOOL := 8
 const SCHOOL_WEIGHT_POWER := 0.6
@@ -815,14 +826,27 @@ func _add_gem(out: Array, rng: RandomNumberGenerator) -> void:
 func _mark_mlb_intent(out: Array, rng: RandomNumberGenerator) -> void:
 	var n := _count_from(MLB_INTENT_ODDS, rng)
 	var top: Array = []
+	var mid: Array = []
 	for p: Dictionary in out:
-		if p["amateur"]["grade"] in ["S", "A"]:
+		var am: Dictionary = p["amateur"]
+		if bool(am.get("as_ikusei", false)):
+			continue
+		if am["grade"] in ["S", "A"]:
 			top.append(p)
-	for i in mini(n, top.size()):
-		var j := rng.randi_range(0, top.size() - 1)
-		var am: Dictionary = top[j]["amateur"]
-		am["mlb_intent"] = {"stated": true, "note": "%sの%s、高校・大学からのメジャー挑戦を表明" % [am["school"], top[j]["name"]]}
-		top.remove_at(j)
+		elif am["grade"] in ["B", "C"] and str(am.get("category", "")) in MLB_MID_CATEGORIES:
+			mid.append(p)
+	for i in n:
+		var from_mid := (rng.randf() < MLB_INTENT_MID and not mid.is_empty()) or top.is_empty()
+		var pool: Array = mid if from_mid else top
+		if pool.is_empty():
+			break
+		var j := rng.randi_range(0, pool.size() - 1)
+		var p: Dictionary = pool[j]
+		var notes: Array = MLB_MID_NOTES if from_mid else MLB_TOP_NOTES
+		var note := str(notes[rng.randi_range(0, notes.size() - 1)]).format({"school": p["amateur"]["school"],
+			"name": p["name"]})
+		p["amateur"]["mlb_intent"] = {"stated": true, "note": note}
+		pool.remove_at(j)
 
 
 func _entry_of(category: String, rng: RandomNumberGenerator) -> Dictionary:

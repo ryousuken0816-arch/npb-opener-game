@@ -51,6 +51,8 @@ const ROW_HEIGHT := 36
 const RIGHT_WIDTH := 330
 ## 抽選の演出の封筒を1行に並べる数（それより多い競合は2行にする）
 const LOTTERY_COLUMNS := 6
+## 演出（開幕・抽選・発表）の後ろの色。透かさない（作業81）
+const OVERLAY_BACKDROP := Color("0d1a33")
 ## 右の要約の中身の幅（要約のスクロールバーの分を空ける）
 const SUMMARY_WIDTH := RIGHT_WIDTH - 40
 ## CPU球団の指名を自動で進める間隔（秒）。早送り中は FAST
@@ -311,8 +313,9 @@ func refresh() -> void:
 	_picks_scroll.visible = picks_mode
 	_book_body.visible = not table
 	_place_pick_buttons()
-	# 手帳のときは説明の1行を出さない（同じ文言はハブの下の帯に出る。縦の場所を手帳に回す）
-	_status_label.visible = table
+	# スマホの手帳のときは説明の1行を出さない（同じ文言は下の操作の帯に出る。縦の場所を手帳に回す）。
+	# パソコンはドラフトの間ハブの下の帯を隠す（作業81：後ろを見せない）ので、手帳のときも1行を出す
+	_status_label.visible = table or not UiLayout.is_mobile
 	if not table:
 		_render_book(d)
 	elif picks_mode:
@@ -1865,8 +1868,9 @@ func _build_overlay() -> void:
 	_overlay.visible = false
 	_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(_overlay)
+	# 後ろ（候補の表の「済」＋入団先・手帳・ボード）が透けると、発表の前にネタバレになる（作業81）。透かさずに塗りつぶす
 	var dim := ColorRect.new()
-	dim.color = Color(0.05, 0.1, 0.2, 0.55)
+	dim.color = OVERLAY_BACKDROP
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_overlay.add_child(dim)

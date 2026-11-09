@@ -114,8 +114,35 @@ const WEAK_SETTLE_SHARE := 0.25
 const WEAK_SETTLE_FLOOR := 40.0
 const LOOSE_STRENGTH_MIN := 58.0
 const RARE_S_VALUE := [90.0, 92.0]
-## 怪物の長所の上限
-const MONSTER_CAP := 90.0
+## 怪物の長所の上限（作業80：武器は入団時から S の90前後）
+const MONSTER_CAP := 94.0
+## 作業80（ユーザー 2026-11-09「5位評価ぐらいでもBBの選手とかいるから特別感感じなかった」）：長所の高さを当時の評価で決める。
+## 評価ごとに、長所の1つ目・2つ目・3つ目（球速・スタミナを除いた順）の [下限, 上限]。
+## 目安：D は C どまり（60台）、C は B が1つ出るかどうか、B は B が1〜2つ、A は A が1つ以上、S は A が複数、怪物は武器が S。
+## 高卒は入団時の総合が低いので別の表（S・A の1つ目は武器 WEAPON と同じ高さ）。スタミナは先発・救援の目安なので今までの範囲（66〜）
+const STRENGTH_RANGE := {
+	"S": [[82.0, 89.0], [80.0, 87.0], [72.0, 84.0]],
+	"A": [[80.0, 87.0], [70.0, 82.0], [68.0, 79.0]],
+	"B": [[70.0, 79.0], [66.0, 76.0], [64.0, 74.0]],
+	"C": [[64.0, 74.0], [60.0, 69.0], [58.0, 67.0]],
+	"D": [[60.0, 69.0], [57.0, 66.0], [55.0, 64.0]],
+}
+const STRENGTH_RANGE_HS := {
+	"S": [[80.0, 88.0], [70.0, 80.0], [64.0, 76.0]],
+	"A": [[75.0, 84.0], [66.0, 76.0], [62.0, 72.0]],
+	"B": [[68.0, 77.0], [62.0, 72.0], [60.0, 68.0]],
+	"C": [[62.0, 71.0], [58.0, 67.0], [56.0, 64.0]],
+	"D": [[58.0, 67.0], [55.0, 64.0], [53.0, 62.0]],
+}
+const MONSTER_RANGE := [[89.0, 94.0], [80.0, 88.0], [74.0, 86.0]]
+## 長所でも短所でもない能力の範囲（評価ごと。評価の低い選手ほど低く、長所が目立つように）
+const FREE_RANGE := {"S": [52.0, 68.0], "A": [50.0, 66.0], "B": [50.0, 65.0], "C": [47.0, 62.0], "D": [44.0, 58.0]}
+const FREE_RANGE_HS := {"S": [48.0, 64.0], "A": [46.0, 62.0], "B": [46.0, 60.0], "C": [44.0, 58.0], "D": [42.0, 56.0]}
+## apply_shape の間だけ使う、形を作っている選手の評価・高卒か・怪物か（_range_of が評価ごとの範囲を引く。空なら今までの範囲）
+static var _shape_grade := ""
+static var _shape_hs := false
+static var _shape_monster := false
+static var _shape_is_pitcher := false
 ## 長所の数（評価ごと [最小, 最大]）と短所の数の上限。評価の高い選手ほど長所が多く、短所が少ない
 const STRENGTH_COUNT := {"S": [3, 3], "A": [2, 3], "B": [2, 2], "C": [1, 2], "D": [1, 1]}
 const WEAKNESS_COUNT := {"S": 1, "A": 1, "B": 2, "C": 2, "D": 2}
@@ -347,10 +374,15 @@ static func apply_shape(p: Dictionary, type_name: String, grade: String, target:
 	var deeper := float(WEAK_DEEPER_GRADE.get(grade, 0.0))
 	deeper += WEAK_DEEPER_WILD if bool(t.get("wild", false)) else 0.0
 	deeper += WEAK_DEEPER_HS if str(p.get("amateur", {}).get("category", "")) == "高校" else 0.0
+	_shape_grade = grade if STRENGTH_RANGE.has(grade) else "C"
+	_shape_hs = str(p.get("amateur", {}).get("category", "")) == "高校"
+	_shape_monster = monster
+	_shape_is_pitcher = bool(p["is_pitcher"])
 	if bool(p["is_pitcher"]):
 		_shape_pitcher(p, t, strong, weak, amp, target, weapon, scap, monster, rng, deeper)
 	else:
 		_shape_batter(p, t, strong, weak, amp, target, weapon, scap, monster, rng, deeper)
+	_shape_grade = ""
 	# まれな S（一芸 S・怪物のほか）
 	var keys: Array = strong.filter(func(k: String) -> bool: return k != "velocity")
 	var hs := str(p.get("amateur", {}).get("category", "")) == "高校"  # 高卒は武器を崩さない
@@ -590,6 +622,8 @@ static func _edge_jitter(keys: Array, rng: RandomNumberGenerator) -> Dictionary:
 static func _range_of(k: String, strong: Array, weak: Array, cap: float, monster: bool, loose := false, jit := {},
 		settle := false) -> Array:
 	var j: Array = jit.get(k, [0.0, 0.0])
+	if not _shape_grade.is_empty() and k != "stamina":
+		return _grade_range_of(k, strong, weak, loose, j, settle)
 	if k in strong:
 		var lo := LOOSE_STRENGTH_MIN if loose and strong.find(k) > 0 else STRENGTH_MIN + float(j[0])  # 1つ目の長所は下げない
 		return [lo, _cap_of(k, cap, monster, true) - float(j[1])]
@@ -598,6 +632,35 @@ static func _range_of(k: String, strong: Array, weak: Array, cap: float, monster
 	if loose:
 		return [WEAKNESS_MIN, _cap_of(k, cap, monster, false)]
 	return [FREE_MIN + float(j[0]), FREE_MAX - float(j[1])]
+
+
+## 作業80：評価ごとの範囲（apply_shape の間。STRENGTH_RANGE・FREE_RANGE）。長所は球速・スタミナを除いた順で1つ目・2つ目・3つ目。
+## 野手でミートとパワーが両方とも長所なら、あとのほうは1段下の範囲（総合が重い2つを両方高くすると、ほかが削られすぎるため）
+static func _grade_range_of(k: String, strong: Array, weak: Array, loose: bool, j: Array, settle: bool) -> Array:
+	var table: Array = MONSTER_RANGE if _shape_monster else (STRENGTH_RANGE_HS if _shape_hs else STRENGTH_RANGE)[_shape_grade]
+	var free: Array = (FREE_RANGE_HS if _shape_hs else FREE_RANGE)[_shape_grade]
+	var top := float(table[0][1])
+	if k in strong:
+		var tier := 0
+		for x: String in strong:
+			if x == k:
+				break
+			if x != "velocity" and x != "stamina":
+				tier += 1
+		if not _shape_is_pitcher and k in HEAVY_KEYS:
+			var other: String = HEAVY_KEYS[1] if k == HEAVY_KEYS[0] else HEAVY_KEYS[0]
+			if other in strong and strong.find(other) < strong.find(k):
+				tier += 1
+		var r: Array = table[mini(tier, table.size() - 1)]
+		# 1つ目の長所は下げない。高卒は武器（総合を戻すときに動かさない）が別にあるので、総合が合わないときは1つ目も下げてよい
+		var lo := minf(LOOSE_STRENGTH_MIN, float(r[0])) if loose and (tier > 0 or _shape_hs) else float(r[0]) + float(j[0])
+		return [lo, maxf(lo, float(r[1]) - float(j[1]))]
+	if k in weak:
+		return [WEAK_SETTLE_FLOOR if settle and not loose else WEAKNESS_MIN,
+			float(free[1]) if loose else minf(WEAKNESS_MAX, float(free[0]) + 4.0) - float(j[1])]
+	if loose:
+		return [WEAKNESS_MIN, top]
+	return [float(free[0]) + float(j[0]), float(free[1]) - float(j[1])]
 
 
 ## 完成型：どの能力も中央の近く（短所なし）。伸びしろは小さめ（早熟。ピークは入団時 + COMPLETE_GROWTH）
@@ -806,7 +869,7 @@ static func _lift(p: Dictionary, key: String, v: float) -> void:
 		_settle_one(br, goal, key, weak, strong)
 
 
-## 一芸を S にしたあと、S の能力は動かさずに総合を戻す（長所は 66 以上、短所は 30 以上、ほかは 50 以上の範囲で）
+## 一芸を S にしたあと、S の能力は動かさずに総合を戻す（長所は 58 以上、短所は 30 以上、ほかは 40 以上の範囲で。作業80）
 static func _settle_one(br: Dictionary, goal: float, key: String, weak: Array, strong: Array) -> void:
 	for _round in 8:
 		var cur := {}
@@ -820,15 +883,21 @@ static func _settle_one(br: Dictionary, goal: float, key: String, weak: Array, s
 		for k: String in BAT_WEIGHT:
 			if k == key:
 				continue
-			var lo := WEAKNESS_MIN if k in weak else (STRENGTH_MIN if k in strong else FREE_MIN)
+			var lo := _one_floor(k, weak, strong)
 			if (diff < 0.0 and float(cur[k]) > lo) or diff > 0.0:
 				movable.append(k)
 				wsum += float(BAT_WEIGHT[k])
 		if movable.is_empty():
 			return
 		for k: String in movable:
-			var lo := WEAKNESS_MIN if k in weak else (STRENGTH_MIN if k in strong else FREE_MIN)
+			var lo := _one_floor(k, weak, strong)
 			FictionalDraft._set_rating(br, k, maxf(lo, float(cur[k]) + diff / wsum))
+
+
+## 一芸 S のあとに総合を戻すときの下限（作業80：評価 C などの総合が低い選手は、ほかの能力を下げないと総合が上がりすぎるので、
+## 長所は LOOSE_STRENGTH_MIN、ほかは WEAK_SETTLE_FLOOR まで下げてよい）
+static func _one_floor(k: String, weak: Array, strong: Array) -> float:
+	return WEAKNESS_MIN if k in weak else (LOOSE_STRENGTH_MIN if k in strong else WEAK_SETTLE_FLOOR)
 
 
 static func _bat_score(v: Dictionary) -> float:
