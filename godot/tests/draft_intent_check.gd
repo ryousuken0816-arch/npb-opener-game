@@ -47,7 +47,7 @@ func _run() -> void:
 	_check_chance()
 	_check_counts()
 	_check_return_years()
-	_check_game()
+	await _check_game()
 	print("ALL OK" if _failures == 0 else "FAILED (%d)" % _failures)
 	quit(1 if _failures > 0 else 0)
 
@@ -254,6 +254,21 @@ func _check_game() -> void:
 	var opts: Array = d.talk_options(target)
 	_check(opts.size() == 3 and float(opts[2]["chance"]) > float(opts[0]["chance"]), "誠意の選び方：%s" % str(opts))
 	var saved: Dictionary = JSON.parse_string(JSON.stringify(_gs.to_save()))
+	# 画面：手帳に説得（誠意）のページ・上の帯に入団交渉の案内
+	change_scene_to_file("res://scenes/hub/hub.tscn")
+	await _frames(6)
+	var hub: Node = current_scene
+	hub.call("_open_sub_screen", "draft")
+	await _frames(4)
+	var view: Node = hub.get("_draft_view")
+	view.call("finish_overlays")
+	await _frames(2)
+	var go: Button = (view.call("notebook") as Control).call("go_button")
+	var notice: String = view.call("talk_notice", d, d.pending_talks())
+	_check(view.call("selected_id") == target and go.text.begins_with("説得する") and not go.disabled,
+		"手帳に入団交渉のページ（%s）" % go.text)
+	_check(notice.contains("意中の球団が別の%s" % tname) and notice.contains("通常の交渉"), "案内：%s" % notice)
+	hub.call("_close_sub_screen")
 	for outcome: String in ["成功", "失敗", "交渉しない"]:
 		_gs.load_state(JSON.parse_string(JSON.stringify(saved)))
 		var d2: RefCounted = _gs.draft()
@@ -334,6 +349,11 @@ func _check_comeback(tname: String) -> void:
 		if str(a.get("headline", "")).contains(tname) and str(a.get("headline", "")).contains("再びドラフト候補"):
 			news_found = true
 	_check(news_found, "ドラフト直前号に「%s、再びドラフト候補に」" % tname)
+
+
+func _frames(n: int) -> void:
+	for i in n:
+		await process_frame
 
 
 func _to_camp() -> void:
