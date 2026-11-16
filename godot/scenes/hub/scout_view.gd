@@ -98,7 +98,8 @@ func setup(p: UiTheme.Palette) -> void:
 func refresh() -> void:
 	var league := GameState.league
 	_render_meeting()  # 印の数は作戦会議で変わるので毎回
-	var key := "%d|%d|%d|%d" % [GameState.year, GameState.phase, GameState.roster_version, GameState.day]
+	var key := "%d|%d|%d|%d|%d" % [GameState.year, GameState.phase, GameState.roster_version, GameState.day,
+		GameState.trade_offers_pending().size()]
 	if key == _shown_key or league == null:
 		return
 	_shown_key = key
@@ -136,8 +137,13 @@ func _render_trade() -> void:
 		"相手は能力・年齢・年俸・守備位置の需要で判断します（成功率は★で表示）。断られたら、その球団とは同じ日にはもう交渉できません。"]
 	lines.append("")
 	lines.append("%s：%s" % [GameState.date_text(), "交渉できます" if block.is_empty() else block])
+	var pending := GameState.trade_offers_pending()
+	for o: Dictionary in pending:
+		lines.append("【打診】%sから：出す %s／受け取る %s（返事は%s）" % [GameData.short_name(o["partner"]),
+			o["give_text"], o["get_text"], GameState.trade_offer_deadline_text(o)])
 	_trade_label.text = "\n".join(lines)
-	_trade_button.text = "トレード交渉へ" if block.is_empty() else "トレード交渉（見るだけ）"
+	_trade_button.text = "届いた打診を見る" if not pending.is_empty() else \
+		("トレード交渉へ" if block.is_empty() else "トレード交渉（見るだけ）")
 
 
 ## ドラフト候補のタブ：今年の候補の数・印の数・有識者の予想の有無

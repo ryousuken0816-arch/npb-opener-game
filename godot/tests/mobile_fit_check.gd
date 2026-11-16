@@ -182,6 +182,15 @@ func _check_trade(when: String) -> void:
 		await _check_screen("%s：トレード タブ%d（条件を入れた）" % [when, i + 1])
 		view.call("switch_tab", 1)
 	view.call("clear_deal")
+	# 届いた打診の画面（作業87）。交渉できない時期は作れないので飛ばす
+	for o: Dictionary in _gs.trade_offers_pending():
+		_gs.trade_offer_decline(int(o["id"]))
+	var offer: Dictionary = _gs.make_trade_offer()
+	if not offer.is_empty():
+		view.call("show_offer", int(offer["id"]))
+		await _check_screen("%s：トレードの打診" % when)
+		_gs.trade_offer_decline(int(offer["id"]))
+		view.call("clear_deal")
 	_hub.call("_close_sub_screen")
 
 

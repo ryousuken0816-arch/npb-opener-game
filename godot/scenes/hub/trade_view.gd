@@ -7,6 +7,11 @@ extends VBoxContainer
 ## 仕組みは Trade、交渉できる時期は GameState.trade_block_reason()（シーズン中は7月31日まで）。
 ## 操作：一覧の札をⒶ／クリックで交渉の枠に入れる・外す（右クリックで選手詳細）。枠の中の札はⒶ／クリックで選手詳細。
 ## LB/RB（Q/E）でタブ、Ⓑでハブへ戻る（交渉の条件は残る）。
+##
+## 作業87：CPU球団からの打診（GameState.trade_offers）。返事待ちの打診があると、開いたときに打診の画面になる：
+## 交渉の枠に相手の案（自球団が出す選手＋金銭・受け取る選手）、中央に「受ける」と「断る」「条件を変える」、下に話の中身。
+## 「条件を変える」でふつうの交渉の画面に案が入ったまま戻る（期限までは打診と同じくらいの条件なら成立しやすい）。
+## 「自分から申し込む」でふつうの画面へ（打診は期限まで残る。下の「届いた打診を見る」で戻れる）
 
 signal message_changed(text: String)
 
@@ -50,6 +55,18 @@ var _odds_label: Label
 var _stars_label: Label
 var _clear_button: Button
 var _status_label: Label
+## 打診を見ているとき（作業87）：その打診（GameState.trade_offers の1つ）。空ならふつうの交渉
+var _offer := {}
+var _offer_styled := false
+var _reply_row: HBoxContainer
+var _decline_button: Button
+var _modify_button: Button
+var _switch_button: Button
+var _tabs_row: Control
+var _list_panel: PanelContainer
+var _offer_panel: PanelContainer
+var _offer_title: Label
+var _offer_text: Label
 ## 一覧の札の並び（選手詳細の十字キーで送る順）
 var _ids: Array[String] = []
 var _tags := {}
@@ -59,8 +76,11 @@ func setup(p: UiTheme.Palette) -> void:
 	_palette = p
 	add_theme_constant_override("separation", 8)
 	add_child(_build_deal())
-	add_child(_build_tabs())
+	_tabs_row = _build_tabs()
+	add_child(_tabs_row)
+	add_child(_build_offer_panel())
 	var list_panel := PanelContainer.new()
+	_list_panel = list_panel
 	var list_style := UiTheme.card(Color("2f7fd8"), 10, 4, 0.97)
 	list_style.content_margin_left = 14
 	list_style.content_margin_right = 14
@@ -84,6 +104,11 @@ func setup(p: UiTheme.Palette) -> void:
 	add_child(bottom)
 	_status_label = UiTheme.fit_label(UiTheme.small_label("", 17, UiTheme.TEXT, 700))
 	bottom.add_child(_status_label)
+	_switch_button = Button.new()
+	_switch_button.custom_minimum_size = Vector2(200, 46)
+	UiTheme.style_button(_switch_button, Color("ff8a3d"))
+	_switch_button.pressed.connect(_on_switch_pressed)
+	bottom.add_child(_switch_button)
 	_clear_button = Button.new()
 	_clear_button.text = "条件をクリア"
 	_clear_button.custom_minimum_size = Vector2(200, 46)
@@ -97,6 +122,11 @@ func setup(p: UiTheme.Palette) -> void:
 func open() -> void:
 	_message = ""
 	_shown_key = ""
+	var pending := GameState.trade_offers_pending()
+	if not pending.is_empty():
+		show_offer(int(pending[0]["id"]))
+		return
+	_offer = {}
 	var teams := _partners()
 	if _partner.is_empty() or _partner not in teams:
 		_partner = teams[0] if not teams.is_empty() else ""
@@ -127,9 +157,17 @@ func focus_first() -> void:
 func refresh() -> void:
 	if GameState.league == null:
 		return
-	var key := "%s|%s|%s|%s|%d|%d|%d|%d|%d|%s" % [_tab, _partner, ",".join(_give), ",".join(_get), _money,
+	if not _offer.is_empty() and _offer["status"] != "pending":
+		# 見ているあいだに期限が過ぎた・選手が動いて流れた
+		_message = "%sからの打診は流れました。" % GameData.short_name(_offer["partner"])
+		_offer = {}
+		_give.clear()
+		_get.clear()
+		_money = 0
+	var key := "%s|%s|%s|%s|%d|%d|%d|%d|%d|%s|%s|%d" % [_tab, _partner, ",".join(_give), ",".join(_get), _money,
 		GameState.roster_version, GameState.year, GameState.day, GameState.phase,
-		GameState.league.trade_refused.get(_partner, "")]
+		GameState.league.trade_refused.get(_partner, ""), _offer.get("id", ""),
+		GameState.trade_offers_pending().size()]
 	if key == _shown_key:
 		return
 	_shown_key = key
@@ -195,9 +233,144 @@ func status_text() -> String:
 	return _status_label.text
 
 
-## 「依頼する」を押す（テスト用）
+## 「依頼する」（打診の画面では「受ける」）を押す（テスト用）
 func press_action() -> void:
 	_on_action_pressed()
+
+
+# --- 打診（作業87） ------------------------------------------------------------------------
+
+## 打診を見る（交渉の枠に相手の案を入れる）
+func show_offer(id: int) -> void:
+	var o := GameState.trade_offer(id)
+	if o.is_empty() or o["status"] != "pending":
+		_offer = {}
+		refresh()
+		return
+	_offer = o
+	GameState.trade_offer_mark_seen(id)
+	_partner = o["partner"]
+	_give.assign(o["give"])
+	_get.assign(o["get"])
+	_money = int(o["money"])
+	_message = ""
+	_shown_key = ""
+	refresh()
+	UiInput.grab(_action_button)
+
+
+## 打診を見ているか
+func offer_mode() -> bool:
+	return not _offer.is_empty()
+
+
+## 見ている打診の番号（見ていなければ 0）
+func offer_id() -> int:
+	return int(_offer.get("id", 0))
+
+
+## 「断る」（テスト用）
+func press_decline() -> void:
+	_on_decline_pressed()
+
+
+## 「条件を変える」（テスト用）
+func press_modify() -> void:
+	_on_modify_pressed()
+
+
+func offer_text() -> String:
+	return _offer_text.text if _offer_panel.visible else ""
+
+
+func _build_offer_panel() -> Control:
+	_offer_panel = PanelContainer.new()
+	var style := UiTheme.card(Color("e8413c"), 10, 4, 0.97)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	_offer_panel.add_theme_stylebox_override("panel", style)
+	_offer_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_offer_panel.visible = false
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
+	_offer_panel.add_child(box)
+	_offer_title = UiTheme.fit_label(Label.new())
+	UiTheme.heading(_offer_title, 26, Color("c62828"), Color.WHITE, 6, false)
+	box.add_child(_offer_title)
+	_offer_text = UiTheme.small_label("", 19, UiTheme.TEXT, 700)
+	_offer_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_offer_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_offer_text.custom_minimum_size = Vector2(120, 0)
+	box.add_child(_offer_text)
+	return _offer_panel
+
+
+func _render_offer() -> void:
+	var on := not _offer.is_empty()
+	_offer_panel.visible = on
+	_tabs_row.visible = not on
+	_list_panel.visible = not on
+	_reply_row.visible = on
+	_clear_button.visible = not on
+	var pending := GameState.trade_offers_pending()
+	_switch_button.visible = on or not pending.is_empty()
+	_switch_button.text = "自分から申し込む" if on else "届いた打診を見る"
+	if on != _offer_styled:
+		_offer_styled = on
+		_action_button.text = "受ける" if on else "依頼する"
+		UiTheme.style_button(_action_button, Color("2e9b48") if on else Color("e8413c"), Color.WHITE, 26, 8)
+	if not on:
+		return
+	var partner_short := GameData.short_name(_offer["partner"])
+	_offer_title.text = "%sからトレードの打診（返事は%s）" % [partner_short, GameState.trade_offer_deadline_text(_offer)]
+	var lines: Array[String] = [str(_offer["reason"])]
+	lines.append("出す：%s　／　受け取る：%s" % [_offer["give_text"], _offer["get_text"]])
+	lines.append("「受ける」で成立、「断る」で打ち切り。「条件を変える」で案を直して申し込めます（打診と同じくらいの条件なら成立しやすい）。")
+	_offer_text.text = "\n".join(lines)
+
+
+func _on_switch_pressed() -> void:
+	if not _offer.is_empty():
+		_offer = {}
+		_give.clear()
+		_get.clear()
+		_money = 0
+		_message = "自分から申し込む画面です（届いた打診は期限まで「届いた打診を見る」で見られます）。"
+		_shown_key = ""
+		refresh()
+		focus_first()
+		return
+	var pending := GameState.trade_offers_pending()
+	if not pending.is_empty():
+		show_offer(int(pending[0]["id"]))
+
+
+func _on_decline_pressed() -> void:
+	if _offer.is_empty():
+		return
+	var o := _offer
+	_offer = {}  # 先に外す（断ると GameState.changed で refresh が走る）
+	GameState.trade_offer_decline(int(o["id"]))
+	_message = "%sからの打診を断りました。" % GameData.short_name(o["partner"])
+	_give.clear()
+	_get.clear()
+	_money = 0
+	_shown_key = ""
+	refresh()
+	focus_first()
+
+
+func _on_modify_pressed() -> void:
+	if _offer.is_empty():
+		return
+	var dl := GameState.trade_offer_deadline_text(_offer)
+	_offer = {}
+	_message = "相手の案を入れました。条件を変えて「依頼する」で申し込めます（%s。打診と同じくらいなら成立しやすい）。" % dl
+	_shown_key = ""
+	refresh()
+	focus_first()
 
 
 func clear_deal() -> void:
@@ -256,6 +429,25 @@ func _build_deal() -> Control:
 	_stars_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UiTheme.heading(_stars_label, 34, Color("e53935"), Color.WHITE, 6)
 	center.add_child(_stars_label)
+	_reply_row = HBoxContainer.new()
+	_reply_row.add_theme_constant_override("separation", 8)
+	_reply_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_reply_row.visible = false
+	center.add_child(_reply_row)
+	_decline_button = Button.new()
+	_decline_button.text = "断る"
+	_decline_button.custom_minimum_size = Vector2(100, 44)
+	_decline_button.add_theme_font_size_override("font_size", 20)
+	UiTheme.style_button(_decline_button, Color("8a9199"))
+	_decline_button.pressed.connect(_on_decline_pressed)
+	_reply_row.add_child(_decline_button)
+	_modify_button = Button.new()
+	_modify_button.text = "条件を変える"
+	_modify_button.custom_minimum_size = Vector2(136, 44)
+	_modify_button.add_theme_font_size_override("font_size", 20)
+	UiTheme.style_button(_modify_button, Color("1e63c8"))
+	_modify_button.pressed.connect(_on_modify_pressed)
+	_reply_row.add_child(_modify_button)
 
 	var right := VBoxContainer.new()
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -370,11 +562,16 @@ func _render_deal() -> void:
 	var block := GameState.trade_block_reason()
 	var open := block.is_empty()
 	for b in _money_buttons + _partner_buttons:
-		b.disabled = not open
+		b.disabled = not open or not _offer.is_empty()
 	_action_button.disabled = true
 	_stars_label.text = ""
+	_render_offer()
 	if not open:
 		_odds_label.text = "いまは交渉できません"
+		return
+	if not _offer.is_empty():
+		_action_button.disabled = false
+		_odds_label.text = "相手からの打診"
 		return
 	if _get.is_empty():
 		_odds_label.text = "相手の選手を選んでください"
@@ -527,7 +724,10 @@ func _ability_text(p: Dictionary) -> String:
 func _render_status() -> void:
 	_message_day = GameState.trade_day_key()
 	var block := GameState.trade_block_reason()
-	if not _message.is_empty():
+	if not _offer.is_empty():
+		_status_label.text = "%s：%sからの打診に返事をします。" % [GameState.date_text(),
+			GameData.short_name(_offer["partner"])]
+	elif not _message.is_empty():
 		_status_label.text = _message
 	elif not block.is_empty():
 		_status_label.text = "%s。（%s）" % [block, GameState.date_text()]
@@ -542,6 +742,8 @@ func _render_status() -> void:
 # --- 操作 --------------------------------------------------------------------------------
 
 func _on_tag_pressed(id: String) -> void:
+	if not _offer.is_empty():
+		_offer = {}  # 打診の案を直す（条件を変える）
 	var excluded := GameState.trade_excluded()
 	var mine: bool = GameState.league.team_of.get(id, "") == GameState.team
 	var side: Array[String] = _give if mine else _get
@@ -573,6 +775,18 @@ func _step_money(delta: int) -> void:
 
 
 func _on_action_pressed() -> void:
+	if not _offer.is_empty():
+		var id := int(_offer["id"])
+		_offer = {}  # 先に外す（受けると GameState.changed で refresh が走る）
+		var accepted := GameState.trade_offer_accept(id)
+		_message = accepted["text"]
+		_give.clear()
+		_get.clear()
+		_money = 0
+		_shown_key = ""
+		refresh()
+		focus_first()
+		return
 	var result := GameState.trade_request(_partner, _give, _get, _money)
 	_message = result["text"]
 	if result["ok"]:

@@ -429,6 +429,7 @@ func _refresh() -> void:
 	UiFx.set_text_bump(_year_label, GameState.year_text())
 	UiFx.set_text_bump(_month_label, GameState.month_text(), 1.2)
 	_buttons["advance"].set_text(GameState.button_text())
+	_buttons["scout"].set_text(scout_text())
 	_emblem.setup(_palette, GameData.short_name(GameState.team))
 	_team_name_label.text = GameState.team
 	UiFx.set_text_bump(_summary_label, _summary_text(), 1.06)
@@ -509,6 +510,11 @@ func _description(key: String) -> String:
 		if GameState.draft_open():
 			return "ドラフト会議：史実のドラフト指名選手から、1位入札（重複は抽選）・2位以降のウェーバー・育成の指名をします。"
 		return "オフシーズンを進めます。次は「%s」です。" % GameState.PHASE_NAMES[GameState.next_phase()]
+	if key == "scout":
+		var pending := GameState.trade_offers_pending()
+		if not pending.is_empty():
+			return "%sからトレードの打診が届いています（返事は%s）。トレード交渉の画面で受ける・断る・条件を変えるを選びます。" % [
+				GameData.short_name(pending[0]["partner"]), GameState.trade_offer_deadline_text(pending[0])]
 	for menu: Array in MENUS:
 		if menu[0] == key:
 			return menu[4]
@@ -525,6 +531,10 @@ func _on_menu_chosen(key: String) -> void:
 		_open_sub_screen("postseason")
 		return
 	if key == "advance":
+		# まだ見ていないトレードの打診（作業87。オフの段階に入ったときに届いたもの）は先に開く
+		if _offer_due():
+			_open_sub_screen("trade")
+			return
 		# ポストシーズンは日本一が決まるまで、可変ボタンでポストシーズンの画面を開く
 		if GameState.phase == GameState.Phase.POSTSEASON and not GameState.postseason_done():
 			_open_sub_screen("postseason")
@@ -569,6 +579,11 @@ func _on_menu_chosen(key: String) -> void:
 ## 可変ボタンで進めたあと：大事なニュースで途中で止めたところ（作業35）、次の段階の画面、新しい号のどれかを開く
 func _after_advance() -> void:
 	var stop := GameState.news_stop
+	if _offer_due():
+		# トレードの打診が届いた（作業87）：日送りはここで止めて打診の画面
+		GameState.news_stop = {}
+		_open_sub_screen("trade")
+		return
 	if int(stop.get("resume_to", -1)) >= 0:
 		_open_news_stop("")
 	elif GameState.phase == GameState.Phase.POSTSEASON:
@@ -590,11 +605,22 @@ func _after_advance() -> void:
 		_open_news_stop("")
 
 
+## まだ見ていないトレードの打診があり、知らせてよいとき（自動処理・テストの途中は知らせない。作業87）
+func _offer_due() -> bool:
+	return GameState.news_stop_on() and not GameState.trade_offer_unseen().is_empty()
+
+
 ## 大事なニュースで早送りを止めた（GameState.news_stop）：その号（速報だけなら速報のタブ）を開いて、
 ## 帯で「続ける」「ここで止める」を選ばせる。return_key は閉じたら戻る画面（日程表・ポストシーズン。空ならハブ）
 func _open_news_stop(return_key: String) -> void:
 	if GameState.news_stop.is_empty():
 		return
+	for r: Dictionary in GameState.news_stop.get("reasons", []):
+		if r.get("kind", "") == "offer":
+			# トレードの打診（作業87）：新聞ではなく打診の画面を開く。早送りの続きはしない（返事をしてから進める）
+			GameState.news_stop = {}
+			_open_sub_screen("trade")
+			return
 	_stop = GameState.news_stop.duplicate(true)
 	_stop_return = return_key if return_key != "news" else _stop_return
 	_pending_issue = ""
@@ -1139,3 +1165,10 @@ func _refresh_mobile_dashboard() -> void:
 		_mobile_team_label.text = "%s （%s）" % [GameState.team, _summary_text()]
 	if _mobile_standings != null and is_instance_valid(_mobile_standings):
 		_mobile_standings.refresh()
+	if _mobile_menu_buttons.has("scout") and is_instance_valid(_mobile_menu_buttons["scout"]):
+		_mobile_menu_buttons["scout"].text = scout_text()
+
+
+## 新戦力のボタンの文字（トレードの打診が返事待ちなら印。作業87）
+func scout_text() -> String:
+	return "新戦力 ●打診" if not GameState.trade_offers_pending().is_empty() else "新戦力"

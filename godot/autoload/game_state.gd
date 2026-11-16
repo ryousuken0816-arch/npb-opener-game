@@ -21,6 +21,8 @@ signal news_posted(article: Dictionary)
 signal issue_published(key: String)
 ## 大事なニュースが出たので日程表の早送りを止めた（作業35。ハブがニュースを開く。中身は news_stop）
 signal news_stopped
+## トレードの打診が届いた（作業87。自動処理の途中は出さない）
+signal trade_offer_arrived(offer: Dictionary)
 
 enum Phase {
 	SEASON,        ## レギュラーシーズン（日単位で進行）
@@ -117,6 +119,13 @@ var league: LeagueRoster = null
 var tactics := {"bunt": 0, "steal": 0, "relief": 0}
 ## 自球団の二刀流の選手の起用（作業86。選手ID → TwoWay.MODE_*。年をまたいでも引き継ぐ）
 var two_way_modes := {}
+## トレードの打診（作業87）。届いた話 {id, partner, kind, give（自球団が出す）, get（受け取る）, money（自球団が払う）,
+## reason, date, deadline（シーズン中の期限の日付。オフは空）, phase_key（オフはその段階のあいだ）, status, seen, ratio, ...}。
+## status：pending（返事待ち）/ accepted（受けた）/ countered（条件を変えて成立）/ declined（断った）/ expired（期限切れ）/
+## void（選手が動いて流れた）
+var trade_offers: Array[Dictionary] = []
+## 打診と CPU球団どうしのトレードの予定（TradeOffers.make_plan。シーズンの年ごと）
+var offer_plan := {}
 
 ## その年のポストシーズン（CS・日本シリーズ。ポストシーズンの段階に入ったときに作り、翌年の開幕まで残す）
 var postseason: Postseason = null
@@ -202,6 +211,8 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	news = News.new()
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	two_way_modes = {}
+	trade_offers = []
+	offer_plan = {}
 	phase = Phase.SEASON
 	GameData.synthetic.clear()
 	GameData.clear_draft_classes()
@@ -419,7 +430,8 @@ func _stop_kind_of(a: Dictionary, issue_key: String) -> String:
 
 ## 止める理由を1つ足す（集めている間で、設定で選んだ種類だけ。同じ号は1回）
 func _note_stop(kind: String, headline: String, issue_key := "") -> void:
-	if not _stop_watch or kind.is_empty() or not news_stop_kinds.get(kind, false):
+	# トレードの打診（作業87）は設定にかかわらず止める（返事の期限があるので）
+	if not _stop_watch or kind.is_empty() or (kind != "offer" and not news_stop_kinds.get(kind, false)):
 		return
 	if not issue_key.is_empty():
 		for r: Dictionary in _stop_reasons:
@@ -523,9 +535,43 @@ func trade_day_key() -> String:
 	return Season.date_of_day(day) if phase == Phase.SEASON else "%d-%d" % [year, phase]
 
 
-## トレードの相手の見立て（Trade.evaluate）
+## トレードの相手の見立て（Trade.evaluate）。相手から打診が来ていれば、その案と同じくらいの比で成功する（作業87）
 func trade_estimate(partner: String, give: Array, get_ids: Array, money: int) -> Dictionary:
-	return Trade.evaluate(league, year, partner, give, get_ids, money)
+	var sure := Trade.RATIO_SURE
+	var offer := trade_offer_from(partner)
+	if not offer.is_empty():
+		sure = minf(sure, float(offer.get("ratio", sure)))
+	return Trade.evaluate(league, year, partner, give, get_ids, money, trade_future, sure)
+
+
+## 選手の将来性（Depth のスコアの目盛り）。架空の選手は育つ先（growth の peak）、実在の選手は史実のピーク（Depth）
+func trade_future(id: String) -> float:
+	var p := GameData.player(id)
+	if p.is_empty():
+		return 0.0
+	var now := Depth.now_score(p)
+	var g: Variant = p.get("growth")
+	if g is Dictionary and g.get("peak") is Dictionary:
+		return now + _peak_rise(p, g["peak"])
+	return depth_tool().future_score(id, year, now)
+
+
+## 架空の選手のピークまでの伸び（能力の平均の伸びを実力 z に直したもの＋出場が増える分）
+func _peak_rise(p: Dictionary, peak: Dictionary) -> float:
+	var side: Variant = p.get("pitching") if p.get("is_pitcher", false) else p.get("batting")
+	if not side is Dictionary or not side.get("ratings") is Dictionary:
+		return 0.0
+	var total := 0.0
+	var n := 0
+	for k: String in peak:
+		var r: Variant = side["ratings"].get(k)
+		if k == "velocity" or not r is Dictionary or r.get("value") == null or peak[k] == null:
+			continue
+		total += float(peak[k]) - float(r["value"])
+		n += 1
+	var rise := 0.9 * total / maxf(n, 1) / SimPlayer.SCALE_SD
+	var a := Salary.ability(p)
+	return maxf(0.0, rise) + Depth.PLAYING_WEIGHT * maxf(0.0, 0.9 - float(a[1]))
 
 
 ## トレードを申し込む。{ok, text}。成立したら所属を入れ替え、シーズン中はペナントの編成にもすぐ反映する
@@ -544,20 +590,313 @@ func trade_request(partner: String, give: Array, get_ids: Array, money: int) -> 
 		changed.emit()
 		return {"ok": false, "refused": true, "text": "%sに断られました（成功率：%s）" % [GameData.short_name(partner),
 			Trade.STAR_WORDS[est["stars"]]]}
+	var offer := trade_offer_from(partner)
+	var text := _complete_trade(team, partner, give, get_ids, money)
+	if not offer.is_empty():
+		offer["status"] = "countered"
+		offer["final"] = {"give": give.duplicate(), "get": get_ids.duplicate(), "money": money}
+	changed.emit()
+	return {"ok": true, "text": text}
+
+
+## トレードを成立させる（所属・ペナントの編成・出来事・ニュース）。成立の文を返す。team_a が give＋金銭を出す
+func _complete_trade(team_a: String, team_b: String, give: Array, get_ids: Array, money: int) -> String:
 	var date := Season.date_of_day(day) if phase == Phase.SEASON else ""
-	var moves := Trade.execute(league, partner, give, get_ids, money, date)
+	var moves := Trade.execute_between(league, team_a, team_b, give, get_ids, money, date)
 	_sync_roster()
 	if phase == Phase.SEASON and season != null:
 		for mv in moves:
 			season.transfer(GameData.player(mv["pid"]), mv["to"])
 		_mark_ikusei(true)  # 移った育成選手の印を付け直す（1軍に入っていれば組み直す。作業19）
-	changed.emit()
-	var names: Array[String] = []
+	var a_names: Array[String] = []
+	var b_names: Array[String] = []
 	for mv in moves:
-		if mv["to"] == team:
-			names.append(mv["name"])
-	return {"ok": true, "text": "トレード成立！ %sから %s を獲得しました" % [GameData.short_name(partner),
-		"・".join(names)]}
+		(b_names if mv["to"] == team_b else a_names).append(mv["name"])
+	var money_text := "＋金銭%s" % Salary.text(money) if money > 0 else ""
+	var a_short := GameData.short_name(team_a)
+	var b_short := GameData.short_name(team_b)
+	var body := "%sは%s%sを、%sは%sを出した。" % [a_short, "・".join(b_names), money_text, b_short,
+		"・".join(a_names)]
+	var players: Array = give.duplicate()
+	players.append_array(get_ids)
+	post_news(News.article(date if not date.is_empty() else _off_news_date(), "trade",
+		"%sと%sのトレードが成立" % [a_short, b_short], body, players, [team_a, team_b]),
+		"" if phase == Phase.SEASON else open_off_issue(), true)
+	if team_a == team:
+		return "トレード成立！ %sから %s を獲得しました" % [b_short, "・".join(a_names)]
+	return body
+
+
+## オフの記事の日付（段階の目安の日。その年のオフ号に載る）
+func _off_news_date() -> String:
+	match phase:
+		Phase.CAMP:
+			return "%d-02-01" % year
+		Phase.FA_TRADE:
+			return "%d-12-01" % year
+		Phase.ACTIVE_DRAFT:
+			return "%d-12-10" % year
+	return "%d-11-15" % year
+
+
+# --- トレードの打診（作業87） -------------------------------------------------------------
+
+## partner から届いていて返事待ちの打診（無ければ空）
+func trade_offer_from(partner: String) -> Dictionary:
+	for o: Dictionary in trade_offers:
+		if o["status"] == "pending" and o["partner"] == partner:
+			return o
+	return {}
+
+
+## 返事待ちの打診（届いた順）
+func trade_offers_pending() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for o: Dictionary in trade_offers:
+		if o["status"] == "pending":
+			result.append(o)
+	return result
+
+
+## まだ見ていない返事待ちの打診（無ければ空）
+func trade_offer_unseen() -> Dictionary:
+	for o: Dictionary in trade_offers_pending():
+		if not o.get("seen", false):
+			return o
+	return {}
+
+
+func trade_offer(id: int) -> Dictionary:
+	for o: Dictionary in trade_offers:
+		if int(o["id"]) == id:
+			return o
+	return {}
+
+
+func trade_offer_mark_seen(id: int) -> void:
+	var o := trade_offer(id)
+	if not o.is_empty():
+		o["seen"] = true
+
+
+## 返事の期限の文（「7月5日まで」「FA・トレード・ポスティングのあいだ」）
+func trade_offer_deadline_text(o: Dictionary) -> String:
+	if not str(o.get("deadline", "")).is_empty():
+		return "%sまで" % News.date_label(o["deadline"])
+	return "%sのあいだ" % PHASE_NAMES.get(int(o.get("phase", phase)), "この段階")
+
+
+## 打診を受ける。{ok, text}
+func trade_offer_accept(id: int) -> Dictionary:
+	var o := trade_offer(id)
+	if o.is_empty() or o["status"] != "pending":
+		return {"ok": false, "text": "この打診はもう終わっています"}
+	var error := trade_block_reason()
+	if error.is_empty():
+		error = Trade.check(league, o["partner"], o["give"], o["get"], int(o["money"]), trade_excluded())
+	if not error.is_empty():
+		o["status"] = "void"
+		changed.emit()
+		return {"ok": false, "text": "この打診は流れました（%s）" % error}
+	o["status"] = "accepted"
+	var text := _complete_trade(team, o["partner"], o["give"], o["get"], int(o["money"]))
+	changed.emit()
+	return {"ok": true, "text": text}
+
+
+## 打診を断る
+func trade_offer_decline(id: int) -> void:
+	var o := trade_offer(id)
+	if not o.is_empty() and o["status"] == "pending":
+		o["status"] = "declined"
+		changed.emit()
+
+
+## 打診を作るときの見立て役（TradeOffers）
+func _offer_maker(salt: String) -> TradeOffers:
+	var m := TradeOffers.new()
+	m.league = league
+	m.year = year
+	m.future = trade_future
+	m.excluded = trade_excluded()
+	var in_year := phase in [Phase.SEASON, Phase.CAMP, Phase.POSTSEASON]
+	var joins := league.recent_joins(year - 1 if in_year else year)
+	var roster_year := year if in_year else year + 1
+	for id: String in league.team_of:
+		if joins.has(id):
+			m.excluded[id] = "最近加わった選手です"
+		elif int(league.joined.get(id, 0)) >= roster_year:
+			m.excluded[id] = "新人です"
+	if season != null:
+		for lg: String in ["C", "P"]:
+			for row: Dictionary in standings(lg):
+				m.standing[row["team"]] = {"rank": row["rank"], "gb": row["games_behind"]}
+	m.rng.seed = hash([first_year, team, year, phase, day, salt])
+	return m
+
+
+## 予定を作る（シーズンの始め。古いセーブは途中から：今日より前の日付の予定は捨てる）
+func _make_offer_plan(drop_before := "") -> void:
+	var r := RandomNumberGenerator.new()
+	r.seed = hash([first_year, team, year, "trade_plan"])
+	var opening := _opening_date() if season != null else ""
+	offer_plan = TradeOffers.make_plan(r, year, opening)
+	if not drop_before.is_empty():
+		var kept: Array = []
+		for slot: Dictionary in offer_plan["slots"]:
+			if not str(slot["at"]).begins_with(str(year)) or str(slot["at"]) >= drop_before:
+				kept.append(slot)
+		offer_plan["slots"] = kept
+
+
+## 毎朝（シーズン中）：期限の過ぎた打診を流し、今日の予定の打診・トレードを起こす
+func _offers_tick_day() -> void:
+	if league == null:
+		return
+	var today := Season.date_of_day(day)
+	for o: Dictionary in trade_offers_pending():
+		if not str(o.get("deadline", "")).is_empty() and today > str(o["deadline"]):
+			_expire_offer(o)
+	if offer_plan.is_empty() or int(offer_plan.get("year", 0)) != year or not trade_block_reason().is_empty():
+		return
+	for slot: Dictionary in offer_plan["slots"]:
+		var at := str(slot["at"])
+		if slot.get("done", false) or not at.begins_with("%d-" % year) or at > today:
+			continue
+		if _fire_offer_slot(slot):
+			slot["done"] = true
+		else:
+			slot["tries"] = int(slot["tries"]) + 1
+			if int(slot["tries"]) >= TradeOffers.RETRY_DAYS:
+				slot["done"] = true
+
+
+## 段階に入ったとき（オフ）：前の段階・シーズン中の打診を流し、この段階の予定を起こす
+func _offers_enter_phase() -> void:
+	if league == null:
+		return
+	var key := trade_day_key()
+	for o: Dictionary in trade_offers_pending():
+		var in_season := not str(o.get("deadline", "")).is_empty()
+		if (in_season and phase != Phase.SEASON) or (not in_season and str(o.get("phase_key", "")) != key):
+			_expire_offer(o)
+	if offer_plan.is_empty() or not trade_block_reason().is_empty():
+		return
+	var plan_year := year - 1 if phase == Phase.CAMP else year
+	if int(offer_plan.get("year", 0)) != plan_year:
+		return
+	var phase_name_key: String = Phase.find_key(phase)
+	for slot: Dictionary in offer_plan["slots"]:
+		if slot.get("done", false) or str(slot["at"]) != phase_name_key:
+			continue
+		_fire_offer_slot(slot)
+		slot["done"] = true
+
+
+func _expire_offer(o: Dictionary) -> void:
+	o["status"] = "expired"
+	post_news(News.article(Season.date_of_day(day) if phase == Phase.SEASON else _off_news_date(), "trade",
+		"%sからのトレードの打診は期限が過ぎて流れました" % GameData.short_name(o["partner"]), "", [],
+		[team, o["partner"]]), "", true)
+
+
+## 予定を1つ起こす（作れたら true）
+func _fire_offer_slot(slot: Dictionary) -> bool:
+	if slot["who"] == "user":
+		return not make_trade_offer().is_empty()
+	return not make_cpu_trade().is_empty()
+
+
+## 自球団への打診を作って届ける（partner を指定しなければ相手も選ぶ）。作れなければ空。返事待ちがあれば作らない
+func make_trade_offer(partner := "") -> Dictionary:
+	if not trade_offers_pending().is_empty() or not trade_block_reason().is_empty():
+		return {}
+	var m := _offer_maker("user%d" % trade_offers.size())
+	var teams: Array[String] = []
+	for t in GameData.teams():
+		if t != team and (partner.is_empty() or t == partner):
+			teams.append(t)
+	_shuffle(teams, m.rng)
+	for t in teams:
+		var deal := m.build(t, team)
+		if deal.is_empty() or not Trade.check(league, t, deal["give"], deal["get"], int(deal["money"]),
+				trade_excluded()).is_empty():
+			continue
+		var o := deal.duplicate()
+		o.erase("target")
+		o["id"] = _next_offer_id()
+		o["year"] = year
+		o["date"] = Season.date_of_day(day) if phase == Phase.SEASON else ""
+		o["phase"] = phase
+		o["phase_key"] = trade_day_key()
+		o["deadline"] = ""
+		if phase == Phase.SEASON:
+			var last := "%d-%s" % [year, Trade.DEADLINE]
+			var dl := Season.date_of_day(day + TradeOffers.OFFER_DAYS - 1)
+			o["deadline"] = dl if dl < last else last
+		o["status"] = "pending"
+		o["seen"] = false
+		o["reason"] = m.reason_text(deal)
+		o["give_text"] = m.side_text(deal["give"], int(deal["money"]))
+		o["get_text"] = m.side_text(deal["get"])
+		trade_offers.append(o)
+		_trim_offers()
+		var players: Array = deal["give"].duplicate()
+		players.append_array(deal["get"])
+		var headline := "%sからトレードの打診" % GameData.short_name(t)
+		var date: String = o["date"] if not str(o["date"]).is_empty() else _off_news_date()
+		post_news(News.article(date, "trade", headline, "%s（出す：%s／受け取る：%s。返事は%s）" % [o["reason"],
+			o["give_text"], o["get_text"], trade_offer_deadline_text(o)], players, [team, t]), "", true)
+		_note_stop("offer", headline)
+		if not _busy:
+			trade_offer_arrived.emit(o)
+		return o
+	return {}
+
+
+## CPU球団どうしのトレードを1件起こす（2026年以降の予定から）。起きなければ空
+func make_cpu_trade() -> Dictionary:
+	var m := _offer_maker("cpu%d" % league.events(year, "trade").size())
+	var teams: Array[String] = []
+	for t in GameData.teams():
+		if t != team:
+			teams.append(t)
+	_shuffle(teams, m.rng)
+	for a in teams:
+		var others := teams.duplicate()
+		_shuffle(others, m.rng)
+		for b: String in others:
+			if b == a:
+				continue
+			var deal := m.build(a, b, true)
+			if deal.is_empty() or not m.room_ok(b, a, deal["give"], deal["get"]):
+				continue
+			_complete_trade(b, a, deal["give"], deal["get"], int(deal["money"]))
+			deal["date"] = Season.date_of_day(day) if phase == Phase.SEASON else ""
+			deal["year"] = year
+			return deal
+	return {}
+
+
+func _next_offer_id() -> int:
+	var n := 0
+	for o: Dictionary in trade_offers:
+		n = maxi(n, int(o["id"]))
+	return n + 1
+
+
+## 終わった打診は新しいほうから 30件まで残す
+func _trim_offers() -> void:
+	while trade_offers.size() > 30 and trade_offers[0]["status"] != "pending":
+		trade_offers.remove_at(0)
+
+
+static func _shuffle(arr: Array, r: RandomNumberGenerator) -> void:
+	for i in range(arr.size() - 1, 0, -1):
+		var j := r.randi_range(0, i)
+		var tmp: Variant = arr[i]
+		arr[i] = arr[j]
+		arr[j] = tmp
 
 
 ## 外国人市場（戦力外の選手を含む）の選手を自球団で獲得する（オフのみ）。失敗したら理由の文を返す。
@@ -1032,6 +1371,8 @@ func _advance_one_day() -> void:
 	var old_month := month
 	day += 1
 	_amateur_news(Season.date_of_day(day))
+	if day <= season_last_day():
+		_offers_tick_day()  # トレードの打診・CPU球団どうしのトレード（作業87）
 	if day > season_last_day():
 		_publish(desk().monthly_issue(day, true))
 		_enter(next_phase())
@@ -1375,6 +1716,7 @@ func _enter(new_phase: Phase) -> void:
 			_apply_trades("%d-01-31" % year)
 		Phase.SEASON:
 			_start_season()
+	_offers_enter_phase()  # トレードの打診（作業87）
 	_sync_roster()
 	if new_phase == Phase.CAMP:
 		# 年の終わり：新しい年の所属（史実の球団 hist_team と比べる）を当ててから「史実との比較」の号
@@ -1469,6 +1811,8 @@ func _start_season() -> void:
 			mine.apply_two_way_modes(two_way_modes)
 	day = _season_first_day()
 	_sync_record()
+	if league != null:
+		_make_offer_plan()  # トレードの打診の予定（作業87）
 
 
 # --- ポストシーズン・優勝争い ---------------------------------------------------------------
@@ -1946,6 +2290,7 @@ func to_save() -> Dictionary:
 	return {
 		"year": year, "day": day, "phase": phase, "team": team, "tactics": tactics,
 		"two_way_modes": two_way_modes,
+		"trade_offers": trade_offers, "offer_plan": offer_plan,
 		"offseason_order": offseason_order, "off_leaving": _off_leaving, "off_returns": _off_returns,
 		"wins": wins, "losses": losses, "draws": draws,
 		"first_year": first_year, "awards_history": awards_history, "stats_history": stats_history,
@@ -2022,6 +2367,13 @@ func load_state(d: Dictionary) -> void:
 	if modes is Dictionary:
 		for id: Variant in modes:
 			two_way_modes[str(id)] = str(modes[id])
+	trade_offers = []
+	var offers: Variant = d.get("trade_offers")
+	if offers is Array:
+		for o: Variant in offers:
+			if o is Dictionary and o.has("id") and o.has("partner"):
+				trade_offers.append(o)
+	offer_plan = d.get("offer_plan", {}) if d.get("offer_plan") is Dictionary else {}
 	GameData.clear_draft_classes()
 	var classes: Variant = d.get("draft_classes")
 	if classes is Dictionary:
@@ -2078,4 +2430,7 @@ func load_state(d: Dictionary) -> void:
 	wins = int(d.get("wins", 0))
 	losses = int(d.get("losses", 0))
 	draws = int(d.get("draws", 0))
+	# 作業87より前のセーブ：シーズン中なら今日からの打診の予定を作る（オフは次のシーズンから）
+	if offer_plan.is_empty() and phase == Phase.SEASON:
+		_make_offer_plan(Season.date_of_day(day))
 	changed.emit()
