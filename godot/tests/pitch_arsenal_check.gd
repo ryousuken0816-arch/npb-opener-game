@@ -2,6 +2,7 @@ extends SceneTree
 ## 投手の持ち球（PitchArsenal。docs/AUTORUN.md 作業79・HANDOFF 4.79）の確認。ヘッドレスで約1分。
 ## - 実在の投手（2012年・2026年の開幕前の能力値）に持ち球を作ると、計算した奪三振・被弾抑制が元の値に近い（合わせきれない人は少ない）
 ## - 持ち球は2〜5種、変化量は1〜7で真ん中もよく出る（端に張り付かない）、球種がばらける、決め球がある
+## - 作業83の分布：多くの球は2〜4、決め球の平均は4くらい、奪三振の上位1割の決め球は5〜6、7を持つ投手はリーグに数人
 ## - 同じ選手は年が変わってもほぼ同じ球種（2025年と2026年）。作ったあと ensure をもう一度呼んでも変わらない
 ## - 球速が速いだけ（持ち球が弱い）の投手も、遅い投手より奪三振が少し高い
 ## - 成長などで k9 が変わったら、球種はそのままで変化量が合わせ直される
@@ -59,6 +60,9 @@ func _check_year(y: int) -> Dictionary:
 	var names := {}
 	var best := {}
 	var big := 0
+	var sevens := 0
+	var best_moves: Array = []
+	var by_k: Array = []
 	for p: Dictionary in players:
 		var r: Dictionary = p["pitching"]["ratings"]
 		var b: Array = before[p["id"]]
@@ -74,6 +78,14 @@ func _check_year(y: int) -> Dictionary:
 			names[x["name"]] = int(names.get(x["name"], 0)) + 1
 		var bp := PitchArsenal.best_pitch(p)
 		best[bp.get("name", "")] = int(best.get(bp.get("name", ""), 0)) + 1
+		best_moves.append(int(bp.get("move", 0)))
+		var mx := 0
+		var total := 0
+		for x: Dictionary in ps:
+			mx = maxi(mx, int(x["move"]))
+			total += int(x["move"])
+		sevens += 1 if mx >= PitchArsenal.MOVE_MAX else 0
+		by_k.append([float(r["k9"]["value"]), int(bp.get("move", 0)), total])
 	var gbs: Array = []
 	var plat_mean: Array = []
 	for p: Dictionary in players:
@@ -88,6 +100,12 @@ func _check_year(y: int) -> Dictionary:
 	print("  球種 %s" % names)
 	print("  決め球 %s" % best)
 	print("  例：%s" % _examples(players))
+	by_k.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) > float(b[0]))
+	var top: Array = by_k.slice(0, maxi(1, by_k.size() / 10))
+	var top_best := _mean(top.map(func(x: Array) -> int: return x[1]))
+	var top_sum := _mean(top.map(func(x: Array) -> int: return x[2]))
+	var mid := float(int(moves.get(2, 0)) + int(moves.get(3, 0)) + int(moves.get(4, 0)))
+	print("  決め球の変化量 平均 %.2f、奪三振の上位1割 決め球 %.2f・合計 %.1f、7を持つ投手 %d人" % [_mean(best_moves), top_best, top_sum, sevens])
 	var edge := float(int(moves.get(1, 0)) + int(moves.get(7, 0)))
 	var all_moves := 0.0
 	for m: int in moves:
@@ -96,6 +114,10 @@ func _check_year(y: int) -> Dictionary:
 	_check(_sd(ek) < 3.0 and _sd(eh) < 4.0, "%d年：一人ずつのずれも小さい（標準偏差 %.1f・%.1f）" % [y, _sd(ek), _sd(eh)])
 	_check(big / n < 0.08, "%d年：5を超えてずれる人は少ない（%d人）" % [y, big])
 	_check(edge / maxf(1, all_moves) < 0.35, "%d年：変化量が1か7に張り付く球は少ない（%.0f%%）" % [y, 100.0 * edge / maxf(1, all_moves)])
+	_check(sevens <= maxi(3, players.size() / 50), "%d年：変化量7を持つ投手はリーグに数人（%d人）" % [y, sevens])
+	_check(_mean(best_moves) >= 3.2 and _mean(best_moves) <= 4.4, "%d年：決め球の変化量の平均は4くらい（%.2f）" % [y, _mean(best_moves)])
+	_check(top_best >= 4.5 and top_best <= 6.0, "%d年：奪三振の上位1割の決め球は5〜6（%.2f）" % [y, top_best])
+	_check(mid / maxf(1, all_moves) >= 0.6, "%d年：多くの球は変化量2〜4（%.0f%%）" % [y, 100.0 * mid / maxf(1, all_moves)])
 	_check(names.size() >= 8 and best.size() >= 6, "%d年：球種・決め球がばらける（%d種・決め球 %d種）" % [y, names.size(), best.size()])
 	for c: int in counts:
 		_check(c >= 2 and c <= 5, "%d年：持ち球は2〜5種（%d種）" % [y, c])
@@ -142,11 +164,20 @@ func _check_refit(players: Dictionary) -> void:
 	_check(not PitchArsenal.ensure(p, 2026), "作ったあとにもう一度呼んでも変わらない")
 	var r: Dictionary = p["pitching"]["ratings"]
 	var k0 := int(r["k9"]["value"])
+	var before := PitchArsenal.summary(p)
+	var before_sum := _move_sum(p)
 	r["k9"] = {"value": mini(100, k0 + 10), "rank": "B"}
 	PitchArsenal.ensure(p, 2026)
 	var names2: Array = p["pitching"]["pitches"].map(func(x: Dictionary) -> String: return x["name"])
-	print("  %s：奪三振 %d → %d（%s）" % [p["name"], k0, int(r["k9"]["value"]), PitchArsenal.summary(p)])
-	_check(names == names2 and int(r["k9"]["value"]) > k0 + 5, "k9 が上がると球種はそのままで変化量が上がる")
+	print("  %s：奪三振 %d → %d（%s → %s）" % [p["name"], k0, int(r["k9"]["value"]), before, PitchArsenal.summary(p)])
+	_check(names == names2 and int(r["k9"]["value"]) >= k0 + 4 and _move_sum(p) > before_sum, "k9 が上がると球種はそのままで変化量が上がる")
+
+
+static func _move_sum(p: Dictionary) -> int:
+	var n := 0
+	for x: Dictionary in p["pitching"]["pitches"]:
+		n += int(x["move"])
+	return n
 
 
 func _examples(players: Array) -> String:

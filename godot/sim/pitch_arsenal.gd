@@ -3,6 +3,8 @@ extends RefCounted
 ## 投手の持ち球（docs/AUTORUN.md 作業79。HANDOFF 4.79）。
 ## ユーザーの声（2026-11-09）：「変化球量の能力追加したり」「単純に奪三振と置き換えるじゃつまんない」「低い評価でも球速速い人いておかしいと思った」。
 ## 投手の見せる能力は 球速・制球・スタミナ・持ち球（2〜5種。球種ごとに曲がる向きと変化量 1〜7）。
+## 作業83（HANDOFF 4.87）：変化量の分布を作り直した。多くの球は2〜4、決め球の平均は4くらい、一流の決め球は5〜6、7 はリーグに数人。
+## 奪三振は決め球がほとんどを決め（WEIGHTS）、被弾抑制は持ち球の全部で稼ぐ（H_WEIGHTS）。新人（ドラフト候補）は2〜3種が中心
 ## 奪三振（k9）・被弾抑制（hr9）は画面に出さず、球速と持ち球から計算した値（derive）としてデータに残す
 ## （総合・年俸・ドラフトの評価・成長の式・試合の基準はこの値を使う）。
 ## - 実在の選手：能力値ファイルの k9・hr9 に合うように、選手IDで決まる乱数で持ち球の候補を CANDIDATES 通り作り、いちばん合うものを選ぶ（fit）。
@@ -28,15 +30,18 @@ const TYPES := {
 const ORDER := ["スライダー", "カットボール", "カーブ", "シュート", "ツーシーム", "シンカー", "フォーク", "スプリット", "チェンジアップ"]
 ## 同時に持たない組み合わせ
 const EXCLUSIVE := [["フォーク", "スプリット"]]
-## 効く順の重み（持ち球が多いほど少しずつ上がる）
-const WEIGHTS := [1.0, 0.7, 0.45, 0.3, 0.2]
-## 変化量1あたりの能力値（球種の k・h を掛ける）
-const UNIT := 3.0
-const K_BASE := 30.0
-const H_BASE := 35.0
-## 球速1km/h あたりの奪三振・被弾抑制（その年のリーグの平均との差。実在の投手の球速と K/9 の能力値の傾き 約1.5）
-const K_VELO := 1.3
-const H_VELO := 0.35
+## 物差しの版（作業83で変化量の分布を作り直した。古いセーブの持ち球は球種はそのままで変化量を合わせ直す）
+const SCALE_VERSION := 2
+## 効く順の重み。奪三振は決め球がほとんどを決める（2つ目からは小さい）、被弾抑制は持ち球の全部で稼ぐ（作業83）
+const WEIGHTS := [1.0, 0.38, 0.18, 0.07, 0.03]
+const H_WEIGHTS := [1.0, 0.9, 0.8, 0.75, 0.7]
+## 変化量1あたりの能力値（球種の k・h を掛ける）。作業83で 3 → 5.8（表示の変化量を小さくして、成績の水準は同じ）
+const UNIT := 5.8
+const K_BASE := 21.0
+const H_BASE := 24.0
+## 球速1km/h あたりの奪三振・被弾抑制（その年のリーグの平均との差。実在の投手（2026年）の傾き 奪三振 約1.5・被弾抑制 約0.75）
+const K_VELO := 1.4
+const H_VELO := 0.7
 ## 縦（落ちる球）と横の変化がそろう（どちらも変化量 COMBO_MOVE 以上）と奪三振に足す
 const COMBO_K := 2.0
 const COMBO_MOVE := 3
@@ -51,11 +56,19 @@ const CANDIDATES := 8
 ## 2つ目からの候補に足す罰（ずれの2乗の和）と、これ以下なら次の候補を作らない値
 const CANDIDATE_PENALTY := 4.0
 const GOOD_FIT := 6.0
-## 変化量を4の近くに寄せる重み（合わせるときの罰の項）
-const MOVE_PULL := 0.02
+## 合わせるときの罰の項：大きい順に並べた変化量を PULL_CENTER に寄せる重み（決め球は5、ほかは2〜3。作業83）
+const MOVE_PULL := 1.0
+const PULL_CENTER := [5.0, 3.0, 3.0, 2.5, 2.0]
+## 大きい変化量の罰（ずれの2乗の物差し）。6 は一流の決め球、7 はリーグに数人だけの特別な球（作業83）
+const TOP_COST := {6: 8.0, 7: 120.0}
 ## 持ち球の数（先発・救援）の選ばれやすさ [2種, 3種, 4種, 5種]
-const COUNT_STARTER := [10, 35, 35, 20]
-const COUNT_RELIEF := [35, 45, 17, 3]
+const COUNT_STARTER := [15, 40, 33, 12]
+const COUNT_RELIEF := [45, 42, 12, 1]
+## 新人（ドラフト候補）は2〜3種が中心で、5種は無し（作業83。プロで新しい球種を覚えて増える）
+const COUNT_ROOKIE := [42, 46, 12, 0]
+## 実在の選手も、この年齢以下（その年の誕生日の年で数える）は新人と同じ数の配分（若い投手は球種が少なく、
+## 年を重ねて覚えていく。19歳の育成選手に5種が付いて1軍登録の要約の欄からはみ出した前例もある）
+const YOUNG_AGE := 22
 ## その年のリーグの球速の平均（km/h。generated/ratings/<年>_pre.json の投手）。無い年はいちばん近い年
 const VELO_REF := {2008: 144.8, 2009: 144.9, 2010: 144.9, 2011: 145.9, 2012: 146.3, 2013: 146.5, 2014: 146.5,
 	2015: 146.8, 2016: 147.2, 2017: 147.9, 2018: 148.4, 2019: 148.8, 2020: 149.3, 2021: 149.6, 2022: 150.0,
@@ -106,7 +119,8 @@ static func derive(pitches: Array, kmh: float, ref: float) -> Array:
 	var h := H_BASE + H_VELO * (kmh - ref)
 	for i in mini(kc.size(), WEIGHTS.size()):
 		k += UNIT * float(WEIGHTS[i]) * float(kc[i])
-		h += UNIT * float(WEIGHTS[i]) * float(hc[i])
+	for i in mini(hc.size(), H_WEIGHTS.size()):
+		h += UNIT * float(H_WEIGHTS[i]) * float(hc[i])
 	if has_down and has_side:
 		k += COMBO_K
 	if slow:
@@ -114,7 +128,7 @@ static func derive(pitches: Array, kmh: float, ref: float) -> Array:
 	return [k, h]
 
 
-## 球種 names に合う変化量を探す（start があればそこから）。目標 k・h との差の2乗 + 変化量を4に寄せる罰が最小になるように1ずつ動かす
+## 球種 names に合う変化量を探す（start があればそこから）。目標 k・h との差の2乗 + 変化量の罰（_pull）が最小になるように1ずつ動かす
 static func fit(names: Array, kmh: float, ref: float, k: float, h: float, start: Array = []) -> Array:
 	var info := _info(names)
 	var mv: Array = []
@@ -162,7 +176,6 @@ static func _err(info: Array, mv: Array, kmh: float, ref: float, k: float, h: fl
 	var down := false
 	var side := false
 	var slow := false
-	var pull := 0.0
 	for i in info.size():
 		var m := float(mv[i])
 		var t: Array = info[i]
@@ -172,7 +185,6 @@ static func _err(info: Array, mv: Array, kmh: float, ref: float, k: float, h: fl
 			down = down or bool(t[2])
 			side = side or not bool(t[2])
 			slow = slow or bool(t[3])
-		pull += (m - 4.0) * (m - 4.0)
 	kc.sort()
 	hc.sort()
 	var dk := K_BASE + K_VELO * (kmh - ref) - k
@@ -180,17 +192,41 @@ static func _err(info: Array, mv: Array, kmh: float, ref: float, k: float, h: fl
 	var n := kc.size()
 	for i in mini(n, WEIGHTS.size()):
 		dk += UNIT * float(WEIGHTS[i]) * kc[n - 1 - i]
-		dh += UNIT * float(WEIGHTS[i]) * hc[n - 1 - i]
+	for i in mini(n, H_WEIGHTS.size()):
+		dh += UNIT * float(H_WEIGHTS[i]) * hc[n - 1 - i]
 	if down and side:
 		dk += COMBO_K
 	if slow:
 		dk += SLOW_K * clampf(kmh - ref + SLOW_FROM, 0.0, SLOW_MAX)
-	return dk * dk + dh * dh + MOVE_PULL * pull
+	return dk * dk + dh * dh + _pull(mv)
+
+
+## 変化量の罰：大きい順に PULL_CENTER へ寄せる（決め球は大きめ、ほかは小さめ）＋ 6・7 は重い罰（TOP_COST。7 はまれ）
+static func _pull(mv: Array) -> float:
+	var ms: Array = mv.duplicate()
+	ms.sort()
+	ms.reverse()
+	var pull := 0.0
+	var top := 0.0
+	for i in ms.size():
+		var m := float(ms[i])
+		var c := float(PULL_CENTER[mini(i, PULL_CENTER.size() - 1)])
+		pull += (m - c) * (m - c)
+		top += float(TOP_COST.get(int(ms[i]), 0.0))
+	return MOVE_PULL * pull + top
 
 
 ## 持ち球の球種を選ぶ（乱数は呼び出し元）
-static func pick_names(rng: RandomNumberGenerator, throws: String, starter: bool, hint := "") -> Array:
-	var counts: Array = COUNT_STARTER if starter else COUNT_RELIEF
+## その年に YOUNG_AGE 歳以下か（年の分からない呼び出しや生年の無い選手は false）
+static func _young(p: Dictionary, year: int) -> bool:
+	var birth := str(p.get("birth", "")) if p.get("birth") != null else ""
+	if year <= 0 or birth.length() < 4 or not birth.substr(0, 4).is_valid_int():
+		return false
+	return year - int(birth.substr(0, 4)) <= YOUNG_AGE
+
+
+static func pick_names(rng: RandomNumberGenerator, throws: String, starter: bool, hint := "", rookie := false) -> Array:
+	var counts: Array = COUNT_ROOKIE if rookie else (COUNT_STARTER if starter else COUNT_RELIEF)
 	var n := 2 + _pick_index(rng, counts)
 	# 三振型・ゴロ型の向きは選び方に入れない（年ごとの k・h のゆれで球種が変わらないように）。候補を何通りか作って合うものを選ぶ（ensure）
 	var w := {}
@@ -263,7 +299,8 @@ static func ensure(p: Dictionary, year := -1, hint := "") -> bool:
 	var v: Variant = pit.get("velocity")
 	var kmh := float(v["kmh"]) if v is Dictionary and v.get("kmh") != null else ref
 	var have: Array = pit.get("pitches", []) if pit.get("pitches") is Array else []
-	if not have.is_empty() and sig is Dictionary and float(sig.get("k", -1)) == float(k0) \
+	var same_scale := sig is Dictionary and int(sig.get("v", 1)) == SCALE_VERSION
+	if not have.is_empty() and same_scale and float(sig.get("k", -1)) == float(k0) \
 			and float(sig.get("h", -1)) == float(h0) and float(sig.get("kmh", -1)) == kmh:
 		return false
 	var pitches: Array
@@ -273,15 +310,17 @@ static func ensure(p: Dictionary, year := -1, hint := "") -> bool:
 		for x: Dictionary in have:
 			names.append(str(x["name"]))
 			start.append(int(x["move"]))
-		pitches = fit(names, kmh, ref, float(k0), float(h0), start)
+		# 物差しが変わった古いセーブ（作業83より前）は、球種はそのままで変化量を初めから合わせ直す
+		pitches = fit(names, kmh, ref, float(k0), float(h0), start if same_scale else [])
 	else:
 		var rng := RandomNumberGenerator.new()
 		var best_e := INF
 		var starter := str(pit.get("role", "")) == "先発"
 		var throws := str(p.get("throws", "右")) if p.get("throws") != null else "右"
+		var rookie := p.get("amateur") is Dictionary or _young(p, year)  # ドラフト候補・若い選手（作業83：2〜3種が中心）
 		for c in CANDIDATES:
 			rng.seed = ("%s#%d" % [str(p.get("id", p.get("name", ""))), c]).hash()
-			var names := pick_names(rng, throws, starter, hint)
+			var names := pick_names(rng, throws, starter, hint, rookie)
 			var cand := fit(names, kmh, ref, float(k0), float(h0))
 			var d := derive(cand, kmh, ref)
 			# あとの候補ほど罰を足す（同じ選手は年が変わっても最初の候補の球種になりやすい）。よく合えばそこで止める
@@ -301,7 +340,7 @@ static func ensure(p: Dictionary, year := -1, hint := "") -> bool:
 	_write(r, "hr9", h1)
 	if absf(shift) >= 0.5 and _rv(r, "overall") != null:
 		_write(r, "overall", clampi(roundi(float(_rv(r, "overall")) + shift), 1, 100))
-	pit["arsenal"] = {"k": float(k1), "h": float(h1), "kmh": kmh, "ref": ref}
+	pit["arsenal"] = {"k": float(k1), "h": float(h1), "kmh": kmh, "ref": ref, "v": SCALE_VERSION}
 	return true
 
 
@@ -340,6 +379,11 @@ static func best_pitch(p: Dictionary) -> Dictionary:
 	return best
 
 
+## 変化量の色分けのランク（名簿の決め球など。作業83の分布：7 はリーグに数人＝S、6 は一流の決め球＝A、5 B、4 C、3 D、2 E、1 F）
+static func move_rank(move: int) -> String:
+	return ["F", "F", "E", "D", "C", "B", "A", "S"][clampi(move, 0, MOVE_MAX)]
+
+
 ## 持ち球の短い書き方（例「スライダー5・フォーク6★」）
 static func summary(p: Dictionary) -> String:
 	var pit: Variant = p.get("pitching")
@@ -356,11 +400,13 @@ static func summary(p: Dictionary) -> String:
 ## 同じ利き腕に強い球（スライダー・カット・シュート）と反対に強い球（チェンジアップ・シンカー）の奪三振の分の PLATOON 倍を、
 ## 打者の左右の割合（SAME_SHARE）でならすと0になるように上下に分ける（投手の平均の奪三振は k9 のまま）
 const PLATOON := 0.35
+## 上下の大きさをそろえる割り算（作業83で物差しを変えたとき、実在の投手（2026年）の上下の散らばりが前と同じになるように 17 → 28）
+const PLATOON_NORM := 28.0
 ## 投げる手ごとの、同じ利き腕の打者の割合（両打ちは反対の打席に立つ）
 const SAME_SHARE := {"右": 0.6, "左": 0.4}
-## ゴロの多さ：持ち球のゴロ（効く順の重み）の、実在の投手（2026年）の平均と標準偏差
-const GB_MEAN := 6.2
-const GB_SD := 3.4
+## ゴロの多さ：持ち球のゴロ（被弾抑制と同じ重み H_WEIGHTS）の、実在の投手（2026年）の平均と標準偏差（作業83で測り直し）
+const GB_MEAN := 4.4
+const GB_SD := 2.1
 
 
 static func platoon(pitches: Array, throws: String) -> Array:
@@ -373,7 +419,7 @@ static func platoon(pitches: Array, throws: String) -> Array:
 	var same := 0.0
 	var opp := 0.0
 	for i in mini(kc.size(), WEIGHTS.size()):
-		var c := PLATOON * UNIT * float(WEIGHTS[i]) * float(kc[i][0]) / 17.0
+		var c := PLATOON * UNIT * float(WEIGHTS[i]) * float(kc[i][0]) / PLATOON_NORM
 		if kc[i][1] == "same":
 			same += c
 			opp -= c * s / (1.0 - s)
@@ -391,8 +437,8 @@ static func groundball(pitches: Array) -> float:
 	g.sort()
 	g.reverse()
 	var raw := 0.0
-	for i in mini(g.size(), WEIGHTS.size()):
-		raw += float(WEIGHTS[i]) * float(g[i])
+	for i in mini(g.size(), H_WEIGHTS.size()):
+		raw += float(H_WEIGHTS[i]) * float(g[i])
 	return (raw - GB_MEAN) / GB_SD
 
 
@@ -409,8 +455,8 @@ static func best_label(p: Dictionary) -> String:
 
 ## 新しい球種を覚える（作業79：春季キャンプ・オフ。化けるきっかけ）。年齢ごとの確率（その年齢以下）
 const LEARN_RATE := [[23, 0.12], [27, 0.08], [31, 0.04]]
-## 覚えた球の変化量
-const LEARN_MOVE := [2, 4]
+## 覚えた球の変化量（作業83で 2〜4 → 2〜3。覚えたての球は小さく、成長で育つ）
+const LEARN_MOVE := [2, 3]
 
 
 ## 確率で新しい球種を1つ覚える。覚えた球の分だけ奪三振・被弾抑制（と総合）を上げ、架空の選手はピークも上げる。覚えた球種の名前（無ければ ""）

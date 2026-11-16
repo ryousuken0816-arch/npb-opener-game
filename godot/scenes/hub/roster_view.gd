@@ -295,7 +295,7 @@ static func _paint_rank(item: TreeItem, col: int, rank: String) -> void:
 	item.set_custom_bg_color(col, UiTheme.rank_bg(rank))
 
 
-## 決め球（作業79）：「フォーク 6」。色は変化量（6〜7 A・5 B・4 C・3 D・ほか E）。並び替えは変化量 × 空振り。ツールチップに持ち球の全部
+## 決め球（作業79）：「フォーク 6」。色は変化量（PitchArsenal.move_rank：7 S・6 A・5 B・4 C・3 D・2 E・1 F。作業83）。並び替えは変化量 × 空振り。ツールチップに持ち球の全部
 func _set_best_pitch(item: TreeItem, col: int, p: Dictionary) -> void:
 	item.set_text_alignment(col, HORIZONTAL_ALIGNMENT_CENTER)
 	PitchArsenal.ensure(p)
@@ -307,7 +307,7 @@ func _set_best_pitch(item: TreeItem, col: int, p: Dictionary) -> void:
 	item.set_text(col, "%s %d" % [b["name"], move])
 	item.set_metadata(col, float(PitchArsenal.TYPES.get(str(b["name"]), {}).get("k", 1.0)) * move)
 	item.set_tooltip_text(col, "持ち球 " + PitchArsenal.summary(p))
-	_paint_rank(item, col, "A" if move >= 6 else ("B" if move == 5 else ("C" if move == 4 else ("D" if move == 3 else "E"))))
+	_paint_rank(item, col, PitchArsenal.move_rank(move))
 	item.set_custom_font(col, UiTheme.font(800))
 	item.set_custom_font_size(col, 18)
 

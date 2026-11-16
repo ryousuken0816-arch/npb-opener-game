@@ -116,6 +116,10 @@ var season_blend := 0.0
 var _blend_base: Dictionary = {}
 ## リーグ全体のずれ（SeasonBlend.league_shift。最初に混ぜたときに開幕時点の値から出す）
 var _blend_shift: Dictionary = {}
+## 前の年の開幕時点の能力の写し（作業83。GrowthDiff。{"year": 年, "values": 選手ID → 写し}）。セーブに入る
+var growth_prev: Dictionary = {}
+## 今の年の開幕時点の能力の写し（次の年の開幕時点を読んだら growth_prev へ回す）
+var _season_start: Dictionary = {}
 
 
 ## <年>_<phase>.json を読み込む。見つからなければ false を返し、現在のデータを保持する。
@@ -142,7 +146,25 @@ func load_ratings(year: int, phase: String) -> bool:
 	PitchArsenal.ensure_all(ratings.get("players", []), year)
 	PitchArsenal.ensure_all(ratings.get("mlb_players", []), year)
 	_index_players()
+	if phase == "pre":
+		_roll_growth(year)
 	return true
+
+
+## 能力の写しを消す（新しく始めるとき・セーブを読むとき。作業83）
+func reset_growth(prev: Variant = null) -> void:
+	growth_prev = prev if prev is Dictionary and prev.has("values") else {}
+	_season_start = {}
+
+
+## 開幕時点の能力値を読んだとき：前の年の開幕時点の写しがあれば growth_prev へ回し、今の年の写しを取る（作業83）
+func _roll_growth(year: int) -> void:
+	if int(_season_start.get("year", -1)) == year - 1:
+		growth_prev = _season_start
+	elif int(growth_prev.get("year", -1)) != year - 1:
+		growth_prev = {}  # 無ければ使うとき（GrowthDiff.prev_values）に前の年の能力値から作る
+	if int(_season_start.get("year", -1)) != year:
+		_season_start = {"year": year, "values": GrowthDiff.snapshot(ratings.get("players", []))}
 
 
 ## 今の能力値（<年>_pre）を、その年の <年>_post へ t の割合で混ぜる（作業40。SeasonBlend）。

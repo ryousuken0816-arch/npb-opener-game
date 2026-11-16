@@ -40,9 +40,10 @@ const BAT_MID := 60.0
 const PITCH_MID := 62.0
 const BAT_TO_PITCH := 1.875
 ## 評価ごとの入団時の総合 [上, 下]。同じ評価の中は見た目の評価の順に LEVEL_STEP ずつ下げる（下の値より下げない）
-## 作業80：中位・下位（C・D）は2下げた（上位との差を広げる）
-const LEVEL_READY := {"S": [79, 74], "A": [75, 70], "B": [69, 64], "C": [61, 55], "D": [54, 48]}
-const LEVEL_HS := {"S": [68, 64], "A": [64, 60], "B": [59, 55], "C": [52, 47], "D": [46, 41]}
+## 作業80：中位・下位（C・D）は2下げた（上位との差を広げる）。
+## 作業83：B は2、C・D は5下げた（長所はそのままで、ほかの能力を FictionalTypes.FREE_RANGE の D〜F に。ピークはそのまま＝伸びしろが大きい）
+const LEVEL_READY := {"S": [79, 74], "A": [75, 70], "B": [67, 62], "C": [56, 50], "D": [49, 43]}
+const LEVEL_HS := {"S": [68, 64], "A": [64, 60], "B": [57, 53], "C": [47, 42], "D": [41, 36]}
 const LEVEL_STEP := 1.0
 ## 高卒の S・A の武器 [上, 下]（投手は奪三振、野手はパワー・走力・肩のうち元の値がいちばん目立つもの）
 const WEAPON := {"S": [86, 81], "A": [80, 75]}
@@ -807,6 +808,53 @@ func _calibrate_entry(p: Dictionary, grade: String, i: int, quality: float, rng:
 	for k: String in part["ratings"]:
 		if peak.has(k) and part["ratings"][k] is Dictionary:
 			peak[k] = maxf(float(peak[k]), float(part["ratings"][k]["value"]))
+	if not bool(p.get("is_monster", false)):
+		# 候補の乱数（rng）の並びを変えないよう、選手ごとの乱数で決める（ほかの候補の能力が前と同じになる）
+		var room_rng := RandomNumberGenerator.new()
+		room_rng.seed = ("room#%s" % str(p.get("id", ""))).hash() ^ rng.seed
+		_ensure_room(p, part["ratings"], peak, room_rng)
+
+
+## 作業83（伸びしろ）：ピークが入団時とほとんど同じ候補（司令塔の見本：社会人の投手 総合B75→B75）を無くす。
+## 区分ごとに [伸びる能力の数, 伸びの下限, 上限]。足りなければ、今いちばん伸びる能力から順にピークを入団時＋伸びまで上げる
+## （投手は総合のピークも奪三振・制球・被弾抑制の上げた分の 1/3 ずつ上げる）。社会人・独立の完成型は小さいままでよい（ユーザー決定）
+const ROOM := {"高校": [2, 6.0, 12.0], "大学": [1, 5.0, 10.0], "専門": [1, 5.0, 10.0], "社会人": [1, 3.0, 7.0], "独立": [1, 3.0, 7.0]}
+const ROOM_BAT_KEYS := ["meet", "power", "eye", "defense", "speed"]
+const ROOM_PIT_KEYS := ["k9", "bb9", "hr9"]
+## ピークの上限（怪物でない候補）
+const ROOM_PEAK_CAP := 95.0
+
+
+func _ensure_room(p: Dictionary, r: Dictionary, peak: Dictionary, rng: RandomNumberGenerator) -> void:
+	var cat := str(p.get("category", ""))
+	var rule: Array = ROOM.get(cat, [])
+	if rule.is_empty() or peak.is_empty():
+		return
+	if cat in ["社会人", "独立"] and FictionalTypes.is_complete(str(p.get("_type", ""))):
+		return
+	var pit := bool(p["is_pitcher"])
+	var keys: Array = (ROOM_PIT_KEYS if pit else ROOM_BAT_KEYS).filter(func(k: String) -> bool:
+		return peak.has(k) and r.get(k) is Dictionary)
+	var gain := func(k: String) -> float: return float(peak[k]) - float(r[k]["value"])
+	keys.sort_custom(func(a: String, b: String) -> bool: return float(gain.call(a)) > float(gain.call(b)))
+	var need := int(rule[0])
+	var lo := float(rule[1])
+	var have := keys.filter(func(k: String) -> bool: return float(gain.call(k)) >= lo).size()
+	var raised := 0.0
+	for k: String in keys:
+		if have >= need:
+			break
+		if float(gain.call(k)) >= lo:
+			continue
+		var v := float(r[k]["value"])
+		var to := minf(ROOM_PEAK_CAP, v + rng.randf_range(lo, float(rule[2])))
+		if to <= float(peak[k]):
+			continue
+		raised += to - float(peak[k])
+		peak[k] = to
+		have += 1
+	if pit and raised > 0.0 and peak.has("overall"):
+		peak["overall"] = minf(ROOM_PEAK_CAP, float(peak["overall"]) + raised / 3.0)
 
 
 func _pick_templates(n: int, ikusei: bool, rng: RandomNumberGenerator, theme := "例年並み") -> Array:

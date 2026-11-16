@@ -229,6 +229,7 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	offseason_order = OFFSEASON_ORDER
 	_off_leaving = []
 	_off_returns = []
+	GameData.reset_growth()
 	GameData.load_ratings(year, "pre")
 	league = LeagueRoster.new()
 	league.start(year, GameData.ratings, _opening_date(), team, randi() + 1)
@@ -1707,6 +1708,8 @@ func _enter(new_phase: Phase) -> void:
 			GameData.load_ratings(year, "pre")
 			league.begin_year(year, GameData.ratings)
 			_new_pitch_news()
+			for a: Dictionary in GrowthDiff.camp_articles(year, league.team_of, league.user_team):
+				post_news(a)  # この1年でいちばん伸びた選手・覚醒（作業83）
 			team = league.user_team
 			league.cpu_market_round(-1)
 			league.cpu_release_round(2)
@@ -2304,6 +2307,7 @@ func to_save() -> Dictionary:
 		"draft_board": draft_board.to_save(year),
 		"news_stop_kinds": news_stop_kinds,
 		"season_blend": GameData.season_blend,
+		"growth_prev": GameData.growth_prev,  # 前の年の開幕時点の能力（作業83。選手詳細の ↑）
 	}
 
 
@@ -2403,6 +2407,7 @@ func load_state(d: Dictionary) -> void:
 				for p: Variant in ps:
 					if p is Dictionary:
 						FictionalDraft.upgrade_old(p)
+	GameData.reset_growth(d.get("growth_prev"))
 	GameData.load_ratings(year, "pre" if phase in [Phase.SEASON, Phase.CAMP, Phase.POSTSEASON] else "post")
 	if phase in [Phase.SEASON, Phase.POSTSEASON]:
 		GameData.set_season_blend(float(d.get("season_blend", 0.0)))
