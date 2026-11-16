@@ -117,7 +117,8 @@ static func delta(p: Dictionary, kind: String, key := "") -> Variant:
 	return int(now[kind][key]) - int(prev[kind][key])
 
 
-## 持ち球の変化：[[球種, 前の変化量（新しい球種は 0）, 今の変化量], ...]（変わった球種だけ）。比べられなければ []
+## 持ち球の変化：[[球種, 前の変化量（新しい球種は 0）, 今の変化量], ...]（変わった球種だけ）。比べられなければ []。
+## 新しい球種は、前の年の球種が全部残っているときだけ（覚えた＝足された）
 static func pitch_changes(p: Dictionary) -> Array:
 	var id := str(p.get("id", ""))
 	if id.is_empty() or _gd().ratings.is_empty():
@@ -126,8 +127,15 @@ static func pitch_changes(p: Dictionary) -> Array:
 	var now := of(p)
 	if not prev.has("m") or not now.has("m"):
 		return []
+	# 前の年の球種が消えているとき（実在の選手は毎年の能力から持ち球を作り直すので、球種が入れ替わることがある）は、
+	# 「新しい球種」とは言えないので、両方の年にある球種の変化量だけにする
+	var replaced := false
+	for name: String in prev["m"]:
+		replaced = replaced or not now["m"].has(name)
 	var out: Array = []
 	for name: String in now["m"]:
+		if replaced and not prev["m"].has(name):
+			continue
 		var a := int(prev["m"].get(name, 0))
 		var b := int(now["m"][name])
 		if a != b:

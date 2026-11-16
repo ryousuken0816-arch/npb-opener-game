@@ -64,8 +64,11 @@ const TOP_COST := {6: 8.0, 7: 120.0}
 ## 持ち球の数（先発・救援）の選ばれやすさ [2種, 3種, 4種, 5種]
 const COUNT_STARTER := [15, 40, 33, 12]
 const COUNT_RELIEF := [45, 42, 12, 1]
-## 新人（ドラフト候補）は2〜3種が中心（作業83。プロで新しい球種を覚えて増える）
-const COUNT_ROOKIE := [40, 45, 13, 2]
+## 新人（ドラフト候補）は2〜3種が中心で、5種は無し（作業83。プロで新しい球種を覚えて増える）
+const COUNT_ROOKIE := [42, 46, 12, 0]
+## 実在の選手も、この年齢以下（その年の誕生日の年で数える）は新人と同じ数の配分（若い投手は球種が少なく、
+## 年を重ねて覚えていく。19歳の育成選手に5種が付いて1軍登録の要約の欄からはみ出した前例もある）
+const YOUNG_AGE := 22
 ## その年のリーグの球速の平均（km/h。generated/ratings/<年>_pre.json の投手）。無い年はいちばん近い年
 const VELO_REF := {2008: 144.8, 2009: 144.9, 2010: 144.9, 2011: 145.9, 2012: 146.3, 2013: 146.5, 2014: 146.5,
 	2015: 146.8, 2016: 147.2, 2017: 147.9, 2018: 148.4, 2019: 148.8, 2020: 149.3, 2021: 149.6, 2022: 150.0,
@@ -214,6 +217,14 @@ static func _pull(mv: Array) -> float:
 
 
 ## 持ち球の球種を選ぶ（乱数は呼び出し元）
+## その年に YOUNG_AGE 歳以下か（年の分からない呼び出しや生年の無い選手は false）
+static func _young(p: Dictionary, year: int) -> bool:
+	var birth := str(p.get("birth", "")) if p.get("birth") != null else ""
+	if year <= 0 or birth.length() < 4 or not birth.substr(0, 4).is_valid_int():
+		return false
+	return year - int(birth.substr(0, 4)) <= YOUNG_AGE
+
+
 static func pick_names(rng: RandomNumberGenerator, throws: String, starter: bool, hint := "", rookie := false) -> Array:
 	var counts: Array = COUNT_ROOKIE if rookie else (COUNT_STARTER if starter else COUNT_RELIEF)
 	var n := 2 + _pick_index(rng, counts)
@@ -306,7 +317,7 @@ static func ensure(p: Dictionary, year := -1, hint := "") -> bool:
 		var best_e := INF
 		var starter := str(pit.get("role", "")) == "先発"
 		var throws := str(p.get("throws", "右")) if p.get("throws") != null else "右"
-		var rookie := p.get("amateur") is Dictionary  # ドラフト候補（作業83：2〜3種が中心）
+		var rookie := p.get("amateur") is Dictionary or _young(p, year)  # ドラフト候補・若い選手（作業83：2〜3種が中心）
 		for c in CANDIDATES:
 			rng.seed = ("%s#%d" % [str(p.get("id", p.get("name", ""))), c]).hash()
 			var names := pick_names(rng, throws, starter, hint, rookie)

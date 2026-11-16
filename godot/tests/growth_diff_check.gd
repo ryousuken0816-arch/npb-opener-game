@@ -120,6 +120,30 @@ func _run() -> void:
 	_check("開幕時点を続けて読むと前の年の写しが回る", int(gd.growth_prev.get("year", -1)) == 2025, str(gd.growth_prev.get("year")))
 	var got3: Variant = _diff.delta(gd.player(batter), "b", "power")
 	_check("回した写しでも差は同じ", got3 != null and int(got3) == expect, str(got3))
+
+	# 架空の年：2027年から始めて春季キャンプまで進める（成長の式で作った2028年の能力と比べる・キャンプのニュース）
+	gs.new_game(TEAM, 2027)
+	await _frames(2)
+	gs.skip_to_phase(gs.Phase.CAMP)
+	gs.advance()
+	await _frames(2)
+	_check("2028年の春季キャンプで2027年の写しが回る", gs.year == 2028 and int(gd.growth_prev.get("year", -1)) == 2027
+		and gd.growth_prev.get("values", {}).size() > 500, "%d年・写し %s年" % [gs.year, gd.growth_prev.get("year")])
+	var camp: Array = gs.news.articles.filter(func(a: Dictionary) -> bool:
+		return str(a.get("kind", "")) == "camp" and int(a.get("year", 0)) == 2028)
+	var heads: Array = camp.map(func(a: Dictionary) -> String: return str(a["headline"]))
+	for a: Dictionary in camp:
+		if str(a["headline"]).contains("伸びた") or str(a["headline"]).contains("覚醒"):
+			print("  2028年：%s　%s" % [a["headline"], a["body"]])
+	_check("キャンプのニュースに「いちばん伸びた」", heads.any(func(h: String) -> bool: return h.begins_with("この1年でいちばん伸びたのは")),
+		str(heads))
+	var grown := 0
+	for p: Dictionary in gd.players_of(TEAM):
+		var dv: Variant = _diff.delta(p, "p" if bool(p.get("is_pitcher", false)) else "b",
+			"overall" if bool(p.get("is_pitcher", false)) else "meet")
+		if dv != null and int(dv) != 0:
+			grown += 1
+	_check("2028年の自球団の選手に前の年からの差がある（%d人）" % grown, grown >= 10, "")
 	_finish()
 
 
