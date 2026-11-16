@@ -86,8 +86,15 @@ const REINCARNATION_ODDS := [0.65, 0.25, 0.08, 0.02]
 ## 転生選手の高校／大学の割合
 const REINCARNATION_HIGH_SCHOOL := 0.60
 const REINCARNATION_SAME_SCHOOL := 0.40
-const REINCARNATION_SCALE := [0.85, 1.05]
+## ピーク＝元の選手の全盛期の能力を中央（63）から何倍にするか（作業84：[0.85, 1.05] → [0.95, 1.02]。下限だけ上げて、
+## 中堅の名選手が弱く出すぎないように。大物（全盛期に S が複数）は今とほぼ同じ強さ）。能力はピークも入団時も REINCARNATION_MAX で止める
+const REINCARNATION_SCALE := [0.95, 1.02]
 const REINCARNATION_NOISE := 2.5
+const REINCARNATION_MAX := 99.0
+## 入団時＝ピークからいくつ引くか（野手・投手）と、球速を何km/h 引くか（作業84：−15・−14・−4 → −12・−11・−2。作業80で目玉・怪物の入団時が強くなったぶん、中堅の転生選手が埋もれないように）
+const REINCARNATION_ENTRY_GAP_BAT := 12.0
+const REINCARNATION_ENTRY_GAP_PIT := 11.0
+const REINCARNATION_ENTRY_GAP_VELO := 2.0
 ## 夢多め（作業22。hits == "dream" で S級の候補を増やす）
 const DREAM_EXTRA := [2, 4]
 const DREAM_MIN_SCORE := 1.6
@@ -753,13 +760,13 @@ func make_reincarnation(legend: Dictionary, draft_year: int, rng: RandomNumberGe
 		if k == "velocity":
 			peak[k] = v + rng.randfn(0.0, 2.0)
 		else:
-			peak[k] = SimPlayer.SCALE_MEAN + (v - SimPlayer.SCALE_MEAN) * scale + rng.randfn(0.0, REINCARNATION_NOISE)
+			peak[k] = minf(SimPlayer.SCALE_MEAN + (v - SimPlayer.SCALE_MEAN) * scale + rng.randfn(0.0, REINCARNATION_NOISE), REINCARNATION_MAX)
 
 	if side == "B":
 		p["batting"] = {"ratings": {}, "sample": {"pa_1": 0.0, "pa_2": 0.0}, "trajectory": 3}
 		for k: String in ["meet", "power", "eye", "speed", "defense", "arm"]:
 			var pk: float = float(peak.get(k, 50))
-			var ent: int = clampi(roundi(pk - 15.0 + rng.randfn(0.0, 3.0)), 20, 99)
+			var ent: int = clampi(roundi(pk - REINCARNATION_ENTRY_GAP_BAT + rng.randfn(0.0, 3.0)), 20, 99)
 			p["batting"]["ratings"][k] = {"value": ent, "rank": FictionalTalent._ability_rank(ent)}
 		p["pitching"] = null
 		p["fielding"] = {}
@@ -767,10 +774,10 @@ func make_reincarnation(legend: Dictionary, draft_year: int, rng: RandomNumberGe
 		var arm_val: int = int(p["batting"]["ratings"]["arm"]["value"])
 		p["fielding"][p["primary_pos"]] = {"games": 0, "defense": {"value": def_val, "rank": FictionalTalent._ability_rank(def_val)}, "arm": {"value": arm_val, "rank": FictionalTalent._ability_rank(arm_val)}}
 	else:
-		p["pitching"] = {"ratings": {}, "velocity": {"kmh": roundi(float(peak.get("velocity", 145)) - 4.0), "source": "fictional"}, "role": legend.get("role", "先発"), "sample": {"outs_1": 0.0, "outs_2": 0.0}}
+		p["pitching"] = {"ratings": {}, "velocity": {"kmh": roundi(float(peak.get("velocity", 145)) - REINCARNATION_ENTRY_GAP_VELO), "source": "fictional"}, "role": legend.get("role", "先発"), "sample": {"outs_1": 0.0, "outs_2": 0.0}}
 		for k: String in ["overall", "stamina", "k9", "bb9", "hr9"]:
 			var pk: float = float(peak.get(k, 50))
-			var ent: int = clampi(roundi(pk - 14.0 + rng.randfn(0.0, 3.0)), 20, 99)
+			var ent: int = clampi(roundi(pk - REINCARNATION_ENTRY_GAP_PIT + rng.randfn(0.0, 3.0)), 20, 99)
 			p["pitching"]["ratings"][k] = {"value": ent, "rank": FictionalTalent._ability_rank(ent)}
 		p["batting"] = {"ratings": {}, "trajectory": 1, "sample": {"pa_1": 0.0, "pa_2": 0.0}}
 
