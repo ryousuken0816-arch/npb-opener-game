@@ -347,18 +347,20 @@ func _check_balance() -> void:
 			# 作業62：入団時の水準（投手は総合、野手は換算。FictionalDraft.entry_level）
 			var lv: float = _fd.entry_level(p)
 			var reg := not bool(am["as_ikusei"]) and not p.has("reincarnation")
-			if reg and not bool(p.get("is_monster", false)):
+			# 本格二刀流（型 A。作業86）も怪物と同じ超目玉なので、ふつうの候補の水準の確認からは外す（two_way_check で見る）
+			var ace := str(p.get("two_way", {}).get("type", "")) == "A" and bool(p["two_way"].get("active", false))
+			if reg and not bool(p.get("is_monster", false)) and not ace:
 				top = maxf(top, lv)  # 怪物は別（作業85：高校生も入団時から飛び抜ける。下の _check_monster）
 			if bool(p.get("is_monster", false)):
 				mon_cat[am["category"]] = int(mon_cat.get(am["category"], 0)) + 1
-			elif reg and not p.has("dream") and lv >= 79.6:
+			elif reg and not p.has("dream") and lv >= 79.6 and not ace:
 				strong_not_monster += 1
-			if str(am.get("band", "")) == "1" and am["category"] != "高校" and not bool(p.get("is_monster", false)):
+			if str(am.get("band", "")) == "1" and am["category"] != "高校" and not bool(p.get("is_monster", false)) and not ace:
 				ready1.append(lv)
 			if am["grade"] in ["S", "A"]:
 				sa_all += 1
 				sa_bat += 0 if p["is_pitcher"] else 1
-				if am["category"] == "高校" and not bool(p.get("is_monster", false)):
+				if am["category"] == "高校" and not bool(p.get("is_monster", false)) and not ace:
 					hs_top += 1
 					var best := int(p["pitching"]["ratings"]["k9"]["value"]) if p["is_pitcher"] else maxi(
 						int(p["batting"]["ratings"]["power"]["value"]), maxi(int(p["batting"]["ratings"]["speed"]["value"]),
@@ -411,7 +413,7 @@ func _check_balance() -> void:
 	_check(tops_bad.is_empty(), "その年の一番上は入団時の総合 78 前後〜82（怪物は別。外れた年 %s）" % [tops_bad])
 	_check(ready_avg >= 68 and ready_avg <= 76, "大卒・社会人などの1位の帯は B 前後（平均 %.1f）" % ready_avg)
 	_check(hs_top_weak == 0 and hs_top > 0, "高卒の S・A は武器（奪三振・パワー・走力・肩）を1つ B 以上（武器なし %d／%d人）" % [hs_top_weak, hs_top])
-	_check(strong_not_monster == 0, "入団時の総合 A（80以上）は怪物だけ（怪物以外 %d人）" % strong_not_monster)
+	_check(strong_not_monster == 0, "入団時の総合 A（80以上）は怪物（と本格二刀流）だけ（ほか %d人）" % strong_not_monster)
 	_check(int(mon_cat.get("大学", 0)) + int(mon_cat.get("社会人", 0)) + int(mon_cat.get("独立", 0)) >= 2,
 		"大学・社会人・独立からも怪物が出る（怪物 %s）" % [mon_cat])
 	_check(float(sa_bat) / maxf(1, sa_all) >= 0.25, "S・A の野手もそれなりにいる（%.0f%%）" % (100.0 * sa_bat / maxf(1, sa_all)))
