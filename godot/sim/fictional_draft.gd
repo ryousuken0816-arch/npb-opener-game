@@ -50,6 +50,29 @@ const WEAPON := {"S": [86, 81], "A": [80, 75]}
 const MONSTER_LEVEL_READY := [80.0, 84.0]
 const MONSTER_LEVEL_HS := [70.0, 75.0]
 const MONSTER_WEAPON := [89.0, 93.0]
+## 作業85（ユーザー 2026-11-16「これ怪物って感じしないな」「なんで高校生そんな弱くすんねん！佐々木朗希・大谷・ダル、みんな高校生じゃん」）：
+## 怪物の入団時の能力は型・評価の水準のあとで直接決める（_monsterize）。高校生も大学・社会人と同じ（伸びしろだけ高校生が大きい）。
+## 武器は花形（投手＝球速か奪三振、野手＝ミートかパワー）S、2番目・3番目は A、D 以下の弱点なし。範囲は [下限, 上限]
+const MON_WEAPON := [92.0, 97.0]
+const MON_SECOND := [84.0, 90.0]
+const MON_THIRD := [82.0, 88.0]
+const MON_THIRD_CAP := 90.0
+const MON_FLOOR := [62.0, 70.0]
+## 投手：武器が球速のとき（この確率）は奪三振も A（84〜90）、球速 160〜162。奪三振が武器のときの球速 155〜160
+const MON_VELO_WEAPON_RATE := 0.40
+const MON_VELO_WEAPON := [160.0, 162.0]
+const MON_VELO_OTHER := [155.0, 160.0]
+const MON_K9_OTHER := [88.0, 92.0]
+## 投手の総合（奪三振・制球・被本塁打の平均）の範囲
+const MON_OVERALL := [86.0, 92.0]
+const MON_VELO_PEAK_MAX := 165.0
+## ピーク：武器は 97〜99、2番目・3番目は 90〜97、ほかは入団時＋伸びしろ（高校生のほうが大きい）。元のピークより低くしない
+const MON_PEAK_WEAPON := [97.0, 99.0]
+const MON_PEAK_SECOND := [90.0, 97.0]
+const MON_GROW_HS := [6.0, 10.0]
+const MON_GROW := [3.0, 6.0]
+const MON_VELO_GROW_HS := [2.0, 5.0]
+const MON_VELO_GROW := [1.0, 3.0]
 ## 年の質（豊作・不作）→ その年の全員を quality × QUALITY_SHIFT（±QUALITY_SHIFT_MAX まで）上下。
 ## 評価 B 以下はその倍（豊作の年は中位の層も厚い）。S・A は不作の年でも −1 まで（その年の一番上を78前後に保つ）
 const QUALITY_SHIFT := 8.0
@@ -378,12 +401,78 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 	# 一芸だけ S（作業67。確率で年に0〜2人。紹介文に「◯◯は世代随一」）
 	FictionalTypes.assign_one_skill(out, theme, rng)
 	for p: Dictionary in out:
+		if bool(p.get("is_monster", false)) and not bool(p["amateur"].get("as_ikusei", false)):
+			_monsterize(p, rng)  # 怪物の入団時・ピーク（作業85）
 		FictionalTypes.untie(p, rng)  # 同じ選手の中で同じ数字が並ばないように（作業73）
 		fill_fielding(p)
 		set_trajectory(p)
 		_sync_peak(p)
 
 	return out
+
+
+## 怪物の入団時の能力・球速とピークを決める（作業85。MON_*）。型・評価の水準で作った能力は、高いほうを残して下限・範囲にそろえる。
+## 投手：奪三振が武器（92〜97）か球速が武器（160〜162）、制球・被本塁打は A（84〜90）、スタミナは C 以上、総合＝奪三振・制球・被本塁打の平均。
+## 野手：ミートかパワーが武器（92〜97）、もう一方が A（84〜90）、選球眼・走力・守備のうち元がいちばん高いものも A（82〜90）、ほかは C 以上
+func _monsterize(p: Dictionary, rng: RandomNumberGenerator) -> void:
+	var hs := str(p["category"]) == "高校"
+	var grow: Array = MON_GROW_HS if hs else MON_GROW
+	var peak: Dictionary = p["growth"]["peak"]
+	var entry: Dictionary = {}  # 能力名 → 入団時の値
+	var tops: Dictionary = {}  # 能力名 → ピークの下限（武器・2番目・3番目）
+	if bool(p["is_pitcher"]):
+		var pr: Dictionary = p["pitching"]["ratings"]
+		var velo_weapon := rng.randf() < MON_VELO_WEAPON_RATE
+		if velo_weapon:
+			entry["k9"] = clampf(maxf(_rv(pr, "k9", 0.0), rng.randf_range(MON_K9_OTHER[0], MON_K9_OTHER[1])), MON_K9_OTHER[0], MON_K9_OTHER[1])
+		else:
+			entry["k9"] = rng.randf_range(MON_WEAPON[0], MON_WEAPON[1])
+			tops["k9"] = rng.randf_range(MON_PEAK_WEAPON[0], MON_PEAK_WEAPON[1])
+		for k: String in ["bb9", "hr9"]:
+			entry[k] = clampf(maxf(_rv(pr, k, 0.0), rng.randf_range(MON_SECOND[0], MON_SECOND[1])), MON_SECOND[0], MON_SECOND[1])
+			tops[k] = rng.randf_range(MON_PEAK_SECOND[0], MON_PEAK_SECOND[1])
+		if velo_weapon:
+			tops["k9"] = rng.randf_range(MON_PEAK_SECOND[0], MON_PEAK_SECOND[1])
+		entry["stamina"] = maxf(_rv(pr, "stamina", 0.0), rng.randf_range(MON_FLOOR[0], MON_FLOOR[1]))
+		for k: String in entry:
+			_set_rating(pr, k, entry[k])
+		_set_rating(pr, "overall", clampf((float(entry["k9"]) + float(entry["bb9"]) + float(entry["hr9"])) / 3.0, MON_OVERALL[0], MON_OVERALL[1]))
+		var velo: Dictionary = p["pitching"]["velocity"]
+		var kmh := rng.randf_range(MON_VELO_WEAPON[0], MON_VELO_WEAPON[1]) if velo_weapon 			else rng.randf_range(MON_VELO_OTHER[0], MON_VELO_OTHER[1])
+		velo["kmh"] = roundi(kmh)
+		var vg: Array = MON_VELO_GROW_HS if hs else MON_VELO_GROW
+		peak["velocity"] = minf(MON_VELO_PEAK_MAX, maxf(float(peak.get("velocity", 0.0)), kmh + rng.randf_range(vg[0], vg[1])))
+		entry["overall"] = _rv(pr, "overall", 0.0)
+	else:
+		var br: Dictionary = p["batting"]["ratings"]
+		var meet := _rv(br, "meet", 0.0)
+		var power := _rv(br, "power", 0.0)
+		var weapon := "power" if power > meet + 10.0 else ("meet" if meet > power + 10.0 else ("power" if rng.randf() < 0.5 else "meet"))
+		var other := "meet" if weapon == "power" else "power"
+		entry[weapon] = rng.randf_range(MON_WEAPON[0], MON_WEAPON[1])
+		tops[weapon] = rng.randf_range(MON_PEAK_WEAPON[0], MON_PEAK_WEAPON[1])
+		entry[other] = clampf(maxf(_rv(br, other, 0.0), rng.randf_range(MON_SECOND[0], MON_SECOND[1])), MON_SECOND[0], MON_SECOND[1])
+		tops[other] = rng.randf_range(MON_PEAK_SECOND[0], MON_PEAK_SECOND[1])
+		var third := "eye"
+		for k: String in ["speed", "defense"]:
+			if _rv(br, k, 0.0) > _rv(br, third, 0.0):
+				third = k
+		entry[third] = clampf(maxf(_rv(br, third, 0.0), rng.randf_range(MON_THIRD[0], MON_THIRD[1])), MON_THIRD[0], MON_THIRD_CAP)
+		tops[third] = rng.randf_range(MON_PEAK_SECOND[0], MON_PEAK_SECOND[1])
+		for k: String in ["eye", "speed", "defense", "arm"]:
+			if not entry.has(k):
+				entry[k] = maxf(_rv(br, k, 0.0), rng.randf_range(MON_FLOOR[0], MON_FLOOR[1]))
+		for k: String in entry:
+			_set_rating(br, k, entry[k])
+		var f: Dictionary = p.get("fielding", {}).get(p["primary_pos"], {})
+		for k: String in ["defense", "arm"]:
+			if not f.is_empty() and br.get(k) is Dictionary:
+				f[k] = br[k].duplicate()
+	for k: String in entry:
+		var pk := minf(99.0, float(entry[k]) + rng.randf_range(grow[0], grow[1]))
+		if tops.has(k):
+			pk = maxf(pk, float(tops[k]))
+		peak[k] = maxf(float(peak.get(k, 0.0)), pk)
 
 
 ## 本指名のひな形 picks のうち、怪物にする添字（高校生の化け物・大学／社会人の即戦力の怪物を、それぞれの確率で0〜1人）

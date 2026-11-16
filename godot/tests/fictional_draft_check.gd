@@ -347,16 +347,10 @@ func _check_balance() -> void:
 			# 作業62：入団時の水準（投手は総合、野手は換算。FictionalDraft.entry_level）
 			var lv: float = _fd.entry_level(p)
 			var reg := not bool(am["as_ikusei"]) and not p.has("reincarnation")
-			if reg:
-				top = maxf(top, lv)
+			if reg and not bool(p.get("is_monster", false)):
+				top = maxf(top, lv)  # 怪物は別（作業85：高校生も入団時から飛び抜ける。下の _check_monster）
 			if bool(p.get("is_monster", false)):
 				mon_cat[am["category"]] = int(mon_cat.get(am["category"], 0)) + 1
-				var w := int(p["pitching"]["ratings"]["k9"]["value"]) if p["is_pitcher"] else maxi(
-					int(p["batting"]["ratings"]["power"]["value"]), maxi(int(p["batting"]["ratings"]["speed"]["value"]),
-					int(p["batting"]["ratings"]["arm"]["value"])))
-				if (am["category"] == "高校" and w < 88) or (am["category"] != "高校" and lv < 79.5):
-					mon_weak += 1
-					mon_weak_list.append("%s %s %s 武器%d 総合%.1f" % [p["name"], am["category"], am.get("type", ""), w, lv])
 			elif reg and not p.has("dream") and lv >= 79.6:
 				strong_not_monster += 1
 			if str(am.get("band", "")) == "1" and am["category"] != "高校" and not bool(p.get("is_monster", false)):
@@ -414,12 +408,12 @@ func _check_balance() -> void:
 	var tops_bad := tops.filter(func(t: int) -> bool: return t < 76 or t > 84)
 	print("  その年の一番上 %s、1位の帯の大学・社会人など 平均 %.1f、怪物 %s、S・A の野手 %.0f%%"
 		% [tops, ready_avg, mon_cat, 100.0 * sa_bat / maxf(1, sa_all)])
-	_check(tops_bad.is_empty(), "その年の一番上は入団時の総合 78 前後〜82（怪物の年は 84 まで。外れた年 %s）" % [tops_bad])
+	_check(tops_bad.is_empty(), "その年の一番上は入団時の総合 78 前後〜82（怪物は別。外れた年 %s）" % [tops_bad])
 	_check(ready_avg >= 68 and ready_avg <= 76, "大卒・社会人などの1位の帯は B 前後（平均 %.1f）" % ready_avg)
 	_check(hs_top_weak == 0 and hs_top > 0, "高卒の S・A は武器（奪三振・パワー・走力・肩）を1つ B 以上（武器なし %d／%d人）" % [hs_top_weak, hs_top])
 	_check(strong_not_monster == 0, "入団時の総合 A（80以上）は怪物だけ（怪物以外 %d人）" % strong_not_monster)
-	_check(int(mon_cat.get("大学", 0)) + int(mon_cat.get("社会人", 0)) + int(mon_cat.get("独立", 0)) >= 2 and mon_weak == 0,
-		"大学・社会人・独立からも怪物が出て、入団時から飛び抜けている（怪物 %s、足りない %d人 %s）" % [mon_cat, mon_weak, mon_weak_list])
+	_check(int(mon_cat.get("大学", 0)) + int(mon_cat.get("社会人", 0)) + int(mon_cat.get("独立", 0)) >= 2,
+		"大学・社会人・独立からも怪物が出る（怪物 %s）" % [mon_cat])
 	_check(float(sa_bat) / maxf(1, sa_all) >= 0.25, "S・A の野手もそれなりにいる（%.0f%%）" % (100.0 * sa_bat / maxf(1, sa_all)))
 	# 所属の区分：独立リーグ・くふうハヤテは「独立」、専門学校は「専門」、古い社名は無い
 	var bad_cat: Array = []
@@ -847,6 +841,38 @@ func _check_types() -> void:
 ## 作業80（ユーザー 2026-11-09「5位評価ぐらいでもBBの選手とかいるから特別感感じなかった」「怪物みたいなのまだ出てない気がする」）：
 ## 長所の高さが当時の評価に結びつく（D は C どまり、C は B が1つ出るかどうか、B は B が1〜2つ、A は A が1つ以上、S は A が複数）。
 ## 怪物は約3年に1人（1人以上いる年が約3割）で、武器は入団時から S（90前後）。数え方は tests/draft_spread_dump.gd と同じ
+## 作業85：怪物の入団時の形。外れていたら理由、よければ空。投手は 武器（奪三振 92 以上か球速 160 以上）・奪三振／制球／被本塁打が 82 以上・
+## 総合 86〜92・球速 155〜162、野手は ミートかパワーが 92 以上・82 以上の能力が3つ以上。どちらも C 未満（60 未満）の能力なし
+func _monster_bad(p: Dictionary, r: Dictionary) -> String:
+	var lo := 999
+	for k: String in r:
+		if k != "overall" and r[k] is Dictionary:
+			lo = mini(lo, int(r[k]["value"]))
+	if lo < 60:
+		return "弱点（最低%d）" % lo
+	if p["is_pitcher"]:
+		var kmh := int(p["pitching"]["velocity"]["kmh"])
+		var k9 := int(r["k9"]["value"])
+		var ovr := int(r["overall"]["value"])
+		if k9 < 92 and kmh < 160:
+			return "武器なし（奪三振%d・球速%d）" % [k9, kmh]
+		if int(r["bb9"]["value"]) < 82 or int(r["hr9"]["value"]) < 82 or k9 < 82:
+			return "2・3番目が A 未満"
+		if ovr < 85 or ovr > 92:
+			return "総合%d" % ovr
+		if kmh < 155 or kmh > 162:
+			return "球速%d" % kmh
+		return ""
+	var n_a := 0
+	for k: String in ["meet", "power", "eye", "speed", "defense"]:
+		n_a += 1 if int(r[k]["value"]) >= 82 else 0
+	if maxi(int(r["meet"]["value"]), int(r["power"]["value"])) < 92:
+		return "武器なし（ミート%d・パワー%d）" % [int(r["meet"]["value"]), int(r["power"]["value"])]
+	if n_a < 3:
+		return "A 以上が%d個" % n_a
+	return ""
+
+
 func _check_spread() -> void:
 	print("== 作業80：評価ごとの長所の高さ・怪物（30年分） ==")
 	var fd: RefCounted = _fd.new()
@@ -857,6 +883,8 @@ func _check_spread() -> void:
 	var mon_years := 0
 	var mon_n := 0
 	var mon_weak: Array = []
+	var mon_bad85: Array = []
+	var mon_hs85 := 0
 	for y in range(2028, 2028 + years):
 		var mons := 0
 		for p: Dictionary in fd.generate_year(y, rng):
@@ -880,6 +908,11 @@ func _check_spread() -> void:
 				mons += 1
 				if top < 88:
 					mon_weak.append("%s %s 最高%d" % [p["name"], am["category"], top])
+				# 作業85：高校生も大学・社会人と同じ（武器 S・2番目と3番目 A・C 未満の弱点なし・投手は総合 86〜92 と球速 155〜162）
+				var bad := _monster_bad(p, r)
+				if not bad.is_empty():
+					mon_bad85.append("%s %s %s" % [p["name"], am["category"], bad])
+				mon_hs85 += 1 if am["category"] == "高校" else 0
 		mon_years += 1 if mons > 0 else 0
 		mon_n += mons
 	var avg := func(g: String, i: int) -> float:
@@ -898,4 +931,5 @@ func _check_spread() -> void:
 	_check(avg.call("A", 2) >= 0.9, "評価 A は A が1つ以上（A 以上 %.2f）" % avg.call("A", 2))
 	_check(avg.call("S", 2) >= 1.5, "評価 S（目玉）は A が複数（A 以上 %.2f）" % avg.call("S", 2))
 	_check(mon_years >= 4 and mon_years <= 14 and mon_n <= 18, "怪物は約3年に1人（1人以上いる年 %d／%d年・%d人）" % [mon_years, years, mon_n])
+	_check(mon_bad85.is_empty() and mon_hs85 >= 1, "怪物は入団時から飛び抜ける（高校生も。作業85：%d人中 高校 %d人、外れ %s）" % [mon_n, mon_hs85, mon_bad85])
 	_check(mon_weak.is_empty() and avg.call("怪物", 3) >= 0.9, "怪物の武器は入団時から S の90前後（S %.2f、足りない %s）" % [avg.call("怪物", 3), mon_weak])
