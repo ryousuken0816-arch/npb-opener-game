@@ -64,6 +64,33 @@ func scan_day(date: String) -> void:
 				_check_line(date, line, "b", season.batting.get(line["id"], {}), team, opp)
 			for line: Dictionary in res["pitching"][side]:
 				_check_line(date, line, "p", season.pitching.get(line["id"], {}), team, opp)
+			_check_two_way(date, res, side, team, opp)
+
+
+## 二刀流（作業86）：同じ年に投打の節目（二桁勝利・二桁本塁打など。TwoWay.FEATS）を越えたら速報
+func _check_two_way(date: String, res: Dictionary, side: int, team: String, opp: String) -> void:
+	var season: Season = gs.season
+	var today := {}  # 選手ID → [今日の勝, 今日の本塁打]
+	for line: Dictionary in res["batting"][side]:
+		if int(line.get("hr", 0)) > 0:
+			today[line["id"]] = [0, int(line["hr"])]
+	for line: Dictionary in res["pitching"][side]:
+		if int(line.get("w", 0)) > 0:
+			var t: Array = today.get(line["id"], [0, 0])
+			today[line["id"]] = [int(line["w"]), t[1]]
+	for id: String in today:
+		if not (season.batting.has(id) and season.pitching.has(id)):
+			continue
+		var w := int(season.pitching[id].get("w", 0))
+		var hr := int(season.batting[id].get("hr", 0))
+		var feat := TwoWay.feat_crossed(w - int(today[id][0]), hr - int(today[id][1]), w, hr)
+		if feat.is_empty():
+			continue
+		var name: String = season.player_name(id)
+		var body := "%s、%s戦で%s（%s）が今季%d勝・%d本塁打とし、投打の二刀流で%sを達成した。" % [
+			News.date_label(date), GameData.short_name(opp), name, GameData.short_name(team), w, hr, feat]
+		gs.post_news(News.article(date, "feat", "%s（%s）%s達成！" % [name, GameData.short_name(team), feat],
+			body, [id], [team]), "", true)
 
 
 ## 1人の1試合の成績で通算の節目・初記録を越えたか

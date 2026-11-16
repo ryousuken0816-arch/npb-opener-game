@@ -313,10 +313,25 @@ func pit_line_text(id: String) -> String:
 
 
 func _line_text(id: String) -> String:
+	if _two_way_season(id):
+		return pit_line_text(id) + "／" + bat_line_text(id)
 	if _season.pitching.has(id) and (not _season.batting.has(id)
 			or int(_season.pitching[id].get("outs", 0)) >= int(_season.batting[id].get("pa", 0))):
 		return pit_line_text(id)
 	return bat_line_text(id)
+
+
+## 投打の両方で出た（作業86。二刀流）：規定の半分以上の打席と、規定の 1/3 以上の投球回
+func _two_way_season(id: String) -> bool:
+	if not (_season.batting.has(id) and _season.pitching.has(id)):
+		return false
+	var games := _games_of_team(id)
+	return float(_season.batting[id].get("pa", 0)) >= games * QUALIFY_PA_PER_GAME * 0.5 			and int(_season.pitching[id].get("outs", 0)) >= games * QUALIFY_OUTS_PER_GAME / 3.0
+
+
+## 投打の価値を合わせる（二刀流は両方を足す。片方がマイナス＝ふつうの投手の打撃などは大きいほうだけ）
+static func combined_value(bat: float, pit: float) -> float:
+	return maxf(bat, pit) + maxf(minf(bat, pit), 0.0)
 
 
 # --- 各賞 -------------------------------------------------------------------------------
@@ -330,7 +345,7 @@ func _mvp(lg: String, order: Dictionary) -> Variant:
 			values[id] = _bat_value(id)
 	for id: String in _season.pitching:
 		if _league(id) == lg:
-			values[id] = maxf(values.get(id, -INF), _pit_value(id))
+			values[id] = combined_value(values[id], _pit_value(id)) if values.has(id) else _pit_value(id)
 	for id: String in values:
 		var rank := int(order.get(_team(id), 9))
 		var v: float = values[id] + (MVP_CHAMPION_BONUS if rank == 1 else MVP_CHAMPION_BONUS * 0.5 if rank == 2 else 0.0)
@@ -350,8 +365,9 @@ func _rookie(lg: String, is_rookie: Callable) -> Variant:
 			if checked.has(id) or _league(id) != lg:
 				continue
 			checked[id] = true
-			var v := maxf(_bat_value(id) if _season.batting.has(id) else -INF,
-					_pit_value(id) if _season.pitching.has(id) else -INF)
+			var v := _bat_value(id) if _season.batting.has(id) else -INF
+			if _season.pitching.has(id):
+				v = combined_value(v, _pit_value(id)) if _season.batting.has(id) else _pit_value(id)
 			var enough := int(_season.batting.get(id, {}).get("pa", 0)) >= ROOKIE_MIN_PA 				or int(_season.pitching.get(id, {}).get("outs", 0)) >= ROOKIE_MIN_OUTS
 			var better: bool = (enough and not best_key[0]) or (enough == best_key[0] and v > best_key[1])
 			if better and is_rookie.call(id):
@@ -408,7 +424,8 @@ func _best_nine(lg: String) -> Array:
 		else:
 			picks = _top(_candidates_at(lg, pos, n), _bat_value, n, taken)
 		for id in picks:
-			taken[id] = true
+			if pos != "投手":
+				taken[id] = true  # 投手に選ばれた二刀流は打者でも選ばれてよい（作業86）
 			var text := pit_line_text(id) if pos == "投手" else bat_line_text(id)
 			var e := _entry(id, text)
 			e["pos"] = pos

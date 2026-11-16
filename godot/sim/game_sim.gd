@@ -175,13 +175,15 @@ func set_env(env: Dictionary) -> void:
 func play() -> Dictionary:
 	for side in 2:
 		var team: SimTeam = teams[side]
-		_order[side] = team.lineup(use_dh).duplicate()
-		_bench[side] = team.bench(use_dh).duplicate()
+		var starter := team.pick_starter(day)
+		# その日の打順（二刀流の選手の先発・休みで変わる。作業86）
+		var plan: Array = team.game_order(use_dh, day, starter)
+		_order[side] = plan[0]
+		_bench[side] = plan[1]
 		for entry: Array in _order[side]:
 			if entry[0] != null:
 				_fielders[side][entry[1]] = entry[0]
 				_used_ids[side][entry[0].id] = true
-		var starter := team.pick_starter(day)
 		_starter[side] = starter
 		_enter_pitcher(side, starter)
 		_pit_lines[side][starter.id]["gs"] = 1
@@ -238,11 +240,16 @@ func _next_batter(batting: int) -> SimPlayer:
 	# 投手の打順（DHなし）：リリーフや降板間際の先発には代打を出す
 	var pitcher: SimPlayer = _pitcher[batting]
 	if _should_pinch_hit(batting, pitcher):
-		var ph: SimPlayer = _bench[batting].pop_front()
-		_used_ids[batting][ph.id] = true
-		_must_change[batting] = true
-		_bat_line(batting, ph, "代打")
-		return ph
+		var ph: SimPlayer = null
+		while ph == null and not _bench[batting].is_empty():
+			var c: SimPlayer = _bench[batting].pop_front()
+			if not _used_ids[batting].has(c.id):  # 登板した二刀流の選手は代打に出さない（作業86）
+				ph = c
+		if ph != null:
+			_used_ids[batting][ph.id] = true
+			_must_change[batting] = true
+			_bat_line(batting, ph, "代打")
+			return ph
 	return pitcher
 
 
@@ -252,6 +259,8 @@ func _should_pinch_hit(batting: int, pitcher: SimPlayer) -> bool:
 	var lead: int = _score[batting] - _score[1 - batting]
 	if pitcher != _starter[batting]:
 		return _inning >= 6
+	if pitcher.both() and pitcher.batting_value() > -1.0:
+		return false  # 打てる二刀流の先発には代打を出さない（作業86）
 	var near_limit: bool = _pitch_count[batting] >= pitcher.pitch_limit() - 15
 	return (_inning >= 7 and lead <= 0) or (_inning >= 6 and near_limit) \
 			or (lead < -3 and _inning >= 5)
@@ -740,6 +749,11 @@ func _choose_reliever(fielding: int, lead: int) -> SimPlayer:
 	if others.is_empty():
 		others = available
 	if absi(lead) >= 4:
+		# 大差：控えにいる野手が本職の二刀流がいれば敗戦処理（作業86）
+		for p in team.two_way_arms(day):
+			if not _used_ids[fielding].has(p.id):
+				_bench[fielding].erase(p)
+				return p
 		return others[-1]
 	return others[0]
 

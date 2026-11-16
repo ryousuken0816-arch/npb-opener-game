@@ -68,6 +68,10 @@ var last_started := {}
 ## 投手ID → [日, 球数] の直近の登板
 var recent_outings := {}
 var _rotation_index := 0
+## 二刀流の起用（作業86）：選手ID → TwoWay.MODE_*（変えた選手だけ。無ければ二刀流）
+var two_way_modes := {}
+## 起用を変えて打順から外れた二刀流の選手の打順 {選手ID: [[DH あり, 打順の位置], ...]}（戻したら同じ打順に入れる）
+var _two_way_slots := {}
 
 
 ## debut_years: 選手ID → 1軍初出場の年（外国人枠の「日本人扱い」の判定用）
@@ -167,9 +171,14 @@ func _auto_choose(excluded: Dictionary) -> Array[SimPlayer]:
 		chosen.append(p)
 
 	var chosen_fielders: Array[SimPlayer] = []
+	# 二刀流で起用する投手（1軍に選んだ投手）もスタメンの候補に入れる（作業86）
+	var lineup_pool: Array[SimPlayer] = fielders.duplicate()
+	for p in chosen:
+		if p.both():
+			lineup_pool.append(p)
 	for use_dh in [true, false]:
-		for entry: Array in _build_order(use_dh, fielders):
-			if entry[0] != null and entry[0] not in chosen_fielders:
+		for entry: Array in _build_order(use_dh, lineup_pool):
+			if entry[0] != null and not entry[0].is_pitcher and entry[0] not in chosen_fielders:
 				chosen_fielders.append(entry[0])
 	var rest := fielders.filter(func(p: SimPlayer) -> bool: return p not in chosen_fielders)
 	rest.sort_custom(func(a: SimPlayer, b: SimPlayer) -> bool:
@@ -256,7 +265,7 @@ func _plan_pitching_staff(pitchers: Array[SimPlayer]) -> Dictionary:
 
 ## 1軍の野手でスタメン・打順を自動で組む
 func auto_lineup(use_dh: bool) -> void:
-	var order := _build_order(use_dh, active_players(false))
+	var order := _build_order(use_dh, batter_pool())
 	if use_dh:
 		lineup_dh = order
 	else:
@@ -430,7 +439,7 @@ func _rebuild_bench() -> void:
 			if entry[0] != null:
 				in_lineup[entry[0].id] = true
 		var rest: Array[SimPlayer] = []
-		for p in active_players(false):
+		for p in batter_pool():
 			if not in_lineup.has(p.id):
 				rest.append(p)
 		rest.sort_custom(func(a: SimPlayer, b: SimPlayer) -> bool:
@@ -458,6 +467,29 @@ func players_where(is_active_flag: bool, pitchers: bool) -> Array[SimPlayer]:
 
 func active_players(pitchers: bool) -> Array[SimPlayer]:
 	return players_where(true, pitchers)
+
+
+## スタメン・控えに入れられるか：1軍の野手か、二刀流で起用する1軍の投手（作業86）
+func can_bat(p: SimPlayer) -> bool:
+	return active.has(p.id) and (not p.is_pitcher or p.both())
+
+
+## スタメン・控えの候補（1軍の野手＋二刀流で起用する投手。並びは players の順）
+func batter_pool() -> Array[SimPlayer]:
+	var result: Array[SimPlayer] = []
+	for p in players:
+		if can_bat(p):
+			result.append(p)
+	return result
+
+
+## 球団の二刀流の選手（1・2軍とも。専念した選手は入らない）
+func two_way_players() -> Array[SimPlayer]:
+	var result: Array[SimPlayer] = []
+	for p in players:
+		if not p.two_way.is_empty():
+			result.append(p)
+	return result
 
 
 func active_count() -> int:
@@ -583,13 +615,13 @@ func _repair_lineups() -> void:
 		var order: Array = lineup(use_dh)
 		var in_lineup := {}
 		for entry: Array in order:
-			if entry[0] != null and is_active(entry[0]):
+			if entry[0] != null and can_bat(entry[0]):
 				in_lineup[entry[0].id] = true
 		for entry: Array in order:
-			if entry[0] == null or is_active(entry[0]):
+			if entry[0] == null or can_bat(entry[0]):
 				continue
 			var best: SimPlayer = null
-			for p in active_players(false):
+			for p in batter_pool():
 				if in_lineup.has(p.id):
 					continue
 				if best == null or _starter_score(p, entry[1]) > _starter_score(best, entry[1]):
@@ -690,7 +722,7 @@ func lineup_swap_order(use_dh: bool, i: int, j: int) -> void:
 ## 打順の i 番目に控えの p を入れる（打順と守備位置を引き継ぎ、元の選手は控えへ）
 func lineup_replace(use_dh: bool, i: int, p: SimPlayer) -> void:
 	var order := lineup(use_dh)
-	if order[i][0] == null or not is_active(p) or p.is_pitcher:
+	if order[i][0] == null or not can_bat(p):
 		return
 	for entry: Array in order:
 		if entry[0] == p:
@@ -765,6 +797,162 @@ func record_outing(p: SimPlayer, day: int, pitches: int, started: bool) -> void:
 	recent_outings[p.id] = outings
 
 
+# --- 二刀流（作業86） ----------------------------------------------------------------------
+
+## 二刀流の選手が先発した翌日（休み。スタメン・控えから外す）
+func resting(p: SimPlayer, day: int) -> bool:
+	return p.both() and int(last_started.get(p.id, -100)) == day - 1
+
+
+## その日の打順と控え [打順（[SimPlayer or null, 守備位置] の新しい配列）, 控え]。starter はその日の先発投手。
+## 二刀流の選手：先発の日は、打順に入っていれば DH ありは投手兼指名打者（降板しても打つ。守っていた位置は元の指名打者か
+## 控えのいちばん合う選手が守る）、DH なしは自分の打順で投手として打つ（9番＝投手の打順には控えが入って守る）。
+## 打順に入っていなければ DH ありは打たない・DH なしは9番で打つ。先発の翌日は休み（空いた打順は控えのいちばん合う選手）。
+## 二刀流の選手がいなければ lineup・bench の写しそのまま
+func game_order(use_dh: bool, day: int, starter: SimPlayer) -> Array:
+	var order: Array = []
+	for entry: Array in lineup(use_dh):
+		order.append([entry[0], entry[1]])
+	var subs: Array[SimPlayer] = bench(use_dh).duplicate()
+	var any := starter != null and starter.both()
+	for p in subs:
+		any = any or p.both()
+	for entry: Array in order:
+		any = any or (entry[0] != null and (entry[0] as SimPlayer).both())
+	if not any:
+		return [order, subs]
+	for p in subs.duplicate():
+		if p == starter or resting(p, day):
+			subs.erase(p)
+	for entry: Array in order:
+		var p: SimPlayer = entry[0]
+		if p != null and p != starter and resting(p, day):
+			var sub := _best_sub(entry[1], subs)
+			if sub != null:
+				entry[0] = sub
+				subs.erase(sub)
+	if starter == null or not starter.both():
+		return [order, subs]
+	var i := -1
+	for k in order.size():
+		if order[k][0] == starter:
+			i = k
+	if i < 0:
+		return [order, subs]
+	var pos: String = order[i][1]
+	if use_dh:
+		if pos == "指名打者":
+			return [order, subs]
+		for entry: Array in order:
+			if entry[1] != "指名打者":
+				continue
+			var dh: SimPlayer = entry[0]
+			var sub := _best_sub(pos, subs)
+			if sub != null and (dh == null or _starter_score(sub, pos) > _starter_score(dh, pos)):
+				entry[0] = sub
+				subs.erase(sub)
+				if dh != null:
+					subs.append(dh)
+			entry[1] = pos
+		order[i][1] = "指名打者"
+	else:
+		var k := -1
+		for j in order.size():
+			if order[j][0] == null:
+				k = j
+		order[i] = [null, "投手"]
+		if k >= 0:
+			var sub := _best_sub(pos, subs)
+			if sub != null:
+				order[k] = [sub, pos]
+				subs.erase(sub)
+			else:
+				order.remove_at(k)  # 控えがいない（ほぼ無い）
+	return [order, subs]
+
+
+## 控え subs のうち、守備位置 pos にいちばん合う選手（いなければ null）
+func _best_sub(pos: String, subs: Array[SimPlayer]) -> SimPlayer:
+	var best: SimPlayer = null
+	for p in subs:
+		if best == null or _starter_score(p, pos) > _starter_score(best, pos):
+			best = p
+	return best
+
+
+## 野手が本職の二刀流（二刀流で起用）で、その日に投げられる選手（大差の試合の救援に使う。前の2日に投げていない）
+func two_way_arms(day: int) -> Array[SimPlayer]:
+	var result: Array[SimPlayer] = []
+	for p in batter_pool():
+		if p.both() and not p.is_pitcher and int(last_pitched.get(p.id, -100)) < day - 2:
+			result.append(p)
+	return result
+
+
+## 二刀流の選手の起用を変える（TwoWay.MODE_*）。投手⇔野手の側が変わったら持ち場・スタメンを直す。
+## 打てるようになった選手は、今の指名打者より良ければ DH ありの指名打者に入れる
+func set_two_way_mode(p: SimPlayer, m: String) -> void:
+	if p.two_way.is_empty() or not m in TwoWay.MODES:
+		return
+	two_way_modes[p.id] = m
+	if p.mode == m:
+		return
+	var was_pitcher := p.is_pitcher
+	var slots: Array = []
+	for use_dh in [true, false]:
+		var order := lineup(use_dh)
+		for i in order.size():
+			if order[i][0] == p:
+				slots.append([use_dh, i])
+	p.set_mode(m)
+	if is_active(p) and was_pitcher != p.is_pitcher:
+		if was_pitcher:
+			_take_out_pitcher(p)
+		else:
+			_place_pitcher(p, ROLE_ROTATION if p.role == "先発" else ROLE_RELIEF, -1)
+	if not can_bat(p) and not slots.is_empty():
+		_two_way_slots[p.id] = slots
+	_repair_lineups()
+	if can_bat(p):
+		# 前に外れた打順があればそこへ戻す。無ければ、今の指名打者より良いとき DH ありの指名打者に
+		var back: Array = _two_way_slots.get(p.id, [])
+		_two_way_slots.erase(p.id)
+		for slot: Array in back:
+			var order := lineup(slot[0])
+			var i: int = slot[1]
+			if i < order.size() and order[i][0] != null and _pos_in(order, p) < 0:
+				order[i][0] = p
+		var in_dh := _pos_in(lineup_dh, p) >= 0
+		if not in_dh:
+			for entry: Array in lineup_dh:
+				if entry[1] == "指名打者" and entry[0] != null 						and _starter_score(p, "指名打者") > _starter_score(entry[0], "指名打者"):
+					entry[0] = p
+		_rebuild_bench()
+
+
+## 打順の中の p の位置（いなければ -1）
+static func _pos_in(order: Array, p: SimPlayer) -> int:
+	for i in order.size():
+		if order[i][0] == p:
+			return i
+	return -1
+
+
+## 起用の設定（選手ID → TwoWay.MODE_*）をまとめて当て、1軍・持ち場・スタメンを組み直す（シーズンの初め）
+func apply_two_way_modes(modes: Dictionary) -> void:
+	var changed := false
+	for id: Variant in modes:
+		var p: SimPlayer = by_id.get(str(id))
+		if p == null or p.two_way.is_empty():
+			continue
+		two_way_modes[p.id] = str(modes[id])
+		if p.mode != str(modes[id]):
+			p.set_mode(str(modes[id]))
+			changed = true
+	if changed:
+		auto_register()
+
+
 # --- セーブ／ロード ----------------------------------------------------------------------
 
 ## 編成の状態（1軍登録・オーダー・ローテ・ブルペン・抹消日・登板間隔・方針）。選手は ID で持つ
@@ -787,11 +975,20 @@ func to_save() -> Dictionary:
 		"closer": closer.id if closer != null else null, "relievers": ids.call(relievers),
 		"tactics": tactics, "last_pitched": last_pitched, "last_started": last_started,
 		"recent_outings": recent_outings, "rotation_index": _rotation_index,
+		"two_way_modes": two_way_modes,
 	}
 
 
 ## to_save() の中身を戻す（選手はこの編成にいる選手だけ。いない ID は飛ばす）
 func from_save(d: Dictionary) -> void:
+	two_way_modes = {}
+	var modes: Variant = d.get("two_way_modes")
+	if modes is Dictionary:
+		for id: Variant in modes:
+			var p: SimPlayer = by_id.get(str(id))
+			if p != null and not p.two_way.is_empty():
+				two_way_modes[p.id] = str(modes[id])
+				p.set_mode(str(modes[id]))
 	var order: Array = d.get("players", [])
 	var rank := {}
 	for i in order.size():

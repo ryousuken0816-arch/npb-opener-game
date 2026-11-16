@@ -744,11 +744,15 @@ func renew_contracts(season_year: int, season: Season) -> ContractRenewal:
 		if p.is_empty():
 			continue
 		var stats: Dictionary = {}
+		var other: Dictionary = {}
 		if season != null:
-			stats = (season.pitching if p.get("is_pitcher", false) else season.batting).get(id, {})
+			var pitcher: bool = p.get("is_pitcher", false)
+			stats = (season.pitching if pitcher else season.batting).get(id, {})
+			if TwoWay.is_two_way(p):  # 二刀流は投打の両方で査定（作業86）
+				other = (season.batting if pitcher else season.pitching).get(id, {})
 		var foreign := RosterRules.is_foreign(p, next_year, debut.get(id))
 		var years := years_in_npb(id, next_year)
-		var amount := Salary.renew(prev, p, stats, years, foreign, next_year)
+		var amount := Salary.renew(prev, p, stats, years, foreign, next_year, other)
 		_set_salary(id, amount, next_year)
 		if mine:
 			contracts.add_row(id, prev, amount, "")

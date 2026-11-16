@@ -159,13 +159,19 @@ static func rookie(draft: Dictionary, year: int) -> int:
 
 ## 契約更改。current：今の年俸、p：能力値（シーズン後）、season_stats：今季のゲーム内成績
 ## （打者は Season.batting、投手は Season.pitching の1人分。無ければ空）、years：来季の在籍年数
+## other_stats：二刀流（作業86）のもう一方の今季の成績（投手が本職なら打撃）。渡すと投打の両方の額を足して査定する
 static func renew(current: int, p: Dictionary, season_stats: Dictionary, years: int, foreign: bool,
-		year: int) -> int:
-	var a := ability(p)
-	var season := season_ability(p, season_stats, year - 1)  # year は来季。成績は今季（year − 1）の水準で見る
-	var z: float = lerpf(a[0], season[0], SEASON_WEIGHT)
-	var playing: float = lerpf(a[1], season[1], SEASON_PLAYING_WEIGHT)
-	var value := market_value(z, playing, a[2])
+		year: int, other_stats: Dictionary = {}) -> int:
+	var t := _renew_value(p, season_stats, year)
+	var value: float = t[0]
+	var season: Array = t[1]
+	if not other_stats.is_empty() and TwoWay.is_two_way(p):
+		var q := p.duplicate()
+		q["is_pitcher"] = not bool(p.get("is_pitcher", false))
+		var t2 := _renew_value(q, other_stats, year)
+		value += float(t2[0])
+		if float(t2[1][1]) >= SEASON_PLAYING_MIN * 0.7 and float(t2[1][0]) > float(season[0]):
+			season = t2[1]
 	var target := cap(value * (FOREIGN_PREMIUM if foreign else seniority(years)))
 	target = maxf(target, FOREIGN_MIN if foreign else floor_for(years, year))
 	# 今季の成績がはっきり良い（悪い）年は、能力値（直近3年）が下り坂（上り坂）でも下げない（上げない）
@@ -176,6 +182,15 @@ static func renew(current: int, p: Dictionary, season_stats: Dictionary, years: 
 	var cut := CUT_LIMIT_HIGH if current > CUT_LIMIT_BORDER else CUT_LIMIT_LOW
 	var upper := minf(current * RAISE_MAX, current + RAISE_MAX_AMOUNT)
 	return round_amount(clampf(target, current * (1.0 - cut), maxf(upper, current)))
+
+
+## 能力値と今季の成績から [市場価値（在籍年数・最低額の前）, season_ability の結果]
+static func _renew_value(p: Dictionary, season_stats: Dictionary, year: int) -> Array:
+	var a := ability(p)
+	var season := season_ability(p, season_stats, year - 1)  # year は来季。成績は今季（year − 1）の水準で見る
+	var z: float = lerpf(a[0], season[0], SEASON_WEIGHT)
+	var playing: float = lerpf(a[1], season[1], SEASON_PLAYING_WEIGHT)
+	return [market_value(z, playing, a[2]), season]
 
 
 ## 契約更改で自球団が提示できる範囲 [下限, 上限]。current：今の年俸、proposed：査定額（renew の結果）。
