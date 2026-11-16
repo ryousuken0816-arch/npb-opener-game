@@ -19,9 +19,13 @@ const DEADLINE := "07-31"
 const MIN_PLAYING := 0.35
 ## 年齢の係数 [この年齢まで, 係数]
 const AGE_FACTORS := [[23, 1.35], [26, 1.2], [29, 1.05], [32, 0.85], [35, 0.6], [99, 0.4]]
-## 年俸の負担（価値から年俸 × この割合を引く。価値の SURPLUS_MIN 倍は残す）
+## 年俸の負担：今の実力の市場価値より高くもらっている分（割高な分）× この割合を引く。価値の SURPLUS_MIN 倍は残す。
+## 作業87：前は年俸そのものの半分を引いていたので、高年俸の主力ほど安く見えた（「受けるだけで得」「主力を安く取れる」）
 const SALARY_WEIGHT := 0.5
 const SURPLUS_MIN := 0.15
+## 伸びしろ（作業87）：この年齢までの選手は、将来性（Depth のスコア）の市場価値 × 割合 も価値の候補にする（大きいほう）。
+## [この年齢まで, 割合]（若いほど先が長いが不確か）
+const POTENTIAL_RATES := [[21, 0.5], [24, 0.55], [27, 0.6]]
 ## 価値の下限（万円。若手・控えも0にはしない）
 const VALUE_FLOOR := 300.0
 ## 守備位置の需要（Draft.NEED_SHARE の割合と比べた過不足）の効き方と幅
@@ -34,17 +38,24 @@ const RATIO_SURE := 1.5
 const STAR_WORDS := ["", "かなり低い", "低い", "五分五分", "高い", "かなり高い"]
 
 
-## 選手の価値（万円の目安）
-static func player_value(p: Dictionary, at_year: int, salary: int) -> float:
+## 選手の価値（万円の目安）。future：将来性（Depth.now_score と同じ目盛り。GameState.trade_future）。NAN なら見ない
+static func player_value(p: Dictionary, at_year: int, salary: int, future := NAN) -> float:
 	var a := Salary.ability(p)
-	var value := Salary.market_value(a[0], maxf(float(a[1]), MIN_PLAYING), a[2])
+	var base := Salary.market_value(a[0], maxf(float(a[1]), MIN_PLAYING), a[2])
+	var value := base
 	var age := FreeAgency.age_of(p, at_year)
 	if age > 0:
 		for f: Array in AGE_FACTORS:
 			if age <= int(f[0]):
 				value *= float(f[1])
 				break
-	value = maxf(value - SALARY_WEIGHT * salary, value * SURPLUS_MIN)
+		if not is_nan(future):
+			for r: Array in POTENTIAL_RATES:
+				if age <= int(r[0]):
+					var z := minf(future - Depth.PLAYING_WEIGHT, Salary.Z_MAX)
+					value = maxf(value, Salary.market_value(z, 1.0, a[2]) * float(r[1]))
+					break
+	value = maxf(value - SALARY_WEIGHT * maxf(0.0, salary - base), value * SURPLUS_MIN)
 	return maxf(value, VALUE_FLOOR)
 
 
@@ -63,21 +74,28 @@ static func need_factor(league: LeagueRoster, team: String, group: String) -> fl
 
 ## 相手の見立て。give：自球団が出す選手、get：相手から受け取る選手、money：自球団が払う金銭（万円）。
 ## {chance（0〜1）, stars（1〜5）, gain（相手が受け取る価値）, loss（相手が出す価値）}
+## future：選手ID → 将来性（GameState.trade_future。空なら見ない）。sure：この比で成功率 100%（相手から打診が
+## 来ているときはその案の比。作業87）
 static func evaluate(league: LeagueRoster, at_year: int, partner: String, give: Array, get_ids: Array,
-		money: int) -> Dictionary:
-	var gain := float(money)
-	for id: String in give:
-		var p := GameData.player(id)
-		gain += player_value(p, at_year, league.salary_of(id)) \
-			* need_factor(league, partner, LeagueRoster.pos_group(p))
-	var loss := 0.0
-	for id: String in get_ids:
-		var p := GameData.player(id)
-		loss += player_value(p, at_year, league.salary_of(id)) \
-			* need_factor(league, partner, LeagueRoster.pos_group(p))
+		money: int, future := Callable(), sure := RATIO_SURE) -> Dictionary:
+	var gain := float(money) + side_value(league, at_year, partner, give, future)
+	var loss := side_value(league, at_year, partner, get_ids, future)
 	var ratio := gain / maxf(loss, 1.0)
-	var chance := clampf((ratio - RATIO_ZERO) / (RATIO_SURE - RATIO_ZERO), 0.0, 1.0)
-	return {"chance": chance, "stars": stars_of(chance), "gain": gain, "loss": loss}
+	var chance := clampf((ratio - RATIO_ZERO) / (maxf(sure, RATIO_ZERO + 0.05) - RATIO_ZERO), 0.0, 1.0)
+	return {"chance": chance, "stars": stars_of(chance), "gain": gain, "loss": loss, "ratio": ratio}
+
+
+## 選手たちの価値の合計を team の目で（守備位置の需要を掛ける。team が空なら掛けない）
+static func side_value(league: LeagueRoster, at_year: int, team: String, ids: Array, future := Callable()) -> float:
+	var total := 0.0
+	for id: String in ids:
+		var p := GameData.player(id)
+		var fut: float = float(future.call(id)) if future.is_valid() else NAN
+		var v := player_value(p, at_year, league.salary_of(id), fut)
+		if not team.is_empty():
+			v *= need_factor(league, team, LeagueRoster.pos_group(p))
+		total += v
+	return total
 
 
 static func stars_of(chance: float) -> int:
@@ -121,7 +139,13 @@ static func check(league: LeagueRoster, partner: String, give: Array, get_ids: A
 ## トレードを成立させる（所属を入れ替えて出来事に記録）。動いた選手 [{pid, name, from, to}]
 static func execute(league: LeagueRoster, partner: String, give: Array, get_ids: Array, money: int,
 		date: String) -> Array[Dictionary]:
-	var user := league.user_team
+	return execute_between(league, league.user_team, partner, give, get_ids, money, date)
+
+
+## 2球団のあいだのトレード（CPU球団どうしも。作業87）。team が give＋金銭を出し、partner が get_ids を出す
+static func execute_between(league: LeagueRoster, team: String, partner: String, give: Array, get_ids: Array,
+		money: int, date: String) -> Array[Dictionary]:
+	var user := team
 	var moves: Array[Dictionary] = []
 	for id: String in give:
 		moves.append({"pid": id, "name": league.names.get(id, id), "from": user, "to": partner})
