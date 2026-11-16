@@ -5,6 +5,7 @@ extends SceneTree
 ##    投打の両方の成績が付く・先発した翌日は打たない・DH なしの試合で投げて打つ・DH ありの試合で投手兼 DH。
 ##    日本ハムの大谷は DH の試合で投手兼 DH。リーグの成績の水準が崩れない
 ## 3. 起用の切り替え（二刀流／投手に専念／野手に専念）・SimTeam のセーブ／ロード
+## 5. 架空の候補：本格二刀流（型 A）は約10〜15年に1人、投手でエース級・打者で主軸級、超目玉で競合
 ## 4. ゲーム（GameState）で起用設定の画面から切り替え、日付を進めても試合が回る。年俸の査定・MVP の価値・節目のニュース
 ##
 ##   godot --headless --path godot -s res://tests/two_way_check.gd
@@ -27,6 +28,7 @@ func _run() -> void:
 	_gs = root.get_node("GameState")
 	var t0 := Time.get_ticks_msec()
 	_check_real()
+	_check_candidates()
 	_check_season()
 	_check_modes()
 	await _check_game()
@@ -61,6 +63,44 @@ func _check_real() -> void:
 			o = p
 	_check(o != null and not o.primary_pos.is_empty() and o.is_pitcher and o.both() and o in team.rotation and team.can_bat(o),
 		"2014年の大谷（能力値では%s）も投手として先発ローテーションに入り、打者の候補にもなる" % (o.primary_pos if o != null else "?"))
+
+
+# --- 5. 架空の候補 --------------------------------------------------------------------------------
+
+func _check_candidates() -> void:
+	print("
+== 架空の候補の本格二刀流（型 A） ==")
+	var fd: RefCounted = (load("res://sim/fictional_draft.gd") as GDScript).new()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 8686
+	var years := 80
+	var aces: Array = []
+	for y in range(2028, 2028 + years):
+		for p: Dictionary in fd.generate_year(y, rng):
+			var tw: Dictionary = p.get("two_way", {})
+			if bool(tw.get("active", false)) and str(tw["type"]) == "A":
+				PitchArsenal.ensure(p, y + 1)
+				aces.append(p)
+	_check(aces.size() >= 2 and aces.size() <= 14, "型 A は %d年で %d人（約10〜15年に1人）" % [years, aces.size()])
+	for p: Dictionary in aces:
+		var pr: Dictionary = p["pitching"]["ratings"]
+		var br: Dictionary = p["batting"]["ratings"]
+		var am: Dictionary = p["amateur"]
+		var best := PitchArsenal.best_pitch(p)
+		var kmh := int(p["pitching"]["velocity"]["kmh"])
+		var bat := maxi(int(br["meet"]["value"]), int(br["power"]["value"]))
+		print("  %s %s：%dkm 奪三振%d 総合%d 決め球%s%d／ミート%d パワー%d（評価%s・%d球団・%s）" % [p["name"], am["category"], kmh,
+			int(pr["k9"]["value"]), int(pr["overall"]["value"]), best.get("name", "-"), int(best.get("move", 0)),
+			int(br["meet"]["value"]), int(br["power"]["value"]), am["grade"], int(am["bids"]), am["projected"]])
+		_check(kmh >= 155 and int(pr["k9"]["value"]) >= 84 and int(best.get("move", 0)) >= 5,
+			"%s：投手でエース級（球速 155km 以上・奪三振 A 以上・決め球）" % p["name"])
+		_check(bat >= 80, "%s：打者で主軸級（ミートかパワーが A 以上）" % p["name"])
+		_check(am["grade"] == "S" and int(am["bids"]) >= 3 and bool(p["is_pitcher"]) and p["fielding"].has("外野手"),
+			"%s：評価 S・3球団以上が競合・投手で登録・外野も守れる" % p["name"])
+		var q: Dictionary = p.duplicate(true)
+		q["team"] = TIGERS
+		var sp := SimPlayer.from_rating(q)
+		_check(sp.both() and sp.is_pitcher and (sp.meet > 0.5 or sp.power > 0.5), "%s：試合では二刀流で起用し、本当の打撃で打つ" % p["name"])
 
 
 # --- 2. 1シーズン ------------------------------------------------------------------------------

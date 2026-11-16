@@ -25,7 +25,7 @@ const SPIKE_RATE := {
 }
 
 ## 二刀流の発生確率（ドラフト1年あたりの期待人数）
-const TWO_WAY_A_RATE := 0.028  # 本格二刀流の怪物：約36年に1人
+const TWO_WAY_A_RATE := 0.075  # 本格二刀流の怪物：約13年に1人（作業86。投打とも主力級に作り直すのは FictionalDraft._two_way_ace）
 const TWO_WAY_B_RATE := 0.25   # 投手本職＋打撃優秀：4年に1人
 const TWO_WAY_C_RATE := 0.15   # 野手本職＋投手可能：6〜7年に1人
 const TWO_WAY_D_RATE := 0.55   # 未完の二刀流素材（高校生）：2年に1人強
@@ -484,7 +484,7 @@ func _two_way_weight(c: Dictionary, type: String) -> float:
 	match type:
 		"A":
 			# 本格二刀流の怪物：高校・大学の上位才能
-			if cat in ["高校", "大学"] and t >= 0.5:
+			if cat in ["高校", "大学"] and t >= 0.5 and not bool(c.get("amateur", {}).get("as_ikusei", false)):
 				return maxf(t + 1.0, 0.1)
 			return 0.0
 		"B":

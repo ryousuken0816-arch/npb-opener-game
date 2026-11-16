@@ -73,6 +73,20 @@ const MON_GROW_HS := [6.0, 10.0]
 const MON_GROW := [3.0, 6.0]
 const MON_VELO_GROW_HS := [2.0, 5.0]
 const MON_VELO_GROW := [1.0, 3.0]
+## 本格二刀流（型 A。作業86「二刀流でめっちゃ強いやつがたまに出るのがワクワクする」）：投手でエース級（球速 155km 以上・決め球あり）
+## かつ打者で主軸級（ミートかパワーが A〜S）。怪物と同じ超目玉で何球団も競合。範囲は [下限, 上限]（元の値が高ければ残す）
+const TW_K9 := [86.0, 93.0]
+const TW_BB9 := [66.0, 80.0]
+const TW_HR9 := [74.0, 84.0]
+const TW_STAMINA := [64.0, 76.0]
+const TW_VELO := [155.0, 160.0]
+const TW_BAT_WEAPON := [82.0, 92.0]
+const TW_BAT_SECOND := [70.0, 80.0]
+const TW_BAT_FLOOR := [60.0, 72.0]
+const TW_ARM := [82.0, 92.0]
+const TW_DEFENSE := [58.0, 68.0]
+## ピーク：奪三振・打撃の武器は 94〜99、ほかは入団時＋伸びしろ（怪物と同じ MON_GROW_HS・MON_GROW）
+const TW_PEAK_TOP := [94.0, 99.0]
 ## 年の質（豊作・不作）→ その年の全員を quality × QUALITY_SHIFT（±QUALITY_SHIFT_MAX まで）上下。
 ## 評価 B 以下はその倍（豊作の年は中位の層も厚い）。S・A は不作の年でも −1 まで（その年の一番上を78前後に保つ）
 const QUALITY_SHIFT := 8.0
@@ -403,8 +417,14 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 	for p: Dictionary in out:
 		if bool(p.get("is_monster", false)) and not bool(p["amateur"].get("as_ikusei", false)):
 			_monsterize(p, rng)  # 怪物の入団時・ピーク（作業85）
+		var two_way_ace := str(p.get("two_way", {}).get("type", "")) == "A" and bool(p["two_way"].get("active", false))
+		if two_way_ace:
+			_two_way_ace(p, rng)  # 本格二刀流の入団時・ピーク（作業86）
 		FictionalTypes.untie(p, rng)  # 同じ選手の中で同じ数字が並ばないように（作業73）
 		fill_fielding(p)
+		if two_way_ace:
+			var br: Dictionary = p["batting"]["ratings"]
+			p["fielding"]["外野手"] = _field_entry("外野手", _rv(br, "defense", 60.0), _rv(br, "arm", 85.0))
 		set_trajectory(p)
 		_sync_peak(p)
 
@@ -473,6 +493,68 @@ func _monsterize(p: Dictionary, rng: RandomNumberGenerator) -> void:
 		if tops.has(k):
 			pk = maxf(pk, float(tops[k]))
 		peak[k] = maxf(float(peak.get(k, 0.0)), pk)
+
+
+## 本格二刀流（型 A。作業86）の入団時の能力・球速とピーク、超目玉の扱い。投手として登録し（先発）、打撃・外野の守備も持つ。
+## 投手：奪三振 86〜93（決め球が付く）・制球 66〜80・被本塁打 74〜84・スタミナ 64〜76・球速 155〜160km。
+## 打者：ミートかパワーが 82〜92（A〜S）、もう一方 70〜80、選球眼・走力 60〜72、肩 82〜92・守備 58〜68
+func _two_way_ace(p: Dictionary, rng: RandomNumberGenerator) -> void:
+	var hs := str(p["category"]) == "高校"
+	var grow: Array = MON_GROW_HS if hs else MON_GROW
+	if not p.get("pitching") is Dictionary or not p.get("batting") is Dictionary:
+		return
+	var peak: Dictionary = p["growth"]["peak"]
+	var pit: Dictionary = p["pitching"]
+	if not pit.get("ratings") is Dictionary:
+		pit["ratings"] = {}
+	var pr: Dictionary = pit["ratings"]
+	var bat: Dictionary = p["batting"]
+	if not bat.get("ratings") is Dictionary:
+		bat["ratings"] = {}
+	var br: Dictionary = bat["ratings"]
+	var entry := {}  # [ratings, 能力名, 値]
+	var up := func(r: Dictionary, k: String, range_: Array) -> void:
+		var v := clampf(maxf(_rv(r, k, 0.0), rng.randf_range(range_[0], range_[1])), range_[0], maxf(range_[1], _rv(r, k, 0.0)))
+		_set_rating(r, k, v)
+		entry[k] = v
+	up.call(pr, "k9", TW_K9)
+	up.call(pr, "bb9", TW_BB9)
+	up.call(pr, "hr9", TW_HR9)
+	up.call(pr, "stamina", TW_STAMINA)
+	_set_rating(pr, "overall", (_rv(pr, "k9", 80.0) + _rv(pr, "bb9", 70.0) + _rv(pr, "hr9", 75.0)) / 3.0)
+	entry["overall"] = _rv(pr, "overall", 0.0)
+	if not pit.get("velocity") is Dictionary:
+		pit["velocity"] = {"kmh": 150, "source": "fictional"}
+	var kmh := maxf(float(pit["velocity"].get("kmh", 0)), rng.randf_range(TW_VELO[0], TW_VELO[1]))
+	pit["velocity"]["kmh"] = roundi(kmh)
+	var vg: Array = MON_VELO_GROW_HS if hs else MON_VELO_GROW
+	peak["velocity"] = minf(MON_VELO_PEAK_MAX, maxf(float(peak.get("velocity", 0.0)), kmh + rng.randf_range(vg[0], vg[1])))
+	pit["role"] = "先発"
+	var meet := _rv(br, "meet", 0.0)
+	var power := _rv(br, "power", 0.0)
+	var weapon := "power" if power > meet + 10.0 else ("meet" if meet > power + 10.0 else ("power" if rng.randf() < 0.65 else "meet"))
+	up.call(br, weapon, TW_BAT_WEAPON)
+	up.call(br, "meet" if weapon == "power" else "power", TW_BAT_SECOND)
+	up.call(br, "eye", TW_BAT_FLOOR)
+	up.call(br, "speed", TW_BAT_FLOOR)
+	up.call(br, "arm", TW_ARM)
+	up.call(br, "defense", TW_DEFENSE)
+	for k: String in entry:
+		var pk := minf(99.0, float(entry[k]) + rng.randf_range(grow[0], grow[1]))
+		if k == "k9" or k == weapon:
+			pk = maxf(pk, rng.randf_range(TW_PEAK_TOP[0], TW_PEAK_TOP[1]))
+		peak[k] = maxf(float(peak.get(k, 0.0)), pk)
+	# 投手として登録する（野手が本職の候補でも先発する。打撃・外野の守備は持ったまま）
+	p["is_pitcher"] = true
+	p["side"] = "P"
+	p["primary_pos"] = "投手"
+	var am: Dictionary = p["amateur"]
+	if not bool(am.get("as_ikusei", false)):
+		am["grade"] = "S"
+		am["band"] = "1"
+		am["as_round"] = 1
+		am["projected"] = "超目玉（二刀流）"
+		am["bids"] = maxi(int(am.get("bids", 1)), rng.randi_range(3, 6))
 
 
 ## 本指名のひな形 picks のうち、怪物にする添字（高校生の化け物・大学／社会人の即戦力の怪物を、それぞれの確率で0〜1人）
