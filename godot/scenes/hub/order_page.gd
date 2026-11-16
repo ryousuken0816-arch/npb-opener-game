@@ -436,12 +436,22 @@ func _swap_button(enabled: bool, active: bool) -> Button:
 	return b
 
 
-## 二刀流の印（作業86）
-func _two_way_badge() -> Label:
-	var badge := UiTheme.small_label("二", 13, Color("c62828"), 800)
+## 二刀流の印（作業86。赤い四角に白の「二」）
+func _two_way_badge() -> Control:
+	var box := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("c62828")
+	style.set_corner_radius_all(4)
+	style.content_margin_left = 2
+	style.content_margin_right = 2
+	box.add_theme_stylebox_override("panel", style)
+	box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.mouse_filter = Control.MOUSE_FILTER_PASS
+	var badge := UiTheme.small_label("二", 13, Color.WHITE, 800)
 	badge.tooltip_text = "二刀流：先発の日は投手兼DH（DHなしは自分の打順で投げて打つ）、翌日は休み"
-	badge.custom_minimum_size = Vector2(14, 0)
-	return badge
+	badge.mouse_filter = Control.MOUSE_FILTER_PASS
+	box.add_child(badge)
+	return box
 
 
 func _arrow_button(text: String, enabled: bool) -> Button:
