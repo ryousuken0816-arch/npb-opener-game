@@ -45,6 +45,12 @@ var throws: String
 var primary_pos := ""  ## 能力値データの primary_pos（"投手" "捕手" "外野手" など。不明は空）
 var is_foreign := false  ## 外国人枠の対象（RosterRules.is_foreign）
 var is_ikusei := false  ## 育成選手（支配下登録するまで1軍に登録できない。GameState.mark_ikusei が付ける）
+## 二刀流（作業86。TwoWay）：型（"A"〜"D"・"実"。"" は二刀流でない）と起用（TwoWay.MODE_*）。
+## is_pitcher は起用で決まる側（二刀流なら本職、専念したらその側）。本職は primary_pitcher
+var two_way := ""
+var mode := ""
+var primary_pitcher := false
+var _bat := {}  ## 本来の打撃の z 値（二刀流の投手が打つとき・起用を変えたときに使う）
 
 # 打撃（z 値）
 var meet := 0.0
@@ -104,12 +110,10 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 	else:
 		for key in ["meet", "power", "eye", "speed"]:
 			s.set(key, z_of(null, UNKNOWN_BATTING))
+	s.primary_pitcher = s.is_pitcher
+	s._bat = {"meet": s.meet, "power": s.power, "eye": s.eye, "speed": s.speed, "trajectory": s.trajectory}
 	if s.is_pitcher:
-		s.meet = PITCHER_BAT_MEET
-		s.power = PITCHER_BAT_POWER
-		s.eye = PITCHER_BAT_EYE
-		s.speed = minf(s.speed, PITCHER_BAT_SPEED)
-		s.trajectory = 1
+		s._pitcher_batting()
 
 	var fielding: Variant = p.get("fielding")
 	if fielding is Dictionary:
@@ -140,6 +144,14 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 		var role_value: Variant = pitching.get("role")
 		s.role = role_value if role_value != null else ""
 		s.pitching_sample = float(pitching.get("sample", {}).get("outs_1", 0.0))
+	# 二刀流（作業86）：投手でも本当の打撃で打つ
+	s.two_way = TwoWay.type_of(p)
+	if not s.two_way.is_empty():
+		if TwoWay.is_full(s.two_way) and s.has_pitching:
+			s.primary_pitcher = true  # 本格二刀流は投手として登録（野手が本職でも先発する）
+			if s.role.is_empty():
+				s.role = "先発"
+		s.set_mode(TwoWay.MODE_BOTH)
 	return s
 
 
@@ -148,8 +160,41 @@ static func from_rating(p: Dictionary) -> SimPlayer:
 func refresh_from(p: Dictionary) -> void:
 	var s := SimPlayer.from_rating(p)
 	for key in ["meet", "power", "eye", "speed", "trajectory", "defense", "arm", "familiarity",
-			"overall", "k9", "bb9", "hr9", "stamina", "k_same", "k_opp", "gb"]:
+			"overall", "k9", "bb9", "hr9", "stamina", "k_same", "k_opp", "gb", "_bat"]:
 		set(key, s.get(key))
+	if not two_way.is_empty():
+		set_mode(mode)
+
+
+## 投手の打撃（実際の投手の打撃成績相当）にする
+func _pitcher_batting() -> void:
+	meet = PITCHER_BAT_MEET
+	power = PITCHER_BAT_POWER
+	eye = PITCHER_BAT_EYE
+	speed = minf(float(_bat.get("speed", speed)), PITCHER_BAT_SPEED)
+	trajectory = 1
+
+
+## 二刀流の起用を変える（作業86。二刀流でない選手は何もしない）。is_pitcher と打撃の z 値が変わる
+func set_mode(m: String) -> void:
+	if two_way.is_empty() or not m in TwoWay.MODES:
+		return
+	mode = m
+	if m == TwoWay.MODE_BOTH:
+		is_pitcher = primary_pitcher
+	else:
+		is_pitcher = m == TwoWay.MODE_PITCH
+	if is_pitcher and not has_pitching:
+		is_pitcher = false  # 投手の能力が無い（念のため）
+	for key: String in _bat:
+		set(key, _bat[key])
+	if m == TwoWay.MODE_PITCH:
+		_pitcher_batting()
+
+
+## 投打の両方に出る（二刀流で起用している）
+func both() -> bool:
+	return not two_way.is_empty() and mode == TwoWay.MODE_BOTH and has_pitching
 
 
 ## 持ち球（from_rating で ensure 済み）から、左右の打者による上下とゴロの多さ

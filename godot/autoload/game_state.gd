@@ -115,6 +115,8 @@ var league: LeagueRoster = null
 
 ## 自球団の采配方針（SimTeam.tactics と同じ形。年をまたいでも引き継ぐ）
 var tactics := {"bunt": 0, "steal": 0, "relief": 0}
+## 自球団の二刀流の選手の起用（作業86。選手ID → TwoWay.MODE_*。年をまたいでも引き継ぐ）
+var two_way_modes := {}
 
 ## その年のポストシーズン（CS・日本シリーズ。ポストシーズンの段階に入ったときに作り、翌年の開幕まで残す）
 var postseason: Postseason = null
@@ -199,6 +201,7 @@ func new_game(team_name: String, start_year: int = START_YEAR) -> void:
 	postseason_history = {}
 	news = News.new()
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
+	two_way_modes = {}
 	phase = Phase.SEASON
 	GameData.synthetic.clear()
 	GameData.clear_draft_classes()
@@ -937,6 +940,16 @@ func set_tactic(key: String, level: int) -> void:
 		mine.set_tactic(key, tactics[key])
 
 
+## 自球団の二刀流の選手の起用を変える（作業86。TwoWay.MODE_*。今季の SimTeam にもすぐ反映）
+func set_two_way_mode(id: String, mode: String) -> void:
+	if not mode in TwoWay.MODES:
+		return
+	two_way_modes[id] = mode
+	var mine := my_team()
+	if mine != null and mine.by_id.has(id):
+		mine.set_two_way_mode(mine.by_id[id], mode)
+
+
 # --- 育成選手の支配下登録（docs/AUTORUN.md 作業19） ----------------------------------------------
 
 ## 支配下に登録できない理由（春季キャンプ〜7月31日だけ登録できる）。登録できるなら空
@@ -1453,6 +1466,7 @@ func _start_season() -> void:
 		if mine != null:
 			for key: String in tactics:
 				mine.set_tactic(key, tactics[key])
+			mine.apply_two_way_modes(two_way_modes)
 	day = _season_first_day()
 	_sync_record()
 
@@ -1931,6 +1945,7 @@ func save_summary() -> Dictionary:
 func to_save() -> Dictionary:
 	return {
 		"year": year, "day": day, "phase": phase, "team": team, "tactics": tactics,
+		"two_way_modes": two_way_modes,
 		"offseason_order": offseason_order, "off_leaving": _off_leaving, "off_returns": _off_returns,
 		"wins": wins, "losses": losses, "draws": draws,
 		"first_year": first_year, "awards_history": awards_history, "stats_history": stats_history,
@@ -2002,6 +2017,11 @@ func load_state(d: Dictionary) -> void:
 	tactics = {"bunt": 0, "steal": 0, "relief": 0}
 	for key: String in d.get("tactics", {}):
 		tactics[key] = int(d["tactics"][key])
+	two_way_modes = {}
+	var modes: Variant = d.get("two_way_modes")
+	if modes is Dictionary:
+		for id: Variant in modes:
+			two_way_modes[str(id)] = str(modes[id])
 	GameData.clear_draft_classes()
 	var classes: Variant = d.get("draft_classes")
 	if classes is Dictionary:

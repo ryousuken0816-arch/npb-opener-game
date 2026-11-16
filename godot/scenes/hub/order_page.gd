@@ -16,6 +16,8 @@ extends HBoxContainer
 ## コントローラー：十字キーで札・守備位置の欄を選び、Ⓐ＝選手詳細、Ⓧ＝入れ替え（相手の札で Ⓐ か Ⓧ）、Ⓑ＝入れ替えの取り消し。
 ## 作り直してもフォーカスは同じ位置に残る。
 ## オフシーズン（編成を変えられない間）は「⇄」が押せず、札を押すと選手詳細だけ。
+## 二刀流（作業86）：左の列の「二刀流」の欄で、選手ごとに 二刀流／投手に専念／野手に専念 を選ぶ（球団に二刀流の選手がいるときだけ出る）。
+## 二刀流の投手も控え・スタメンに入る（札の横に「二」）。先発の日は投手兼 DH（DH なしは自分の打順で投げて打つ）、翌日は休み。
 
 signal roster_changed
 
@@ -39,6 +41,7 @@ var _message := ""
 
 var _dh_button: Button
 var _no_dh_button: Button
+var _two_way_box: VBoxContainer
 var _message_label: Label
 var _coverage_box: HBoxContainer
 var _lineup_title: Label
@@ -69,6 +72,9 @@ func setup(p: UiTheme.Palette) -> void:
 	UiTheme.style_button(auto, Color("1e88e5"), Color.WHITE, 8, 3)
 	auto.pressed.connect(_on_auto)
 	left.add_child(auto)
+	_two_way_box = VBoxContainer.new()
+	_two_way_box.add_theme_constant_override("separation", 3)
+	left.add_child(_two_way_box)
 	var hint := UiTheme.small_label(
 			"札を押すと選手詳細（何も変わりません）。\n入れ替えは「⇄」→相手の札（もう一度「⇄」で取り消し）。\n▲▼で打順を入れ替え。\n\n控え ⇄ スタメン → その打順に入る\n\n"
 			+ "守備位置は右の欄で変えられます。\n\nDHなしはセ・リーグ主催、DHありはパ・リーグ主催の試合で使います。", 13)
@@ -175,6 +181,7 @@ func _refresh_body() -> void:
 	_clear(_lineup_box)
 	_clear(_bench_grid)
 	_clear(_coverage_box)
+	_clear(_two_way_box)
 	if _team == null:
 		_message_label.text = "日程データのない年は編成できません"
 		return
@@ -196,6 +203,43 @@ func _refresh_body() -> void:
 	_render_coverage()
 	_render_lineup()
 	_render_bench()
+	_render_two_way()
+
+
+## 二刀流の欄（作業86）：球団の二刀流の選手ごとに起用（二刀流／投手に専念／野手に専念）を選ぶ
+func _render_two_way() -> void:
+	var list := _team.two_way_players()
+	if list.is_empty():
+		return
+	var title := UiTheme.small_label("二刀流", 15, _palette.ink, 800)
+	title.tooltip_text = "二刀流：先発の日は投手兼DH（DHなしは自分の打順で投げて打つ）、翌日は休み。投げない日は打者で出ます"
+	_two_way_box.add_child(title)
+	for p in list:
+		var name_label := UiTheme.fit_label(UiTheme.small_label(_names.get(p.id, p.name), 13, _palette.ink, 700))
+		name_label.tooltip_text = "%s（本職：%s）" % [p.name, "投手" if p.primary_pitcher else "野手"]
+		_two_way_box.add_child(name_label)
+		var pick := OptionButton.new()
+		pick.custom_minimum_size = Vector2(0, 30)
+		pick.add_theme_font_size_override("font_size", 13)
+		for m: String in TwoWay.MODES:
+			pick.add_item(TwoWay.mode_label(m))
+		pick.select(TwoWay.MODES.find(p.mode))
+		pick.set_meta("two_way_id", p.id)
+		pick.tooltip_text = "二刀流：投打の両方に出る／投手に専念：打席に立たない（DHなしは投手の打撃）／野手に専念：投げない"
+		pick.item_selected.connect(_on_two_way_mode.bind(p))
+		_two_way_box.add_child(pick)
+
+
+func _on_two_way_mode(index: int, p: SimPlayer) -> void:
+	var m: String = TwoWay.MODES[index]
+	if m == p.mode:
+		return
+	GameState.set_two_way_mode(p.id, m)
+	_sel_index = -1
+	_sel_bench = null
+	_message = "%s：%s" % [p.name, TwoWay.mode_label(m)]
+	refresh()
+	roster_changed.emit()
 
 
 ## 入れ替え中の案内の1行
@@ -340,6 +384,8 @@ func _render_lineup() -> void:
 			badge.tooltip_text = "ブレイク（この年の主力・好成績選手）"
 			badge.custom_minimum_size = Vector2(14, 0)
 			row.add_child(badge)
+		if p != null and p.both():
+			row.add_child(_two_way_badge())
 		row.add_child(_position_selector(i, pos))
 		row.add_child(_move_buttons(i, order.size()))
 		var ratings: Dictionary = {}
@@ -388,6 +434,24 @@ func _swap_button(enabled: bool, active: bool) -> Button:
 	b.tooltip_text = "入れ替え中です。もう一度押すと取り消し" if active else "入れ替える：押したあと、相手の札を押します"
 	UiTheme.style_button(b, Color("e65100") if active else Color("1e88e5"), Color.WHITE, 4, 2)
 	return b
+
+
+## 二刀流の印（作業86。赤い四角に白の「二」）
+func _two_way_badge() -> Control:
+	var box := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("c62828")
+	style.set_corner_radius_all(4)
+	style.content_margin_left = 2
+	style.content_margin_right = 2
+	box.add_theme_stylebox_override("panel", style)
+	box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.mouse_filter = Control.MOUSE_FILTER_PASS
+	var badge := UiTheme.small_label("二", 13, Color.WHITE, 800)
+	badge.tooltip_text = "二刀流：先発の日は投手兼DH（DHなしは自分の打順で投げて打つ）、翌日は休み"
+	badge.mouse_filter = Control.MOUSE_FILTER_PASS
+	box.add_child(badge)
+	return box
 
 
 func _arrow_button(text: String, enabled: bool) -> Button:
@@ -495,6 +559,8 @@ func _render_bench() -> void:
 			var badge := UiTheme.small_label("★", 14, Color("f9a825"), 800)
 			badge.tooltip_text = "ブレイク（この年の主力・好成績選手）"
 			row.add_child(badge)
+		if p.both():
+			row.add_child(_two_way_badge())
 		_bench_grid.add_child(row)
 
 

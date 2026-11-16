@@ -636,7 +636,8 @@ func _check_two_way_focus(q: Dictionary, age: int, rng: RandomNumberGenerator) -
 	var b_ovr: float = (b_meet + b_power) * 0.5
 
 	var delta: float = (p_ovr - b_ovr) / 12.0 # 正なら投手有利、負なら打者有利
-	var type_bias := -0.6 if tw_type == "A" else 0.4
+	# 本格二刀流（A）はほとんど専念しない（作業86。22〜25歳の4年で約2割）
+	var type_bias := -4.0 if tw_type == "A" else 0.4
 
 	# 専念確率（シグモイド）
 	var z: float = 1.2 * (float(age) - 23.5) + 1.8 * absf(delta) + type_bias
