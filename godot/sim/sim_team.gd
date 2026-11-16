@@ -25,6 +25,9 @@ const DEFENSE_WEIGHT := {
 	"左翼手": 0.25, "右翼手": 0.3, "一塁手": 0.15,
 }
 
+## 本格二刀流の選手を指名打者に選ぶときの上乗せ（ふつうの指名打者の実績・打力の差は大きくて 1.5 程度）
+const TWO_WAY_DH_BONUS := 1.5
+
 ## 投手の持ち場
 const ROLE_ROTATION := "rotation"
 const ROLE_RELIEF := "relief"
@@ -364,6 +367,9 @@ func _improve_assignment(assigned: Dictionary, used: Dictionary,
 func _starter_score(p: SimPlayer, slot: String) -> float:
 	var score := _experience_value(p)
 	if slot == "指名打者":
+		# 本格二刀流（二刀流で起用中）は投げない日も指名打者で打たせる（作業86。守備の慣れが低くて外野に入れなくても打つ）
+		if p.both() and TwoWay.is_full(p.two_way):
+			score += TWO_WAY_DH_BONUS
 		return score
 	var def := p.range_at(slot)
 	if slot == "捕手" and not p.can_play("捕手"):

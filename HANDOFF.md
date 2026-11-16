@@ -1086,6 +1086,7 @@
      見た目は新 `tests/two_way_capture.gd`（2016年の日本ハムで3週間進めて起用設定。ウィンドウは右下の隅・フォーカスなし）。数え方は新 `tests/two_way_dump.gd`（表示だけ）
    - 確認：two_way_check・order_page_check・tactics_check・awards_check・contract_check・save_check・player_detail_check・pad_flow_check・fictional_draft_check（「入団時の総合 A は怪物だけ」から型 A を外した）・draft_balance_check・draft_check・growth_check・future_year_check＋quick、Godot ヘッドレスでエラー0件、起用設定のスクショ1回
    - やっていないこと：試合の実況・ボックススコアに「投手兼 DH」の表示（打撃の行の守備位置は「指名打者」）。登板の前日の休み（翌日だけ）。メジャー志望・意中の球団を型 A に付きやすくするのは今のまま（ふつうの候補と同じ確率）
+   - 2026-11-17 追記（main で two_way_check が5件 NG）：`godot/data/`（Web 用のまとめたデータ）が無いと守備の慣れ（`detail` の重み）が効き、大谷は外野の慣れが低くてスタメンから外れ、指名打者も近藤に負けて試合で打たなかった（まとめたデータでは慣れが 1.0 になり左翼で出ていたので通っていた）。→ `SimTeam._starter_score` で二刀流で起用中の本格二刀流の指名打者に `TWO_WAY_DH_BONUS` 1.5 を足し、投げない日も指名打者で打つようにした。データあり・なしの両方で two_way_check が通る
 
 4.87 ~~トレードの打診が来る（主力・有望な若手が動く話だけ）~~ → 完了（2026-11-17、担当 task87）。docs/AUTORUN.md の作業87、docs/SPEC.md「決定事項：トレード交渉の時期」
    - ユーザーの声：「トレードの打診が来るようにしたい」「弱い選手同士のトレードいらんから、頻度減らしてでも」
