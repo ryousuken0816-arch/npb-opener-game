@@ -366,7 +366,9 @@ func _check_balance() -> void:
 						int(p["batting"]["ratings"]["power"]["value"]), maxi(int(p["batting"]["ratings"]["speed"]["value"]),
 						int(p["batting"]["ratings"]["arm"]["value"])))
 					hs_top_weak += 1 if best < 70 else 0
-			s += 1 if am["grade"] == "S" else 0
+			# 本格二刀流（型 A。作業86）はあとから評価 S にするので、怪物と同じく毎年の人数の枠の外（S が4人の年に重なると5人になる）
+			var tw_ace := str(p.get("two_way", {}).get("type", "")) == "A" and bool(p["two_way"].get("active", false))
+			s += 1 if am["grade"] == "S" and not tw_ace else 0
 			a += 1 if am["grade"] == "A" else 0
 			var monster := bool(p.get("is_monster", false))
 			mon += 1 if monster else 0

@@ -809,7 +809,10 @@ func _calibrate_entry(p: Dictionary, grade: String, i: int, quality: float, rng:
 		if peak.has(k) and part["ratings"][k] is Dictionary:
 			peak[k] = maxf(float(peak[k]), float(part["ratings"][k]["value"]))
 	if not bool(p.get("is_monster", false)):
-		_ensure_room(p, part["ratings"], peak, rng)
+		# 候補の乱数（rng）の並びを変えないよう、選手ごとの乱数で決める（ほかの候補の能力が前と同じになる）
+		var room_rng := RandomNumberGenerator.new()
+		room_rng.seed = ("room#%s" % str(p.get("id", ""))).hash() ^ rng.seed
+		_ensure_room(p, part["ratings"], peak, room_rng)
 
 
 ## 作業83（伸びしろ）：ピークが入団時とほとんど同じ候補（司令塔の見本：社会人の投手 総合B75→B75）を無くす。
