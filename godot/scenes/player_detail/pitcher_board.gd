@@ -279,6 +279,7 @@ func _overall(data: Dictionary) -> HBoxContainer:
 	star.draw.connect(func() -> void: _paint_star(star, value_text))
 	row.add_child(star)
 	row.add_child(UiTheme.rank_label(rating, 28))
+	row.add_child(PlayerDetail.growth_label(GrowthDiff.delta(_detail._data, "p", "overall"), "", 0))
 	return row
 
 
@@ -370,8 +371,9 @@ func _pitch_columns() -> HBoxContainer:
 	left.size_flags_stretch_ratio = 1.15
 	row.add_child(left)
 	left.add_child(_velocity_row())
-	left.add_child(_rated_row("コントロール", _rating("bb9"), "与四球の少なさ（BB/9）"))
-	left.add_child(_rated_row("スタミナ", _rating("stamina"), _detail._pitching_note("stamina")))
+	left.add_child(_rated_row("コントロール", _rating("bb9"), "与四球の少なさ（BB/9）", GrowthDiff.delta(_detail._data, "p", "bb9")))
+	left.add_child(_rated_row("スタミナ", _rating("stamina"), _detail._pitching_note("stamina"),
+		GrowthDiff.delta(_detail._data, "p", "stamina")))
 	var pitching: Dictionary = _detail._dict(_detail._data.get("pitching"))
 	var pitches: Array = pitching.get("pitches", []) if pitching.get("pitches") is Array else []
 	var best: Dictionary = PitchArsenal.best_pitch(_detail._data)
@@ -387,11 +389,26 @@ func _pitch_columns() -> HBoxContainer:
 	var cap := Label.new()
 	cap.name = "BestPitch"
 	cap.text = "決め球　%s" % str(best["name"]) if not best.is_empty() else "決め球　―"
+	var changes := _pitch_changes_text()
+	if not changes.is_empty():
+		cap.text += "　（前の年から %s）" % changes
+		cap.tooltip_text = "前の年の開幕時点からの持ち球の変化（数字は変化量）"
 	cap.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UiTheme.heading(cap, 15, Color("8a5a00"), Color.WHITE, 3, false)
 	left.add_child(cap)
 	row.add_child(_ability_grid())
 	return row
+
+
+## 持ち球の前の年からの変化（作業83）：「フォーク4→5↑・新 カーブ2」。変わっていなければ ""
+func _pitch_changes_text() -> String:
+	var parts: Array = []
+	for c: Array in GrowthDiff.pitch_changes(_detail._data):
+		if int(c[1]) == 0:
+			parts.append("新 %s%d" % [c[0], int(c[2])])
+		else:
+			parts.append("%s%d→%d%s" % [c[0], int(c[1]), int(c[2]), "↑" if int(c[2]) > int(c[1]) else "↓"])
+	return "・".join(parts)
 
 
 func _rating(key: String) -> Variant:
@@ -414,12 +431,13 @@ func _velocity_row() -> PanelContainer:
 	unit.text = "km/h"
 	UiTheme.heading(unit, 16, Color("3d5a80"), Color.WHITE, 3, false)
 	box.add_child(unit)
+	box.add_child(PlayerDetail.growth_label(GrowthDiff.delta(_detail._data, "v"), "km", 56))
 	var note := _detail.note_label(_detail._velocity_note(velo))
 	box.add_child(note)
 	return row
 
 
-func _rated_row(title: String, rating: Variant, note_text: String) -> PanelContainer:
+func _rated_row(title: String, rating: Variant, note_text: String, delta: Variant = null) -> PanelContainer:
 	var row := _row_shell()
 	var box: HBoxContainer = row.get_child(0)
 	box.add_child(PlayerDetail.pill(title, 118, 16))
@@ -433,6 +451,7 @@ func _rated_row(title: String, rating: Variant, note_text: String) -> PanelConta
 	var color := UiTheme.rank_color(rating["rank"]).darkened(0.05) if rating is Dictionary else UiTheme.TEXT
 	UiTheme.heading(value, 28, color, Color.WHITE, 4, false)
 	box.add_child(value)
+	box.add_child(PlayerDetail.growth_label(delta))
 	box.add_child(_detail.note_label(note_text))
 	return row
 

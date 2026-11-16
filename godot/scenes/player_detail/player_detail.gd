@@ -32,6 +32,9 @@ const BATTER_ROWS := [
 ## 作業79：奪三振・被弾抑制は持ち球から出るので、投手能力の一覧の行にはしない（マスと「選手能力」で見る）
 const PITCHER_ROWS := [["bb9", "制球"], ["stamina", "スタミナ"]]
 const PITCHER_BOARD := preload("res://scenes/player_detail/pitcher_board.gd")
+## 前の年からの差の色（作業83：上がった＝緑、下がった＝灰色）
+const GROWTH_UP := Color("1e9e4a")
+const GROWTH_DOWN := Color("8a96a3")
 ## 特殊能力で悪いもの（赤い札）。それ以外は青い札
 const BAD_ABILITIES := ["三振取れず", "四球病", "一発病"]
 const ABILITY_SLOTS := 8
@@ -457,6 +460,7 @@ func _overall_box() -> Control:
 	UiTheme.heading(value, 34, UiTheme.rank_color(rating["rank"]).darkened(0.1) if rating is Dictionary
 		else UiTheme.TEXT, Color.WHITE, 5, false)
 	box.add_child(value)
+	box.add_child(growth_label(GrowthDiff.delta(_data, "p", "overall"), "", 0))
 	for c: Control in box.get_children():
 		c.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	return box
@@ -712,7 +716,7 @@ func _summary_page() -> Control:
 		"打球の上がりやすさ（1〜4）"))
 	var ratings := _dict(batting.get("ratings"))
 	for r: Array in BATTER_ROWS:
-		body.add_child(_ability_row(r[1], ratings.get(r[0]), _batting_note(r[0])))
+		body.add_child(_ability_row(r[1], ratings.get(r[0]), _batting_note(r[0]), GrowthDiff.delta(_data, "b", r[0])))
 
 	var right := VBoxContainer.new()
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -737,12 +741,12 @@ func pitcher_overview() -> Control:
 	var pitching := _dict(_data.get("pitching"))
 	var velocity := _dict(pitching.get("velocity"))
 	var kmh := "%d" % int(velocity["kmh"]) if velocity.get("kmh") != null else "-"
-	box.add_child(value_row("球速", kmh, "km/h", _velocity_note(velocity), 32))
+	box.add_child(value_row("球速", kmh, "km/h", _velocity_note(velocity), 32, GrowthDiff.delta(_data, "v")))
 	var ratings := _dict(pitching.get("ratings"))
 	for r: Array in PITCHER_ROWS:
-		box.add_child(_ability_row(r[1], ratings.get(r[0]), _pitching_note(r[0])))
-	box.add_child(_ability_row("奪三振", ratings.get("k9"), _pitching_note("k9")))
-	box.add_child(_ability_row("打たれ強さ", ratings.get("hr9"), _pitching_note("hr9")))
+		box.add_child(_ability_row(r[1], ratings.get(r[0]), _pitching_note(r[0]), GrowthDiff.delta(_data, "p", r[0])))
+	box.add_child(_ability_row("奪三振", ratings.get("k9"), _pitching_note("k9"), GrowthDiff.delta(_data, "p", "k9")))
+	box.add_child(_ability_row("打たれ強さ", ratings.get("hr9"), _pitching_note("hr9"), GrowthDiff.delta(_data, "p", "hr9")))
 	box.add_child(note_label("変化の向きと変化量は「投手能力」。奪三振・打たれ強さは球速と持ち球から計算した値"))
 	return box
 
@@ -838,7 +842,7 @@ func _is_prospect() -> bool:
 
 
 ## 能力の行：項目名 | ランク | 数値 | 実数値（棒は作業72で外した）
-func _ability_row(title: String, rating: Variant, note: String) -> Control:
+func _ability_row(title: String, rating: Variant, note: String, delta: Variant = null) -> Control:
 	var row := _row_frame()
 	var box: HBoxContainer = row.get_child(0)
 	box.add_child(pill(title, 110, 19))
@@ -853,12 +857,29 @@ func _ability_row(title: String, rating: Variant, note: String) -> Control:
 	UiTheme.heading(value, 32, UiTheme.rank_color(rating["rank"]).darkened(0.1) if rating is Dictionary
 		else UiTheme.TEXT, Color.WHITE, 5, false)
 	box.add_child(value)
+	box.add_child(growth_label(delta))
 	box.add_child(note_label(note))
 	return row
 
 
-## 数値だけの行（球速・弾道。パワプロと同じくランクなし）
-func value_row(title: String, value_text: String, unit: String, note: String, value_size := 32) -> Control:
+## 前の年の開幕時点からの差（作業83）：上がったら緑の「↑5」、下がったら灰色の「↓3」、変わらない・比べられないときは同じ幅の空き
+static func growth_label(delta: Variant, unit := "", width := 46) -> Label:
+	var label := Label.new()
+	label.name = "Growth"
+	label.custom_minimum_size = Vector2(width, 0)
+	label.mouse_filter = Control.MOUSE_FILTER_PASS
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var d := int(delta) if delta != null else 0
+	if d == 0:
+		return label
+	label.text = "%s%d%s" % ["↑" if d > 0 else "↓", absi(d), unit]
+	label.tooltip_text = "前の年の開幕時点から %s%d%s" % ["+" if d > 0 else "−", absi(d), unit]
+	UiTheme.heading(label, 17 if d > 0 else 15, GROWTH_UP if d > 0 else GROWTH_DOWN, Color.WHITE, 3, false)
+	return label
+
+
+## 数値だけの行（球速・弾道。パワプロと同じくランクなし）。delta があれば単位のあとに前の年からの差（作業83）
+func value_row(title: String, value_text: String, unit: String, note: String, value_size := 32, delta: Variant = null) -> Control:
 	var row := _row_frame()
 	var box: HBoxContainer = row.get_child(0)
 	box.add_child(pill(title, 110, 19))
@@ -872,6 +893,8 @@ func value_row(title: String, value_text: String, unit: String, note: String, va
 	var unit_label := UiTheme.small_label(unit, 17, UiTheme.TEXT, 800)
 	unit_label.custom_minimum_size = Vector2(40, 0)
 	box.add_child(unit_label)
+	if delta != null:
+		box.add_child(growth_label(delta))
 	box.add_child(note_label(note))
 	return row
 
