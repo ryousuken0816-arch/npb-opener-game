@@ -18,45 +18,83 @@ const PIT_WEIGHT := {"k9": 1.0 / 3.0, "bb9": 1.0 / 3.0, "hr9": 1.0 / 3.0}
 
 ## 型：名前 → {pos：守備位置の区分（投手・捕手・内野手・外野手。共通は "共通"）, w：選ばれやすさ, s：長所（強い順）, d：短所（弱い順）, 付け足し}
 ## 付け足し：bats（打席）・throws（投げる手）・role（投手の役割）・wild（長所1つを極端に・短所を3つ）・flat（短所なし・長所は控えめ）・
-## utility（守れる位置を増やす）・velo（球速の長所・短所。km/h）
+## utility（守れる位置を増やす）・angle（腕の角度などで決まる球速のずれ。km/h）・velo_extra（球速が長所のときの上乗せ。km/h）・
+## no_s・no_d（選び直しで長所・短所にしない能力。作業89：サイドスローの速球派・本格派の遅い球などの型に合わない形を出さない）
+## 作業89（ユーザー 2026-11-19「同じ型の選手が多い」）：s の1つ目（看板）だけが固定。ほかの長所・短所は候補ごとに選び直す
+## （s の残りが選ばれやすく、d の能力もまれに長所になる＝「肩の強い俊足巧打」）。球速の上げ下げは長所・短所に球速があるかで決める（_velo_shift）
 const TYPES := {
 	# 投手
-	"本格派の剛腕": {"pos": "投手", "w": 14, "s": ["k9", "velocity", "stamina"], "d": ["bb9"], "velo": 5},
-	"技巧派": {"pos": "投手", "w": 11, "s": ["bb9", "hr9", "stamina"], "d": ["velocity", "k9"], "velo": -5},
-	"制球職人": {"pos": "投手", "w": 9, "s": ["bb9", "stamina", "hr9"], "d": ["k9", "velocity"], "velo": -4},
-	"荒れ球の豪腕": {"pos": "投手", "w": 7, "s": ["velocity", "k9", "hr9"], "d": ["bb9", "stamina"], "velo": 7},
-	"サイドスロー": {"pos": "投手", "w": 6, "s": ["hr9", "bb9", "k9"], "d": ["velocity"], "velo": -5},
-	"アンダースロー": {"pos": "投手", "w": 2, "s": ["hr9", "bb9", "stamina"], "d": ["velocity", "k9"], "velo": -9},
+	"本格派の剛腕": {"pos": "投手", "w": 14, "s": ["k9", "velocity", "stamina"], "d": ["bb9"], "no_d": ["velocity"]},
+	"技巧派": {"pos": "投手", "w": 11, "s": ["bb9", "hr9", "stamina"], "d": ["velocity", "k9"], "no_s": ["velocity"]},
+	"制球職人": {"pos": "投手", "w": 9, "s": ["bb9", "stamina", "hr9"], "d": ["k9", "velocity"], "no_s": ["velocity"]},
+	"荒れ球の豪腕": {"pos": "投手", "w": 7, "s": ["velocity", "k9", "hr9"], "d": ["bb9", "stamina"], "velo_extra": 2},
+	"サイドスロー": {"pos": "投手", "w": 6, "s": ["hr9", "bb9", "k9"], "d": ["velocity"], "angle": -3, "no_s": ["velocity"]},
+	"アンダースロー": {"pos": "投手", "w": 2, "s": ["hr9", "bb9", "stamina"], "d": ["velocity", "k9"], "angle": -6, "no_s": ["velocity"]},
 	"先発完投型": {"pos": "投手", "w": 11, "s": ["stamina", "bb9", "hr9"], "d": ["k9"], "role": "先発"},
-	"リリーフ専任": {"pos": "投手", "w": 10, "s": ["k9", "velocity", "hr9"], "d": ["stamina"], "role": "救援", "velo": 3},
-	"左のワンポイント": {"pos": "投手", "w": 5, "s": ["k9", "hr9"], "d": ["stamina", "velocity"], "role": "救援", "throws": "左",
-		"velo": -3},
-	"未完の大器（投手）": {"pos": "投手", "w": 4, "s": ["velocity", "k9"], "d": ["bb9", "hr9", "stamina"], "wild": true, "velo": 8,
+	"リリーフ専任": {"pos": "投手", "w": 10, "s": ["k9", "velocity", "hr9"], "d": ["stamina"], "role": "救援", "no_d": ["velocity"]},
+	"左のワンポイント": {"pos": "投手", "w": 5, "s": ["k9", "hr9"], "d": ["stamina", "velocity"], "role": "救援", "throws": "左"},
+	"未完の大器（投手）": {"pos": "投手", "w": 4, "s": ["velocity", "k9"], "d": ["bb9", "hr9", "stamina"], "wild": true, "velo_extra": 3,
 		"label": "未完の大器"},
 	"完成型（投手）": {"pos": "投手", "w": 0, "s": [], "d": [], "complete": true, "label": "完成型", "role": "先発"},
+	# 投手（作業89で足した珍しい型）
+	"剛腕クローザー": {"pos": "投手", "w": 5, "s": ["velocity", "k9", "bb9"], "d": ["stamina", "hr9"], "role": "救援", "velo_extra": 1, "no_d": ["velocity"]},
+	"速球派の左腕": {"pos": "投手", "w": 5, "s": ["velocity", "k9", "stamina"], "d": ["bb9"], "throws": "左", "no_d": ["velocity"]},
+	"技巧派サウスポー": {"pos": "投手", "w": 5, "s": ["bb9", "hr9", "stamina"], "d": ["velocity"], "throws": "左", "angle": -1, "no_s": ["velocity"]},
+	"変化球の魔術師": {"pos": "投手", "w": 5, "s": ["k9", "hr9", "bb9"], "d": ["velocity"], "angle": -2, "no_s": ["velocity"]},
+	"長身の本格派": {"pos": "投手", "w": 5, "s": ["hr9", "velocity", "stamina"], "d": ["bb9"], "no_d": ["velocity"]},
+	"ゴロを打たせる名手": {"pos": "投手", "w": 4, "s": ["hr9", "stamina", "bb9"], "d": ["k9"], "no_s": ["velocity"]},
+	"精密なセットアッパー": {"pos": "投手", "w": 4, "s": ["bb9", "k9", "hr9"], "d": ["stamina"], "role": "救援"},
+	"大型右腕": {"pos": "投手", "w": 4, "s": ["stamina", "velocity", "hr9"], "d": ["k9"], "throws": "右", "no_d": ["velocity"]},
 	# 捕手
 	"強肩の守備型捕手": {"pos": "捕手", "w": 10, "s": ["arm", "defense", "eye"], "d": ["power", "speed"]},
 	"打てる捕手": {"pos": "捕手", "w": 8, "s": ["meet", "power", "eye"], "d": ["defense", "speed"]},
 	"大型捕手": {"pos": "捕手", "w": 6, "s": ["power", "arm", "defense"], "d": ["speed", "meet"]},
 	"頭脳派の司令塔": {"pos": "捕手", "w": 6, "s": ["defense", "eye", "meet"], "d": ["power", "speed"]},
+	"強打の捕手": {"pos": "捕手", "w": 4, "s": ["power", "meet", "eye"], "d": ["defense", "arm"]},
+	"俊足の捕手": {"pos": "捕手", "w": 3, "s": ["speed", "defense", "meet"], "d": ["power"]},
 	# 内野手
 	"守備職人": {"pos": "内野手", "w": 10, "s": ["defense", "arm", "speed"], "d": ["power", "meet"]},
 	"内野の長距離砲": {"pos": "内野手", "w": 8, "s": ["power", "eye", "arm"], "d": ["speed", "defense"]},
 	"巧打のリードオフ": {"pos": "内野手", "w": 9, "s": ["meet", "speed", "eye"], "d": ["power", "arm"]},
 	"ユーティリティ": {"pos": "内野手", "w": 7, "s": ["defense", "speed", "meet"], "d": ["power"], "utility": true},
 	"強打の三塁手": {"pos": "内野手", "w": 5, "s": ["power", "arm", "meet"], "d": ["speed"]},
+	"俊足の大型内野手": {"pos": "内野手", "w": 4, "s": ["speed", "power", "arm"], "d": ["meet", "eye"]},
+	"出塁型の二番打者": {"pos": "内野手", "w": 4, "s": ["eye", "meet", "speed"], "d": ["power"]},
+	"強肩の遊撃手": {"pos": "内野手", "w": 4, "s": ["arm", "defense", "speed"], "d": ["power", "eye"]},
 	# 外野手
 	"俊足巧打": {"pos": "外野手", "w": 10, "s": ["speed", "meet", "defense"], "d": ["power", "arm"]},
 	"外野の長距離砲": {"pos": "外野手", "w": 9, "s": ["power", "eye", "meet"], "d": ["speed", "defense"]},
 	"強肩外野手": {"pos": "外野手", "w": 7, "s": ["arm", "defense", "power"], "d": ["meet", "eye"]},
 	"中距離ヒッター": {"pos": "外野手", "w": 9, "s": ["meet", "power", "eye"], "d": ["speed", "arm"]},
 	"守備の名手": {"pos": "外野手", "w": 5, "s": ["defense", "speed", "arm"], "d": ["power", "eye"]},
+	"走攻守の中堅手": {"pos": "外野手", "w": 4, "s": ["speed", "power", "defense"], "d": ["eye"]},
+	"選球眼の好打者": {"pos": "外野手", "w": 4, "s": ["eye", "meet", "arm"], "d": ["power", "speed"]},
+	"強肩強打の右翼手": {"pos": "外野手", "w": 4, "s": ["power", "arm", "meet"], "d": ["speed", "eye"]},
 	# 野手の共通
 	"未完の大器": {"pos": "共通", "w": 4, "s": ["power"], "d": ["meet", "eye", "defense"], "wild": true},
 	"万能型": {"pos": "共通", "w": 4, "s": ["meet", "power", "speed"], "d": [], "flat": true},
 	"スイッチヒッター": {"pos": "共通", "w": 3, "s": ["meet", "speed", "eye"], "d": ["power"], "bats": "両"},
 	"完成型（野手）": {"pos": "共通", "w": 0, "s": [], "d": [], "complete": true, "label": "完成型"},
 }
+## 作業89：型なし（長所・短所を候補ごとにばらばらに決める。型の名前は出さない）の割合。同じ型（表示の名前）は1年に MAX_PER_TYPE 人まで。
+## 型があふれたとき（その守備位置の型がどれも MAX_PER_TYPE 人）も型なしになるので、型なしの全体は TYPELESS_RATE より多い。
+## 投手は候補が多く型があふれやすい（1年に約65人で、投手の型は約20）ので低めにして、型なしが投手・野手とも4割前後になるように
+const TYPELESS_RATE := {"投手": 0.2, "野手": 0.33}
+const MAX_PER_TYPE := 2
+## 看板のほかの長所・短所を選ぶときの重み（型の s の残り・型の d・どちらでもない能力）
+const REROLL_STRONG_W := {"s": 3.0, "d": 0.6, "other": 1.5}
+const REROLL_WEAK_W := {"s": 0.3, "d": 3.0, "other": 1.0}
+## 型なしの看板・長所の選ばれやすさ（守備位置の区分ごとの倍率。無い能力は1）
+const TYPELESS_BIAS := {"捕手": {"defense": 1.6, "arm": 1.6, "speed": 0.6}, "内野手": {"defense": 1.3},
+	"外野手": {"speed": 1.3, "arm": 1.2}, "投手": {}}
+## 球速が長所・短所のときの上げ下げ（km/h。作業89の前は型ごとの固定の値＝本格派 +5・技巧派 −5 など）
+const VELO_STRONG := 5.0
+const VELO_WEAK := 5.0
+## 長所の数（評価ごとの {数: 重み}）と短所の数。作業89：評価の中でも1〜3にばらす（平均は前と同じくらい。C・D は長所1つのまま＝作業83）
+const STRENGTH_COUNT_W := {"S": {2: 0.3, 3: 0.7}, "A": {2: 0.5, 3: 0.5}, "B": {1: 0.25, 2: 0.5, 3: 0.25}, "C": {1: 1.0},
+	"D": {1: 1.0}}
+const WEAKNESS_COUNT_W := {"S": {0: 0.3, 1: 0.7}, "A": {0: 0.2, 1: 0.6, 2: 0.2}, "B": {1: 0.3, 2: 0.5, 3: 0.2},
+	"C": {1: 0.25, 2: 0.5, 3: 0.25}, "D": {1: 0.2, 2: 0.5, 3: 0.3}}
 ## 完成型（ユーザー：「完成した選手はもう出ないんか？」）：大学・社会人などの評価 S・A・B だけ。どの能力も中央の近く（短所なし）、
 ## 入団時の総合を COMPLETE_BONUS 上乗せ（その年の上位）、伸びしろは小さめ（早熟。ピークは入団時 + COMPLETE_GROWTH）。
 ## 未完の大器（極端な長所と短所）と対にして、毎年どちらも MIN_EACH 人は出す（FictionalDraft.generate_year）
@@ -145,10 +183,7 @@ static var _shape_grade := ""
 static var _shape_hs := false
 static var _shape_monster := false
 static var _shape_is_pitcher := false
-## 長所の数（評価ごと [最小, 最大]）と短所の数の上限。評価の高い選手ほど長所が多く、短所が少ない
-## 作業83：C は長所1つ（前は1〜2つ）
-const STRENGTH_COUNT := {"S": [3, 3], "A": [2, 3], "B": [2, 2], "C": [1, 1], "D": [1, 1]}
-const WEAKNESS_COUNT := {"S": 1, "A": 1, "B": 2, "C": 2, "D": 2}
+## 長所の数・短所の数は STRENGTH_COUNT_W・WEAKNESS_COUNT_W（作業89。前は S 3・A 2〜3・B 2・C 1・D 1、短所 S・A 1・B〜D 2）
 ## 長所・短所でない能力に、元の能力の個性をどれだけ残すか（中央からの差の割合）と、ゆらぎの幅
 const KEEP_SHAPE := 0.35
 const NOISE := 3.0
@@ -188,10 +223,12 @@ const THEMES := {
 	"投手の豊作年": {"w": 10, "pick": {"投手": 1.4}, "lv": {"投手": 2.0},
 		"news": "今年は投手の豊作年。上位候補に好投手がずらりと並び、各球団の1位入札は投手に集まりそうだ"},
 	"大型野手の年": {"w": 8, "pick": {"野手": 1.3}, "lv": {"野手": 2.0},
-		"types": {"内野の長距離砲": 3.0, "外野の長距離砲": 3.0, "大型捕手": 3.0, "強打の三塁手": 3.0, "未完の大器": 2.0},
+		"types": {"内野の長距離砲": 3.0, "外野の長距離砲": 3.0, "大型捕手": 3.0, "強打の三塁手": 3.0, "未完の大器": 2.0,
+			"強打の捕手": 3.0, "俊足の大型内野手": 3.0, "強肩強打の右翼手": 3.0},
 		"news": "今年は大型野手の年。長打力が売りの野手がそろい、和製大砲を狙う球団には絶好の年になる"},
 	"俊足の野手が多い年": {"w": 6, "pick": {"野手": 1.15},
-		"types": {"俊足巧打": 3.0, "巧打のリードオフ": 3.0, "守備職人": 2.0, "守備の名手": 2.0, "スイッチヒッター": 2.0},
+		"types": {"俊足巧打": 3.0, "巧打のリードオフ": 3.0, "守備職人": 2.0, "守備の名手": 2.0, "スイッチヒッター": 2.0,
+			"俊足の捕手": 3.0, "走攻守の中堅手": 3.0, "俊足の大型内野手": 2.0},
 		"news": "今年は俊足の野手が多い年。足でかき回せるリードオフ型・守備の名手が上位にも名を連ねる"},
 	"高校生の当たり年": {"w": 9, "pick": {"高校": 1.4}, "lv": {"高校": 2.0},
 		"news": "今年は高校生の当たり年。甲子園を沸かせた逸材がそろい、将来を見据えた指名が増えそうだ"},
@@ -202,7 +239,7 @@ const THEMES := {
 	"捕手の当たり年": {"w": 5, "pick": {"捕手": 2.0}, "lv": {"捕手": 2.0},
 		"news": "今年は捕手の当たり年。強肩・好打の捕手がそろい、正捕手候補を求める球団の争奪戦になりそうだ"},
 	"左腕の当たり年": {"w": 5, "pick": {"投手": 1.15}, "lv": {"投手": 1.0}, "lefty": 0.5,
-		"types": {"左のワンポイント": 2.0},
+		"types": {"左のワンポイント": 2.0, "速球派の左腕": 3.0, "技巧派サウスポー": 3.0},
 		"news": "今年は左腕の当たり年。先発・中継ぎともに好左腕が多く、左投手の補強を狙う球団には好機だ"},
 	"不作の年": {"w": 7, "pick": {}, "lv": {"全員": -2.0},
 		"news": "今年は不作の年との声が多い。目玉の数は例年並みでも、中位以下の層が薄く、各球団のスカウトは頭を抱える"},
@@ -283,9 +320,12 @@ static func level_bonus(theme: String, p: Dictionary) -> float:
 	return b
 
 
-## 型を選ぶ（守備位置・評価・年の色で重み付け）
-static func pick_type(p: Dictionary, grade: String, theme: String, rng: RandomNumberGenerator) -> String:
+## 型を選ぶ（守備位置・評価・年の色で重み付け）。空なら型なし（作業89）。
+## used：その年にもう選ばれた型の人数（表示の名前 → 人数）。MAX_PER_TYPE 人に達した型は選ばない。どれも選べなければ型なし
+static func pick_type(p: Dictionary, grade: String, theme: String, rng: RandomNumberGenerator, used := {}) -> String:
 	var pitcher := bool(p.get("is_pitcher", false))
+	if rng.randf() < float(TYPELESS_RATE["投手" if pitcher else "野手"]):
+		return ""
 	var group := "投手" if pitcher else pos_group(p)
 	var mult: Dictionary = THEMES.get(theme, {}).get("types", {})
 	var hs := str(p.get("category", "")) == "高校"
@@ -296,6 +336,8 @@ static func pick_type(p: Dictionary, grade: String, theme: String, rng: RandomNu
 		var t: Dictionary = TYPES[name]
 		if t["pos"] != group and not (t["pos"] == "共通" and not pitcher):
 			continue
+		if not type_room(used, name):
+			continue
 		var w := float(t["w"]) * float(mult.get(name, 1.0))
 		if bool(t.get("complete", false)):
 			w = 0.0 if hs or bool(p.get("is_monster", false)) else float(COMPLETE_WEIGHT.get(grade, 0.0))
@@ -305,15 +347,24 @@ static func pick_type(p: Dictionary, grade: String, theme: String, rng: RandomNu
 			w *= FLAT_SA_WEIGHT
 		if str(t.get("role", "")) == "救援" and grade in ["S", "A"]:
 			w *= SA_RELIEF_WEIGHT
+		if w <= 0.0:
+			continue
 		names.append(name)
 		ws.append(w)
 		total += w
+	if names.is_empty():
+		return ""
 	var x := rng.randf() * total
 	for i in names.size():
 		x -= float(ws[i])
 		if x <= 0.0:
 			return names[i]
-	return names[-1] if not names.is_empty() else ""
+	return names[-1]
+
+
+## その型をもう1人選べるか（表示の名前ごとに1年に MAX_PER_TYPE 人まで。作業89）
+static func type_room(used: Dictionary, type_name: String) -> bool:
+	return int(used.get(label_of(type_name), 0)) < MAX_PER_TYPE
 
 
 ## 守備位置の4区分（Draft._pos_of と同じ。Draft は GameData に頼るので使わない）
@@ -335,23 +386,26 @@ static func wild_type(p: Dictionary) -> String:
 	return "未完の大器（投手）" if bool(p.get("is_pitcher", false)) else "未完の大器"
 
 
-## 型の能力の形を入れる。入団時の総合（target）は変えない。weapon：高卒の S・A の武器（FictionalDraft._calibrate_entry）
+## 型の能力の形を入れる。入団時の総合（target）は変えない。weapon：高卒の S・A の武器（FictionalDraft._calibrate_entry）。
+## type_name が空なら型なし（作業89：看板も含めて長所・短所を候補ごとにばらばらに決める）
 static func apply_shape(p: Dictionary, type_name: String, grade: String, target: float, weapon: float, cap: float,
 		rng: RandomNumberGenerator) -> void:
 	var t: Dictionary = TYPES.get(type_name, {})
-	if t.is_empty():
+	if t.is_empty() and not type_name.is_empty():
 		return
 	var monster := bool(p.get("is_monster", false))
-	var cnt: Array = STRENGTH_COUNT.get(grade, [1, 2])
-	var n_s := 3 if monster else rng.randi_range(int(cnt[0]), int(cnt[1]))
-	var n_d := 0 if monster else int(WEAKNESS_COUNT.get(grade, 2))
+	var n_s := 3 if monster else _pick_count(STRENGTH_COUNT_W.get(grade, {1: 1.0}), rng)
+	var n_d := 0 if monster else _pick_count(WEAKNESS_COUNT_W.get(grade, {2: 1.0}), rng)
 	if bool(t.get("complete", false)):
 		_shape_complete(p, t, target, cap, rng)
 		return
-	var strong: Array = (t["s"] as Array).duplicate()
-	var weak: Array = (t["d"] as Array).duplicate()
+	var strong: Array
+	var weak: Array
 	var amp: Array = STRENGTH
 	if bool(t.get("wild", false)):
+		# 未完の大器は今までどおり（長所1つを極端に・短所3つ。野手の長所はパワー・走力・肩のどれか）
+		strong = (t["s"] as Array).duplicate()
+		weak = (t["d"] as Array).duplicate()
 		if not bool(p["is_pitcher"]):
 			strong = [WILD_BAT_KEYS[rng.randi_range(0, WILD_BAT_KEYS.size() - 1)]]
 			weak.erase(strong[0])
@@ -359,9 +413,14 @@ static func apply_shape(p: Dictionary, type_name: String, grade: String, target:
 		amp = [WILD_STRENGTH, STRENGTH[1]]
 		n_s = mini(n_s, strong.size())
 		n_d = 3
-	elif bool(t.get("flat", false)):
-		amp = FLAT_STRENGTH
-		n_d = 0
+	else:
+		if bool(t.get("flat", false)):
+			amp = FLAT_STRENGTH
+			n_d = 0
+		var heavy_ok := bool(p["is_pitcher"]) or not (grade in ["S", "A"] or monster)
+		var spec := _reroll(p, t, n_s, n_d, heavy_ok, rng)
+		strong = spec[0]
+		weak = spec[1]
 	if not bool(p["is_pitcher"]):
 		# 総合の重い能力（ミート・パワー）：評価 S・A は短所にしない（総合が届かなくなる）。
 		# 総合の低い選手は長所を両方にしない（ほかの能力が下限まで削られる）
@@ -372,6 +431,7 @@ static func apply_shape(p: Dictionary, type_name: String, grade: String, target:
 			strong.erase("meet" if strong.find("meet") > strong.find("power") else "power")
 	strong = strong.slice(0, mini(n_s, strong.size()))
 	weak = weak.slice(0, mini(n_d, weak.size()))
+	p["amateur"]["strengths"] = strong.duplicate()
 	# 長所の上限は評価ごと（作業73）。短所は未完の大器・高卒・評価の低い選手ほど深く
 	var scap := float(STRENGTH_CAP.get(grade, 84.0))
 	var deeper := float(WEAK_DEEPER_GRADE.get(grade, 0.0))
@@ -392,6 +452,93 @@ static func apply_shape(p: Dictionary, type_name: String, grade: String, target:
 	if grade in ["S", "A"] and not monster and not hs and not keys.is_empty() and rng.randf() < RARE_S_RATE:
 		p["amateur"]["rare_s"] = keys[0]
 		_lift(p, str(keys[0]), rng.randf_range(RARE_S_VALUE[0], RARE_S_VALUE[1]))
+
+
+## 長所・短所の数を重み {数: 重み} から選ぶ（作業89）
+static func _pick_count(w: Dictionary, rng: RandomNumberGenerator) -> int:
+	var total := 0.0
+	for n: int in w:
+		total += float(w[n])
+	var x := rng.randf() * total
+	for n: int in w:
+		x -= float(w[n])
+		if x <= 0.0:
+			return n
+	return int(w.keys()[-1])
+
+
+## 作業89：長所・短所を候補ごとに選び直す。[長所（強い順）, 短所]。
+## 型があれば看板（s の1つ目）だけ固定し、残りは重み付きで選ぶ（REROLL_*）。型なし（t が空）は看板も TYPELESS_BIAS で選ぶ。
+## 先発の型はスタミナを短所にしない・救援の型はスタミナを長所にしない。heavy_ok が false ならミート・パワーを短所にしない
+static func _reroll(p: Dictionary, t: Dictionary, n_s: int, n_d: int, heavy_ok: bool, rng: RandomNumberGenerator) -> Array:
+	var pitcher := bool(p["is_pitcher"])
+	var keys: Array = ["k9", "bb9", "hr9", "stamina", "velocity"] if pitcher else BAT_KEYS
+	var ts: Array = t.get("s", [])
+	var td: Array = t.get("d", [])
+	var role := str(t.get("role", ""))
+	var no_s: Array = t.get("no_s", [])
+	var no_d: Array = t.get("no_d", [])
+	var bias: Dictionary = TYPELESS_BIAS.get("投手" if pitcher else pos_group(p), {})
+	var strong: Array = []
+	if not ts.is_empty():
+		strong.append(ts[0])
+	while strong.size() < n_s:
+		var cand: Array = keys.filter(func(k: String) -> bool:
+			return not k in strong and not k in no_s and not (k == "stamina" and role == "救援"))
+		var sw: Array = []
+		for k: String in cand:
+			if ts.is_empty():
+				sw.append(float(bias.get(k, 1.0)))
+			elif k in ts:
+				sw.append(float(REROLL_STRONG_W["s"]))
+			else:
+				sw.append(float(REROLL_STRONG_W["d"]) if k in td else float(REROLL_STRONG_W["other"]))
+		var k := _weighted(cand, sw, rng)
+		if k.is_empty():
+			break
+		strong.append(k)
+	var weak: Array = []
+	while weak.size() < n_d:
+		var cand: Array = keys.filter(func(k: String) -> bool:
+			return (not k in strong and not k in weak and not k in no_d and not (k == "stamina" and role == "先発")
+				and (heavy_ok or not k in HEAVY_KEYS)))
+		var ww: Array = []
+		for k: String in cand:
+			if ts.is_empty():
+				ww.append(1.0)
+			elif k in td:
+				ww.append(float(REROLL_WEAK_W["d"]))
+			else:
+				ww.append(float(REROLL_WEAK_W["s"]) if k in ts else float(REROLL_WEAK_W["other"]))
+		var k := _weighted(cand, ww, rng)
+		if k.is_empty():
+			break
+		weak.append(k)
+	return [strong, weak]
+
+
+static func _weighted(cand: Array, w: Array, rng: RandomNumberGenerator) -> String:
+	var total := 0.0
+	for x: float in w:
+		total += x
+	if cand.is_empty() or total <= 0.0:
+		return ""
+	var r := rng.randf() * total
+	for i in cand.size():
+		r -= float(w[i])
+		if r <= 0.0:
+			return str(cand[i])
+	return str(cand[-1])
+
+
+## 球速の上げ下げ（km/h）：腕の角度など型で決まる分＋球速が長所なら上げ・短所なら下げる（作業89）
+static func _velo_shift(t: Dictionary, strong: Array, weak: Array) -> float:
+	var v := float(t.get("angle", 0.0))
+	if "velocity" in strong:
+		v += VELO_STRONG + float(t.get("velo_extra", 0.0))
+	elif "velocity" in weak:
+		v -= VELO_WEAK
+	return v
 
 
 static func _cap_of(k: String, cap: float, monster: bool, is_strength: bool) -> float:
@@ -524,7 +671,7 @@ static func _shape_pitcher(p: Dictionary, t: Dictionary, strong: Array, weak: Ar
 	# 球速：型の長所・短所の分だけ動かす
 	var velo: Variant = pit.get("velocity")
 	if velo is Dictionary:
-		var kmh := float(velo.get("kmh", 145)) + float(t.get("velo", 0)) + rng.randf_range(-1.0, 1.0)
+		var kmh := float(velo.get("kmh", 145)) + _velo_shift(t, strong, weak) + rng.randf_range(-1.0, 1.0)
 		velo["kmh"] = clampi(roundi(kmh), VELO_MIN, VELO_MAX_MONSTER if monster else VELO_MAX)
 	if t.has("throws"):
 		p["throws"] = str(t["throws"])
@@ -816,7 +963,8 @@ static func assign_one_skill(cls: Array, theme: String, rng: RandomNumberGenerat
 		pool.erase(p)
 		var t: Dictionary = TYPES.get(str(p["amateur"].get("type_key", "")), {})
 		var key := ""
-		var ss: Array = t.get("s", [])
+		# 作業89：長所は候補ごとに選び直すので、選んだ長所（無ければ型の長所）から
+		var ss: Array = p["amateur"].get("strengths", t.get("s", []))
 		if not ss.is_empty():
 			key = str(ss[0])
 			for k: String in ss.slice(0, 2):

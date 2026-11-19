@@ -296,6 +296,7 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 	# 完成型・未完の大器は毎年どちらも何人か（作業67）
 	var n_complete := 0
 	var n_wild := 0
+	var used_types := {}
 	for i in raw_candidates.size():
 		var p: Dictionary = raw_candidates[i]
 		var is_ikusei := (i >= reg_count)
@@ -343,14 +344,20 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 		var lefty := float(FictionalTypes.THEMES[theme].get("lefty", 0.0))
 		if p["is_pitcher"] and lefty > 0.0 and p["throws"] != "左" and rng.randf() < lefty:
 			p["throws"] = "左"
-		var type_key := FictionalTypes.pick_type(p, grade, theme, rng)
+		# 作業89：3〜4割は型なし（空）、同じ型は1年に2人まで（used_types）
+		var type_key := FictionalTypes.pick_type(p, grade, theme, rng, used_types)
 		var ready_pick: bool = p["category"] != "高校" and not is_ikusei and not bool(p.get("is_monster", false))
-		if ready_pick and grade in ["A", "B"] and rank_in_reg >= 20 and n_complete < FictionalTypes.MIN_EACH:
+		if ready_pick and grade in ["A", "B"] and rank_in_reg >= 20 and n_complete < FictionalTypes.MIN_EACH \
+				and FictionalTypes.type_room(used_types, FictionalTypes.complete_type(p)):
 			type_key = FictionalTypes.complete_type(p)
-		elif not is_ikusei and rank_in_reg >= 45 and n_wild < FictionalTypes.MIN_EACH and grade in ["C", "D"]:
+		elif not is_ikusei and rank_in_reg >= 45 and n_wild < FictionalTypes.MIN_EACH and grade in ["C", "D"] \
+				and FictionalTypes.type_room(used_types, FictionalTypes.wild_type(p)):
 			type_key = FictionalTypes.wild_type(p)
 		n_complete += 1 if FictionalTypes.is_complete(type_key) else 0
 		n_wild += 1 if FictionalTypes.is_wild(type_key) else 0
+		if not type_key.is_empty():
+			var lb := FictionalTypes.label_of(type_key)
+			used_types[lb] = int(used_types.get(lb, 0)) + 1
 		p["_type"] = type_key
 		p["_grade"] = grade
 		p["_theme_bonus"] = (FictionalTypes.level_bonus(theme, p) if grade in ["B", "C", "D"] else 0.0) \
@@ -374,7 +381,7 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 			am["projected"] = "超目玉" if p["category"] == "高校" else "超目玉（即戦力）"
 			am["bids"] = maxi(am["bids"], rng.randi_range(3, 6))
 
-		# 型の名前（二刀流は最後に二刀流の名前にする）
+		# 型の名前（二刀流は最後に二刀流の名前にする）。型なしは空（表・紹介文に型の名前を出さない。作業89）
 		am["type_key"] = str(p["_type"])
 		am["type"] = FictionalTypes.label_of(str(p["_type"]))
 		am["intro"] = intro_of(p)
@@ -1165,6 +1172,13 @@ static func _count_from(odds: Array, rng: RandomNumberGenerator) -> int:
 	return odds.size() - 1
 
 
+## 型なしの候補の紹介文の言葉（右腕・左腕・捕手・内野手・外野手。作業89）
+static func plain_word(p: Dictionary) -> String:
+	if bool(p.get("is_pitcher", false)):
+		return "左腕" if str(p.get("throws", "")) == "左" else "右腕"
+	return FictionalTypes.pos_group(p)
+
+
 static func type_word(p: Dictionary) -> String:
 	var t := str(p.get("amateur", {}).get("type", ""))
 	return t if not t.is_empty() else FictionalTalent.decide_player_type(p)
@@ -1174,5 +1188,7 @@ static func intro_of(p: Dictionary) -> String:
 	var am: Dictionary = p.get("amateur", {})
 	var sch: String = str(am.get("school", ""))
 	var t_word: String = str(am.get("type", type_word(p)))
+	if t_word.is_empty():
+		t_word = plain_word(p)  # 型なし（作業89）
 	var story := str(am.get("story", ""))
 	return "%sの%s" % [sch, t_word] + ("。%s" % story if not story.is_empty() else "")

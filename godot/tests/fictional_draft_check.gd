@@ -746,7 +746,7 @@ func _check(ok: bool, label: String) -> void:
 		_failures += 1
 
 
-## 作業67：型・能力の散らばり・年の色・物語（30年分。入団時の能力だけを見る）
+## 作業67：型・能力の散らばり・年の色・物語（30年分。入団時の能力だけを見る）。作業89：同じ型は1年に2人まで・型なし3〜4割・型40種類以上・そっくりさんがまれ
 func _check_types() -> void:
 	print("== 作業67：架空の候補の型・年の色・物語（30年分） ==")
 	var fd: RefCounted = _fd.new()
@@ -768,8 +768,34 @@ func _check_types() -> void:
 	var all_n := 0
 	var same3 := 0
 	var no_c := 0
+	# 作業89：同じ型は1年に2人まで・型なし・同じ年に同じ型で形（いちばん高い能力＞2番目／いちばん低い能力）まで同じ組
+	var typed_n := 0
+	var typeless := 0
+	var over_cap := 0
+	var lookalike := 0
+	var all_labels := {}
 	for y in range(2028, 2028 + years):
 		var cls: Array = fd.generate_year(y, rng)
+		var year_label := {}
+		var year_shape := {}
+		for p: Dictionary in cls:
+			var am89: Dictionary = p["amateur"]
+			if p.has("reincarnation") or bool(am89.get("gem", false)):
+				continue
+			var key := str(am89.get("type_key", ""))
+			if key.is_empty():
+				typeless += 1
+				continue
+			typed_n += 1
+			var lb := FictionalTypes.label_of(key)
+			all_labels[lb] = true
+			year_label[lb] = int(year_label.get(lb, 0)) + 1
+			var sk := lb + _rel_shape(p)
+			year_shape[sk] = int(year_shape.get(sk, 0)) + 1
+		for lb: String in year_label:
+			over_cap += 1 if int(year_label[lb]) > FictionalTypes.MAX_PER_TYPE else 0
+		for sk: String in year_shape:
+			lookalike += int(year_shape[sk]) * (int(year_shape[sk]) - 1) / 2
 		themes[str(cls[0]["amateur"].get("year_theme", ""))] = int(themes.get(str(cls[0]["amateur"].get("year_theme", "")), 0)) + 1
 		for p: Dictionary in cls:
 			var am: Dictionary = p["amateur"]
@@ -778,7 +804,8 @@ func _check_types() -> void:
 				types[group] = {}
 			types[group][str(am.get("type", ""))] = true
 			all_n += 1
-			named += 1 if str(am.get("type", "")) in str(am.get("intro", "")) else 0
+			# 型なし（作業89）は型の名前が無いので数えない
+			named += 1 if str(am.get("type", "")).is_empty() or str(am.get("type", "")) in str(am.get("intro", "")) else 0
 			if not str(am.get("story", "")).is_empty():
 				stories += 1
 				if am.get("story_key") == "convert_bat" and int(p["batting"]["ratings"]["arm"]["value"]) < 70:
@@ -840,6 +867,29 @@ func _check_types() -> void:
 		"同じ数字が3つ以上並ぶ選手はまれ（%d／%d人）、C の無い野手は少なめ（%d／%d人）" % [same3, all_n, no_c, bat_n])
 	_check(stories >= years * 4 and stories <= years * 12 and convert_weak == 0,
 		"物語は年に数人、元投手の野手は肩が強い（%d人、肩の弱い元投手 %d人）" % [stories, convert_weak])
+	var tl_rate := float(typeless) / maxf(1, typeless + typed_n)
+	print("  作業89：型なし %.1f%%、型の種類 %d、同じ年・同じ型・同じ形の組 %.2f／年（作業89の前は約51）" % [100.0 * tl_rate, all_labels.size(),
+		float(lookalike) / years])
+	_check(over_cap == 0, "同じ型は1年に%d人まで（超えた型 %d）" % [FictionalTypes.MAX_PER_TYPE, over_cap])
+	_check(tl_rate >= 0.3 and tl_rate <= 0.45, "3〜4割は型なし（%.1f%%）" % [100.0 * tl_rate])
+	_check(all_labels.size() >= 40, "型は40種類以上（作業89で珍しい型を足した。%d種類）" % all_labels.size())
+	_check(float(lookalike) / years <= 8.0,
+		"同じ年に同じ型で形まで同じ候補の組はまれ（%.2f組／年。作業89の前は約51組）" % [float(lookalike) / years])
+
+
+## 選手の中での形（いちばん高い能力＞2番目／いちばん低い能力。投手の球速は 145km＝50・1km＝2.5 に換算）。作業89
+func _rel_shape(p: Dictionary) -> String:
+	var pit := bool(p["is_pitcher"])
+	var r: Dictionary = p["pitching"]["ratings"] if pit else p["batting"]["ratings"]
+	var keys: Array = ["k9", "bb9", "hr9", "stamina"] if pit else ["meet", "power", "eye", "speed", "defense", "arm"]
+	var vals := {}
+	for k: String in keys:
+		vals[k] = float(r[k]["value"]) if r.get(k) is Dictionary else 50.0
+	if pit:
+		vals["velocity"] = 50.0 + (float(p["pitching"].get("velocity", {}).get("kmh", 145)) - 145.0) * 2.5
+	var ks: Array = vals.keys()
+	ks.sort_custom(func(a: String, b: String) -> bool: return float(vals[a]) > float(vals[b]))
+	return "%s>%s/%s" % [ks[0], ks[1], ks[-1]]
 
 
 ## 作業80（ユーザー 2026-11-09「5位評価ぐらいでもBBの選手とかいるから特別感感じなかった」「怪物みたいなのまだ出てない気がする」）：
