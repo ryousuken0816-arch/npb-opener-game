@@ -24,7 +24,7 @@ const PIT_WEIGHT := {"k9": 1.0 / 3.0, "bb9": 1.0 / 3.0, "hr9": 1.0 / 3.0}
 ## （s の残りが選ばれやすく、d の能力もまれに長所になる＝「肩の強い俊足巧打」）。球速の上げ下げは長所・短所に球速があるかで決める（_velo_shift）
 const TYPES := {
 	# 投手
-	"本格派の剛腕": {"pos": "投手", "w": 14, "s": ["k9", "velocity", "stamina"], "d": ["bb9"], "no_d": ["velocity"]},
+	"本格派の剛腕": {"pos": "投手", "w": 14, "s": ["k9", "velocity", "stamina"], "d": ["bb9"], "no_d": ["velocity"], "angle": 4},
 	"技巧派": {"pos": "投手", "w": 11, "s": ["bb9", "hr9", "stamina"], "d": ["velocity", "k9"], "no_s": ["velocity"]},
 	"制球職人": {"pos": "投手", "w": 9, "s": ["bb9", "stamina", "hr9"], "d": ["k9", "velocity"], "no_s": ["velocity"]},
 	"荒れ球の豪腕": {"pos": "投手", "w": 7, "s": ["velocity", "k9", "hr9"], "d": ["bb9", "stamina"], "velo_extra": 2},
@@ -79,7 +79,7 @@ const TYPES := {
 ## 作業89：型なし（長所・短所を候補ごとにばらばらに決める。型の名前は出さない）の割合。同じ型（表示の名前）は1年に MAX_PER_TYPE 人まで。
 ## 型があふれたとき（その守備位置の型がどれも MAX_PER_TYPE 人）も型なしになるので、型なしの全体は TYPELESS_RATE より多い。
 ## 投手は候補が多く型があふれやすい（1年に約65人で、投手の型は約20）ので低めにして、型なしが投手・野手とも4割前後になるように
-const TYPELESS_RATE := {"投手": 0.2, "野手": 0.33}
+const TYPELESS_RATE := {"投手": 0.15, "野手": 0.3}
 const MAX_PER_TYPE := 2
 ## 看板のほかの長所・短所を選ぶときの重み（型の s の残り・型の d・どちらでもない能力）
 const REROLL_STRONG_W := {"s": 3.0, "d": 0.6, "other": 1.5}
@@ -87,9 +87,13 @@ const REROLL_WEAK_W := {"s": 0.3, "d": 3.0, "other": 1.0}
 ## 型なしの看板・長所の選ばれやすさ（守備位置の区分ごとの倍率。無い能力は1）
 const TYPELESS_BIAS := {"捕手": {"defense": 1.6, "arm": 1.6, "speed": 0.6}, "内野手": {"defense": 1.3},
 	"外野手": {"speed": 1.3, "arm": 1.2}, "投手": {}}
-## 球速が長所・短所のときの上げ下げ（km/h。作業89の前は型ごとの固定の値＝本格派 +5・技巧派 −5 など）
+## 球速が長所・短所のときの上げ下げ（km/h。作業89の前は型ごとの固定の値＝本格派 +5・技巧派 −5 など）。
+## 選び直すと評価の低い投手（長所1つ・短所2〜3つ）は球速が短所になりやすく、−5 だと評価 C・D の球速の平均が約2km 下がったので、
+## 短所は −3 にし、型なしでは球速を短所に選びにくくした（TYPELESS_VELO_WEAK_W）。評価ごとの球速の平均は前と ±1.3km 以内
+## （S・A が約1km 上がり、C が約1km 下がる。全体の平均は −0.3km）
 const VELO_STRONG := 5.0
-const VELO_WEAK := 5.0
+const VELO_WEAK := 3.0
+const TYPELESS_VELO_WEAK_W := 0.5
 ## 長所の数（評価ごとの {数: 重み}）と短所の数。作業89：評価の中でも1〜3にばらす（平均は前と同じくらい。C・D は長所1つのまま＝作業83）
 const STRENGTH_COUNT_W := {"S": {2: 0.3, 3: 0.7}, "A": {2: 0.5, 3: 0.5}, "B": {1: 0.25, 2: 0.5, 3: 0.25}, "C": {1: 1.0},
 	"D": {1: 1.0}}
@@ -505,7 +509,7 @@ static func _reroll(p: Dictionary, t: Dictionary, n_s: int, n_d: int, heavy_ok: 
 		var ww: Array = []
 		for k: String in cand:
 			if ts.is_empty():
-				ww.append(1.0)
+				ww.append(TYPELESS_VELO_WEAK_W if k == "velocity" else 1.0)
 			elif k in td:
 				ww.append(float(REROLL_WEAK_W["d"]))
 			else:

@@ -353,6 +353,60 @@ static func ensure(p: Dictionary, year := -1, hint := "") -> bool:
 	return true
 
 
+## 決め球（best_pitch）の変化量を move まで上げ、奪三振・被弾抑制（と総合）を持ち球から計算し直す（作業89：本格二刀流の決め球を
+## 怪物にそろえる。fit は 6・7 に罰があるので、奪三振を上げて作り直しても決め球が大きくならない）。印（arsenal）も新しい値にするので、
+## あとの ensure で作り直されない。持ち球が無ければ先に ensure で作る。上げたら true
+static func raise_best(p: Dictionary, move: int, year := -1, hint := "") -> bool:
+	ensure(p, year, hint)
+	var best := best_pitch(p)
+	if best.is_empty() or int(best["move"]) >= move:
+		return false
+	best["move"] = clampi(move, 1, 7)
+	_rederive(p, year)
+	return true
+
+
+## 奪三振（持ち球から計算した値）が k_min に届くまで、三振を取りやすい球（TYPES の k が大きい球）の変化量を1ずつ上げる
+## （max_move まで。作業89：本格二刀流）。届いたら true
+static func lift_k(p: Dictionary, k_min: float, max_move: int, year := -1, hint := "") -> bool:
+	ensure(p, year, hint)
+	var pit: Variant = p.get("pitching")
+	if not pit is Dictionary or not pit.get("pitches") is Array:
+		return false
+	for _i in 12:
+		if float(_rv(pit["ratings"], "k9")) >= k_min:
+			return true
+		var pick := {}
+		for x: Dictionary in pit["pitches"]:
+			if int(x["move"]) < max_move and (pick.is_empty()
+					or float(TYPES.get(str(x["name"]), {}).get("k", 0.0)) > float(TYPES.get(str(pick["name"]), {}).get("k", 0.0))):
+				pick = x
+		if pick.is_empty():
+			return false
+		pick["move"] = int(pick["move"]) + 1
+		_rederive(p, year)
+	return float(_rv(pit["ratings"], "k9")) >= k_min
+
+
+## 持ち球を変えたあとに奪三振・被弾抑制・総合と印を書き直す（ensure の終わりと同じ）
+static func _rederive(p: Dictionary, year: int) -> void:
+	var pit: Dictionary = p["pitching"]
+	var r: Dictionary = pit["ratings"]
+	var sig: Dictionary = pit.get("arsenal", {}) if pit.get("arsenal") is Dictionary else {}
+	var ref := float(sig.get("ref", velo_ref(year if year > 0 else 2026)))
+	var v: Variant = pit.get("velocity")
+	var kmh := float(v["kmh"]) if v is Dictionary and v.get("kmh") != null else ref
+	var d := derive(pit["pitches"], kmh, ref)
+	var k1 := clampi(roundi(float(d[0])), 1, 100)
+	var h1 := clampi(roundi(float(d[1])), 1, 100)
+	var shift := (float(k1) - float(_rv(r, "k9")) + float(h1) - float(_rv(r, "hr9"))) / 3.0
+	_write(r, "k9", k1)
+	_write(r, "hr9", h1)
+	if absf(shift) >= 0.5 and _rv(r, "overall") != null:
+		_write(r, "overall", clampi(roundi(float(_rv(r, "overall")) + shift), 1, 100))
+	pit["arsenal"] = {"k": float(k1), "h": float(h1), "kmh": kmh, "ref": ref, "v": SCALE_VERSION}
+
+
 static func _write(r: Dictionary, k: String, v: int) -> void:
 	var old: Variant = r.get(k)
 	var e: Dictionary = old.duplicate() if old is Dictionary else {}

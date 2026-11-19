@@ -92,8 +92,9 @@ func _check_candidates() -> void:
 		print("  %s %s：%dkm 奪三振%d 総合%d 決め球%s%d／ミート%d パワー%d（評価%s・%d球団・%s）" % [p["name"], am["category"], kmh,
 			int(pr["k9"]["value"]), int(pr["overall"]["value"]), best.get("name", "-"), int(best.get("move", 0)),
 			int(br["meet"]["value"]), int(br["power"]["value"]), am["grade"], int(am["bids"]), am["projected"]])
+		# 決め球は 5 以上・奪三振 84 以上（作業89：怪物の投手にそろえた。作業83の物差しで奪三振 82〜83・決め球 4 になることがあった）
 		_check(kmh >= 155 and int(pr["k9"]["value"]) >= 84 and int(best.get("move", 0)) >= 5,
-			"%s：投手でエース級（球速 155km 以上・奪三振 A 以上・決め球）" % p["name"])
+			"%s：投手でエース級（球速 155km 以上・奪三振 84 以上・決め球の変化量 5 以上）" % p["name"])
 		_check(bat >= 80, "%s：打者で主軸級（ミートかパワーが A 以上）" % p["name"])
 		_check(am["grade"] == "S" and int(am["bids"]) >= 3 and bool(p["is_pitcher"]) and p["fielding"].has("外野手"),
 			"%s：評価 S・3球団以上が競合・投手で登録・外野も守れる" % p["name"])

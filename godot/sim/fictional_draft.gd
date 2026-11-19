@@ -88,6 +88,12 @@ const TW_ARM := [82.0, 92.0]
 const TW_DEFENSE := [58.0, 68.0]
 ## ピーク：奪三振・打撃の武器は 94〜99、ほかは入団時＋伸びしろ（怪物と同じ MON_GROW_HS・MON_GROW）
 const TW_PEAK_TOP := [94.0, 99.0]
+## 作業89：本格二刀流の決め球を怪物（作業85）にそろえる。持ち球は奪三振・球速から合わせて作り（PitchArsenal.fit。6・7 には罰がある）、
+## 型 A は奪三振が下がって 82〜84・決め球が 4 になることがあった（two_way_check の NG）。決め球は TW_ACE_MOVE_MIN 以上、
+## 奪三振が TW_K9 の下限より低ければ三振を取りやすい球から1つずつ上げる（TW_ACE_MOVE_MAX まで。PitchArsenal.lift_k）。怪物の投手の決め球は 6 が約65%・5 が約30%・奪三振 86〜98。
+## いつも 6 にすると球速 158km 前後の型 A は奪三振が 99〜100（怪物より上）になるので、6 は必要なときだけ
+const TW_ACE_MOVE_MIN := 5
+const TW_ACE_MOVE_MAX := 6
 ## 年の質（豊作・不作）→ その年の全員を quality × QUALITY_SHIFT（±QUALITY_SHIFT_MAX まで）上下。
 ## 評価 B 以下はその倍（豊作の年は中位の層も厚い）。S・A は不作の年でも −1 まで（その年の一番上を78前後に保つ）
 const QUALITY_SHIFT := 8.0
@@ -115,10 +121,12 @@ const PITCH_FIELD_HS_GAP := 2.0
 const FIELD_SPREAD := 4
 ## 入団時の弾道（set_trajectory。点の式は tools/amateur_ratings.py の rookie_trajectory と同じ）。区切りは架空の候補だけ別：
 ## 型（作業67）で長所・短所がはっきりした分、点が実在の新人より広がる（下位10% 29・下位15% 33・上位10% 84・上位3% 94）ので、
-## 弾道1 が15%前後・3 が15%前後・4 が数%になるように決めた（史実の新人の1年目は 1 15%・3 4%・4 0.4%）
+## 弾道1 が15%前後・3 が15%前後・4 が数%になるように決めた（史実の新人の1年目は 1 15%・3 4%・4 0.4%）。
+## 作業89：作業83で長所でも短所でもない能力を下げてから点の上のほうが縮み（上位10% 77・上位3% 86）、5年分で 4 が0人・3 が約6%に
+## なった（rookie_fielding_check の NG）。区切りを 94/80/31 → 86/75/30、4 のパワーを 78 → 74 にして、1 約10%・3 約15%・4 約3% に戻した
 const TRAJ_SHAPE := 0.4
-const TRAJ_CUTS := [[94.0, 4], [80.0, 3], [31.0, 2]]
-const TRAJ_4_POWER := 78.0
+const TRAJ_CUTS := [[86.0, 4], [75.0, 3], [30.0, 2]]
+const TRAJ_4_POWER := 74.0
 ## 転生選手の出現確率（人数分布）
 const REINCARNATION_ODDS := [0.65, 0.25, 0.08, 0.02]
 ## 転生選手の高校／大学の割合
@@ -429,6 +437,8 @@ func generate_year(draft_year: int, rng: RandomNumberGenerator, opts: Dictionary
 		if two_way_ace:
 			_two_way_ace(p, rng)  # 本格二刀流の入団時・ピーク（作業86）
 		FictionalTypes.untie(p, rng)  # 同じ選手の中で同じ数字が並ばないように（作業73）
+		if two_way_ace:
+			_ace_pitch(p, draft_year + 1)  # 決め球・奪三振を怪物にそろえる（作業89）
 		fill_fielding(p)
 		if two_way_ace:
 			var br: Dictionary = p["batting"]["ratings"]
@@ -680,6 +690,15 @@ static func _sync_peak(p: Dictionary) -> void:
 			var r: Variant = block["ratings"][k]
 			if peak.has(k) and r is Dictionary and r.get("value") != null:
 				peak[k] = maxf(float(peak[k]), float(r["value"]))
+
+
+## 本格二刀流（型 A）の持ち球を作り、決め球を TW_ACE_MOVE_MIN 以上・奪三振を TW_K9 の下限以上にする（作業89。奪三振・被弾抑制は
+## 持ち球から計算し直す）。year・型の名前（球種の選びやすさ）は候補の持ち球を作るとき（GameData.set_draft_class の ensure_all）と
+## 同じにして、あとで作り直されないように
+func _ace_pitch(p: Dictionary, year: int) -> void:
+	var hint := str(p.get("amateur", {}).get("type_key", ""))
+	PitchArsenal.raise_best(p, TW_ACE_MOVE_MIN, year, hint)
+	PitchArsenal.lift_k(p, float(TW_K9[0]), TW_ACE_MOVE_MAX, year, hint)
 
 
 ## 書き方の無い内野手の位置（守備力 → 遊撃手、肩 → 三塁手、守備力 → 二塁手、ほかは一塁手。高校は FIELD_HS_GAP 下げる）

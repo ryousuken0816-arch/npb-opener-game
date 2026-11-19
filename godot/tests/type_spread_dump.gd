@@ -8,7 +8,9 @@ extends SceneTree
 ## - 1年分の10人の例
 ## 転生選手・掘り出し物（gem）は数えない。投手は奪三振・制球・球威・スタミナ＋球速（150km以上を長所・141km以下を短所）
 ##
-##   godot --headless --path godot -s res://tests/type_spread_dump.gd -- [年数] [種の数]
+## 型の名前を3つ目に渡すと、1通り目のその型の候補（育成を除く）を全部並べる
+##
+##   godot --headless --path godot -s res://tests/type_spread_dump.gd -- [年数] [種の数] [型の名前]
 
 const BAT_KEYS := ["meet", "power", "eye", "speed", "defense", "arm"]
 const PIT_KEYS := ["k9", "bb9", "hr9", "stamina"]
@@ -17,6 +19,7 @@ const WORD := {"meet": "ミ", "power": "パ", "eye": "眼", "speed": "走", "def
 
 var _years := 20
 var _seeds := 3
+var _list_type := ""
 
 
 func _initialize() -> void:
@@ -25,6 +28,8 @@ func _initialize() -> void:
 		_years = int(args[0])
 	if args.size() > 1:
 		_seeds = int(args[1])
+	if args.size() > 2:
+		_list_type = args[2]
 	_run.call_deferred()
 
 
@@ -43,6 +48,7 @@ func _run() -> void:
 	var lookalike_pos := 0
 	var by_grade_s := {}
 	var example: Array = []
+	var listed: Array = []
 	for s in _seeds:
 		var fd: RefCounted = fd_script.new()
 		var rng := RandomNumberGenerator.new()
@@ -81,6 +87,8 @@ func _run() -> void:
 						sigs[label] = {}
 					sigs[label][sig[3]] = int(sigs[label].get(sig[3], 0)) + 1
 					year_sig[label + sig[3]] = int(year_sig.get(label + sig[3], 0)) + 1
+				if s == 0 and label == _list_type and not bool(am.get("as_ikusei", false)):
+					listed.append("%d年 %s" % [y, _line(p, label)])
 				if s == 0 and y == 2030 and example.size() < 12 and not bool(am.get("as_ikusei", false)) \
 						and int(am.get("as_round", 9)) <= 3:
 					example.append(_line(p, label))
@@ -136,6 +144,10 @@ func _run() -> void:
 	print("== 例（1通り目の2030年、3位までの候補から12人） ==")
 	for l: String in example:
 		print(l)
+	if not _list_type.is_empty():
+		print("== 「%s」の候補（1通り目、育成を除く） ==" % _list_type)
+		for l: String in listed:
+			print(l)
 	quit(0)
 
 

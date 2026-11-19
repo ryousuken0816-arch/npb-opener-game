@@ -403,13 +403,14 @@ func _render_summary() -> void:
 ## 育成選手を選んだとき：「支配下に登録する」（春季キャンプ〜7月31日。期間外は押せず理由を出す。作業19）。
 ## コントローラーでも押せるようフォーカスを受ける。
 ## 押せないときは理由をボタンの文言に短く入れる（スマホではツールチップが出ない）。理由の文を別の行に出すと2〜3行になり、
-## 持ち球が2行以上の育成の投手で要約の欄が采配の画面の下からはみ出した（作業83）
+## 持ち球が2行以上の育成の投手で要約の欄が采配の画面の下からはみ出した（作業83）。
+## 文言は短く「支配下登録 2月〜7/31」（作業89：「支配下登録（キャンプ〜7月31日）」では要約の欄が横に 46px はみ出した。期間の全文はツールチップ）
 func _ikusei_button() -> void:
 	var block := GameState.ikusei_promote_block()
 	var button := Button.new()
 	button.text = "支配下に登録する"
 	if not block.is_empty():
-		button.text = "支配下登録（キャンプ〜7月31日）" if block.contains("7月31日") else block
+		button.text = "支配下登録 2月〜7/31" if block.contains("7月31日") else block
 	button.disabled = not block.is_empty()
 	button.tooltip_text = block if not block.is_empty() 			else "育成選手を支配下（%d人まで）に登録します。登録すると1軍に上げられます" % LeagueRoster.ROSTER_LIMIT
 	UiTheme.style_button(button, Color("2e7d32"), Color.WHITE)
