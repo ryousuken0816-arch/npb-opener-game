@@ -340,6 +340,7 @@ func _check_balance() -> void:
 	for y in range(2028, 2028 + years):
 		var s := 0
 		var a := 0
+		var tw_n := 0
 		var mon := 0
 		var top := 0.0
 		for p: Dictionary in fd.generate_year(y, rng):
@@ -370,6 +371,7 @@ func _check_balance() -> void:
 			var tw_ace := str(p.get("two_way", {}).get("type", "")) == "A" and bool(p["two_way"].get("active", false))
 			s += 1 if am["grade"] == "S" and not tw_ace else 0
 			a += 1 if am["grade"] == "A" else 0
+			tw_n += 1 if tw_ace else 0
 			var monster := bool(p.get("is_monster", false))
 			mon += 1 if monster else 0
 			if str(p["name"]).get_slice(" ", 1) in ["大谷", "宗佑磨", "朗希", "輝明", "翔平", "由伸", "宗隆"] \
@@ -391,7 +393,8 @@ func _check_balance() -> void:
 		a_total += a
 		mon_total += mon
 		s_bad += 1 if s < 2 or s > 4 else 0
-		a_bad += 1 if a < 4 or a > 10 else 0
+		# 型 A が評価 A から S に上がった年は A が1人減る（作業89で見つけた。作業86からある）ので、型 A の人数だけ下限をゆるめる
+		a_bad += 1 if a + tw_n < 4 or a > 10 else 0
 		mon_bad += 1 if mon > 2 else 0
 	print("  1年あたり S %.1f人・A %.1f人・怪物 %.2f人、高校生の化け物 %d人／%d年、高校生（本指名）の入団時 C〜D %.0f%%・それ以外で B 以上 %d人、S・A の投手 %d人のうち先発型 %.0f%%"
 		% [float(s_total) / years, float(a_total) / years, float(mon_total) / years, hs_phenom, years,
@@ -588,6 +591,9 @@ func _check_fictional_flow() -> void:
 	d.auto_complete()
 	var mine: Array = d.picks_of(USER)
 	_check(mine.size() >= 3, "自球団が架空の候補を指名（%d人）" % mine.size())
+	# メジャー志望・意中の球団が別の候補（説得が要る。作業77・78）は説得しないと入団しないので数えない（作業89：乱数で 7/8 人になった）
+	var talk := mine.filter(func(rec: Dictionary) -> bool: return not d.talk_kind(str(rec["id"])).is_empty())
+	mine = mine.filter(func(rec: Dictionary) -> bool: return d.talk_kind(str(rec["id"])).is_empty())
 	var guard := 0
 	while not (_gs.year == 2029 and _gs.phase == _gs.Phase.CAMP) and guard < 12:  # 作業54：ドラフトのあとに FA など
 		guard += 1
@@ -597,7 +603,7 @@ func _check_fictional_flow() -> void:
 	for rec: Dictionary in mine:
 		if _gs.league.team_of.get(rec["id"], "") == USER and not _gd.call("player", rec["id"]).is_empty():
 			present += 1
-	_check(present == mine.size(), "指名した架空の選手 %d/%d人が自球団に所属" % [present, mine.size()])
+	_check(present == mine.size(), "指名した架空の選手 %d/%d人が自球団に所属（説得が要る %d人は除く）" % [present, mine.size(), talk.size()])
 	# 作業69：入団した架空の選手（自球団・CPU 球団とも）は弾道1〜4・具体的な守備位置と守備適性を持つ
 	var joined := 0
 	var bad_join: Array = []

@@ -149,7 +149,17 @@ func _check_return_years() -> void:
 		hs["amateur"]["grade_text"], am["school"], am["grade_text"], before, after, am["grade"], am["story"]])
 	_check(am["category"] == "大学" and am["school"] == "東都大学" and am["draft_year"] == 2034
 		and str(back["draft"]).begins_with("2034年") and back["id"] != hs["id"], "大学4年として2034年の候補に戻る")
-	_check(after > before, "4年間で能力が伸びる")
+	# 1人だけだと成長のぶれ（高校生の目玉の約2割は4年で下がる。作業89で選ばれる候補が変わって 65.8 → 55.5 になった）に左右されるので、
+	# 2030年の高校生の S・A 全員を同じように戻したときの平均で見る
+	var gain := 0.0
+	var gn := 0
+	for p: Dictionary in cls:
+		if p["amateur"]["category"] == "高校" and p["amateur"]["grade"] in ["S", "A"] and not bool(p.get("is_monster", false)):
+			var e2 := entry.duplicate()
+			e2["player"] = p
+			gain += _fd.entry_level(_di.make_return(e2, 2034, cls2, "東都大学", _gr.new(), rng)) - _fd.entry_level(p)
+			gn += 1
+	_check(gn > 0 and gain / gn > 0.0, "4年間で能力が伸びる（高校生の S・A %d人の平均 %+.1f。上の1人は %+.1f）" % [gn, gain / maxf(1, gn), after - before])
 	_check(str(am["story"]).contains("2030年秋") and str(am["story"]).contains("中日") and am["refused"]["year"] == 2030,
 		"物語に「2030年秋、中日の1位指名を拒否」")
 	_check(int(_gr.age_at(back, 2035)) == int(_gr.age_at(hs, 2031)) + 4, "年齢も4つ上")
